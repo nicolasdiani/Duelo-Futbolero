@@ -1,0 +1,12 @@
+# Windows
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Copias de seguridad locales
+*_BACKUP_*
+*.bak
