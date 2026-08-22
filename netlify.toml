@@ -1,0 +1,19 @@
+# Configuración para desplegar FÚTBOL CESTO en Netlify
+# Netlify lee este archivo solo: no hace falta tocar nada en su panel.
+
+[build]
+  # No hay build ni dependencias: el juego es un único index.html en la raíz
+  # del repo. Netlify solo tiene que servir la carpeta tal cual está.
+  publish = "."
+
+# A diferencia de Michi Bros, acá NO va un redirect catch-all a index.html.
+# Ese redirect existe cuando hay un router de JavaScript que maneja las rutas;
+# Fútbol Cesto es una sola página sin rutas, así que un catch-all solo serviría
+# para que un link mal escrito devuelva el juego en vez de un 404 honesto.
+
+# Cachear el HTML poco tiempo, para que un deploy nuevo se vea enseguida
+# en los navegadores que ya visitaron el sitio.
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
