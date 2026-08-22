@@ -74,3 +74,13 @@ lógica.
 ## Para subir cambios
 
 Doble click en `subir.bat`.
+
+---
+
+## Licencia
+
+**Copyright © 2026 Nicolás Diani. Todos los derechos reservados.**
+
+Podés jugarlo y leer el código para aprender. No podés redistribuirlo,
+alojarlo en otro dominio, venderlo ni publicar obras derivadas sin permiso
+por escrito. Ver [`LICENSE`](LICENSE) para los términos completos.
