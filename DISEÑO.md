@@ -646,6 +646,112 @@ El texto de la columna lleva más información —el porcentaje y el costo en
 racha— así que va un punto por debajo. Verificado: entra en 360px, que es la
 pantalla más angosta de los celulares actuales.
 
+### El sorteo por eliminación
+
+Al tocar `USAR LA RACHA`, las cinco posibilidades **se van cayendo de a una**
+hasta que queda la que salió:
+
+```
+   ▪ ▪ ▪ ○ ▪      el cursor mira una
+   ▪ ▪ ▪ · ▪      y se apaga
+   ▪ ▪ ○ · ▪
+   ▪ ▪ · · ▪
+   ○ ▪ · · ▪
+   · ▪ · · ○
+   · ★ · · ·      queda la que salió
+```
+
+Es **distinto a propósito** de la ruleta de la mesa: allá un cursor recorre y
+frena, acá se eliminan. Dos sorteos distintos con dos gestos distintos, así no se
+confunden.
+
+El orden en que caen se baraja: si fuera siempre de izquierda a derecha se
+notaría que no significa nada.
+
+> El resultado ya está decidido cuando la animación corre —lo sortea
+> `situacionGol`— así que no lo cambia; solo lo cuenta.
+
+### Las cinco pesan igual
+
+| | Sale | Gol |
+|---|---|---|
+| ⚽ JUGADA CLARA | 20% | **GOL** |
+| 🎯 PENAL 🎮 | 20% | 50% |
+| 🤝 PASE GOL | 20% | 40% |
+| 🚩 CÓRNER | 20% | 35% |
+| 🚧 TIRO LIBRE | 20% | 30% |
+
+Antes los pesos iban de 1 a 3, así que la jugada clara salía el **8%** y el tiro
+libre el 25%: el premio grande de llenar la racha casi no aparecía.
+
+Con todas iguales el **gol esperado sube de 43% a 51%**, así que la racha llena
+pasó a valer bastante más.
+
+### La ficha de la posibilidad de gol
+
+Tocar el cartel verde abre las **cinco cartas que pueden salir**, con su chance
+de aparecer y de terminar en gol:
+
+```
+   ⚽ POSIBILIDAD DE GOL                    43% de gol
+
+   ┌─────┐ ┌──🎮─┐ ┌─────┐ ┌─────┐ ┌─────┐
+   │  ⚽  │ │  🎯  │ │  🤝  │ │  🚩  │ │  🚧  │
+   │ GOL │ │50%  │ │40%  │ │35%  │ │30%  │
+   │sale8│ │sale17│ │sale25│ │sale25│ │sale25│
+   └─────┘ └─────┘ └─────┘ └─────┘ └─────┘
+      ★  verde: entra siempre    🎮 dorado: se patea
+
+   [ USAR LA RACHA ]  [ VOLVER ]
+```
+
+Antes se cobraba la racha a ciegas: el cartel decía «43% de gol» pero no de dónde
+salía ese número, ni que una de las cinco **entra siempre** y otra **se juega**.
+
+| | Sale | |
+|---|---|---|
+| ⚽ JUGADA CLARA | 8% | **GOL** |
+| 🎯 PENAL 🎮 | 17% | 50% GOL |
+| 🤝 PASE GOL | 25% | 40% GOL |
+| 🚩 CÓRNER | 25% | 35% GOL |
+| 🚧 TIRO LIBRE | 25% | 30% GOL |
+
+El penal lleva el **mismo dorado con 🎮** que las cartas de duelo, para que el
+código se reconozca: dorado con mando significa que vas a jugar algo.
+
+Usa la misma franja anclada que los ítems, así abrir cualquiera de las dos es el
+mismo gesto.
+
+### La ficha del ítem
+
+Tocar un ítem ya no lo usa: **abre una ficha** al pie de la fila de acción con lo
+que hace y dos botones.
+
+```
+   🪑 SUPLENTES  +1 ❤              [ USAR ] [ VOLVER ]
+   Entra sangre nueva del banco.
+```
+
+Antes el toque lo gastaba directo, así que había que acordarse de memoria qué
+hacía cada uno — o gastarlo para enterarse.
+
+Va **anclada a la fila**, no centrada en la pantalla: el juego sigue a la vista
+mientras decidís. El ítem abierto se marca con borde dorado, porque la franja no
+tiene pico que lo señale.
+
+**Cuando el ítem no sirve**, la ficha lo explica y no ofrece usarlo:
+
+```
+   🪑 SUPLENTES  +1 ❤                      [ ENTENDIDO ]
+   El aguante ya está completo.
+```
+
+**El VAR** es el caso especial: tiene que apuntar a una carta trabada. Ahí USAR
+cierra la ficha y pasa a modo apuntado, y tocar el ítem de nuevo cancela.
+
+En pantallas de menos de 440px los botones bajan a su propia línea y ocupan el
+ancho completo.
+
 ### Los ítems se acomodan en grilla
 
 | Ítems | Cómo se ven |
@@ -1125,7 +1231,7 @@ Tres tamaños, de mayor a menor, y siempre en ese orden:
 |---|---|---|---|
 | **Título** *(PENAL)* | 14px | 12,5px | 10px |
 | **Resultado** *(50% GOL)* | 13,5px | 12px | 10px |
-| **Efecto** *(+1 ⚡ · si no -1 ❤)* | 12,5px | 11px | 9,5px |
+| **Efecto** *(+1 ⚡ o -1 ❤)* | 12,5px | 11px | 9,5px |
 
 > **Estaba invertida.** El efecto medía 13px y el resultado 11,5px, así que la
 > línea de abajo pesaba más que la de arriba y el cartel se leía al revés de su
@@ -2218,7 +2324,7 @@ Era la ronda donde la racha estaba prácticamente muerta.
 │ ──────────────── │      │ ──────────────── │
 │      -2 ❤        │      │     50% GOL      │  lo que puede pasar
 └──────────────────┘      │ ·············    │
-                          │ +1 ⚡ · si no -1❤│  lo que te deja
+                          │ +1 ⚡ o -1❤│  lo que te deja
                           └──────────────────┘
 ```
 
@@ -2236,7 +2342,7 @@ todo el ancho y va **centrado**.
 
 **Los efectos sobre los medidores van en su propia línea**, debajo de una línea
 punteada. El bloque de arriba es *lo que puede pasar* (`50% GOL`) y el de abajo
-*lo que te deja* (`+1 ⚡ · si no -1 ❤`). Mezclados no se distinguía qué era la
+*lo que te deja* (`+1 ⚡ o -1 ❤`). Mezclados no se distinguía qué era la
 probabilidad y qué la consecuencia.
 
 ### Cartas trabadas 🔒
@@ -2818,6 +2924,79 @@ que un calambre podía llegar a costar 3 ❤ si venías con buen equipo.
 Ahora son lo que son. El jugador aprende de memoria lo que cuesta cada una y no
 necesita leer el número para decidir. El resto de las cartas que lastiman sí
 sigue escalando.
+
+### Un solo conector: «o»
+
+Las doce cartas con dos resultados usan **«o»**, no «si no»:
+
+```
+   50% GOL              50% RIVAL
+   +1 ⚡  o  -1 ❤       -1 ⚡  o  +1 ⚡
+```
+
+«Si no» sugiere una secuencia —primero pasa esto, y si falla, aquello— cuando en
+realidad son **dos resultados posibles del mismo sorteo**. Los mini juegos ya
+usaban «o» y las de porcentaje no, así que dos cartas con la misma estructura se
+leían distinto.
+
+### El dinero en verde
+
+| | Antes | Ahora |
+|---|---|---|
+| 💰 Dinero | dorado `#e8c25a` | **verde `#3ddc6b`** |
+| % de la fila | dorado | **blanco al 82%** |
+
+El dinero y la racha aparecen **en la misma línea** de la fila de acción, y el
+dorado del dinero se confundía con el amarillo de la racha. Ahora usa el mismo
+verde del GOL: las dos cosas que te suman comparten color.
+
+El **porcentaje de la fila** es un dato neutro —cuántas cartas quedan por
+jugar— así que va en blanco. En dorado competía con la racha y con el filo de
+las cartas, que sí significan algo.
+
+> Sale todo de la variable `--coin`, así que los **diez lugares** donde aparece
+> el dinero cambiaron juntos: el medidor, el pop-up de jugada, el cartel de la
+> carta, el relato, el mercado, el tutorial y el panel del 1v1.
+
+### La aparición de las cartas de ayuda
+
+| Carta | R1 | R2 | R3 | R4 | FINAL |
+|---|---|---|---|---|---|
+| 📣 HINCHADA | **46%** | 44% | 40% | 39% | 49% |
+| 💧 COOLING BREAK | 64% | 38% | 39% | 38% | 46% |
+| 🌊 OLA | 41% | 32% | 28% | 39% | 40% |
+| 🪄 CAÑO | 23% | 19% | 16% | 16% | 15% |
+| ✨ NOCHE MÁGICA | **25%** | **27%** | 16% | 16% | 15% |
+
+*(chance de que salga al menos una en la mesa)*
+
+La **hinchada** bajó del 79% al 46% en la clasificatoria, y la **noche mágica**
+—que antes no existía hasta cuartos— ahora aparece en las dos primeras rondas al
+25%.
+
+> **La hinchada no bajaba aunque se le bajara el peso.** Aparecía **dos veces**
+> en la lista de relleno que usa el tablero cuando tiene que reemplazar cartas,
+> así que se reponía sola. Los pesos del pool son solo la mitad de la historia:
+> los rellenos también cuentan.
+>
+> El ajuste fino se hizo con **pesos decimales** —`['hinchada', 1.6]`— porque
+> entre 1 y 2 la diferencia era de 15 puntos porcentuales.
+
+### Máximo 3 hinchadas por mesa
+
+| Nivel | 0 | 1 | 2 | 3 | +de 3 |
+|---|---|---|---|---|---|
+| 1 | 22% | 34% | 27% | 17% | **0** |
+| 2 | 45% | 34% | 15% | 5% | **0** |
+| 3-4 | 54% | 32% | 11% | 3% | **0** |
+| 5 | 46% | 33% | 15% | 6% | **0** |
+
+La HINCHADA da **+1 ❤ sin condiciones** y es la carta de ayuda más común. Con
+cuatro juntas el aguante deja de ser un recurso escaso y las decisiones pierden
+peso: da lo mismo qué fila elijas si tres de las cuatro te curan.
+
+El sobrante pasa a **COOLING BREAK** —que hace lo mismo pero cuenta aparte— o a
+un castigo si la ayuda ya llegó a su techo de 5.
 
 ### Los duelos son siempre 2 y 2
 
