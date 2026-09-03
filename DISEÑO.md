@@ -553,6 +553,38 @@ tensión.
 Solo corre cuando hay **más de una carta jugable** — con una sola no hay nada que
 sortear.
 
+### El alto real de la pantalla
+
+```css
+body{ height:100dvh; display:flex; flex-direction:column; overflow:hidden }
+.cancha{ flex:1; min-height:0 }
+.board{ flex:1; min-height:0 }
+```
+
+**`dvh` y no `vh`.** En el celular la barra del navegador se suma y resta al alto
+de la ventana, y `100vh` mide la pantalla **completa** —incluidas esas barras—,
+así que la última fila quedaba debajo del borde. `100dvh` mide lo que se ve de
+verdad.
+
+Con el alto fijado, la mesa **toma lo que sobra** en vez de calcularse por `vh`:
+así entra exacto en cualquier pantalla, con barras o sin ellas. `--carta` queda
+en 76px como piso de legibilidad, no como medida.
+
+### Espacio para la posibilidad de gol
+
+| | Antes | Ahora |
+|---|---|---|
+| Ícono del ítem | 14px | **12px** |
+| Efecto del ítem | 38px de ancho | **30px** |
+| Stats | dos fichas en fila | **apiladas, número al lado de su etiqueta** |
+| Nombre de la carta | 9,2px | **10,8px** |
+
+Los ítems son un atajo que se usa de vez en cuando; la posibilidad de gol se mira
+en cada jugada. El ancho que ceden se lo lleva la columna del medio.
+
+Los stats apilados con el número **al lado** de su etiqueta ocupan mucho menos
+ancho que dos fichas en fila con el número arriba.
+
 ### Las cuatro filas miden lo mismo
 
 ```css
