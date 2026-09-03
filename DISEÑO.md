@@ -553,6 +553,86 @@ tensión.
 Solo corre cuando hay **más de una carta jugable** — con una sola no hay nada que
 sortear.
 
+### Las cuatro filas miden lo mismo
+
+```css
+.board{ display:grid; grid-auto-rows:minmax(var(--carta), 1fr) }
+```
+
+Las cuatro se reparten el alto **en partes iguales**, sin importar qué cartas les
+toquen. `--carta` es el piso —lo que garantiza que se sigan leyendo en pantallas
+bajas— y `1fr` reparte lo que sobra.
+
+> **Antes la mesa saltaba.** Las cartas con mini juego pedían `min-height: 142px`
+> contra los 126px normales, porque llevan una línea más. Esa fila crecía y las
+> otras tres se achicaban, así que la mesa cambiaba de forma según qué salía en
+> el sorteo.
+
+La carta lleva `overflow: hidden`: si el contenido no entra en el alto que le
+tocó se recorta, que es preferible a una mesa que se mueve entre jugadas. Con la
+carta más cargada —la de mini juego, ~58px de texto fijo— queda espacio para la
+ilustración en todos los dispositivos, desde 32px en un iPhone SE hasta 66px en
+un S24 Ultra.
+
+### El dinero, junto a las columnas
+
+```
+   ┌────────┬─────────┬──────────────────┬─────────┐
+   │ ÍTEMS  │ ❤ ❤ ❤ · │ [⚽ POSIBILIDAD]  │ [2] [1] │
+   │        │ ⚡ ⚡ · · │                  │ ATK DEF │
+   └────────┴─────────┴──────────────────┴─────────┘
+
+   €25M   [C1 · 25% −3⚡] [C2] [C3] [C4]
+```
+
+El dinero se mudó al **hueco que dejan las columnas** —el que queda alineado con
+los botones de fila, que estaba vacío— en vez de apretar la columna de
+medidores. Eso le devuelve una línea entera a la racha.
+
+Los dos medidores ahora comparten **celda y tamaño**: `repeat(4, 21px)` con
+íconos de 19px, así cada rayo queda justo debajo de su corazón, a la misma
+altura.
+
+| | Antes | Ahora |
+|---|---|---|
+| Corazón | 17px | **19px** |
+| Rayo | 14×18px | **16×19px** |
+| Columna de medidores | 3 líneas | **2 líneas** |
+
+### Filas y columnas, del mismo peso
+
+| | Mobile |
+|---|---|
+| Botón de fila `F1` | 12px, tipografía de títulos |
+| Botón de columna `C1 · 25% −3⚡` | **11,5px**, tipografía de títulos |
+
+La columna iba en 9,5px con la tipografía de texto y parecía secundaria, cuando
+**las dos son la misma decisión**: elegís una línea y el azar cae en una de sus
+cartas. Ahora comparten peso y tamaño.
+
+El texto de la columna lleva más información —el porcentaje y el costo en
+racha— así que va un punto por debajo. Verificado: entra en 360px, que es la
+pantalla más angosta de los celulares actuales.
+
+### Los ítems se acomodan en grilla
+
+| Ítems | Cómo se ven |
+|---|---|
+| 0 | `SIN ÍTEMS` en una ficha de borde punteado |
+| 1-2 | una columna |
+| 3-4 | **dos columnas de dos** |
+
+Apilados en una sola columna, con cuatro ítems la fila crecía al doble de alto y
+se comía el espacio de la mesa. Con `grid-auto-flow: column` y dos filas a partir
+del tercero, la columna llega a **55px** contra los **58px** de los medidores —
+así que los ítems nunca empujan la fila.
+
+> **El mensaje de «sin ítems» era una frase entera**: *«No tenés ítems. Se
+> compran en el mercado, entre partido y partido.»* En mobile la columna es
+> angosta y ese texto la ensanchaba, empujando al resto. Ahora dice `SIN ÍTEMS`
+> y va en una ficha del mismo tamaño que un ítem — dónde se compran ya lo
+> explica el tutorial y el propio mercado.
+
 ### La barra y la fila de acción
 
 ```
@@ -2602,6 +2682,20 @@ contra, duelo, plata, aguante, racha, castigo.
 
 Tres iguales sigue permitido y pasa en el **7,5%** de las filas. Ahí la elección
 todavía tiene sentido: la cuarta carta es distinta.
+
+### El empate del delantero paga 3
+
+| | Ganás | Perdés |
+|---|---|---|
+| Antes | +2 ⚡ | ⚽ gol en contra |
+| **Ahora** | **+3 ⚡** | ⚽ gol en contra |
+
+Perder ese mini juego es **gol en contra**, el peor resultado de la mesa, así que
+el premio tiene que estar a la altura del riesgo. Con 2 el 50/50 no compensaba y
+la carta era solo un peligro que se esquivaba.
+
+Con 3 hay algo que ganar: **alcanza para la columna**, que cuesta exactamente 3.
+Ganar el mini juego te habilita el ataque dirigido en la misma jugada.
 
 ### El delantero rival no pasa de 1 al arranque
 

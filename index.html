@@ -1010,7 +1010,13 @@ img{height:auto}
 .ef-var{color:var(--blue)}
 .ef-mas{font-family:var(--txt);font-weight:400;font-size:9.4px;color:var(--dim);letter-spacing:0}
 .shop-ef .ef-mas{font-size:10px}
-.no-items{font-size:10px;color:var(--dim2);letter-spacing:1px;line-height:1.5}
+.no-items{
+  display:inline-flex;align-items:center;justify-content:center;
+  font-family:var(--txt);font-weight:600;
+  font-size:10px;color:var(--dim2);letter-spacing:1.5px;line-height:1;
+  padding:6px 9px;border:1px dashed var(--line);border-radius:6px;
+  white-space:nowrap;
+}
 
 /* ---------- RELATO (columna izquierda, abajo) ---------- */
 .panel-log{flex:1;min-height:0;display:flex;flex-direction:column}
@@ -1709,9 +1715,6 @@ img{height:auto}
 }
 @keyframes latir{0%,100%{opacity:.5}50%{opacity:1}}
 
-/* La carta que trae mini juego lleva una línea más —la etiqueta— así que pide
-   un poco más de alto. Solo esas: el resto queda como estaba. */
-.cell:has(.mj-lb){min-height:142px}
 
 
 
@@ -2258,9 +2261,24 @@ body{padding-bottom:36px}
 }
 
 /* ---------- LA MESA ---------- */
-.board{display:flex;flex-direction:column;gap:var(--gap)}
-.row{display:flex;gap:var(--gap);align-items:stretch}
-.row .cell{min-height:var(--carta)}
+/* ---------- LA MESA: CUATRO FILAS IGUALES ----------
+   Las cuatro filas miden **exactamente lo mismo**, sin importar qué cartas les
+   toquen. Antes las que traían mini juego pedían más alto —una línea más— y esa
+   fila crecía, así que la mesa quedaba despareja de una jugada a otra.
+
+   `grid` con `repeat(4, 1fr)` reparte el alto en cuatro partes iguales y las
+   cartas se estiran a lo que les toca. El contenido que no entra se recorta,
+   que es preferible a una mesa que salta. */
+.board{
+  display:grid;grid-template-rows:repeat(4, 1fr);
+  gap:var(--gap);align-content:stretch;
+}
+.row{display:flex;gap:var(--gap);align-items:stretch;min-height:0}
+/* `--carta` es el **piso** de la fila, no su alto exacto: con `1fr` las cuatro
+   se reparten lo que sobra por igual, y este mínimo garantiza que la carta se
+   siga leyendo aunque la pantalla sea muy baja. */
+.board{grid-auto-rows:minmax(var(--carta), 1fr)}
+.row .cell{min-height:0;overflow:hidden}
 .row-pick{align-self:stretch}
 
 /* ══════════ MOBILE Y TABLET PORTRAIT ══════════ */
@@ -2314,14 +2332,24 @@ body{padding-bottom:36px}
   .fila-accion{
     display:grid;
     grid-template-columns:auto auto minmax(0,1fr) auto;
-    align-items:center;gap:6px;flex:0 0 auto;width:100%;
+    /* `stretch`: la posibilidad de gol y los stats crecen hasta el alto de la
+       fila, que es espacio que estaba libre arriba. */
+    align-items:stretch;gap:6px;flex:0 0 auto;width:100%;
   }
   .fa-izq{display:contents}
 
   /* Los ítems, a la izquierda. */
   #panelItems{padding:0;background:none;border:none;min-width:0}
   #panelItems .panel-tit{display:none}
-  .item-list{display:flex;flex-direction:column;gap:3px}
+  /* Los ítems se acomodan en grilla y **nunca pasan de dos filas de alto**:
+     apilados en una sola columna, con cuatro la fila crecía al doble y se
+     comía el espacio de la mesa.
+
+         1-2 ítems  →  una columna
+         3-4 ítems  →  dos columnas de dos
+  */
+  .item-list{display:grid;grid-auto-flow:column;grid-template-rows:auto;gap:3px}
+  .item-list:has(.item:nth-child(3)){grid-template-rows:auto auto}
   .item{
     display:flex;align-items:center;gap:4px;
     padding:4px 6px;border-radius:6px;
@@ -2329,41 +2357,78 @@ body{padding-bottom:36px}
   .item .ii{font-size:14px;flex:0 0 auto}
   .item .itx{min-width:0;display:flex}
   .item .inm{display:none}
-  .item .ief{font-size:10px;font-weight:800;white-space:nowrap;overflow:hidden;max-width:44px}
+  /* El efecto del SEGUNDO AIRE es «+2 ❤ y recuperás un ❤ de máximo»: en la
+     ficha entra lo que se necesita para decidir, el resto se lee al tocarlo. */
+  .item .ief{
+    font-size:10px;font-weight:800;white-space:nowrap;
+    overflow:hidden;text-overflow:clip;max-width:38px;
+  }
   .item .idesc{display:none}
-  .no-items{font-size:9px}
+  .no-items{font-size:8.6px;letter-spacing:.8px;padding:5px 7px}
 
-  /* Aguante, racha y dinero: uno debajo del otro, pegados a los ítems. */
+  /* Aguante, racha y dinero, uno debajo del otro. Los corazones y los rayos van
+     en **columnas alineadas**: cada rayo queda justo debajo de su corazón, así
+     se leen los dos medidores de una sola pasada vertical. Para eso los dos
+     usan la misma grilla de cuatro celdas iguales. */
   .fa-meds{
-    display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+    display:flex;flex-direction:column;align-items:flex-start;gap:3px;
     padding-left:2px;
   }
-  .fa-meds .rec{padding:0;border:none;background:none;display:flex;align-items:center;gap:2px}
+  .fa-meds .rec{padding:0;border:none;background:none;display:block}
   .fa-meds .rec-lb{display:none}
-  .fa-meds .rec-val{font-size:11px}
-  .fa-meds .hearts,.fa-meds .racha-track{display:flex;flex-wrap:nowrap;gap:2px}
-  .med-art{width:13px;height:13px}
-  .racha-track .med-art{width:11px;height:15px}
+  /* Los dos medidores comparten celda y **tamaño**: cada rayo queda justo
+     debajo de su corazón, a la misma altura. El rayo es más angosto por su
+     forma, así que se le da el mismo alto y se centra en la celda. */
+  .fa-meds .hearts,.fa-meds .racha-track{
+    display:grid;grid-template-columns:repeat(4, 21px);
+    justify-items:center;align-items:center;gap:0;
+  }
+  .med-art{width:19px;height:19px}
+  .racha-track .med-art{width:16px;height:19px}
+  /* El dinero, más marcado: es lo que se convierte en ítems. */
+  .fa-meds #m-dinero{margin-top:1px}
+  /* ---- EL DINERO, JUNTO A LAS COLUMNAS ----
+     Va en el hueco que deja el padding de las columnas, alineado con los
+     botones de fila. Ese espacio estaba vacío. */
+  .fila-cols{display:flex;align-items:center;gap:var(--gap)}
+  .fila-cols #m-dinero{
+    flex:0 0 auto;width:33px;
+    padding:0;border:none;background:none;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .fila-cols .rec-lb{display:none}
+  .fila-cols .rec-val{
+    font-family:var(--tit);font-weight:800;
+    font-size:12.5px;letter-spacing:0;color:var(--coin);
+  }
+  .fila-cols .col-picks{flex:1;padding-left:0}
 
-  /* La posibilidad de gol: la columna que se estira. */
-  .gol-banner{width:100%;min-width:0;padding:6px 9px;gap:7px;justify-content:center}
+  /* La posibilidad de gol y los stats **se estiran a lo alto** hasta el tope de
+     la fila, que lo marca la columna de los medidores. `align-items:stretch` en
+     la fila y `height:100%` acá: así los tres bloques terminan a la misma
+     altura en vez de flotar centrados. */
+  .fila-accion{align-items:stretch}
+  .gol-banner{
+    width:100%;min-width:0;height:100%;
+    padding:8px 9px;gap:7px;justify-content:center;
+  }
   .gol-banner .gb-s{display:none}
   .gol-banner .gb-ico{font-size:16px}
   .gol-banner .gb-t{font-size:9.4px;letter-spacing:.3px;line-height:1.1}
   .gol-banner .gb-go{padding:3px 8px;font-size:9.4px;flex:0 0 auto}
 
   /* Los stats, a la derecha. */
-  #panelPlantel{display:flex;gap:4px;padding:0;background:none;border:none}
+  #panelPlantel{display:flex;gap:4px;padding:0;background:none;border:none;align-items:stretch}
   #panelPlantel .panel-tit{display:none}
   #panelPlantel .stat{
-    display:flex;flex-direction:column;align-items:center;gap:0;
-    padding:3px 7px;border-radius:6px;min-width:32px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+    padding:5px 8px;border-radius:6px;min-width:36px;
     background:linear-gradient(160deg,rgba(0,22,72,.95),rgba(0,8,31,.96));
     border:1px solid var(--line);
   }
-  #panelPlantel .stat .n{font-size:15px;line-height:1.05}
+  #panelPlantel .stat .n{font-size:19px;line-height:1.05}
   #panelPlantel .stat-txt{font-size:0;line-height:1}
-  #panelPlantel .stat-txt b{font-size:6.6px;letter-spacing:.3px;display:block;color:var(--dim)}
+  #panelPlantel .stat-txt b{font-size:7.6px;letter-spacing:.4px;display:block;color:var(--dim)}
   #panelPlantel .stat.atk .n{color:var(--red)}
   #panelPlantel .stat.def .n{color:var(--blue)}
 
@@ -2378,7 +2443,13 @@ body{padding-bottom:36px}
   .row-pick .pk{font-size:12px;letter-spacing:0}
   .row-pick .pp{font-size:7.5px;letter-spacing:0}
   .col-picks{padding-left:33px;gap:var(--gap)}
-  .col-pick{padding:3px 2px;font-size:9.5px;letter-spacing:0}
+  /* La columna se lee igual que la fila: mismo peso de texto y alto parecido.
+     Antes iba en 9,5px contra los 12px de la fila y parecía secundaria, cuando
+     las dos son la misma decisión. */
+  .col-pick{
+    padding:5px 3px;font-size:11.5px;letter-spacing:.3px;
+    font-family:var(--tit);font-weight:800;
+  }
 
   .cell{padding:4px 3px 3px}
   .cell .c-nm{font-size:9.2px;min-height:0}
@@ -3579,7 +3650,7 @@ const ITEMS = {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 113;
+const VERSION = 120;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -4295,7 +4366,14 @@ function costoDuelo(cell){
    doble que ganarle raspando, igual que perder por dos duele el doble. */
 function premioDuelo(cell){
   const mio = TYPES[cell.type].stat === 'atk' ? ATK() : DEF();
-  if(cell.type === 'delantero' && mio === cell.val) return 2;
+  /* El empate del DELANTERO RIVAL paga **3 de racha**: perderlo es gol en
+     contra, el peor resultado de la mesa, así que el premio tiene que estar a
+     la altura del riesgo. Con 2 el 50/50 no compensaba y la carta era solo un
+     peligro.
+
+     Con 3 alcanza para la columna, que cuesta 3: ganarlo te habilita el ataque
+     dirigido en la misma jugada. */
+  if(cell.type === 'delantero' && mio === cell.val) return 3;
   return clamp(mio - cell.val, 1, 3);
 }
 
@@ -4664,7 +4742,10 @@ function renderItems(){
   bar.innerHTML = '';
   const owned = Object.keys(ITEMS).filter(k => G.items[k] > 0);
   if(!owned.length){
-    bar.innerHTML = '<span class="no-items">No tenés ítems. Se compran en el mercado, entre partido y partido.</span>';
+    /* Corto a propósito: en mobile la columna de ítems es angosta y el texto
+       largo la ensanchaba, empujando al resto de la fila. Dónde se compran ya
+       lo explica el tutorial y el propio mercado. */
+    bar.innerHTML = '<span class="no-items">SIN ÍTEMS</span>';
     return;
   }
   owned.forEach(k => {
@@ -6117,7 +6198,11 @@ function tirarPenal(){
         await wait(700);
 
         const box = wrap.querySelector('.sit.penal');
-        box.classList.add('resuelta', esGol ? 'gol' : 'salvado');
+        /* `salvado` = te fue bien, `gol` = te fue mal. Estaba al revés: acá el
+           gol es **tuyo** y te clasifica, así que va en verde; la atajada te
+           elimina y va en rojo. El nombre de la clase viene del penal en
+           contra, donde «gol» significaba lo contrario. */
+        box.classList.add('resuelta', esGol ? 'salvado' : 'gol');
         box.innerHTML =
           '<div class="sit-tag">LA PONÉS ' + elegido.nm + ' · EL ARQUERO ' + arquero.arq.toUpperCase() + '</div>' +
           '<div class="sit-ico">' + (esGol ? '⚽' : '🧤') + '</div>' +
@@ -6791,6 +6876,19 @@ function showStart(irAlDuelo){
     if(banner) fila.appendChild(banner);
     if(stats)  fila.appendChild(stats);
     cancha.insertBefore(fila, cancha.firstChild);
+
+    /* El dinero se muda al hueco que deja el padding de las columnas —el que
+       queda alineado con los botones de fila— en vez de apretar la columna de
+       medidores. Ese espacio estaba vacío y así la racha respira. */
+    const cols = document.getElementById('colPicks');
+    const plata = document.getElementById('m-dinero');
+    if(cols && plata && !document.querySelector('.fila-cols')){
+      const env = document.createElement('div');
+      env.className = 'fila-cols';
+      cols.parentNode.insertBefore(env, cols);
+      env.appendChild(plata);
+      env.appendChild(cols);
+    }
   }
 })();
 
