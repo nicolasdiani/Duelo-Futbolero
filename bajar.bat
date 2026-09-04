@@ -4,7 +4,7 @@ rem  BAJAR FUTBOL CESTO DESDE GITHUB
 rem  Doble click ANTES de ponerte a trabajar en la PC, para
 rem  traerte lo que hayas hecho desde la tablet.
 rem ============================================================
-cd /d "F:\CLAUDE PROYECTOS\Skate web\futbol-cesto"
+cd /d "E:\Proyectos\Duelo-Futbolero"
 
 echo.
 echo === Cambios locales sin subir ===
