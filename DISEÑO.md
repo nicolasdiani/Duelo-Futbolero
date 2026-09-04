@@ -351,6 +351,42 @@ Los stats vuelven a 2/1 en cada campeonato: si se acumularan, el segundo sería
 un paseo. La plata sí se acumula porque es lo que le da sentido a encadenar —
 llegás con billetera al mercado de la ronda 1.
 
+### El partido único
+
+Un partido suelto, con las mismas reglas del campeonato pero sin rondas ni
+mercado. Dos cosas propias:
+
+**Elegís tres ítems antes de jugar.** No hay plata acumulada, así que en vez de
+comprar se reparten cupos:
+
+```
+   ELEGÍ TUS ÍTEMS
+   ● ● ○   te queda 1
+
+   🪑 SUPLENTES  x2      📢 GRITO DEL DT
+   💪 SEGUNDO AIRE       📺 VAR
+```
+
+| Ítem | Máximo |
+|---|---|
+| 🪑 SUPLENTES | **3** |
+| 📢 GRITO DEL DT | **3** |
+| 💪 SEGUNDO AIRE | **1** |
+| 📺 VAR | **1** |
+
+Los básicos se repiten —tres suplentes es una estrategia tan válida como uno de
+cada uno— pero **los dos fuertes van de a uno**: el SEGUNDO AIRE recupera un
+corazón de máximo y el VAR destraba una carta, así que tres de cualquiera de
+ellos desbalancea el partido.
+
+El tope se ve en la ficha (`máx 1`) y el botón se apaga al llegar, pero **el cupo
+sigue libre** para los demás. La ✕ del inventario lo devuelve.
+
+**El empate se define con tanda completa**, como en la final: cinco penales cada
+uno y muerte súbita. Los dos son el último partido de su modo, así que merecen su
+tanda; en el campeonato una ronda de paso se define con un penal suelto porque
+todavía queda torneo por delante.
+
 ### El menú principal
 
 La primera pantalla muestra el logo y los seis caminos:
@@ -427,11 +463,18 @@ nombre que vayas escribiendo.
 
 | Forma | De dónde sale | Patrón |
 |---|---|---|
-| **ESPAÑOL** | el escudo de La Liga | mitades verticales |
-| **INGLÉS** | hombros redondeados, base ancha | franja horizontal |
+| **CLÁSICO** | hombros rectos y punta redondeada | mitades verticales |
+| **INGLÉS** | esquinas suaves arriba, base ancha | franja horizontal |
 | **ITALIANO** | cintura marcada y punta larga | banda diagonal |
-| **REDONDO** | clubes alemanes y sudamericanos | círculo interior |
-| **BANDERÍN** | vertical con base en pico | tres franjas |
+| **BANDERÍN** | vertical con punta en V, típico argentino | tres franjas |
+| **OVALADO** | la elipse de los clubes europeos | franja central |
+
+Cinco siluetas de **escudos reales**, no formas geométricas. Con 9 colores de
+fondo y 9 de detalle son **405 combinaciones**, todas verificadas.
+
+**El escudo arranca al azar** cada vez que se abre la pantalla: el jugador ve
+algo armado en vez de un molde vacío, y si le gusta lo deja. Antes siempre
+empezaba en el mismo azul y amarillo.
 
 Cinco siluetas tomadas de **escudos reales**, no formas geométricas. Con
 9 colores de fondo y 9 de detalle son **405 combinaciones**, todas verificadas.
@@ -553,6 +596,141 @@ tensión.
 Solo corre cuando hay **más de una carta jugable** — con una sola no hay nada que
 sortear.
 
+### El alto se reparte por filas de grid
+
+```css
+.cancha{
+  display:grid;
+  grid-template-rows: auto auto minmax(0,1fr) auto auto auto;
+                              └── la mesa toma lo que sobra
+}
+```
+
+> **La mesa se desbordaba y el marcador quedaba cortado.** La cancha era un grid
+> con `flex:1`, pero **`flex` no reparte el alto entre las filas de un grid**:
+> la mesa pedía su tamaño natural, el total superaba la pantalla, y el
+> `overflow:hidden` del body cortaba lo que sobraba — sin manera de llegar a ello.
+>
+> Ahora la fila de la mesa lleva `minmax(0,1fr)`: toma exactamente lo que queda
+> después de las demás. Y el body usa `min-height` en vez de `height`, así que
+> si en algún dispositivo no entrara, la página crece y se puede scrollear en
+> vez de esconder contenido.
+
+| Dispositivo | Útil | Mesa | Por fila |
+|---|---|---|---|
+| iPhone SE | 580px | 374px | 89px |
+| iPhone 14 | 734px | 528px | 128px |
+| **iPhone 17 Pro** | 760px | 554px | **134px** |
+| S24 Ultra | 796px | 590px | 143px |
+| 14 Pro Max | 811px | 605px | 147px |
+| iPad vertical | 1027px | 821px | 201px |
+
+*(el «útil» descuenta ~13% por las barras del navegador)*
+
+### Las fichas fluyen en desktop
+
+En **mobile** la ficha va flotando sobre el juego: el espacio es escaso y tapar
+un momento no molesta. En **desktop fluye dentro del panel**, ocupa su lugar y
+empuja lo de abajo.
+
+> La ficha del ítem salía del panel de ítems, que en desktop tiene el relato
+> justo debajo — con `position: absolute` le quedaba encima y tapaba el texto.
+> Sin absolute no hay nada que se superponga y el navegador acomoda el resto
+> solo.
+
+**La ficha es una sola, pero se muda** al contenedor que la abre: la de ítems al
+panel de ítems, la de gol junto a su banner. Antes se creaba una vez y se quedaba
+donde nació, así que la de gol aparecía colgada del panel equivocado.
+
+### El panel de PLANTEL
+
+```
+   ┃ 2   ATAQUE
+   ┃     vs. defensores y arqueros
+
+   ┃ 1   DEFENSA
+   ┃     vs. delanteros rivales
+```
+
+El número pasó de 23px a **34px** y va a la izquierda con ancho fijo, así los dos
+textos quedan alineados sobre la misma vertical. El nombre del stat sube a 13px
+en la tipografía de títulos, con la explicación debajo en 10,5px.
+
+Cada ficha lleva un **filo de 3px** en su color —rojo el ataque, azul la
+defensa— que la identifica sin depender de leer.
+
+### Ningún panel se mueve
+
+Los paneles quedan **donde los pone el HTML**. Cada media query les asigna su
+lugar con `grid-area`, y `display: contents` disuelve los contenedores que
+sobran.
+
+> **Antes se movían con JS al cargar**, según el ancho de pantalla. Eso rompía al
+> **rotar la tablet**: si arrancaba en vertical el DOM quedaba armado para
+> mobile, y al girar el CSS pasaba a desktop con los paneles en el lugar
+> equivocado — medidores sueltos flotando, la mesa fuera de su columna.
+>
+> Con todo en CSS, rotar solo cambia qué media query aplica.
+
+### Qué layout toma cada pantalla
+
+La separación ya no es solo por ancho, porque **una tablet acostada tiene la
+misma forma que un monitor**:
+
+| | Condición |
+|---|---|
+| **Mobile** | `max-width:1024px` **y vertical**, o menos de 820px |
+| **Desktop** | más de 1025px, **o** más de 821px **y acostado** |
+
+| Dispositivo | | Layout |
+|---|---|---|
+| iPhone 14 vertical | 390×844 | mobile |
+| iPhone 14 acostado | 844×390 | desktop |
+| iPad vertical | 820×1180 | mobile |
+| **iPad acostado** | 1180×820 | **desktop** |
+| Portátil | 1366×768 | desktop |
+
+Cada pantalla toma un layout y solo uno: no hay solapamiento.
+
+### Desktop: el layout que fluye
+
+```
+┌──────────┬────────────────────────┬──────────┐
+│ TU EQUIPO│  la marquesina          │ PLANTEL  │
+│ ❤ ⚡ €   │  ─────────────────      │ ATK DEF  │
+│ ÍTEMS    │  LA MESA (4x4)          │ RELATO   │
+│ ⚽ GOL    │  columnas               │          │
+└──────────┴────────────────────────┴──────────┘
+```
+
+**La página fluye**: no se fuerza el alto de nada, el contenido manda y el
+navegador scrollea si hace falta. Las columnas laterales quedan **pegajosas**
+(`position: sticky`) para que los ítems y el estado no se vayan de vista al
+bajar.
+
+| | ≤1300px | 1025-1600 | ≥1600px | ≥1900px |
+|---|---|---|---|---|
+| Columnas | 210 / 190 | 245 / 215 | 265 / 235 | 290 / 260 |
+| Alto de carta | 118px | 126px | 150px | 170px |
+| Título de carta | 12px | 13px | 14,5px | 16px |
+| Ancho máximo | — | 1320px | 1480px | 1640px |
+
+**Lo que cambia respecto de mobile:**
+
+- los **ítems muestran su descripción completa**
+- la **posibilidad de gol** muestra su bajada explicativa
+- los **medidores llevan etiqueta** (`AGUANTE`, `RACHA`)
+- el **relato vive en su panel**, sin botón flotante
+
+> **Se probó forzar el alto con `100dvh` y no funcionaba**: la mesa se comprimía
+> y las columnas laterales quedaban con huecos. En mobile ese enfoque es
+> necesario —la pantalla es alta y angosta, todo tiene que entrar— pero en
+> desktop el contenido cabe de sobra y dejarlo fluir se ve mejor.
+>
+> **Los dos layouts no se pisan.** Mobile vive en `max-width` y desktop en
+> `min-width`. Y el JS que arma la fila de acción **solo corre en pantallas
+> angostas**, porque en desktop cada panel se queda en su columna.
+
 ### El alto real de la pantalla
 
 ```css
@@ -584,6 +762,25 @@ en cada jugada. El ancho que ceden se lo lleva la columna del medio.
 
 Los stats apilados con el número **al lado** de su etiqueta ocupan mucho menos
 ancho que dos fichas en fila con el número arriba.
+
+### El nombre de la carta, más grande
+
+| Breakpoint | Antes | Ahora |
+|---|---|---|
+| Mobile chico | 9,6px | **11,2px** |
+| Mobile | 10,8px | **12,6px** |
+| Desktop | 13px | **15px** |
+| ≥1600px | 14,5px | **16,5px** |
+| ≥1900px | 16px | **18px** |
+
+Subió entre **15% y 17%** en los siete breakpoints. El nombre es lo primero que
+se lee de una carta —dice de qué se trata antes que el número o el efecto— y a
+los tamaños anteriores había que fijarse.
+
+Los nombres largos siguen entrando: el más largo es `DELANTERO RIVAL` con 15
+caracteres, y el corte por `overflow-wrap: anywhere` los parte en dos líneas
+cuando hace falta. Con la carta más cargada —la de mini juego— quedan entre 34px
+y 71px para la ilustración según el dispositivo.
 
 ### Las cuatro filas miden lo mismo
 
@@ -646,30 +843,41 @@ El texto de la columna lleva más información —el porcentaje y el costo en
 racha— así que va un punto por debajo. Verificado: entra en 360px, que es la
 pantalla más angosta de los celulares actuales.
 
-### El sorteo por eliminación
+### El sorteo mostraba una carta y jugaba otra
 
-Al tocar `USAR LA RACHA`, las cinco posibilidades **se van cayendo de a una**
-hasta que queda la que salió:
+> **Había dos sorteos independientes.** La animación elegía con `rnd()` cuál
+> resaltar, y `situacionGol` elegía por su cuenta cuál resolver. Coincidían solo
+> por casualidad: veías ganar el PENAL y te salía un CÓRNER.
+>
+> Ahora el sorteo se hace **una sola vez**, en la animación, y la carta elegida
+> viaja hasta `situacionGol` para que resuelva esa misma. Verificado en cuatro
+> corridas seguidas.
+
+### Un solo gesto para el azar
+
+Los dos sorteos del juego usan **el mismo cursor**: recorre las opciones
+frenando como una ruleta y para en la que salió.
 
 ```
-   ▪ ▪ ▪ ○ ▪      el cursor mira una
-   ▪ ▪ ▪ · ▪      y se apaga
-   ▪ ▪ ○ · ▪
-   ▪ ▪ · · ▪
-   ○ ▪ · · ▪
-   · ▪ · · ○
-   · ★ · · ·      queda la que salió
+   ○ ▪ ▪ ▪ ▪
+   ▪ ○ ▪ ▪ ▪      tres vueltas completas
+   ▪ ▪ ○ ▪ ▪
+   ▪ ▪ ▪ ○ ▪
+   ▪ ▪ ▪ ▪ ○      y va frenando
+   · ★ · · ·      para en la que salió
 ```
 
-Es **distinto a propósito** de la ruleta de la mesa: allá un cursor recorre y
-frena, acá se eliminan. Dos sorteos distintos con dos gestos distintos, así no se
-confunden.
+| | Dónde |
+|---|---|
+| La mesa | las cartas de la fila elegida |
+| La posibilidad de gol | las cinco opciones de la ficha |
 
-El orden en que caen se baraja: si fuera siempre de izquierda a derecha se
-notaría que no significa nada.
+> **Se probó eliminarlas de a una** y se volvió atrás: es el mismo azar, con las
+> mismas reglas, así que merece el mismo gesto. Dos animaciones distintas para
+> lo mismo obligan a aprender dos códigos.
 
-> El resultado ya está decidido cuando la animación corre —lo sortea
-> `situacionGol`— así que no lo cambia; solo lo cuenta.
+Velocidad: **85ms**, frenando 48ms por paso sobre el final. El cursor es blanco
+semitransparente en los dos casos.
 
 ### Las cinco pesan igual
 
@@ -721,6 +929,27 @@ código se reconozca: dorado con mando significa que vas a jugar algo.
 
 Usa la misma franja anclada que los ítems, así abrir cualquiera de las dos es el
 mismo gesto.
+
+### La ficha del ítem sale al costado
+
+```
+   [🪑 +1❤] ◄─┐
+              │  🪑 SUPLENTES  +1 ❤
+              │  Entra sangre nueva del banco.
+              │  [ USAR ]  [ VOLVER ]
+              └──────────────────────────
+```
+
+Sale **a la derecha del ítem**, con un pico que lo señala. Antes caía debajo y
+empujaba lo que seguía; ahora no mueve nada y queda claro de qué ítem salió.
+
+**Paleta propia: violeta grafito con filo lila.** Las cartas de la mesa son
+azules con filos de color y los paneles también azules — la ficha necesitaba
+salirse de esa familia para no confundirse con el fondo. El halo difuminado la
+despega todavía más.
+
+En pantallas de menos de 560px no hay lugar a la derecha, así que **cae debajo
+del ítem** y el pico apunta hacia arriba.
 
 ### La ficha del ítem
 
@@ -1088,7 +1317,7 @@ parece que la interfaz se rompió.
 | 🥅 **MANO A MANO** | ¿DÓNDE LA DEFINÍS? | ¡GOLAZO! | ATAJADÓN |
 | 🧱 **UNO CONTRA UNO** | ¿POR DÓNDE LO ENCARÁS? | ¡LO PASÁS! | LA PERDISTE |
 | 🌀 **LA MARCA** | ¿DE QUÉ LADO LO MARCÁS? | ¡SE LA ROBÁS! | TE PASÓ |
-| 👟 **DEFENDER** | ¿PARA QUÉ LADO TE TIRÁS? | ¡LO CORTÁS! | SE VA SOLO |
+| 👟 **DEFENDER** | ¿PARA QUÉ LADO LO MARCÁS? | ¡LO CORTÁS! | SE VA SOLO |
 
 Los dos de arriba y los dos de abajo funcionan al revés, y los textos lo
 reflejan: en **MANO A MANO** y **UNO CONTRA UNO** la pelota es tuya y ganás
@@ -2299,10 +2528,10 @@ golpe nunca te vacíe el aguante entero de una.
 | **LESIÓN** sin refuerzos | — | -2 | -2 | -2/-3 | -2/-3 |
 | **LESIÓN** con 4 refuerzos | — | -3 | -3 | -3 | -3 |
 
-### Rachas grandes: OLA 🌊 y NOCHE MÁGICA ✨
+### Rachas grandes: OLA 🌊 y RACHA FULL ✨
 
 Dos cartas nuevas que cargan la racha de golpe: la **OLA EN LA TRIBUNA** suma
-**+2 ⚡** y la **NOCHE MÁGICA** **llena la racha entera**, venga de donde venga: si
+**+2 ⚡** y la **RACHA FULL** **llena la racha entera**, venga de donde venga: si
 estabas en 0, quedás en 4 y con las dos salidas habilitadas de una.
 
 Son las cartas más raras del juego (1 a 2,6% del pool cada una), y la noche
@@ -2966,11 +3195,11 @@ las cartas, que sí significan algo.
 | 💧 COOLING BREAK | 64% | 38% | 39% | 38% | 46% |
 | 🌊 OLA | 41% | 32% | 28% | 39% | 40% |
 | 🪄 CAÑO | 23% | 19% | 16% | 16% | 15% |
-| ✨ NOCHE MÁGICA | **25%** | **27%** | 16% | 16% | 15% |
+| ✨ RACHA FULL | **25%** | **27%** | 16% | 16% | 15% |
 
 *(chance de que salga al menos una en la mesa)*
 
-La **hinchada** bajó del 79% al 46% en la clasificatoria, y la **noche mágica**
+La **hinchada** bajó del 79% al 46% en la clasificatoria, y la **racha full**
 —que antes no existía hasta cuartos— ahora aparece en las dos primeras rondas al
 25%.
 
