@@ -2872,21 +2872,13 @@ body{padding-bottom:36px}
   .panel-log .panel-tit::after{content:''}
   .panel-log .log{max-height:clamp(150px, 26vh, 340px);padding:0 12px 10px;font-size:12.5px}
 
-  /* ---- LAS FICHAS NO SE SUPERPONEN ----
-     En mobile la ficha va flotando —el espacio es escaso y tapar un momento no
-     molesta—, pero en desktop **fluye dentro del panel**: ocupa su lugar y
-     empuja al relato hacia abajo, en vez de quedarle encima.
+  /* Las fichas salen al costado del ítem y debajo del cartel de gol, con su
+     propia paleta y su halo. No hace falta nada acá: las reglas de arriba ya
+     valen para los dos layouts.
 
-     Es la solución simple: sin `position:absolute` no hay nada que se
-     superponga, y el navegador acomoda el resto solo. */
-  .item-ficha{
-    position:static;margin-top:8px;
-    left:auto;right:auto;top:auto;
-    transform:none;
-    display:none;                 /* cerrada no ocupa lugar */
-  }
-  .item-ficha.on{display:grid;opacity:1}
-  .item-ficha.ficha-gol.on{display:block}
+     Antes este bloque las volvía `position:static` con `display:none`, que era
+     lo correcto cuando fluían dentro del panel — pero al pasar a flotar dejó de
+     serlo y **le ganaba a la regla de la ficha de gol**, que quedaba invisible. */
 }
 
 /* La franja media: menos ancho para los paneles, la mesa manda. */
@@ -4024,7 +4016,7 @@ const ITEMS = {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 146;
+const VERSION = 147;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
