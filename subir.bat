@@ -4,7 +4,7 @@ rem  SUBIR FUTBOL CESTO A GITHUB
 rem  Doble click en este archivo cada vez que quieras subir
 rem  los cambios. Solo commitea si hay algo nuevo.
 rem ============================================================
-cd /d "E:\Proyectos\Duelo-Futbolero"
+cd /d "%~dp0"
 
 echo.
 echo === Cambios detectados ===

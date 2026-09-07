@@ -5,7 +5,7 @@ rem  Doble click ANTES y DESPUES de trabajar en la PC.
 rem  Hace todo en el orden correcto: guarda lo tuyo, se trae lo
 rem  de la tablet, y despues sube todo junto.
 rem ============================================================
-cd /d "E:\Proyectos\Duelo-Futbolero"
+cd /d "%~dp0"
 
 echo.
 echo ============================================
