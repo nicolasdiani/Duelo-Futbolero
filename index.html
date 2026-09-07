@@ -2507,14 +2507,31 @@ body{padding-bottom:36px}
      `vh`: así entra exacto en cualquier pantalla, con barras o sin ellas. */
   html{height:100%}
   body{
-    /* `min-height` y no `height`: si en algún dispositivo el contenido no
-       entrara, la página crece y se puede scrollear. Cortarlo con
-       `overflow:hidden` dejaba el marcador y la última fila fuera de vista sin
-       manera de llegar a ellos. */
-    min-height:100dvh;
+    /* **`height` y no solo `min-height`.** Con solo un mínimo el body no tiene
+       techo: crece con el contenido, y entonces el `flex:1` de la cancha
+       reparte un alto mayor que la pantalla. Así la mesa nunca se veía obligada
+       a achicarse y lo de abajo quedaba fuera de vista.
+
+       Antes se intentó `overflow:hidden`, que cortaba el contenido sin manera
+       de llegar a él. Esto es distinto: la mesa **cede** —su fila es
+       `minmax(0,1fr)`— así que nada se corta, todo entra. El `auto` queda de
+       red por si alguna pantalla es tan baja que ni las filas fijas entran.
+
+       Los menús no dependen de esto: son overlays fijos con scroll propio. */
+    height:100dvh;
     display:flex;flex-direction:column;
-    padding:5px;gap:5px;overflow-x:hidden;
+    padding:5px;gap:5px;overflow-x:hidden;overflow-y:auto;
   }
+  /* **El eslabón que hacía que nada se achicara.** La marquesina y la cancha no
+     son hijas del body: cuelgan de `.wrap`. Y `.wrap` traía `min-height:auto`,
+     que en un ítem flex significa *no puedo achicarme por debajo de mi
+     contenido*. Con ese piso, el techo del body no servía de nada: `.wrap`
+     crecía, la cancha crecía con él, la mesa nunca cedía y el hint y el PLANTEL
+     terminaban fuera de la pantalla.
+
+     Con `min-height:0` la cadena queda libre y el alto se reparte de verdad:
+     body → wrap → cancha → la fila de la mesa. */
+  .wrap{flex:1 1 0;min-height:0}
   .marquesina{flex:0 0 auto}
   .cancha{flex:1;min-height:0}
   .board-zona{flex:1;min-height:0;display:flex;flex-direction:column}
@@ -2566,38 +2583,36 @@ body{padding-bottom:36px}
   */
   .cancha{
     display:grid;
-    grid-template-columns:minmax(0,1fr) auto auto;
-    /* **La fila de la mesa toma todo lo que sobra** (`1fr`) y las demás piden
-       lo suyo (`auto`). Antes la cancha era un grid con `flex:1`, que no
-       reparte el alto entre sus filas: la mesa se desbordaba y el `overflow`
-       del body la cortaba. */
-    grid-template-rows:auto auto minmax(0,1fr) auto auto auto;
+    /* Los ítems se estiran, el PLANTEL pide lo suyo y queda pegado a la derecha. */
+    grid-template-columns:minmax(0,1fr) auto;
+    /* **La fila de la mesa toma todo lo que sobra** (`minmax(0,1fr)`) y las
+       demás piden lo suyo (`auto`). El `0` del minmax es lo que permite que la
+       mesa se achique: sin él la fila nunca baja de su contenido, la página
+       crece más que la pantalla y lo de abajo —el hint y el PLANTEL— queda
+       fuera de vista.
+
+       Los medidores no tienen fila propia: aguante, racha y dinero viven en la
+       marquesina. Y el relato tampoco: es un botón flotante. */
+    grid-template-rows:auto auto minmax(0,1fr) auto;
     grid-template-areas:
-      "items  meds  stats"
-      "gol    gol   gol"
-      "mesa   mesa  mesa"
-      "cols   cols  cols"
-      "hint   hint  hint"
-      "log    log   log";
+      "items  stats"
+      "gol    gol"
+      "mesa   mesa"
+      "hint   hint";
     gap:5px 6px;align-items:center;
     flex:1;min-height:0;
   }
   .lado,.centro,.fila-accion,.fa-izq,.fa-meds{display:contents}
 
   #panelItems{grid-area:items;min-width:0;padding:0;background:none;border:none}
-  #panelEquipo{display:contents}          /* sus medidores van solos */
-  #m-aguante,#m-racha{grid-area:meds}
-  #panelPlantel{grid-area:stats}
+  #panelPlantel{grid-area:stats;justify-self:end}
   .gol-banner{grid-area:gol}
   .board-zona{
     grid-area:mesa;min-height:0;align-self:stretch;
     display:flex;flex-direction:column;
   }
   .board{flex:1;min-height:0}
-  .col-picks{grid-area:cols}
   .board-hint{grid-area:hint}
-  .panel-log{grid-area:log}
-  #m-dinero{grid-area:hint;justify-self:start}
 
   /* Los medidores, uno debajo del otro en su celda. */
   #m-aguante,#m-racha{
@@ -2644,10 +2659,14 @@ body{padding-bottom:36px}
   #m-dinero{padding:0;border:none;background:none;display:flex;align-items:center}
   #m-dinero .rec-val{font-family:var(--tit);font-weight:800;font-size:12.5px;color:var(--coin)}
 
-  /* ---- LA MESA ---- */
-  .cancha{display:flex;flex-direction:column;gap:5px}
-  .lado,.centro{display:contents}
+  /* ---- LA MESA ----
+     Acá vivía un `.cancha{display:flex;flex-direction:column}` que pisaba el
+     grid de arriba —misma especificidad, ganaba por venir después— y dejaba
+     todo el mapa de áreas inerte. Con la cancha en flex los paneles caían en
+     orden del DOM, así que el PLANTEL, que es lo último del HTML, terminaba
+     abajo de la mesa y fuera de la pantalla. */
   .lado{position:static}
+  /* Los medidores se muestran en la marquesina: acá serían un duplicado. */
   #panelEquipo{display:none}
 
   /* La fila, angosta: el % en chico deja más ancho para las cartas. */
