@@ -42,16 +42,21 @@
      coincidencia —los mismos violetas escritos a mano en veintipico de lugares—
      así que tocar una dejaba a la otra distinta. Ahora salen de acá.
 
-     El violeta venía de otra paleta y competía con el dorado. Este celeste
-     cálido sale del azul de la cancha, así que la ficha se lee como parte de la
-     transmisión y no como un cartel pegado encima. */
-  --fi-luz:#9ed8ee;                    /* el filo, el pico y los bordes */
+     El violeta venía de otra paleta y competía con el dorado. Este celeste sale
+     del azul de la cancha, así que la ficha se lee como parte de la transmisión
+     y no como un cartel pegado encima.
+
+     El mismo tono marca en la mesa las cartas con porcentaje de gol. Empezó más
+     lavado —#9ed8ee, 70% de saturación— y se emparentaba con el gris azulado de
+     las que no hacen nada, como OFFSIDE: hues cercanos, 197 contra 217, sobre un
+     fondo azul. Con 85% de saturación se separan sin salirse de la familia. */
+  --fi-luz:#5ecdf2;                    /* el filo, el pico y los bordes */
   --fi-claro:#f2f8fa;                  /* el texto que hay que leer */
   --fi-suave:#afc8d6;                  /* la bajada, un escalón abajo */
   --fi-fondo-a:rgba(10,38,70,.985);
   --fi-fondo-b:rgba(4,18,40,.99);
-  --fi-borde:rgba(158,216,238,.5);
-  --fi-borde-suave:rgba(158,216,238,.28);
+  --fi-borde:rgba(94,205,242,.5);
+  --fi-borde-suave:rgba(94,205,242,.28);
   --fi-halo:rgba(90,180,230,.32);
   --fi-btn-a:rgba(16,58,104,.95);
   --fi-btn-b:rgba(6,24,52,.96);
@@ -915,8 +920,8 @@ img{height:auto}
 /* Celeste: hay un porcentaje de gol en juego. */
 .row.hl .cell.tono-gol:not(.empty):not(.lock),
 .cell.colhl.tono-gol:not(.empty):not(.lock){
-  border-color:rgba(158,216,238,.8);
-  box-shadow:0 3px 14px rgba(158,216,238,.18);
+  border-color:rgba(94,205,242,.85);
+  box-shadow:0 3px 14px rgba(94,205,242,.2);
 }
 /* Amarillo: se juega la racha en un empate. */
 .row.hl .cell.tono-risk:not(.empty):not(.lock),
@@ -5660,6 +5665,20 @@ function abrirItem(k, btn){
 
 document.addEventListener('click', e => {
   if(!e.target.closest('.item, .item-ficha, .gol-banner')) cerrarFichaItem();
+
+  /* **Un click afuera desarma la línea.** La fila o columna elegida quedaba
+     resaltada hasta que confirmabas o elegías otra: no había forma de
+     arrepentirse tocando en cualquier otro lado, que es lo primero que uno
+     intenta. Ahora el resaltado se va como se va cualquier menú abierto.
+
+     Se descarta el click sobre la mesa misma —`.row` y `.col-pick`— porque ese
+     lo maneja `tapLine`, que es el que confirma o mueve la selección. */
+  if(G.armed && !e.target.closest('.row, .col-pick')){
+    G.armed = null;
+    const h = $('hint');
+    if(h) h.textContent = 'Elegí una FILA. El azar decide qué carta te toca.';
+    render();
+  }
 });
 
 async function useItem(k){
