@@ -8250,6 +8250,14 @@ function copasHTML(){
   '</div>';
 }
 
+/* La dirección del juego, en un solo lugar.
+   Estaba escrita a mano adentro del texto que se comparte y quedó con el
+   nombre viejo del repo cuando se renombró a Duelo Futbolero: GitHub redirige
+   `github.com/…` con un 301, **pero no redirige las páginas**, así que cada
+   partido compartido repartía un link muerto. Acá arriba se ve, y si vuelve a
+   mudarse se cambia en un lado. */
+const URL_JUEGO = 'https://nicolasdiani.github.io/Duelo-Futbolero/';
+
 /* El texto que se comparte: legible en WhatsApp, sin depender de formato. */
 function textoCompartir(campeon){
   const L = [];
@@ -8269,7 +8277,7 @@ function textoCompartir(campeon){
       (p.pens ? (p.gano ? ' (ganado en penales)' : ' (perdido en penales)') : '')));
   }
   L.push('');
-  L.push('Jugalo vos: https://nicolasdiani.github.io/Futbol-Cesto/');
+  L.push('Jugalo vos: ' + URL_JUEGO);
   return L.join('\n');
 }
 
