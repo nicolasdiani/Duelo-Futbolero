@@ -783,7 +783,11 @@ img{height:auto}
   flex:1;min-width:0;                       /* deja que el texto se corte, no que empuje */
   font-family:var(--tit);font-weight:800;text-transform:uppercase;
   font-size:16px;letter-spacing:.2px;line-height:1.03;color:var(--white);
-  overflow-wrap:anywhere;hyphens:auto;
+  /* `break-word` y no `anywhere`: el primero parte una palabra **solo si sola
+     no entra**; el segundo la corta en cualquier letra aunque haya un espacio
+     disponible. Por eso se leía «DELANTE / RO RIVAL» en vez de «DELANTERO /
+     RIVAL». Con más cartas diciendo RIVAL, eso pasaba a ser la regla. */
+  overflow-wrap:break-word;hyphens:auto;
 }
 /* Sin duelo el título usa todo el ancho y va centrado. */
 .cell.sin-val .c-nm{text-align:center}
@@ -3273,8 +3277,8 @@ body{padding-bottom:36px}
 /* ---------------- catálogo de cartas ---------------- */
 // stat: 'atk' se compara contra tu ataque, 'def' contra tu defensa, null = sin duelo
 const TYPES = {
-  defensor:  { ico:'🧱', nm:'DEFENSOR',   stat:'atk' },
-  arquero:   { ico:'🥅', nm:'ARQUERO',    stat:'atk' },
+  defensor:  { ico:'🧱', nm:'DEFENSOR RIVAL',stat:'atk' },
+  arquero:   { ico:'🥅', nm:'ARQUERO RIVAL', stat:'atk' },
   medio:     { ico:'🌀', nm:'MEDIO RIVAL', stat:'def' },
   delantero: { ico:'👟', nm:'DELANTERO RIVAL', stat:'def' },
   jugada:    { ico:'⚽', nm:'JUGADA CLARA' },
@@ -3300,7 +3304,7 @@ const TYPES = {
   lesion:    { ico:'🩹', nm:'LESIÓN', dana:true },
   offside:   { ico:'🚫', nm:'OFFSIDE' },
   autogol:   { ico:'🎁', nm:'AUTOGOL RIVAL' },
-  contra:    { ico:'💥', nm:'CONTRAATAQUE' },
+  contra:    { ico:'💥', nm:'CONTRAATAQUE RIVAL' },
   encontra:  { ico:'🙈', nm:'AUTOGOL PROPIO' }
 };
 

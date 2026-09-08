@@ -291,8 +291,8 @@ no se mueve); el segundo trae al rival +1 mientras vos subiste +2.
 
 | Carta | Color | Si ganás el duelo | Si perdés |
 |---|---|---|---|
-| **DEFENSOR** 🔴 N | rojo | Lo pasás: **+1 RACHA** | **-1 aguante** |
-| **ARQUERO** 🔴 N | rojo | **¡GOL!** | -1 aguante |
+| **DEFENSOR RIVAL** 🔴 N | rojo | Lo pasás: **+1 RACHA** | **-1 aguante** |
+| **ARQUERO RIVAL** 🔴 N | rojo | **¡GOL!** | -1 aguante |
 | **DELANTERO RIVAL** 🔵 N | azul | Se la sacás: **+1 RACHA** | **GOL EN CONTRA** |
 | **MEDIOCAMPISTA** 🔵 N | azul | Le ganás la pelota | -1 aguante |
 
@@ -311,7 +311,7 @@ Y las mismas, pero **para el rival** (aparecen desde la ronda 2 en adelante):
 
 | Carta | Efecto |
 |---|---|
-| **CONTRAATAQUE** 💥 | **Gol del rival** directo, sin tirada |
+| **CONTRAATAQUE RIVAL** 💥 | **Gol del rival** directo, sin tirada |
 | **AUTOGOL PROPIO** 🙈 | **Gol del rival** directo, sin tirada |
 | **PENAL RIVAL** 💀 | **50%** — entra: gol rival **-1 ❤** / no entra: **+1 ⚡** |
 | **PASE GOL RIVAL** 🕳 | **40%** — entra: gol rival **-1 ❤** / no entra: **+1 ⚡** |
@@ -1243,8 +1243,8 @@ es el mismo título que aparece al abrirse el pop-up:
 
 | Carta | Cartel |
 |---|---|
-| DEFENSOR | **UNO CONTRA UNO** · +1 ⚡ o -1 ❤ |
-| ARQUERO | **MANO A MANO** · ⚽ GOL o -2 ❤ |
+| DEFENSOR RIVAL | **UNO CONTRA UNO** · +1 ⚡ o -1 ❤ |
+| ARQUERO RIVAL | **MANO A MANO** · ⚽ GOL o -2 ❤ |
 | MEDIO RIVAL | **LA MARCA** · +1 ⚡ o -1 ❤ |
 | DELANTERO RIVAL | **DEFENDER** · +2 ⚡ o ⚽ GOL RIVAL |
 
@@ -1263,7 +1263,7 @@ puede poner abajo:
 | Empate | Color | Porque |
 |---|---|---|
 | **DELANTERO RIVAL** | 🟧 naranja | perderlo es **GOL DEL RIVAL** |
-| ARQUERO · DEFENSOR · MEDIO | 🟨 amarillo | está en el aire |
+| ARQUERO · DEFENSOR · MEDIO, todos RIVAL | 🟨 amarillo | está en el aire |
 
 > **El arquero estuvo en verde y se volvió atrás.** El argumento a favor era que
 > ganarlo es GOL TUYO. El problema: en el resto de la mesa el verde significa
@@ -2171,7 +2171,7 @@ Cada carta de gol sin tirada tiene su espejo del otro lado:
 
 | A favor | En contra |
 |---|---|
-| ⚽ **JUGADA CLARA** — entra sola | 💥 **CONTRAATAQUE** — te agarran mal parado |
+| ⚽ **JUGADA CLARA** — entra sola | 💥 **CONTRAATAQUE RIVAL** — te agarran mal parado |
 | 🎁 **AUTOGOL RIVAL** — te la regalan | 🙈 **AUTOGOL PROPIO** — se la regalás |
 
 Antes había **dos** a favor y **ninguna** en contra: el marcador solo podía
@@ -2220,13 +2220,13 @@ nuevas son de porcentaje, no de gol seguro.
 
 | La pelota es tuya | La pelota es del rival |
 |---|---|
-| ⚽ JUGADA CLARA | 💥 CONTRAATAQUE |
+| ⚽ JUGADA CLARA | 💥 CONTRAATAQUE RIVAL |
 | 🎁 AUTOGOL RIVAL | 🙈 AUTOGOL PROPIO |
 | 🎯 PENAL | 💀 PENAL **RIVAL** |
 | 🤝 PASE GOL | 🕳 PASE GOL **RIVAL** |
 | 🚩 CÓRNER | 🌪 CÓRNER **RIVAL** |
 | 🚧 TIRO LIBRE | 🧨 LIBRE **RIVAL** |
-| 🧱 DEFENSOR | 🌀 MEDIO **RIVAL** |
+| 🧱 DEFENSOR **RIVAL** | 🌀 MEDIO **RIVAL** |
 | 🥅 ARQUERO | 👟 DELANTERO **RIVAL** |
 
 El DEFENSOR y el ARQUERO **no** llevan "rival" aunque sean jugadores del otro
@@ -2322,7 +2322,7 @@ cuatro; lo que cambia es qué estás tratando de hacer.
 | Carta | Título | Pregunta | La pelota es | Ganás si |
 |---|---|---|---|---|
 | 🥅 ARQUERO | MANO A MANO | ¿Dónde la ponés? | tuya | **no** coincidís |
-| 🧱 DEFENSOR | UNO CONTRA UNO | ¿Por dónde lo encarás? | tuya | **no** coincidís |
+| 🧱 DEFENSOR **RIVAL** | UNO CONTRA UNO | ¿Por dónde lo encarás? | tuya | **no** coincidís |
 | 🌀 MEDIO RIVAL | LA MARCA | ¿Para qué lado se la lleva? | del rival | **coincidís** |
 | 👟 DELANTERO RIVAL | DEFENDER | ¿Para qué lado va a encarar? | del rival | **coincidís** |
 
@@ -2337,7 +2337,7 @@ juega con números**, no con verbos:
 
 | Carta | Cartel del empate |
 |---|---|
-| 🧱 DEFENSOR | `50/50` · **+1 ⚡** o **-1 ❤** |
+| 🧱 DEFENSOR **RIVAL** | `50/50` · **+1 ⚡** o **-1 ❤** |
 | 🥅 **ARQUERO** | `50/50` · **⚽ GOL** o **-2 ❤** |
 | 🌀 MEDIO RIVAL | `50/50` · **+1 ⚡** o **-1 ❤** |
 | 👟 **DELANTERO RIVAL** | `50/50` · **+2 ⚡** o **⚽ GOL RIVAL** |
@@ -2443,7 +2443,7 @@ duelo perdido y **no toca la racha**; los que no salen de un duelo cobran el
 | Gol del rival | Aguante | Racha |
 |---|---|---|
 | 👟 DELANTERO RIVAL | **-N ❤** | — |
-| 💥 CONTRAATAQUE | — | **-1 ⚡** |
+| 💥 CONTRAATAQUE RIVAL | — | **-1 ⚡** |
 | 💀 PENAL RIVAL | — | **-1 ⚡** |
 | 🙈 AUTOGOL PROPIO | — | **-1 ⚡** |
 
