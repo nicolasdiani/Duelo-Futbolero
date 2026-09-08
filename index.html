@@ -2635,10 +2635,10 @@ body{padding-bottom:36px}
        crece más que la pantalla y lo de abajo —el hint y el PLANTEL— queda
        fuera de vista.
 
-       Los medidores no tienen fila propia: aguante, racha y dinero viven en la
-       marquesina. Y el relato tampoco: es un botón flotante. */
-    grid-template-rows:auto auto minmax(0,1fr) auto;
+       El relato no tiene fila propia: es un botón flotante. */
+    grid-template-rows:auto auto auto minmax(0,1fr) auto;
     grid-template-areas:
+      "meds   stats"
       "items  stats"
       "gol    gol"
       "mesa   mesa"
@@ -2661,12 +2661,20 @@ body{padding-bottom:36px}
   .board{flex:1;min-height:0}
   .board-hint{grid-area:hint}
 
-  /* Los medidores, uno debajo del otro en su celda. */
-  #m-aguante,#m-racha{
+  /* ---- LA LÍNEA DE MEDIDORES ----
+     Aguante, racha y dinero en un solo renglón, arriba de los ítems. El aviso
+     de amarilla aparece solo a veces, así que la línea puede envolver en vez de
+     desbordar. */
+  #panelEquipo{
+    grid-area:meds;min-width:0;
     padding:0;border:none;background:none;
-    display:flex;align-items:center;
+    display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;
   }
-  #m-aguante{align-self:end} #m-racha{align-self:start}
+  #panelEquipo .panel-tit{display:none}
+  #m-aguante,#m-racha,#m-dinero{
+    padding:0;border:none;background:none;
+    display:flex;align-items:center;flex:0 0 auto;
+  }
   .rec-lb{display:none}
   .hearts,.racha-track{display:grid;grid-template-columns:repeat(4,21px);
                        justify-items:center;align-items:center;gap:0}
@@ -2674,13 +2682,32 @@ body{padding-bottom:36px}
   .racha-track .med-art{width:16px;height:19px}
 
   #panelItems .panel-tit{display:none}
-  .item-list{display:grid;grid-auto-flow:column;grid-template-rows:auto;gap:3px}
-  .item-list:has(.item:nth-child(3)){grid-template-rows:auto auto}
-  .item{display:flex;align-items:center;gap:3px;padding:3px 5px;border-radius:5px}
+  /* ---- LOS ÍTEMS, UNA SOLA LÍNEA ----
+     Antes, con tres ítems o más, la lista pasaba a dos filas y le comía alto a
+     la mesa. Ahora van siempre en un renglón: `1fr` reparte el ancho en partes
+     iguales y el `minmax(0,…)` es lo que les permite achicarse — sin ese cero
+     ninguna columna baja de su contenido y con cuatro ítems la fila desbordaba
+     hacia el costado. */
+  .item-list{
+    display:grid;grid-auto-flow:column;
+    grid-auto-columns:minmax(0,1fr);
+    grid-template-rows:auto;gap:3px;
+  }
+  .item{
+    display:flex;align-items:center;gap:3px;padding:3px 5px;border-radius:5px;
+    min-width:0;                      /* deja que el nombre se recorte, no que empuje */
+  }
   .item .ii{font-size:12px;flex:0 0 auto}
   .item .itx{min-width:0;display:flex}
   .item .inm,.item .idesc{display:none}
-  .item .ief{font-size:9px;font-weight:800;white-space:nowrap;overflow:hidden;max-width:30px}
+  /* El tope de 30px venía de cuando los ítems eran angostos y de ancho libre.
+     Ahora cada uno es una columna `1fr`, así que el efecto usa lo que hay y, si
+     no entra, corta con puntos suspensivos en vez de partir la palabra al
+     medio —«DESTRA»— como hacía antes. */
+  .item .ief{
+    font-size:9px;font-weight:800;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;
+  }
   .no-items{font-size:9px}
 
   .gol-banner{width:100%;min-width:0;padding:6px 9px;gap:7px;justify-content:center;max-width:none}
@@ -2713,8 +2740,6 @@ body{padding-bottom:36px}
      orden del DOM, así que el PLANTEL, que es lo último del HTML, terminaba
      abajo de la mesa y fuera de la pantalla. */
   .lado{position:static}
-  /* Los medidores se muestran en la marquesina: acá serían un duplicado. */
-  #panelEquipo{display:none}
 
   /* La fila, angosta: el % en chico deja más ancho para las cartas. */
   .row-pick{width:28px;padding:2px 0}
