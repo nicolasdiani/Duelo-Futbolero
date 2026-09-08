@@ -4123,6 +4123,68 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .aviso .a-op.solo .od{font-size:10.4px;margin-top:5px}
   .aviso .cta{font-size:14px;padding:9px;margin-top:8px;letter-spacing:2px}
 }
+
+/* ============ LA FICHA DE POSIBILIDAD DE GOL, CON LAS CARTAS ============
+   Las cinco casillas mostraban un emoji de 16px y un porcentaje de 9 adentro
+   de una caja de 157x47 en desktop: sobraba lugar y faltaba el dato básico
+   —de qué jugada era ese porcentaje—. Ahora cada casilla lleva la ilustración
+   de su propia carta, la misma que sale en la mesa, con el nombre debajo.
+
+   La foto va contra `vh` como en los avisos, para que en una pantalla baja
+   ceda ella antes que el resto de la ficha. */
+.fg-art{
+  position:relative;display:block;border-radius:4px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.09);
+}
+.fg-art img{display:block;width:100%;height:clamp(30px, 5.2vh, 44px);object-fit:cover}
+.fg-art::after{
+  content:'';position:absolute;inset:auto 0 0;height:62%;
+  background:linear-gradient(180deg,transparent,rgba(0,8,31,.88));
+}
+/* La chapa del mini juego: la misma del tablero, apoyada sobre la foto. */
+.fg-art .mj-lb{
+  position:absolute;left:50%;bottom:3px;transform:translateX(-50%);z-index:2;
+  margin:0;font-size:7.6px;letter-spacing:1.2px;padding:1px 5px;gap:3px;
+}
+.fg-art .mj-ico{font-size:8.6px}
+
+.fg-cnm{
+  display:block;font-family:var(--tit);font-weight:800;
+  font-size:9px;letter-spacing:.2px;line-height:1.06;
+  color:#fff;margin-top:4px;text-transform:uppercase;
+  overflow-wrap:break-word;hyphens:auto;
+}
+.fg-mini.seguro .fg-cnm{color:#c9f5d6}
+.fg-mini.mj .fg-cnm{color:#fbe9b0}
+
+/* La casilla ya no necesita tanto aire propio: lo pone la foto. */
+.fg-mini{padding:5px 4px 6px}
+.fg-pct{margin-top:3px}
+
+/* La aclaración de que las cinco pesan igual. Sin esto se lee que la JUGADA
+   CLARA es la rara, cuando sale tanto como las otras cuatro. */
+.fg-esp em{
+  display:block;font-style:normal;font-family:var(--txt);font-weight:500;
+  font-size:9.4px;letter-spacing:.4px;text-transform:none;
+  color:var(--fi-suave);margin-top:1px;
+}
+
+@media (min-width:1025px), (min-width:821px) and (orientation:landscape){
+  .fg-art img{height:clamp(40px, 7vh, 62px)}
+  .fg-art .mj-lb{font-size:9px;letter-spacing:1.8px;padding:2px 7px;bottom:4px}
+  .fg-art .mj-ico{font-size:10px}
+  .fg-cnm{font-size:13px;letter-spacing:.5px;margin-top:5px}
+  .fg-mini{padding:6px 5px 7px}
+  .fg-esp em{font-size:10.5px;display:inline;margin-left:6px}
+  .fg-esp em::before{content:'· '}
+}
+@media (max-width:440px){
+  .fg-art img{height:clamp(26px, 4.4vh, 34px)}
+  .fg-cnm{font-size:8px;margin-top:3px}
+  .fg-art .mj-lb{font-size:6.4px;letter-spacing:.6px;padding:0 4px;gap:2px}
+  .fg-art .mj-ico{font-size:7.4px}
+  .fg-mini{padding:4px 3px 5px}
+}
 </style>
 </head>
 <body>
@@ -6399,17 +6461,33 @@ function abrirFichaGol(btn){
   const esperado = Math.round(SIT_FAVOR.reduce((a, x) => a + x.peso * x.p, 0) / total * 100);
 
   f.classList.add('ficha-gol');
+  /* Cada casilla muestra **la ilustración de su propia carta**, la misma que
+     se ve en la mesa. Antes iban cinco emoji: para saber cuál era cuál había
+     que acordarse de que 🚩 es el córner y 🚧 el tiro libre. Con la foto la
+     reconocés porque ya la viste salir, y de paso se usa el ancho que sobraba
+     —157px por casilla en desktop, con un emoji de 16 adentro—.
+
+     El nombre va debajo, que es lo que de verdad faltaba: hoy la ficha te
+     mostraba un porcentaje sin decirte de qué jugada era.
+
+     Y la chapa del mini juego pasa a ser **la misma del tablero**, no un 🎮 de
+     8px flotando en el borde. */
   f.innerHTML =
     '<div class="fg-top">' +
       '<span class="fg-nm">⚽ POSIBILIDAD DE GOL</span>' +
-      '<span class="fg-esp">' + esperado + '% de gol</span>' +
+      '<span class="fg-esp">' + esperado + '% de gol' +
+        '<em>una de las cinco, al azar</em></span>' +
     '</div>' +
     '<div class="fg-minis">' +
       SIT_FAVOR.map(x => {
         const mj = x.key === 'penal';        // el penal se patea, no se sortea
+        const art = artCarta(x.key);
+        const chapa = mj ? '<span class="mj-lb"><i class="mj-ico">🎮</i>MINI JUEGO</span>' : '';
         return '<div class="fg-mini' + (x.p === 1 ? ' seguro' : '') + (mj ? ' mj' : '') + '">' +
-          (mj ? '<span class="fg-mj">🎮</span>' : '') +
-          '<span class="fg-ico">' + x.ico + '</span>' +
+          (art
+            ? '<span class="fg-art"><img src="' + art + '" alt="">' + chapa + '</span>'
+            : '<span class="fg-ico">' + x.ico + '</span>' + chapa) +
+          '<span class="fg-cnm">' + x.nm + '</span>' +
           '<span class="fg-pct">' + (x.p === 1 ? 'GOL' : Math.round(x.p * 100) + '% GOL') + '</span>' +
         '</div>';
       }).join('') +

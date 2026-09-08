@@ -1380,6 +1380,38 @@ cuando frenan.
 La regla común del dibujo: **la pelota va maciza y el decorado en línea**. El
 ojo sigue a la pelota, y el arco, el guante o la barrera no le compiten.
 
+### La ficha de posibilidad de gol
+
+Las cinco casillas mostraban un emoji y un porcentaje. Midiéndola apareció el
+problema de fondo: en desktop **cada casilla mide 157x47 px y adentro había un
+emoji de 16 y un porcentaje de 9**. Sobraba lugar, y faltaba el dato más
+básico — de qué jugada era ese porcentaje. Había que saberse de memoria que 🚩
+es el córner y 🚧 el tiro libre.
+
+Ahora cada casilla lleva **la ilustración de su propia carta**, la misma que
+sale en la mesa, con el nombre debajo. No hay íconos nuevos que aprender: la
+reconocés porque ya la viste salir.
+
+| | Antes | Ahora |
+|---|---|---|
+| Ficha desktop | 836 x 147 | 836 x 213 |
+| Ficha mobile | 380 x 132 | 380 x 172 |
+| Casilla desktop | 157 x 47 | 157 x 115 |
+| Contenido | emoji + % | foto + nombre + % |
+
+Dos cosas más que se arreglaron de paso:
+
+**La chapa del mini juego** era un 🎮 de 8px flotando en el borde de la
+casilla. Pasa a ser la misma chapa dorada que llevan las cartas del tablero,
+apoyada sobre la foto.
+
+**Las cinco pesan igual** —una de cada cinco— y la ficha nunca lo decía, así
+que se leía que la JUGADA CLARA era la rara. Ahora lo aclara al lado del
+porcentaje esperado.
+
+La foto va contra `vh` como en los avisos, para que en una pantalla baja ceda
+ella antes que el resto de la ficha.
+
 ### Los dos avisos de racha llena
 
 **RACHA LLENA** y **TIEMPO DE DESCUENTO** son el mismo momento contado dos
