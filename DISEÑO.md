@@ -1380,6 +1380,50 @@ cuando frenan.
 La regla común del dibujo: **la pelota va maciza y el decorado en línea**. El
 ojo sigue a la pelota, y el arco, el guante o la barrera no le compiten.
 
+### Los penales, con arco de verdad
+
+Eran **dos emoji moviéndose adentro de una caja con borde**: un guante y una
+pelota. Ahora el arco se dibuja —palos, travesaño, red y línea del área— y
+**se apunta tocando adentro**, no con tres botones de flecha.
+
+Tres cosas lo sostienen:
+
+**Las zonas laten.** Un arco dibujado sin nada más se lee como decoración; el
+latido escalonado en celeste dice que hay que tocarlo. Se apagan al disparar.
+
+**El arquero lleva los colores del equipo que ataja** — camiseta y guantes
+salen del escudo. El del rival cuando pateás vos, el tuyo cuando atajás. Y se
+balancea mientras decidís, para que no parezca una estatua esperando: al
+disparar se corta el vaivén y vuela al palo que adivinó, **antes** que salga
+la pelota, así se ve el duelo.
+
+**La pelota está dibujada con el mismo trazo** que el arco —círculo, pentágono
+y costuras— en vez del emoji, que era el único elemento con otro estilo.
+
+Las zonas de toque miden **56x82 px en un 390 y 52x76 en un 360**, bastante
+por encima de lo cómodo: era el riesgo de cambiar botones por zonas.
+
+#### Un solo arco para los tres lugares
+
+Los penales aparecen en tres lados: la **tanda de la final** (y del partido
+único), el **penal definitorio** de una ronda de paso, y la **serie del menú**.
+La tanda y la serie ya compartían `penalUno`, pero el definitorio tenía su
+propio dibujo y sus propios botones con nombre. Ahora los tres usan
+`arcoPenalHTML` y `animarPenal`.
+
+La probabilidad no cambió: sigue siendo azar puro entre tres palos, **2 de
+cada 3 convertidos** (verificado con 6000 tiros simulados: 66,7%).
+
+#### La pizarra de la tanda
+
+El marcador era una línea de ⚽ y ✖ de 13px con **solo los tiros ya**
+**pateados**: no se veía cuántos quedaban, que en una tanda es la mitad de la
+información — «le queda uno y va perdiendo» es todo el drama.
+
+Ahora van los **cinco huecos de cada equipo desde el primer tiro**: verde el
+que entró, tachado el que erró, vacío el que falta, y el que se está por
+patear late en dorado. La fila del que patea se enciende.
+
 ### La pantalla del club, en vitrina
 
 Era un formulario: el escudo chico a la izquierda y a la derecha una lista con

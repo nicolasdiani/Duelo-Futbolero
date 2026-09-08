@@ -511,38 +511,6 @@ img{height:auto}
 .sit.penal.resuelta.gol{border-color:var(--red);box-shadow:0 0 60px rgba(255,59,82,.34)}
 .sit.penal.resuelta.gol .t{color:var(--red)}
 
-/* el arco: tres postes y una línea, alcanza para ubicar el tiro */
-.arco{
-  position:relative;height:96px;margin:16px 0 4px;
-  border:3px solid var(--cal);border-bottom:none;border-radius:5px 5px 0 0;
-  background:repeating-linear-gradient(90deg,transparent,transparent 13px,rgba(255,255,255,.05) 13px,rgba(255,255,255,.05) 14px);
-}
-.arco .arq,.arco .pelota{
-  position:absolute;left:50%;transform:translateX(-50%);
-  transition:transform .55s cubic-bezier(.3,1.4,.5,1),left .55s cubic-bezier(.3,1.4,.5,1),bottom .55s cubic-bezier(.3,1.4,.5,1);
-}
-.arco .arq{top:26px;font-size:32px}
-.arco .pelota{bottom:-15px;font-size:23px;transition-duration:.42s}
-.arco .pelota.va-izq{left:19%;bottom:34px}
-.arco .pelota.va-medio{left:50%;bottom:40px}
-.arco .pelota.va-der{left:81%;bottom:34px}
-.arco .arq.va-izq{left:19%;transform:translateX(-50%) rotate(-24deg)}
-.arco .arq.va-medio{left:50%;transform:translateX(-50%) scale(1.12)}
-.arco .arq.va-der{left:81%;transform:translateX(-50%) rotate(24deg)}
-
-/* Atajada: la pelota frena en la mano del arquero en vez de seguir a la red.
-   Sube menos y se queda pegada al guante. */
-.arco .pelota.atajada{bottom:30px;transform:translateX(-50%) scale(.82)}
-.arco .pelota.va-medio.atajada{bottom:34px}
-.arco .pelota.atajada::after{
-  content:'';position:absolute;inset:-9px;border-radius:50%;
-  border:2px solid var(--gold);animation:paro .5s ease-out both;
-}
-@keyframes paro{
-  from{transform:scale(.4);opacity:1}
-  to{transform:scale(1.5);opacity:0}
-}
-
 .palos{display:flex;gap:7px;margin-top:13px}
 .palo{
   flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
@@ -1282,24 +1250,6 @@ img{height:auto}
 .sit.moneda .palo .pi{display:block;font-size:30px;line-height:1.1}
 
 /* ---------- TANDA DE PENALES ---------- */
-.tanda{
-  border:1px solid var(--line);background:rgba(0,0,0,.35);
-  padding:9px 11px;margin:12px 0;text-align:left;
-}
-.tanda-f{display:flex;align-items:center;gap:9px;padding:4px 0}
-.tanda-nm{
-  font-family:var(--txt);font-size:10.5px;letter-spacing:1px;color:var(--dim);
-  flex:0 0 96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  text-transform:uppercase;
-}
-.tanda-p{flex:1;letter-spacing:3px;font-size:15px;line-height:1;min-height:15px}
-.tanda-p .ok,.tanda-p .no{font-style:normal;font-size:13px;margin-right:2px}
-.tanda-p .no{color:var(--red)}
-/* Al que le toca patear: fila encendida y flecha. */
-.tanda-f.patea{background:rgba(245,200,66,.09)}
-.tanda-f.patea .tanda-nm{color:var(--gold)}
-.tanda-f b{font-family:var(--tit);font-size:19px;color:var(--white);min-width:16px;text-align:right}
-
 /* ---------- REPARTIR PUNTOS ---------- */
 .reparto{
   border:1px solid var(--line);background:var(--panel2);
@@ -2270,63 +2220,6 @@ body{padding-bottom:36px}
 .sit.mam.resuelta.gol .t,.sit.penal.resuelta.gol .t{color:var(--red)}
 .sit.resuelta .sit-ico{font-size:clamp(52px,12vw,72px);line-height:1;margin:4px 0}
 
-/* ---------- EL PENAL: PELOTA Y GUANTE ----------
-   Las dos figuras arrancan en el centro y vuelan a su palo. La pelota además
-   gira mientras viaja y se achica al alejarse, que es lo que da la sensación de
-   profundidad hacia el arco. */
-.arco .arq, .arco .pelota{
-  position:absolute;left:50%;transform:translateX(-50%);
-  transition:left .55s cubic-bezier(.25,1.1,.4,1),
-             bottom .55s cubic-bezier(.3,.9,.4,1),
-             transform .55s cubic-bezier(.25,1.1,.4,1);
-  filter:drop-shadow(0 3px 8px rgba(0,0,0,.7));
-}
-.arco .arq{top:10px;font-size:38px}
-.arco .pelota{bottom:8px;font-size:30px}
-
-/* El vuelo del arquero, con inclinación hacia el palo. */
-.arco .arq.va-izq{left:20%;transform:translateX(-50%) rotate(-28deg) scale(1.05)}
-.arco .arq.va-der{left:80%;transform:translateX(-50%) rotate(28deg) scale(1.05)}
-.arco .arq.va-medio{transform:translateX(-50%) scale(1.12)}
-
-/* La pelota sube al arco: se aleja, así que se achica y rota. */
-.arco .pelota.va-izq{left:22%;bottom:46px;transform:translateX(-50%) rotate(-380deg) scale(.62)}
-.arco .pelota.va-der{left:78%;bottom:46px;transform:translateX(-50%) rotate(380deg) scale(.62)}
-.arco .pelota.va-medio{bottom:50px;transform:translateX(-50%) rotate(340deg) scale(.6)}
-
-/* GOL: la pelota infla la red al fondo. */
-.arco.gol::after{
-  content:'';position:absolute;inset:0;border-radius:8px;
-  background:radial-gradient(circle at var(--x,50%) 30%, rgba(61,220,107,.55), transparent 58%);
-  animation:redInfla .5s ease-out both;
-}
-@keyframes redInfla{
-  from{opacity:0;transform:scale(.7)}
-  60% {opacity:1;transform:scale(1.06)}
-  to  {opacity:.55;transform:scale(1)}
-}
-
-/* ATAJADA: la pelota frena en la mano y sale el destello del choque. */
-.arco .pelota.atajada{
-  bottom:30px;
-  transform:translateX(-50%) rotate(90deg) scale(.75);
-  transition-duration:.42s;
-}
-.arco .pelota.atajada::after{
-  content:'';position:absolute;inset:-14px;border-radius:50%;
-  border:3px solid var(--gold);
-  animation:paro .55s cubic-bezier(.2,.8,.3,1) both;
-}
-@keyframes paro{
-  from{transform:scale(.35);opacity:1}
-  to  {transform:scale(1.9);opacity:0}
-}
-/* y el guante tiembla por el impacto */
-.arco.atajado .arq{animation:sacudon .45s ease-out .4s both}
-@keyframes sacudon{
-  0%,100%{filter:drop-shadow(0 3px 8px rgba(0,0,0,.7))}
-  30% {filter:drop-shadow(0 0 16px rgba(245,200,66,.9)) brightness(1.3)}
-}
 
 /* ---------- EL MINI JUEGO: LAS DOS FIGURAS ---------- */
 /* Al resolverse, el que gana crece y el que pierde se apaga. */
@@ -2342,6 +2235,14 @@ body{padding-bottom:36px}
 @keyframes apaga{
   to{opacity:.28;filter:grayscale(1) drop-shadow(0 2px 5px rgba(0,0,0,.5))}
 }
+/* El destello del choque. Vivía con el arco viejo de los penales; cuando ese
+   se fue, esta animación se quedó sin definición y el anillo del mini juego
+   aparecía quieto. */
+@keyframes paro{
+  from{transform:scale(.35);opacity:1}
+  to  {transform:scale(1.9);opacity:0}
+}
+
 /* El choque cuando los dos van al mismo lado. */
 .mam-cancha.choque::after{
   content:'';position:absolute;left:var(--cx,50%);top:50%;
@@ -2374,7 +2275,8 @@ body{padding-bottom:36px}
 .p-emp .pe-vs{color:var(--dim2);font-size:9px}
 
 /* La cancha: más alta, con las dos figuras grandes. */
-.mam-cancha, .arco{
+/* Compartía estas reglas con el arco viejo de los penales, que ya no existe. */
+.mam-cancha{
   position:relative;height:104px;margin:14px 0 6px;
   border:1px solid var(--line);border-radius:8px;overflow:hidden;
   background:
@@ -2382,7 +2284,7 @@ body{padding-bottom:36px}
       rgba(0,33,118,.5), rgba(0,33,118,.5) 24px,
       rgba(0,20,66,.5) 24px, rgba(0,20,66,.5) 48px);
 }
-.mam-cancha::before,.arco::before{
+.mam-cancha::before{
   content:'';position:absolute;left:0;right:0;top:50%;height:1px;
   background:rgba(255,255,255,.16);
 }
@@ -4391,6 +4293,144 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .club-peana{width:84px;margin-top:2px}
   .card-club .crear-lb{margin:5px 0 4px}
 }
+
+/* ================= EL ARCO DE LOS PENALES =================
+   Reemplaza los dos emoji que se movían adentro de una caja. Ahora el arco se
+   dibuja —palos, travesaño, red y línea del área— y se apunta **tocando
+   adentro**: las tres zonas son los botones.
+
+   Tres cosas lo sostienen:
+
+   1. **Las zonas laten.** Un arco dibujado sin nada más se lee como
+      decoración; el latido escalonado en celeste dice que hay que tocarlo.
+   2. **El arquero lleva los colores del equipo que ataja** —camiseta y
+      guantes salen del escudo— y se balancea mientras decidís, para que no
+      parezca una estatua esperando.
+   3. **La pelota está dibujada con el mismo trazo** que el arco: círculo,
+      pentágono y costuras, en vez del emoji de antes, que era el único
+      elemento con otro estilo. */
+.parco{
+  display:block;width:100%;margin:12px 0 2px;overflow:visible;
+}
+.pp-post{fill:none;stroke:#e8eef8;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.pp-red{fill:none;stroke:rgba(232,238,248,.2);stroke-width:1}
+.pp-piso{fill:none;stroke:rgba(232,238,248,.28);stroke-width:2;stroke-dasharray:4 6}
+.pp-cost{fill:none;stroke:#16181d;stroke-width:.9;stroke-linecap:round}
+
+/* Las tres zonas: laten hasta que se dispara. */
+.pp-zona{
+  fill:var(--fi-luz);fill-opacity:.05;
+  stroke:var(--fi-luz);stroke-width:1.5;stroke-opacity:.35;
+  cursor:pointer;transition:fill-opacity .15s, stroke-opacity .15s;
+  animation:zonaLate 1.7s ease-in-out infinite;
+}
+@keyframes zonaLate{
+  0%,100%{stroke-opacity:.3;fill-opacity:.04}
+  50%    {stroke-opacity:1;fill-opacity:.16}
+}
+.pp-zona:hover{fill-opacity:.2;stroke-opacity:1;animation:none}
+.pp-zona.off{pointer-events:none;animation:none;stroke-opacity:.12;fill-opacity:0}
+.pp-zona.sel{
+  animation:none;stroke:var(--gold);stroke-opacity:1;stroke-width:2.5;
+  fill:var(--gold);fill-opacity:.16;
+}
+
+/* El arquero: vaivén mientras decidís, vuelo cuando disparás. */
+.pp-arq{
+  transition:transform .44s cubic-bezier(.3,1.1,.4,1);
+  filter:drop-shadow(0 3px 7px rgba(0,0,0,.55));
+}
+.pp-arq.idle{animation:arqVaiven 1.8s ease-in-out infinite}
+@keyframes arqVaiven{
+  0%,100%{transform:translateX(-7px) rotate(-3deg)}
+  50%    {transform:translateX(7px) rotate(3deg)}
+}
+
+.pp-pel{
+  transition:transform .46s cubic-bezier(.25,.7,.4,1);
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,.6));
+}
+
+/* La red se infla en verde cuando entra. */
+.pp-gol{fill:none;stroke:var(--green);stroke-width:4;opacity:0}
+.pp-gol.on{animation:ppRed .55s ease-out}
+@keyframes ppRed{
+  0%  {opacity:0}
+  30% {opacity:1}
+  100%{opacity:0}
+}
+
+.pp-hint{
+  font-family:var(--txt);font-weight:600;font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--dim2);margin-top:4px;
+}
+
+@media (min-width:1025px), (min-width:821px) and (orientation:landscape){
+  .parco{margin:14px 0 4px}
+  .pp-hint{font-size:11.5px;letter-spacing:2.6px;margin-top:6px}
+}
+@media (prefers-reduced-motion:reduce){
+  .pp-zona,.pp-arq.idle{animation:none}
+  .pp-zona{stroke-opacity:.8;fill-opacity:.12}
+}
+
+/* ================= LA PIZARRA DE LA TANDA =================
+   Reemplaza la línea de ⚽ y ✖ de 13px. Los cinco huecos de cada equipo están
+   siempre, así se ve **cuántos quedan**: en una tanda eso es la mitad de la
+   información. El que se está por patear late en dorado. */
+.pizarra{display:grid;gap:5px;margin:10px 0 2px}
+.pz-f{
+  display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:9px;
+  border:1px solid var(--line);border-radius:7px;background:rgba(0,12,40,.6);
+  padding:5px 9px;transition:border-color .2s, background .2s;
+}
+.pz-f.turno{border-color:var(--gold);background:rgba(245,200,66,.09)}
+.pz-nm{
+  font-family:var(--tit);font-weight:800;font-size:12.5px;letter-spacing:.6px;
+  color:var(--white);max-width:11ch;text-transform:uppercase;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.pz-tiros{display:flex;gap:5px;justify-content:center}
+.pz-t{
+  width:15px;height:15px;border-radius:50%;
+  border:1.5px solid var(--line2, #1e3f7d);background:rgba(0,8,31,.7);
+  display:flex;align-items:center;justify-content:center;
+  transition:background .22s, border-color .22s, box-shadow .22s;
+}
+.pz-t.gol{background:var(--green);border-color:var(--green);box-shadow:0 0 9px rgba(61,220,107,.55)}
+.pz-t.fallo{background:transparent;border-color:var(--red)}
+.pz-t.fallo::after{
+  content:'';width:7px;height:1.6px;background:var(--red);
+  transform:rotate(-45deg);border-radius:2px;
+}
+.pz-t.ahora{border-color:var(--gold);animation:pzLate 1.1s ease-in-out infinite}
+@keyframes pzLate{
+  0%,100%{box-shadow:0 0 0 0 rgba(245,200,66,.6)}
+  50%    {box-shadow:0 0 0 4px rgba(245,200,66,0)}
+}
+.pz-n{
+  font-family:var(--tit);font-weight:800;font-size:17px;color:var(--gold);
+  min-width:14px;text-align:right;font-variant-numeric:tabular-nums;
+}
+
+@media (min-width:1025px), (min-width:821px) and (orientation:landscape){
+  .pizarra{gap:6px;margin:12px 0 4px}
+  .pz-f{padding:7px 12px;gap:12px}
+  .pz-nm{font-size:15px}
+  .pz-tiros{gap:7px}
+  .pz-t{width:19px;height:19px;border-width:2px}
+  .pz-t.fallo::after{width:9px;height:2px}
+  .pz-n{font-size:21px;min-width:18px}
+}
+@media (max-width:440px){
+  .pz-f{padding:4px 7px;gap:6px}
+  .pz-nm{font-size:10.5px;max-width:8ch}
+  .pz-tiros{gap:4px}
+  .pz-t{width:12px;height:12px;border-width:1.2px}
+  .pz-t.fallo::after{width:6px;height:1.4px}
+  .pz-n{font-size:14px;min-width:12px}
+}
+@media (prefers-reduced-motion:reduce){ .pz-t.ahora{animation:none} }
 </style>
 </head>
 <body>
@@ -7249,9 +7289,89 @@ async function serieDePenales(eqs, auto){
 
    `yoPateo` decide el modo: en el 1v1 patea el que tiene el turno; en el
    campeonato pateás vos y atajás cuando patea la máquina. */
+/* ---------------- EL ARCO DE LOS PENALES ----------------
+   Antes eran dos emoji —un guante y una pelota— moviéndose adentro de una caja
+   con borde. Ahora el arco se dibuja: palos, travesaño, red y línea del área, y
+   **se apunta tocando adentro**, no con tres botones de flecha.
+
+   Las tres zonas laten en celeste, escalonadas, para que se vea que hay que
+   tocarlas: sin eso un arco dibujado se lee como decoración.
+
+   El arquero lleva **los colores del escudo del equipo que ataja** —el rival
+   cuando pateás vos, el tuyo cuando atajás— y se balancea mientras decidís. Al
+   disparar se corta el vaivén y vuela al palo que adivinó.
+
+   Los tres lugares donde hay penales —la tanda de la final, el penal
+   definitorio de una ronda y la serie del menú— usan este mismo arco. El
+   definitorio tenía su propio dibujo y sus propios botones. */
+const PENAL_Z = [ {x:48, y:60}, {x:100, y:60}, {x:152, y:60} ];
+
+function arcoPenalHTML(esc){
+  const A = COLORES[((esc && esc.c1) || 0) % COLORES.length].hex;   // camiseta
+  const B = COLORES[((esc && esc.c2) || 0) % COLORES.length].hex;   // guantes
+
+  let red = '';
+  for(let x = 26; x <= 174; x += 12) red += '<path class="pp-red" d="M' + x + ' 22 V98"/>';
+  for(let y = 30; y <= 96; y += 12) red += '<path class="pp-red" d="M22 ' + y + ' H178"/>';
+
+  const zonas = [22, 74, 126].map((x, i) =>
+    '<rect class="pp-zona" data-z="' + i + '" x="' + x + '" y="22" width="52" height="76" rx="3" ' +
+    'style="animation-delay:' + (i * 260) + 'ms"/>').join('');
+
+  return '<svg class="parco" viewBox="0 0 200 120" aria-label="Arco">' +
+    '<g class="pp-redg">' + red + '</g>' +
+    '<path class="pp-post" d="M22 100 V22 H178 V100"/>' +
+    '<path class="pp-piso" d="M8 103 H192"/>' +
+    '<path class="pp-gol" d="M22 100 V22 H178 V100"/>' +
+    /* El arquero, con los colores del que ataja. */
+    '<g class="pp-arq idle">' +
+      '<circle cx="100" cy="56" r="8" fill="#f0c9a0" stroke="rgba(0,0,0,.35)" stroke-width="1"/>' +
+      '<path d="M91 66 h18 v24 h-18 z" fill="' + A + '" stroke="rgba(0,0,0,.35)" stroke-width="1"/>' +
+      '<path d="M93 90 h6 v10 h-6 z M101 90 h6 v10 h-6 z" fill="' + B + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
+      '<path d="M91 68 h-6 v-7 h6 z M109 68 h6 v-7 h-6 z" fill="' + A + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
+      '<rect x="76" y="55" width="12" height="12" rx="3.5" fill="' + B + '" stroke="rgba(0,0,0,.4)" stroke-width="1"/>' +
+      '<rect x="112" y="55" width="12" height="12" rx="3.5" fill="' + B + '" stroke="rgba(0,0,0,.4)" stroke-width="1"/>' +
+    '</g>' +
+    /* La pelota, dibujada con el mismo trazo que el arco. */
+    '<g class="pp-pel">' +
+      '<circle cx="100" cy="112" r="7" fill="#f2f4f8" stroke="rgba(0,0,0,.45)" stroke-width="1"/>' +
+      '<path d="M100 107.4 l4.4 3.2 -1.7 5.2 h-5.4 l-1.7 -5.2 z" fill="#16181d"/>' +
+      '<path class="pp-cost" d="M100 104.8 v2.6 M104.4 110.6 l2.5 -.8 M102.7 115.8 l1.6 2.2 ' +
+        'M97.3 115.8 l-1.6 2.2 M95.6 110.6 l-2.5 -.8"/>' +
+    '</g>' +
+    zonas +
+  '</svg>';
+}
+
+/* La animación del tiro: sale el arquero, después la pelota. En ese orden a
+   propósito —se ve el duelo— y no al revés. */
+async function animarPenal(wrap, mio, suyo){
+  const svg = wrap.querySelector('.parco');
+  if(!svg) return;
+  const atajado = mio === suyo;
+  svg.querySelectorAll('.pp-zona').forEach((z, i) => {
+    z.classList.add('off');
+    if(i === mio) z.classList.add('sel');
+  });
+  const arq = svg.querySelector('.pp-arq'), pel = svg.querySelector('.pp-pel');
+  arq.classList.remove('idle');
+  const ca = PENAL_Z[suyo], cp = PENAL_Z[mio];
+  arq.style.transform = 'translate(' + (ca.x - 100) + 'px,' + (ca.y - 62) + 'px)' +
+                        ' rotate(' + ((ca.x - 100) * .17) + 'deg)';
+  await wait(130);
+  pel.style.transform = 'translate(' + (cp.x - 100) + 'px,' + (cp.y - 112) + 'px)' +
+                        (atajado ? ' scale(.8)' : '');
+  await wait(520);
+  if(!atajado) svg.querySelector('.pp-gol').classList.add('on');
+  await wait(300);
+}
+
+/* Cinco por equipo, como en la cancha. En muerte súbita la pizarra sigue
+   mostrando cinco huecos: lo que importa ahí es el tiro en curso. */
+const TANDA_TIROS = 5;
+
 function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo){
   return new Promise(resolve => {
-    const LADOS = ['izq','medio','der'];
     /* `ronda: 0` es un penal **suelto** —el de la posibilidad de gol dentro del
        partido—, no uno de la tanda. Ahí no va ni el «1 DE 5» ni el tablero de
        la serie: no hay serie. */
@@ -7266,22 +7386,17 @@ function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo){
         '<div class="t">' + (suelto ? '🎯 PENAL'
                                     : yoPateo ? 'PATEA ' + eqs[quien].club : 'ATAJÁS VOS') + '</div>' +
         (suelto ? '' : tandaHTML(eqs, tiros, primero, quien)) +
-        '<div class="arco">' +
-          '<div class="arq" id="arqP">🧤</div>' +
-          '<div class="pelota" id="pelP">⚽</div>' +
-        '</div>' +
+        arcoPenalHTML(eqs[1 - quien].escudo) +
         '<div class="s">' + (yoPateo ? '¿A QUÉ PALO LA MANDÁS?' : '¿A QUÉ PALO VOLÁS?') + '</div>' +
-        '<div class="palos">' +
-          '<button class="palo" data-p="0">⬅</button>' +
-          '<button class="palo" data-p="1">⬆</button>' +
-          '<button class="palo" data-p="2">➡</button>' +
-        '</div>' +
+        '<div class="pp-hint">tocá adentro del arco</div>' +
       '</div>';
     document.body.appendChild(wrap);
 
-    wrap.querySelectorAll('.palo').forEach(btn => {
+    let tirado = false;
+    wrap.querySelectorAll('.pp-zona').forEach(btn => {
       btn.onclick = async () => {
-        const mio = +btn.dataset.p, suyo = rnd(3);
+        if(tirado) return; tirado = true;
+        const mio = +btn.dataset.z, suyo = rnd(3);
         /* Pateando: el palo es tuyo y el arquero adivina.
            Atajando: el palo es el de tu arquero y el rival elige adónde tira. */
         const paloPelota = yoPateo ? mio : suyo;
@@ -7289,21 +7404,7 @@ function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo){
         const atajado = paloPelota === paloArquero;
         const conv = !atajado;                      // convierte el que patea
 
-        wrap.querySelectorAll('.palo').forEach(b => {
-          b.disabled = true;
-          if(+b.dataset.p === mio) b.classList.add('elegido');
-        });
-
-        // los dos vuelan a su palo; si coinciden, la pelota queda en el guante
-        wrap.querySelector('#arqP').className  = 'arq va-' + LADOS[paloArquero];
-        wrap.querySelector('#pelP').className  = 'pelota va-' + LADOS[paloPelota] +
-                                                 (atajado ? ' atajada' : '');
-        /* El arco reacciona: si entró, la red se infla en el palo donde fue;
-           si la atajaron, el guante tiembla por el impacto. */
-        const arco = wrap.querySelector('.arco');
-        arco.style.setProperty('--x', ['22%','50%','78%'][paloPelota]);
-        setTimeout(() => arco.classList.add(atajado ? 'atajado' : 'gol'), 380);
-        await wait(atajado ? 980 : 860);
+        await animarPenal(wrap, paloPelota, paloArquero);
 
         /* El cartel se lee siempre desde tu lado: verde lo que te conviene,
            rojo lo que no. Pateando, gol es verde; atajando, gol es rojo. */
@@ -7336,17 +7437,29 @@ function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo){
    sorteo, el marcador se leería invertido justo cuando el rival gana la moneda.
    Al que le toca patear se le marca la flecha. */
 function tandaHTML(eqs, tiros, primero, turnoDe){
-  const fila = i =>
-    '<div class="tanda-f' + (turnoDe === i ? ' patea' : '') + '">' +
-      '<span class="tanda-nm">' + (turnoDe === i ? '▸ ' : '') + eqs[i].club + '</span>' +
-      '<span class="tanda-p">' +
-        tiros[i].map(t => t
-          ? '<i class="ok" title="gol">⚽</i>'
-          : '<i class="no" title="errado">✖</i>').join('') +
-      '</span>' +
-      '<b>' + tiros[i].filter(Boolean).length + '</b>' +
+  /* **Los cinco tiros, siempre a la vista.** Antes se dibujaba un ⚽ o una ✖
+     por tiro *ya pateado*: no se veía cuántos quedaban, que en una tanda es la
+     mitad de la información —«le queda uno y va perdiendo» es todo el drama—.
+
+     Ahora van los cinco huecos de cada equipo desde el primer tiro: verde el
+     que entró, tachado el que erró, vacío el que falta, y el que se está por
+     patear late en dorado. */
+  const fila = i => {
+    const huecos = [];
+    for(let k = 0; k < TANDA_TIROS; k++){
+      const t = tiros[i][k];
+      const cls = t === true ? ' gol'
+                : t === false ? ' fallo'
+                : (turnoDe === i && k === tiros[i].length ? ' ahora' : '');
+      huecos.push('<span class="pz-t' + cls + '"></span>');
+    }
+    return '<div class="pz-f' + (turnoDe === i ? ' turno' : '') + '">' +
+      '<span class="pz-nm">' + (turnoDe === i ? '▸ ' : '') + eqs[i].club + '</span>' +
+      '<span class="pz-tiros">' + huecos.join('') + '</span>' +
+      '<b class="pz-n">' + tiros[i].filter(t => t === true).length + '</b>' +
     '</div>';
-  return '<div class="tanda">' + fila(0) + fila(1) + '</div>';
+  };
+  return '<div class="pizarra">' + fila(0) + fila(1) + '</div>';
 }
 
 /* El resumen final de la tanda, antes de volver al resultado del partido. */
@@ -8555,38 +8668,22 @@ function tirarPenal(){
       '<div class="sit penal">' +
         '<div class="p-emp">EMPATE <b>' + G.gU + ' - ' + G.gC + '</b></div>' +
         '<div class="t">PENAL<br>DEFINITORIO</div>' +
-        '<div class="arco">' +
-          '<div class="arq" id="arq">🧤</div>' +
-          '<div class="pelota" id="pel">⚽</div>' +
-        '</div>' +
+        arcoPenalHTML(G.escudoRival) +
         '<div class="s">¿A DÓNDE LA PONÉS?</div>' +
-        '<div class="palos">' +
-          PALOS.map(p => '<button class="palo" data-k="' + p.key + '">' +
-            '<span class="pi">' + p.ico + '</span>' +
-            '<span class="pn">' + p.nm + '</span></button>').join('') +
-        '</div>' +
+        '<div class="pp-hint">tocá adentro del arco</div>' +
       '</div>';
     document.body.appendChild(wrap);
 
-    wrap.querySelectorAll('.palo').forEach(btn => {
+    let tirado = false;
+    wrap.querySelectorAll('.pp-zona').forEach(btn => {
       btn.onclick = async () => {
-        const elegido = PALOS.find(p => p.key === btn.dataset.k);
-        const arquero = PALOS[rnd(PALOS.length)];
-        const esGol   = elegido.key !== arquero.key;
+        if(tirado) return; tirado = true;
+        const i = +btn.dataset.z, j = rnd(PALOS.length);
+        const elegido = PALOS[i], arquero = PALOS[j];
+        const esGol   = i !== j;
 
-        // se bloquean los botones y se marca el palo elegido
-        wrap.querySelectorAll('.palo').forEach(b => {
-          b.disabled = true;
-          if(b.dataset.k === btn.dataset.k) b.classList.add('elegido');
-        });
         wrap.querySelector('.s').textContent = 'LA PONÉS ' + elegido.nm + '…';
-
-        // suspenso: la pelota sale y el arquero se tira
-        const pel = wrap.querySelector('#pel'), arq = wrap.querySelector('#arq');
-        pel.classList.add('va-' + elegido.key);
-        await wait(320);
-        arq.classList.add('va-' + arquero.key);
-        await wait(700);
+        await animarPenal(wrap, i, j);
 
         const box = wrap.querySelector('.sit.penal');
         /* `salvado` = te fue bien, `gol` = te fue mal. Estaba al revés: acá el
