@@ -2648,7 +2648,20 @@ body{padding-bottom:36px}
   }
   .lado,.centro,.fila-accion,.fa-izq,.fa-meds{display:contents}
 
-  #panelItems{grid-area:items;min-width:0;padding:0;background:none;border:none}
+  /* El `backdrop-filter` que hereda del panel **crea un contexto de
+     apilamiento**, y ahí adentro quedaba encerrado el `z-index:200` de la
+     ficha: hacia afuera el panel competía como un `auto` cualquiera y la mesa,
+     que viene después en el DOM, le ganaba. Acá encima es inútil, porque el
+     panel va sin fondo y estaría difuminando algo que no existe.
+
+     El `z-index` va acompañado de `position:relative` a propósito: sobre un
+     elemento estático se ignora, que es justo lo que le pasaba a `.lado` en
+     mobile. */
+  #panelItems{
+    grid-area:items;min-width:0;padding:0;background:none;border:none;
+    backdrop-filter:none;-webkit-backdrop-filter:none;
+    position:relative;z-index:20;
+  }
   #panelPlantel{grid-area:stats;justify-self:end}
   /* El ancla envuelve al cartel, así que el hijo del grid pasa a ser ella.
      Se nombran las dos: antes de que el jugador abra la ficha por primera vez
