@@ -4332,9 +4332,18 @@ lee peor, no mejor.
 
 ### Y el cartel, centrado en mobile
 
-En mobile el cartel esconde la descripción y queda solo el título y el botón,
-pero el título seguía **pegado a la izquierda** con todo el hueco a la derecha:
-`.gb-txt` es `flex:1` y se comía el ancho sobrante sin usarlo. Un
-`text-align:center` en el mismo bloque donde se esconde `.gb-s` y ocupa el
-ancho parejo. En desktop la descripción vuelve, y con ella la alineación a la
-izquierda.
+En mobile el cartel esconde la descripción y quedan solo el ícono, el título y
+el botón. Ahora los tres van **juntos en el medio**, como un grupo.
+
+El que lo impedía era `.gb-txt{flex:1}`. Se quedaba con **todo** el ancho
+sobrante, y eso hacía dos cosas a la vez: el título salía pegado a la izquierda
+de una caja enorme, y el botón USAR terminaba empujado contra el borde derecho,
+lejos del texto al que pertenece. Un `text-align:center` arreglaba lo primero
+pero dejaba el botón donde estaba —el hueco seguía existiendo, solo que ahora
+adentro de la caja del texto—.
+
+La caja pasa a `flex:0 1 auto`: mide lo que mide el texto, no más, y el
+`justify-content:center` que el cartel ya tenía centra a los tres como un solo
+bloque. En 390px quedan 110px de aire parejo a cada lado; en 320px, 75px, con el
+título todavía en una sola línea. En desktop la descripción vuelve, `.gb-txt`
+recupera su `flex:1` y con él la alineación a la izquierda de siempre.

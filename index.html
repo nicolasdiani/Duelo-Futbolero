@@ -2720,11 +2720,16 @@ body{padding-bottom:36px}
   .no-items{font-size:9px;grid-column:1/-1}
 
   .gol-banner{width:100%;min-width:0;padding:6px 9px;gap:7px;justify-content:center;max-width:none}
-  /* Acá el cartel esconde la descripción y queda solo el título y el botón,
-     pero el título seguía pegado a la izquierda con el hueco a la derecha:
-     `.gb-txt` es `flex:1` y se comía todo el ancho sobrante. */
+  /* Acá el cartel esconde la descripción y queda solo el ícono, el título y el
+     botón, y los tres van **juntos en el medio**.
+
+     El que lo impedía era `.gb-txt{flex:1}`: se quedaba con todo el ancho
+     sobrante, así que el título salía centrado dentro de esa caja enorme pero
+     el botón USAR terminaba pegado al borde derecho, lejos. Sin `flex:1` la
+     caja mide lo que mide el texto y el `justify-content:center` del cartel
+     centra a los tres como un solo grupo. */
   .gol-banner .gb-s{display:none}
-  .gol-banner .gb-txt{text-align:center}
+  .gol-banner .gb-txt{flex:0 1 auto;text-align:center}
   .gol-banner .gb-ico{font-size:16px}
   .gol-banner .gb-t{font-size:9.4px;letter-spacing:.3px;line-height:1.1}
   .gol-banner .gb-go{padding:3px 8px;font-size:9.4px;flex:0 0 auto}
