@@ -2960,6 +2960,17 @@ body{padding-bottom:36px}
   .row{display:flex;gap:6px;align-items:stretch}
   .row .cell{min-height:126px;overflow:visible}
 
+  /* **El resaltado, un punto más grueso acá.** Son los mismos 2px que en mobile,
+     pero la carta de desktop mide 215px de alto contra 136: el mismo borde pesa
+     menos sobre una superficie más grande y el resaltado se leía flojo. Con 3px
+     recupera la presencia que tiene en el celular sin llegar a su peso relativo,
+     que a este tamaño encerraría la carta.
+
+     No corre nada de lugar: el `box-sizing:border-box` global hace que el borde
+     crezca hacia adentro. */
+  .row.hl .cell:not(.empty):not(.lock),
+  .cell.colhl:not(.empty):not(.lock){ border-width:3px }
+
   /* Los paneles laterales, con sus etiquetas completas. */
   #panelEquipo,#panelPlantel,#panelItems{display:flex;flex-direction:column;gap:9px}
   .item-list{display:flex;flex-direction:column;gap:6px}
