@@ -103,7 +103,12 @@ body::after{bottom:3%;height:88px;border-bottom:none}
 *{max-width:100%}
 html,body{overflow-x:hidden}
 img{height:auto}
-.c-art{max-width:none}          /* esta sí llena la carta, es su fondo */
+/* Las que van **a sangre**: se salen del padding de su tarjeta con márgenes
+   negativos, y el `max-width:100%` de arriba se los anulaba —quedaban del
+   ancho del contenido y pegadas a la izquierda, con el hueco del padding
+   visible a la derecha—. Es el mismo caso que `.c-art`: no desbordan la
+   pantalla, llenan su propia tarjeta. */
+.c-art,.a-foto,.mam-art{max-width:none}
 
 /* ---------- LA MARQUESINA: el partido, arriba y al medio ---------- */
 .marquesina{
@@ -7262,6 +7267,11 @@ async function finDeJugadaDuelo(){
    partido. Cobrarla ahora es la última chance de cambiar el marcador;
    guardarla la lleva entera al próximo partido —pero solo si ganás este. */
 function descuento(){
+  // el mismo promedio que el aviso de racha llena, calculado y no escrito
+  const esperadoFavor = Math.round(
+    SIT_FAVOR.reduce((a, x) => a + x.peso * x.p, 0) /
+    SIT_FAVOR.reduce((a, x) => a + x.peso, 0) * 100);
+
   const empata = G.gU === G.gC, pierde = G.gU < G.gC;
   // la nota cambia según cómo vayas: es lo que decide entre las dos opciones
   const nota = pierde
@@ -7286,7 +7296,7 @@ function descuento(){
         '<div class="a-ops">' +
           '<button class="a-op btn gol" id="dJugar">' +
             '<div class="oi">⚽</div><div class="on">JUGARLA</div>' +
-            '<div class="od">Una última situación de gol al 38%, antes del pitazo. Gasta la racha entera.</div>' +
+            '<div class="od">Una última situación de gol al ' + esperadoFavor + '%, antes del pitazo. Gasta la racha entera.</div>' +
           '</button>' +
           '<button class="a-op btn col" id="dGuardar">' +
             '<div class="oi">🎒</div><div class="on">GUARDARLA</div>' +
@@ -7772,6 +7782,14 @@ function fotoRacha(titulo){
    racha queda cargada hasta que uses una —recién ahí se vacía—, así que la
    decisión se toma con la mesa delante y no a las apuradas. */
 function avisoRacha(){
+  /* El promedio se calcula, no se escribe: los dos textos decían **38%**, que
+     era el número de cuando la jugada clara salía el 8% y el tiro libre el 25%.
+     Desde que las cinco pesan igual son 51, y la ficha de la mesa ya lo decía
+     bien — así que el aviso prometía una cosa y la ficha otra. */
+  const esperadoFavor = Math.round(
+    SIT_FAVOR.reduce((a, x) => a + x.peso * x.p, 0) /
+    SIT_FAVOR.reduce((a, x) => a + x.peso, 0) * 100);
+
   return new Promise(resolve => {
     const wrap = document.createElement('div');
     wrap.className = 'sit-flash';
@@ -7786,7 +7804,7 @@ function avisoRacha(){
         '<div class="a-ops">' +
           '<div class="a-op gol solo">' +
             '<div class="oi">⚽</div><div class="on">SITUACIÓN DE GOL</div>' +
-            '<div class="od">Una llegada clara al 38%, sin riesgo de que te lastimen. Gasta la racha entera y una jugada.</div>' +
+            '<div class="od">Una llegada clara al ' + esperadoFavor + '%, sin riesgo de que te lastimen. Gasta la racha entera y una jugada.</div>' +
           '</div>' +
         '</div>' +
         '<div class="a-s">No hace falta usarla ahora: queda disponible hasta que la gastes.</div>' +
