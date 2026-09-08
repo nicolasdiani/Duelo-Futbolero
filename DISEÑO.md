@@ -1380,6 +1380,39 @@ cuando frenan.
 La regla común del dibujo: **la pelota va maciza y el decorado en línea**. El
 ojo sigue a la pelota, y el arco, el guante o la barrera no le compiten.
 
+### Los dos avisos de racha llena
+
+**RACHA LLENA** y **TIEMPO DE DESCUENTO** son el mismo momento contado dos
+veces —se te llenaron los cuatro rayos—, y hasta ahora se anunciaban con un
+emoji de 50px sobre azul liso. Ninguno mostraba la racha que acabás de llenar,
+ni la ilustración que el juego ya tenía guardada para eso: la carta **RACHA
+FULL** (`noche` en el mazo), que no aparecía en ningún otro lado.
+
+Los dos pasan al molde del pop-up del mini juego: **la foto a sangre como
+cabecera, con el título encima del degradado**, y abajo los cuatro rayos
+encendidos. No estrena un lenguaje nuevo — es el mismo que el jugador ya vio
+cuando le tocó un empate de duelo.
+
+Los rayos son los mismos del medidor del panel, misma imagen y mismo orden,
+porque es ahí donde los vio llenarse: repetirlos en el cartel cierra el
+círculo. Laten escalonados, 90ms entre uno y otro.
+
+**La foto se sale del cartel con `--apx`**, que es el mismo padding que el
+aviso entra por los costados. Así no hay números que mantener a mano cuando el
+padding cambia de breakpoint.
+
+**Y el alto va contra `vh`** —`clamp(96px, 16vh, 170px)`— porque el cartel del
+descuento ya venía siendo el más largo de los avisos: trae marcador y dos
+opciones. Con una foto de alto fijo, en un 360x640 se pasaba 36px del hueco
+que deja el overlay, y como `.sit-flash` centra sin scrollear, lo que sobra no
+se corta: queda fuera de alcance. En desktop no pasaba porque ahí el aviso ya
+tenía su `max-height:88vh`.
+
+Ahora hay tope de alto también en mobile —la red de contención— y una
+compactación por alto de pantalla que hace que no haga falta usarla.
+Verificado en 320x568, 360x640, 390x844 y 1280x700: los dos entran enteros,
+sin scroll.
+
 ### Los mismos dibujos en los siete carteles
 
 Lo que arrancó en el tiro errado se extendió a **todos los carteles que
