@@ -1558,9 +1558,15 @@ Ahora tiene cartel, y junta las dos cosas:
 Si el máximo ya está en el piso, el cartel lo dice en vez de mentir.
 
 **Lo que viene** — las cinco cartas del rival, con el mismo cursor de sorteo
-que usa la ficha de la racha llena, en rojo. El botón recién se habilita
-cuando el sorteo frena, y la carta que se juega es **esa misma** (`yaElegida`),
-no un segundo sorteo a espaldas del jugador.
+que usa la ficha de la racha llena, en rojo. **El sorteo arranca con el botón,
+no con el cartel**: antes corría solo apenas aparecía y, para cuando terminabas
+de leer que te habías fundido, el cursor ya había pasado por las cinco y
+frenado. Ahora leés lo que perdiste, mirás las cinco, y recién cuando tocás
+A VER QUÉ PASA sale el sorteo — el mismo gesto que del lado tuyo, donde el
+cursor arranca al tocar USAR LA RACHA y no al abrir la ficha.
+
+La carta que se juega es **esa misma** (`yaElegida`), no un segundo sorteo a
+espaldas del jugador.
 
 #### Los dos lados juegan el mismo mazo
 

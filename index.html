@@ -8305,17 +8305,28 @@ function fundidaRival(cayoMax){
             '</div>';
           }).join('') +
         '</div>' +
-        '<button class="cta" id="fuBtn" disabled>SORTEANDO…</button>' +
+        '<button class="cta" id="fuBtn">A VER QUÉ PASA</button>' +
       '</div>';
     document.body.appendChild(wrap);
 
-    (async () => {
+    /* **El sorteo arranca con el botón, no con el cartel.** Antes corría solo
+       apenas aparecía: para cuando terminabas de leer que te habías fundido, el
+       cursor ya había pasado por las cinco y frenado. El momento se perdía.
+
+       Ahora el cartel espera: leés lo que perdiste, mirás las cinco que puede
+       tocarle al rival, y recién cuando tocás el botón sale el sorteo. Es el
+       mismo gesto que del lado tuyo, donde el cursor arranca al tocar USAR LA
+       RACHA y no al abrir la ficha. */
+    const b = wrap.querySelector('#fuBtn');
+    b.onclick = async () => {
+      if(b.disabled) return;
+      b.disabled = true;
+      b.textContent = 'SORTEANDO…';
       const elegida = await sorteoGol(wrap, SIT_RIVAL);
-      const b = wrap.querySelector('#fuBtn');
-      b.disabled = false;
-      b.textContent = 'A VER QUÉ PASA';
-      b.onclick = () => { wrap.remove(); resolve(elegida); };
-    })();
+      await wait(620);              // un respiro para ver cuál salió
+      wrap.remove();
+      resolve(elegida);
+    };
   });
 }
 
