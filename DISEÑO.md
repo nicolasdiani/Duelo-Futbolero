@@ -1333,6 +1333,66 @@ reflejan: en **MANO A MANO** y **UNO CONTRA UNO** la pelota es tuya y ganás
 **esquivando** al rival —clavás o pasás—; en **LA MARCA** y **DEFENDER** la
 pelota es de él y ganás **adivinando** dónde va —robás o cortás—.
 
+### El que no entró
+
+Cuando una carta de porcentaje no convierte, sale un cartel corto que se va
+solo: el desenlace en grande y abajo lo que costó. Son **ocho cartas con
+cuatro frases cada una**, sorteadas — 32 frases en total.
+
+**El dibujo va con la frase, no con la carta.** Antes cada carta tenía un emoji
+fijo: el PENAL mostraba siempre 🧤 y después sorteaba entre ATAJA EL ARQUERO,
+SE VA AL PALO, LA MANDA AFUERA y AL TRAVESAÑO. En tres de los cuatro el arquero
+ni la tocaba, así que **el dibujo contradecía al texto la mitad de las veces**.
+
+Las 32 frases caen en diez desenlaces y cada frase se lleva el suyo:
+
+| Desenlace | Frases que lo usan |
+|---|---|
+| **Atajada** | ataja el arquero · ataja tu arquero · ¡atajado! |
+| **Descuelgue** | descuelga el arquero · descuelga tu arquero |
+| **Al palo** | se va al palo |
+| **Al travesaño** | al travesaño |
+| **Afuera** | la manda afuera · la tira afuera · se va alto · la manda a las nubes · se va largo |
+| **En la barrera** | en la barrera · en tu barrera |
+| **Despeje** | despeja la defensa · despeja tu defensa |
+| **Llega tarde** | llega tarde |
+| **Le pega mal** | le pega mal |
+| **Cabezazo** | cabezazo afuera |
+
+Son animaciones SVG, no emoji, y eso resuelve tres cosas de una:
+
+**Se miden en `em`**, así que heredan el `font-size` que el cartel ya tiene en
+cada breakpoint —42px en mobile, 58 en desktop— y el responsive que ya andaba
+sigue mandando sin una sola regla nueva de tamaño.
+
+**Se dibujan con `currentColor`**, así que el cartel les presta su color: el
+mismo dibujo sale rojo cuando el que erró fuiste vos y verde cuando erró el
+rival. No hay dos versiones de nada.
+
+**Corren una sola vez y quedan congeladas en el desenlace.** El cartel vive
+2,5s y se va: una animación en loop lo convertiría en un gif colgado. Por eso
+la coordenada que está escrita en el SVG es siempre **la que se lee bien
+quieta** — AFUERA tiene la pelota pasada por arriba del arco y no adentro,
+que detenida decía «gol»; y los tres botines (DESPEJE, LLEGA TARDE, LE PEGA
+MAL) tienen la pelota en tres lugares distintos para que no queden idénticos
+cuando frenan.
+
+La regla común del dibujo: **la pelota va maciza y el decorado en línea**. El
+ojo sigue a la pelota, y el arco, el guante o la barrera no le compiten.
+
+### El color se lee desde tu lado
+
+En los cinco carteles de desenlace del juego el color no cuenta lo que pasó en
+la cancha sino **cómo te afecta**: verde lo que te conviene, rojo lo que no.
+Por eso una pelota que no entra sale roja si era tuya y verde si era del rival,
+y es la misma regla que usan el latido de los medidores y el borde de las
+cartas resueltas.
+
+Había una sola excepción: **gastar la racha llena y errar la situación de gol**
+salía en gris. El argumento era que ahí no perdés aguante. Se corrigió a rojo:
+te comiste la racha entera y una jugada, es el peor resultado posible de esa
+decisión, y el gris lo contaba como si no hubiera pasado nada.
+
 ### La jugada se ve, no solo se lee
 
 **En el penal:**

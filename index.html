@@ -3606,6 +3606,215 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .menu-op{padding:6px 10px}
   .mo-txt b{font-size:11.5px}
 }
+
+/* ================= LOS DESENLACES DEL QUE NO ENTRÓ =================
+   Reemplazan los emoji de los carteles de tiro errado. Diez dibujos, uno por
+   desenlace, repartidos por **frase** y no por carta —el reparto vive en
+   `FALLOS`—, así el guante no puede volver a salir con AL TRAVESAÑO.
+
+   Tres reglas los sostienen:
+
+   1. **Se miden en `em`.** El SVG no trae tamaño propio: hereda el
+      `font-size` que `.fi` ya tiene en cada breakpoint —42px en mobile, 58 en
+      desktop—, así que el responsive que ya andaba sigue mandando y no hubo
+      que tocar ninguna regla de tamaño.
+   2. **Se dibujan con `currentColor`.** El cartel les presta su color: rojo
+      cuando el que erró fuiste vos, verde cuando erró el rival. Un solo dibujo
+      para los dos casos.
+   3. **Corren una sola vez y quedan congelados en el impacto.** El cartel se
+      va solo a los 2,5s; una animación en loop lo convertiría en un gif
+      colgado. Con `forwards` el último fotograma es la foto del desenlace. */
+
+.gf.fallo .fi .fx{display:block;width:1em;height:1em;margin:0 auto;overflow:visible}
+.fx .fl{fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.fx .fn{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+/* La pelota maciza y el decorado en línea: el ojo sigue a la pelota. */
+.fx .pe{fill:currentColor;stroke:none}
+.fx .ten{opacity:.42}
+.fx .red{opacity:.28}
+.fx > *{animation-duration:1.15s;animation-fill-mode:forwards;animation-iteration-count:1}
+
+/* 1 · ATAJADA — la pelota entra y se clava en la palma. */
+@keyframes fx-ataja-pel{
+  0%  {transform:translate(17px,-15px);opacity:0}
+  12% {opacity:1}
+  55% {transform:translate(0,0)}
+  68% {transform:translate(1.6px,1px)}
+  100%{transform:translate(1.6px,1px)}
+}
+@keyframes fx-ataja-gu{
+  0%,54%{transform:translate(0,0)}
+  60%   {transform:translate(-2.6px,1.6px)}
+  76%   {transform:translate(0,0)}
+  100%  {transform:translate(0,0)}
+}
+@keyframes fx-chispa{
+  0%,53%{opacity:0;transform:scale(.4)}
+  60%   {opacity:1;transform:scale(1)}
+  88%   {opacity:0;transform:scale(1.35)}
+  100%  {opacity:0;transform:scale(1.35)}
+}
+.fx-atajada .pe{animation-name:fx-ataja-pel;animation-timing-function:cubic-bezier(.3,.7,.4,1)}
+.fx-atajada .gu{animation-name:fx-ataja-gu;animation-timing-function:ease-out}
+.fx-atajada .ch{animation-name:fx-chispa;animation-timing-function:ease-out;transform-origin:39px 8px}
+
+/* 2 · DESCUELGUE — el centro baja y las dos manos se cierran. */
+@keyframes fx-desc-pel{
+  0%  {transform:translate(0,-26px);opacity:0}
+  12% {opacity:1}
+  58% {transform:translate(0,0)}
+  100%{transform:translate(0,0)}
+}
+@keyframes fx-desc-i{0%,52%{transform:translate(-7px,0)}72%{transform:translate(0,0)}100%{transform:translate(0,0)}}
+@keyframes fx-desc-d{0%,52%{transform:translate(7px,0)}72%{transform:translate(0,0)}100%{transform:translate(0,0)}}
+.fx-descuelgue .pe{animation-name:fx-desc-pel;animation-timing-function:cubic-bezier(.35,.6,.4,1)}
+.fx-descuelgue .gi{animation-name:fx-desc-i;animation-timing-function:cubic-bezier(.4,1.6,.5,1)}
+.fx-descuelgue .gd{animation-name:fx-desc-d;animation-timing-function:cubic-bezier(.4,1.6,.5,1)}
+
+/* 3 · AL PALO — vibra el palo y la pelota sale escupida. */
+@keyframes fx-palo-pel{
+  0%  {transform:translate(24px,6px);opacity:0}
+  12% {opacity:1}
+  48% {transform:translate(0,0)}
+  56% {transform:translate(2px,0)}
+  100%{transform:translate(20px,-12px)}
+}
+@keyframes fx-palo-vibra{
+  0%,46%{transform:scaleX(1)}
+  53%   {transform:scaleX(1.6)}
+  70%   {transform:scaleX(1)}
+  100%  {transform:scaleX(1)}
+}
+.fx-palo .pe{animation-name:fx-palo-pel;animation-timing-function:cubic-bezier(.25,.6,.4,1)}
+.fx-palo .po{animation-name:fx-palo-vibra;animation-timing-function:ease-out;transform-origin:17px 24px}
+
+/* 4 · AL TRAVESAÑO — sube, golpea y cae del lado de afuera. */
+@keyframes fx-trav-pel{
+  0%  {transform:translate(0,20px);opacity:0}
+  12% {opacity:1}
+  46% {transform:translate(0,0)}
+  54% {transform:translate(0,1.6px)}
+  100%{transform:translate(9px,19px)}
+}
+@keyframes fx-trav-vibra{
+  0%,44%{transform:scaleY(1)}
+  52%   {transform:scaleY(2)}
+  70%   {transform:scaleY(1)}
+  100%  {transform:scaleY(1)}
+}
+.fx-travesano .pe{animation-name:fx-trav-pel;animation-timing-function:cubic-bezier(.25,.55,.4,1)}
+.fx-travesano .br{animation-name:fx-trav-vibra;animation-timing-function:ease-out;transform-origin:24px 15px}
+
+/* 5 · AFUERA — la parábola por encima del arco. Es el desenlace de seis frases.
+   Ojo con el sentido: acá la pelota **arranca corrida y termina en su
+   coordenada del SVG**, al revés que las otras. Es que su posición de reposo
+   tiene que ser la de afuera del arco: antes descansaba adentro, y aunque la
+   animación se veía bien, el fotograma quieto decía «gol». Lo mismo se hizo
+   con DESPEJE y LLEGA TARDE, para que los tres botines no queden idénticos
+   cuando están detenidos. */
+@keyframes fx-afuera{
+  0%  {transform:translate(-27px,23px);opacity:0}
+  10% {opacity:1}
+  35% {transform:translate(-19px,2px)}
+  65% {transform:translate(-11px,-7px)}
+  100%{transform:translate(0,0)}
+}
+.fx-afuera .pe{animation-name:fx-afuera;animation-timing-function:cubic-bezier(.3,.5,.5,1)}
+
+/* 6 · EN LA BARRERA — los tres saltan juntos y la pelota vuelve. */
+@keyframes fx-barr-pel{
+  0%  {transform:translate(23px,-9px);opacity:0}
+  12% {opacity:1}
+  46% {transform:translate(0,0)}
+  54% {transform:translate(1px,0)}
+  100%{transform:translate(17px,8px)}
+}
+@keyframes fx-barr-tiembla{
+  0%,44%{transform:translate(0,0)}
+  52%   {transform:translate(-1.8px,0)}
+  62%   {transform:translate(1.1px,0)}
+  76%   {transform:translate(0,0)}
+  100%  {transform:translate(0,0)}
+}
+.fx-barrera .pe{animation-name:fx-barr-pel;animation-timing-function:cubic-bezier(.25,.6,.4,1)}
+.fx-barrera .mu{animation-name:fx-barr-tiembla;animation-timing-function:ease-out}
+
+/* 7 · DESPEJE — la pierna cruza y la manda lejos. */
+@keyframes fx-desp-bota{
+  0%,26%{transform:rotate(-38deg)}
+  46%   {transform:rotate(16deg)}
+  100%  {transform:rotate(-14deg)}
+}
+@keyframes fx-desp-pel{
+  0%,38%{transform:translate(-16px,22px)}
+  100%  {transform:translate(0,0)}
+}
+.fx-despeje .bo{animation-name:fx-desp-bota;animation-timing-function:cubic-bezier(.4,.1,.3,1);transform-origin:13px 33px}
+.fx-despeje .pe{animation-name:fx-desp-pel;animation-timing-function:cubic-bezier(.15,.7,.4,1)}
+
+/* 8 · LLEGA TARDE — la pelota cruza y la pierna entra atrás, sin tocarla. */
+@keyframes fx-tarde-pel{
+  0%  {transform:translate(-38px,0);opacity:0}
+  14% {opacity:1}
+  100%{transform:translate(0,0)}
+}
+@keyframes fx-tarde-bota{
+  0%,42%{transform:translate(-14px,0) rotate(-14deg);opacity:0}
+  56%   {opacity:1}
+  100%  {transform:translate(0,0) rotate(10deg);opacity:1}
+}
+.fx-tarde .pe{animation-name:fx-tarde-pel;animation-timing-function:cubic-bezier(.2,.6,.5,1)}
+.fx-tarde .bo{animation-name:fx-tarde-bota;animation-timing-function:cubic-bezier(.3,.5,.4,1);transform-origin:16px 34px}
+
+/* 9 · LE PEGA MAL — se deforma en el impacto y sale bailando. */
+@keyframes fx-mal-bota{
+  0%,22%{transform:rotate(-30deg)}
+  40%   {transform:rotate(12deg)}
+  100%  {transform:rotate(-8deg)}
+}
+@keyframes fx-mal-pel{
+  0%,32%{transform:translate(0,0) scale(1)}
+  38%   {transform:translate(2px,0) scale(1.2,.8)}
+  52%   {transform:translate(8px,-3px) scale(1)}
+  66%   {transform:translate(13px,2px)}
+  82%   {transform:translate(17px,-2px)}
+  100%  {transform:translate(21px,3px)}
+}
+.fx-pegamal .bo{animation-name:fx-mal-bota;animation-timing-function:cubic-bezier(.4,.1,.3,1);transform-origin:12px 33px}
+.fx-pegamal .pe{animation-name:fx-mal-pel;animation-timing-function:linear}
+
+/* 10 · CABEZAZO AFUERA — cabecea y se le va por arriba del travesaño. */
+@keyframes fx-cab-pel{
+  0%  {transform:translate(11px,12px);opacity:0}
+  12% {opacity:1}
+  46% {transform:translate(0,0)}
+  100%{transform:translate(14px,-17px)}
+}
+@keyframes fx-cab-nuca{
+  0%,42%{transform:rotate(0)}
+  56%   {transform:rotate(-11deg)}
+  100%  {transform:rotate(-3deg)}
+}
+.fx-cabezazo .pe{animation-name:fx-cab-pel;animation-timing-function:cubic-bezier(.3,.6,.4,1)}
+.fx-cabezazo .cb{animation-name:fx-cab-nuca;animation-timing-function:ease-out;transform-origin:16px 40px}
+
+/* Sin animación, el dibujo queda en el fotograma del contacto: las
+   coordenadas del SVG ya están puestas ahí, así que no hace falta nada más
+   que apagarlas. */
+@media (prefers-reduced-motion:reduce){
+  .fx > *{animation:none !important}
+}
+
+/* ---- Y LA ÚNICA EXCEPCIÓN DE COLOR QUE QUEDABA ----
+   La regla del juego es que el color se lee **desde tu lado**: verde lo que te
+   conviene, rojo lo que no. La cumplían los cinco carteles de desenlace menos
+   uno: gastar la racha llena y errar la situación de gol salía en gris, como
+   si no hubiera pasado nada. Es el peor resultado posible de esa decisión
+   —te comiste la racha entera y una jugada— así que va en rojo con el resto. */
+.sit.resuelta.salvado.lado-favor{
+  border-color:var(--red);box-shadow:0 0 60px rgba(255,59,82,.3);
+}
+.sit.resuelta.salvado.lado-favor .t{color:var(--red)}
 </style>
 </head>
 <body>
@@ -7218,25 +7427,168 @@ function situacionGol(lado, yaElegida){
    situación tiene varios desenlaces posibles y se sortea uno solo por sabor
    —no cambian nada del resultado, que ya se decidió—. El cartel recuerda el
    efecto: errar vos cuesta aguante, que erre el rival te carga la racha. */
+/* ---------------- LO QUE PASÓ CUANDO NO ENTRÓ ----------------
+   **El dibujo va con la frase, no con la carta.** Antes cada carta tenía un
+   emoji fijo y sorteaba una de sus cuatro frases, así que el PENAL mostraba
+   siempre un guante y la mitad de las veces lo acompañaba con AL TRAVESAÑO o
+   SE VA AL PALO —donde el arquero ni la tocó—. El dibujo contradecía al texto
+   una de cada dos.
+
+   Las 32 frases del juego caen en **diez desenlaces**, y cada frase se lleva
+   el suyo. Así ya no hay forma de que se contradigan.
+
+   El desenlace es una animación SVG y no un emoji: se dibuja con
+   `currentColor`, o sea que el cartel le presta su color —rojo si erraste vos,
+   verde si erró el rival— sin necesidad de dos versiones de nada. */
 const FALLOS = {
-  penal:    { ico:'🧤', txt:['ATAJA EL ARQUERO','SE VA AL PALO','LA MANDA AFUERA','AL TRAVESAÑO'] },
-  pasegol:  { ico:'😖', txt:['LA MANDA AFUERA','LLEGA TARDE','ATAJA EL ARQUERO','LE PEGA MAL'] },
-  corner:   { ico:'🙆', txt:['DESCUELGA EL ARQUERO','CABEZAZO AFUERA','SE VA LARGO','DESPEJA LA DEFENSA'] },
-  libre:    { ico:'🧱', txt:['EN LA BARRERA','AL TRAVESAÑO','SE VA ALTO','ATAJA EL ARQUERO'] },
-  penalC:   { ico:'🧤', txt:['¡ATAJADO!','SE VA AL PALO','LA TIRA AFUERA','AL TRAVESAÑO'] },
-  pasegolC: { ico:'😮‍💨', txt:['LA MANDA A LAS NUBES','LLEGA TARDE','ATAJA TU ARQUERO','LE PEGA MAL'] },
-  cornerC:  { ico:'💪', txt:['DESPEJA TU DEFENSA','CABEZAZO AFUERA','SE VA LARGO','DESCUELGA TU ARQUERO'] },
-  libreC:   { ico:'🧱', txt:['EN TU BARRERA','AL TRAVESAÑO','SE VA ALTO','ATAJA TU ARQUERO'] }
+  penal: [
+    { t:'ATAJA EL ARQUERO', g:'atajada'   },
+    { t:'SE VA AL PALO',    g:'palo'      },
+    { t:'LA MANDA AFUERA',  g:'afuera'    },
+    { t:'AL TRAVESAÑO',     g:'travesano' }
+  ],
+  pasegol: [
+    { t:'LA MANDA AFUERA',  g:'afuera'  },
+    { t:'LLEGA TARDE',      g:'tarde'   },
+    { t:'ATAJA EL ARQUERO', g:'atajada' },
+    { t:'LE PEGA MAL',      g:'pegamal' }
+  ],
+  corner: [
+    { t:'DESCUELGA EL ARQUERO', g:'descuelgue' },
+    { t:'CABEZAZO AFUERA',      g:'cabezazo'   },
+    { t:'SE VA LARGO',          g:'afuera'     },
+    { t:'DESPEJA LA DEFENSA',   g:'despeje'    }
+  ],
+  libre: [
+    { t:'EN LA BARRERA',    g:'barrera'   },
+    { t:'AL TRAVESAÑO',     g:'travesano' },
+    { t:'SE VA ALTO',       g:'afuera'    },
+    { t:'ATAJA EL ARQUERO', g:'atajada'   }
+  ],
+  penalC: [
+    { t:'¡ATAJADO!',      g:'atajada'   },
+    { t:'SE VA AL PALO',  g:'palo'      },
+    { t:'LA TIRA AFUERA', g:'afuera'    },
+    { t:'AL TRAVESAÑO',   g:'travesano' }
+  ],
+  pasegolC: [
+    { t:'LA MANDA A LAS NUBES', g:'afuera'  },
+    { t:'LLEGA TARDE',          g:'tarde'   },
+    { t:'ATAJA TU ARQUERO',     g:'atajada' },
+    { t:'LE PEGA MAL',          g:'pegamal' }
+  ],
+  cornerC: [
+    { t:'DESPEJA TU DEFENSA',   g:'despeje'    },
+    { t:'CABEZAZO AFUERA',      g:'cabezazo'   },
+    { t:'SE VA LARGO',          g:'afuera'     },
+    { t:'DESCUELGA TU ARQUERO', g:'descuelgue' }
+  ],
+  libreC: [
+    { t:'EN TU BARRERA',    g:'barrera'   },
+    { t:'AL TRAVESAÑO',     g:'travesano' },
+    { t:'SE VA ALTO',       g:'afuera'    },
+    { t:'ATAJA TU ARQUERO', g:'atajada'   }
+  ]
 };
+
+/* Los diez desenlaces, dibujados.
+   Regla común: **la pelota va maciza y el decorado en línea**. El ojo sigue a
+   la pelota, y el arco, el guante o la barrera no le compiten.
+
+   Van inline y no en el sprite de `<symbol>` de los ítems porque hay que
+   animarles las partes de adentro, y el CSS de la página no alcanza al árbol
+   sombra que crea un `<use>`. Como en pantalla hay un cartel a la vez, no se
+   duplica nada. */
+const GESTOS = {
+  atajada:
+    '<g class="gu">' +
+      '<path class="fl" d="M11 39V21a3.4 3.4 0 0 1 6.8 0v-4.4a3.4 3.4 0 0 1 6.8 0V21"/>' +
+      '<path class="fl" d="M24.6 21v-2.6a3.4 3.4 0 0 1 6.8 0V30a9 9 0 0 1-9 9h-4.4"/>' +
+      '<path class="fl" d="M11 27.5h20.4"/>' +
+    '</g>' +
+    '<g class="ch">' +
+      '<path class="fn" d="M34 9.5 36.5 7"/><path class="fn" d="M39 8V4.5"/>' +
+      '<path class="fn" d="M43 11.5 45.5 9.5"/>' +
+    '</g>' +
+    '<circle class="pe" cx="31.5" cy="16" r="5.4"/>',
+
+  descuelgue:
+    '<path class="fl gi" d="M13 40V25.5a3.2 3.2 0 0 1 6.4 0v-3.8a3.2 3.2 0 0 1 6.4 0"/>' +
+    '<path class="fl gd" d="M35 40V25.5a3.2 3.2 0 0 0-6.4 0v-3.8a3.2 3.2 0 0 0-6.4 0"/>' +
+    '<circle class="pe" cx="24" cy="15" r="5.6"/>',
+
+  palo:
+    '<path class="fl po" d="M17 6v36"/>' +
+    '<path class="fn ten" d="M17 42h9"/>' +
+    '<circle class="pe" cx="23.5" cy="24" r="5.4"/>',
+
+  travesano:
+    '<path class="fl br" d="M6 15h36"/>' +
+    '<path class="fn ten" d="M8 15v6M40 15v6"/>' +
+    '<circle class="pe" cx="24" cy="22" r="5.4"/>',
+
+  afuera:
+    '<path class="fl" d="M6 42V22h36v20"/>' +
+    '<path class="fn red" d="M6 32h36M15 22v20M24 22v20M33 22v20"/>' +
+    '<circle class="pe" cx="39" cy="13" r="5"/>',
+
+  barrera:
+    '<g class="mu ten">' +
+      '<circle class="fn" cx="13" cy="17" r="3.2"/>' +
+      '<path class="fn" d="M8.5 41V27a4.6 4.6 0 0 1 9.2 0v14"/>' +
+      '<circle class="fn" cx="24" cy="15.5" r="3.2"/>' +
+      '<path class="fn" d="M19.5 41V25.5a4.6 4.6 0 0 1 9.2 0V41"/>' +
+      '<circle class="fn" cx="35" cy="17" r="3.2"/>' +
+      '<path class="fn" d="M30.5 41V27a4.6 4.6 0 0 1 9.2 0v14"/>' +
+    '</g>' +
+    '<circle class="pe" cx="24" cy="32" r="5.2"/>',
+
+  despeje:
+    '<g class="bo">' +
+      '<path class="fl" d="M8 15v14a4 4 0 0 0 4 4h11a3 3 0 0 0 0-6h-5a2.5 2.5 0 0 1-2.5-2.5V15"/>' +
+    '</g>' +
+    '<circle class="pe" cx="41" cy="12" r="5"/>' +
+    '<path class="fn ten" d="M6 41h34"/>',
+
+  tarde:
+    '<g class="bo">' +
+      '<path class="fl" d="M6 20v10a4 4 0 0 0 4 4h11a3 3 0 0 0 0-6h-5a2.5 2.5 0 0 1-2.5-2.5V20"/>' +
+    '</g>' +
+    '<circle class="pe" cx="40" cy="31" r="5"/>' +
+    '<path class="fn ten" d="M4 41h40"/>',
+
+  pegamal:
+    '<g class="bo">' +
+      '<path class="fl" d="M7 16v13a4 4 0 0 0 4 4h10a3 3 0 0 0 0-6h-4.5a2.5 2.5 0 0 1-2.5-2.5V16"/>' +
+    '</g>' +
+    '<circle class="pe" cx="19" cy="34" r="5"/>' +
+    '<path class="fn ten" d="M5 41h38"/>',
+
+  cabezazo:
+    '<path class="fn ten" d="M4 12h40"/>' +
+    '<g class="cb">' +
+      '<circle class="fl" cx="16" cy="24" r="6"/>' +
+      '<path class="fl" d="M6 42v-4a10 10 0 0 1 20 0v4"/>' +
+    '</g>' +
+    '<circle class="pe" cx="27" cy="21" r="5"/>'
+};
+
+/* El SVG se dimensiona en `em`, así que hereda el `font-size` que ya tiene
+   `.fi` en cada breakpoint —42px en mobile, 58px en desktop— y los tamaños
+   que ya venían andando siguen mandando sin tocar una sola regla. */
+const icoFallo = g =>
+  '<svg class="fx fx-' + g + '" viewBox="0 0 48 48" aria-hidden="true">' + (GESTOS[g] || '') + '</svg>';
 
 async function flashFallo(tipo, favor){
   const F = FALLOS[tipo];
+  /* Se sortea la frase y el dibujo viene con ella, no del tipo de carta. */
+  const D = F[rnd(F.length)];
   const wrap = document.createElement('div');
   wrap.className = 'gol-flash';
   wrap.innerHTML =
     '<div class="gf fallo ' + (favor ? 'favor' : 'contra') + '">' +
-      '<div class="fi">' + F.ico + '</div>' +
-      '<div class="t">' + F.txt[rnd(F.txt.length)] + '</div>' +
+      '<div class="fi">' + icoFallo(D.g) + '</div>' +
+      '<div class="t">' + D.t + '</div>' +
       '<div class="s">' + (favor ? 'NO ENTRÓ &nbsp;·&nbsp; -1 <i class="ih"></i> AGUANTE'
                                  : 'NO ENTRÓ &nbsp;·&nbsp; +1 <i class="ir"></i> RACHA') + '</div>' +
     '</div>';
