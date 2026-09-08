@@ -1380,6 +1380,53 @@ cuando frenan.
 La regla común del dibujo: **la pelota va maciza y el decorado en línea**. El
 ojo sigue a la pelota, y el arco, el guante o la barrera no le compiten.
 
+### Cuando se te funde el equipo
+
+Quedarte sin aguante es el **único castigo permanente** del juego: perdés un
+corazón de máximo para todo lo que queda del campeonato. Hasta ahora eso
+pasaba en una línea de relato, y la llegada del rival aparecía ya sorteada,
+sin decir de dónde salía ni qué otras podían tocarle.
+
+Ahora tiene cartel, y junta las dos cosas:
+
+**Lo que perdiste** — los corazones que te quedan, con el que se fue tachado.
+Si el máximo ya está en el piso, el cartel lo dice en vez de mentir.
+
+**Lo que viene** — las cinco cartas del rival, con el mismo cursor de sorteo
+que usa la ficha de la racha llena, en rojo. El botón recién se habilita
+cuando el sorteo frena, y la carta que se juega es **esa misma** (`yaElegida`),
+no un segundo sorteo a espaldas del jugador.
+
+#### Los dos lados juegan el mismo mazo
+
+`SIT_RIVAL` tenía **cuatro** cartas —sin la jugada clara— y con pesos
+desparejos: 2/3/3/3, así que el penal salía el 18% de las veces y las otras
+tres el 27% cada una.
+
+| | Antes | Ahora |
+|---|---|---|
+| Cartas del rival | 4 | 5 |
+| Pesos | 2 / 3 / 3 / 3 | 1 / 1 / 1 / 1 / 1 |
+| Gol esperado | 38% | **51%** |
+| Peor caso para vos | penal al 50% | jugada clara, **entra sin sorteo** |
+
+Los dos lados son ahora el mismo mazo, con los mismos porcentajes y la misma
+chance de salir. Es más justo de leer —el cartel del rival muestra exactamente
+las mismas cinco cartas que el tuyo— pero **sube la dificultad**: cada vez que
+te fundís, el rival pasa de 38% a 51% de convertir, y una de cada cinco veces
+le toca la JUGADA CLARA, que no tiene salvada posible.
+
+Si el juego queda demasiado duro, la palanca es `peso` en `SIT_RIVAL`: bajarle
+el peso a `jugada` lo suaviza sin volver a desalinear las cartas.
+
+#### El arte del rival está pendiente
+
+Las cinco casillas usan por ahora el arte del lado tuyo. Del lado del rival la
+camiseta tendría que ser blanca, y hoy `penalC` y `libreC` son alias de las
+tuyas, `pasegolC` no tiene imagen y solo `cornerC` tiene arte propio. En la
+mesa se disimula porque las cartas están lejos; **juntas en un cartel se
+nota**. Se cambia cuando estén las imágenes.
+
 ### La ficha de posibilidad de gol
 
 Las cinco casillas mostraban un emoji y un porcentaje. Midiéndola apareció el

@@ -4185,6 +4185,80 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .fg-art .mj-ico{font-size:7.4px}
   .fg-mini{padding:4px 3px 5px}
 }
+
+/* ============ EL CARTEL DE LA FUNDIDA ============
+   Quedarte sin aguante es el único castigo permanente del juego —perdés un
+   corazón de máximo para todo el campeonato— y pasaba en una línea de relato.
+   Ahora tiene cartel, y adentro va también el sorteo de la llegada del rival,
+   que hasta acá aparecía ya resuelta sin decir de dónde salía.
+
+   Reusa las casillas de la ficha de racha llena (`.fg-mini`) y su mismo
+   cursor de sorteo: es el mismo gesto de los dos lados, en rojo. */
+.sit.fundida{border-color:var(--red);box-shadow:0 0 60px rgba(255,59,82,.3)}
+.sit.fundida .t{color:var(--red)}
+.sit.fundida .sit-tag{color:rgba(255,59,82,.75)}
+
+/* Los corazones que quedan, y el que se fue tachado. */
+.fu-hearts{display:flex;justify-content:center;align-items:center;gap:9px;margin:12px 0 4px}
+.fu-hearts img,.fu-hearts .ih{width:32px;height:32px}
+.fu-ida{position:relative;display:inline-flex;opacity:.28;filter:grayscale(.7)}
+.fu-ida::after{
+  content:'';position:absolute;left:-4px;right:-4px;top:50%;height:2px;
+  background:var(--red);transform:rotate(-20deg);border-radius:2px;
+}
+
+.fu-linea{height:1px;background:var(--line);margin:15px -14px}
+.fu-ahora{
+  font-family:var(--txt);font-weight:700;font-size:11.5px;letter-spacing:2.2px;
+  text-transform:uppercase;color:var(--red);margin-bottom:11px;line-height:1.6;
+}
+.fu-ahora b{font-family:var(--tit);font-weight:800;font-size:1.35em;letter-spacing:.5px}
+.fu-ahora em{
+  display:block;font-style:normal;font-weight:500;font-size:9.6px;
+  letter-spacing:.4px;text-transform:none;color:var(--dim2);margin-top:1px;
+}
+
+/* Las casillas, del lado del rival: rojo donde la tuya va celeste. */
+.sit.fundida .fg-minis{margin-top:0}
+.sit.fundida .fg-mini{border-color:rgba(255,59,82,.28)}
+.sit.fundida .fg-pct{color:var(--red)}
+.sit.fundida .fg-cnm{color:#fff}
+.sit.fundida .fg-mini.foco{border-color:rgba(255,255,255,.92);box-shadow:0 0 0 2px rgba(255,255,255,.5)}
+.sit.fundida .fg-mini.gana{
+  border-color:var(--red) !important;
+  box-shadow:0 0 0 3px var(--red), 0 0 28px rgba(255,59,82,.5) !important;
+}
+.sit.fundida .fg-mini.gana .fg-pct{color:var(--red) !important}
+
+.sit.fundida .cta{
+  margin-top:15px;
+  background:linear-gradient(160deg, rgba(58,10,18,.9), rgba(0,12,40,.96));
+  border-color:var(--red);color:var(--red);
+}
+.sit.fundida .cta:disabled{opacity:.4;cursor:default;letter-spacing:4px}
+
+/* El cartel es alto: cinco casillas con foto, más los corazones. Se le pone
+   tope y scroll propio también en mobile, igual que a los avisos. */
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){
+  .sit.fundida{max-height:calc(100dvh - 78px);overflow-y:auto}
+}
+@media (max-width:820px) and (max-height:680px){
+  .sit.fundida{max-height:calc(100dvh - 54px);padding:16px 14px}
+  .fu-hearts{gap:6px;margin:8px 0 2px}
+  .fu-hearts img,.fu-hearts .ih{width:24px;height:24px}
+  .fu-linea{margin:10px -10px}
+  .fu-ahora{font-size:10px;letter-spacing:1.6px;margin-bottom:8px}
+  .fu-ahora em{font-size:8.6px}
+  .sit.fundida .cta{margin-top:10px;font-size:14px;padding:9px}
+}
+@media (min-width:1025px), (min-width:821px) and (orientation:landscape){
+  .fu-hearts{gap:11px;margin:14px 0 6px}
+  .fu-hearts img,.fu-hearts .ih{width:40px;height:40px}
+  .fu-ahora{font-size:14px;letter-spacing:2.6px;margin-bottom:14px}
+  .fu-ahora em{font-size:11.5px;display:inline;margin-left:7px}
+  .fu-ahora em::before{content:'· '}
+  .fu-linea{margin:18px -18px}
+}
 </style>
 </head>
 <body>
@@ -5110,17 +5184,29 @@ function esperarOClick(wrap, ms){
    vacía le da una al rival, la racha que se llena te da una a vos. Mismas
    cuatro situaciones y mismas probabilidades de los dos lados — lo único que
    cambia es quién patea. */
+/* **Las mismas cinco que las tuyas, con los mismos porcentajes y el mismo
+   peso.** Antes eran cuatro —sin la jugada clara— y repartidas 2/3/3/3, así
+   que el penal salía el 18% y las otras el 27% cada una: 38% de gol esperado
+   contra el 51% del lado tuyo.
+
+   Ahora los dos lados son el mismo mazo. Es más justo de leer —el cartel del
+   rival muestra exactamente las mismas cinco cartas que el tuyo— pero **sube
+   la dificultad**: el rival pasa de 38% a 51% por llegada, y una de cada
+   cinco veces le toca la JUGADA CLARA, que entra sin sorteo. */
 const SIT_RIVAL = [
-  { key:'penal',   ico:'🎯', nm:'PENAL',      p:.50, peso:2,
+  { key:'jugada',  ico:'⚽', nm:'JUGADA CLARA', p:1, peso:1,
+    gol:'💥 Jugada perfecta del rival. La define de primera y no hay nada que hacer.',
+    no: '' },
+  { key:'penal',   ico:'🎯', nm:'PENAL',      p:.50, peso:1,
     gol:'💀 Penal. Cambia el palo y la clava.',
     no: '💀 ¡PENAL ATAJADO! Tu arquero adivina el palo.' },
-  { key:'pasegol', ico:'🤝', nm:'PASE GOL',   p:.40, peso:3,
+  { key:'pasegol', ico:'🤝', nm:'PASE GOL',   p:.40, peso:1,
     gol:'🕳 Se la dejan servida en el área chica y la empuja.',
     no: '🕳 Se la dejan servida pero la manda a las nubes.' },
-  { key:'corner',  ico:'🚩', nm:'CÓRNER',     p:.35, peso:3,
+  { key:'corner',  ico:'🚩', nm:'CÓRNER',     p:.35, peso:1,
     gol:'🌪 Córner, cabezazo del central y adentro.',
     no: '🌪 Córner despejado. Sale la pelota jugando.' },
-  { key:'libre',   ico:'🚧', nm:'TIRO LIBRE', p:.30, peso:3,
+  { key:'libre',   ico:'🚧', nm:'TIRO LIBRE', p:.30, peso:1,
     gol:'🧨 Tiro libre al ángulo. Imposible.',
     no: '🧨 El tiro libre se estrella en la barrera.' }
 ];
@@ -6516,7 +6602,8 @@ function abrirFichaGol(btn){
 
    El resultado ya está decidido cuando esto corre —lo sortea `situacionGol`—
    así que la animación no lo cambia; solo lo cuenta. */
-async function sorteoGol(ficha){
+async function sorteoGol(ficha, lista){
+  const L = lista || SIT_FAVOR;          // el mazo del rival usa el mismo cursor
   const minis = [...ficha.querySelectorAll('.fg-mini')];
   if(minis.length < 2) return null;
 
@@ -6524,7 +6611,7 @@ async function sorteoGol(ficha){
 
   /* Se sortea **acá** y se devuelve, para que el partido resuelva exactamente
      la carta que el jugador vio ganar. */
-  const fin = pick(SIT_FAVOR.map((x, i) => [i, x.peso]))[0];
+  const fin = pick(L.map((x, i) => [i, x.peso]))[0];
   let esp = 85, i = 0;
   const vueltas = minis.length * 3 + fin;
   for(let n = 0; n <= vueltas; n++){
@@ -6538,7 +6625,7 @@ async function sorteoGol(ficha){
   minis.forEach(m => m.classList.remove('foco'));
   minis.forEach((m, k) => m.classList.add(k === fin ? 'gana' : 'fuera'));
   await wait(560);
-  return SIT_FAVOR[fin];
+  return L[fin];
 }
 
 /* ---------------- la ficha del ítem ----------------
@@ -7725,6 +7812,7 @@ async function hurt(msg, amount, maxYaBajo){
      del golpe vuelve a vaciarlo, el aguante se rellena igual pero sin repartir
      otra situación. */
   let yaSeFundio = false;
+  let cayoMax = false;   // si el máximo ya está en el piso, no baja y hay que decirlo
 
   for(let i=0;i<n;i++){
     G.aguante--;
@@ -7732,8 +7820,10 @@ async function hurt(msg, amount, maxYaBajo){
 
     // el máximo baja una sola vez por golpe, igual que la situación de gol
     if(!bajoMax){
+      const antes = G.aguanteMax;
       G.aguanteMax = Math.max(AGUANTE_PISO, G.aguanteMax - 1);
       bajoMax = true;
+      cayoMax = G.aguanteMax < antes;
     }
     G.aguante = G.aguanteMax;
     G.fundidas++;
@@ -7750,8 +7840,76 @@ async function hurt(msg, amount, maxYaBajo){
     say('😮‍💨 Se te funde el equipo: quedan ' + G.aguanteMax +
         ' <i class="ih"></i> de máximo y el rival se gana una situación.', 'big');
     render();
-    await situacionGol('contra');
+    /* El cartel muestra el castigo y sortea la llegada a la vista; después se
+       juega **esa misma**, que es lo que hace `yaElegida`. */
+    const elegida = await fundidaRival(cayoMax);
+    await situacionGol('contra', elegida);
   }
+}
+
+/* ---------------- CUANDO SE TE FUNDE EL EQUIPO ----------------
+   Quedarte sin aguante es el único castigo **permanente** del juego: perdés un
+   corazón de máximo para todo lo que queda del campeonato. Hasta ahora eso
+   pasaba en una línea de relato, y la llegada del rival aparecía ya sorteada,
+   sin decir de dónde salía ni qué otras podían tocarle.
+
+   El cartel junta las dos cosas: **lo que perdiste** —los corazones que te
+   quedan, con el que se fue tachado— y **lo que viene** —las cinco cartas del
+   rival, con el sorteo corriendo encima—. Recién cuando frena se habilita el
+   botón, así el jugador ve de dónde salió la que le tocó.
+
+   Usa el mismo cursor de sorteo que la ficha de la racha llena, y las mismas
+   casillas: es el mismo gesto de los dos lados, en rojo. */
+function fundidaRival(cayoMax){
+  return new Promise(resolve => {
+    const wrap = document.createElement('div');
+    wrap.className = 'sit-flash';
+
+    const artH = ARTSRC('ico_aguante');
+    const corazon = () => artH ? '<img src="' + artH + '" alt="">' : '<i class="ih"></i>';
+    let hearts = '<div class="fu-hearts">';
+    for(let i = 0; i < G.aguanteMax; i++) hearts += corazon();
+    if(cayoMax) hearts += '<span class="fu-ida">' + corazon() + '</span>';
+    hearts += '</div>';
+
+    const total = SIT_RIVAL.reduce((a, x) => a + x.peso, 0);
+    const esperado = Math.round(SIT_RIVAL.reduce((a, x) => a + x.peso * x.p, 0) / total * 100);
+
+    wrap.innerHTML =
+      '<div class="sit fundida">' +
+        '<div class="sit-tag">SE TE FUNDE EL EQUIPO</div>' +
+        hearts +
+        '<div class="t">SE ACABÓ EL AGUANTE</div>' +
+        '<div class="s">' + (cayoMax
+          ? 'VUELVE ENTERO, PERO CON UN <i class="ih"></i> MENOS DE MÁXIMO'
+          : 'VUELVE ENTERO. EL MÁXIMO YA NO BAJA MÁS.') + '</div>' +
+        '<div class="fu-linea"></div>' +
+        '<div class="fu-ahora">Y EL RIVAL SE GANA UNA LLEGADA ' +
+          '<b>' + esperado + '%</b> DE GOL <em>una de las cinco, al azar</em></div>' +
+        '<div class="fg-minis">' +
+          SIT_RIVAL.map(x => {
+            const art = artCarta(x.key);
+            return '<div class="fg-mini">' +
+              (art
+                ? '<span class="fg-art"><img src="' + art + '" alt=""></span>'
+                : '<span class="fg-ico">' + x.ico + '</span>') +
+              '<span class="fg-cnm">' + x.nm + '</span>' +
+              '<span class="fg-pct">' + (x.p === 1 ? 'GOL' : Math.round(x.p * 100) + '% GOL') + '</span>' +
+            '</div>';
+          }).join('') +
+        '</div>' +
+        '<button class="cta" id="fuBtn" disabled>SORTEANDO…</button>' +
+      '</div>';
+    document.body.appendChild(wrap);
+
+    (async () => {
+      const elegida = await sorteoGol(wrap, SIT_RIVAL);
+      const b = wrap.querySelector('#fuBtn');
+      b.disabled = false;
+      b.textContent = 'A VER QUÉ PASA';
+      b.onclick = () => { wrap.remove(); resolve(elegida); };
+    })();
+  });
 }
 
 /* Pop-up de la situación de gol. Sirve para los dos lados: 'contra' cuando se
