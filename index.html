@@ -455,44 +455,6 @@ img{height:auto}
 .p-emp .pe-riv b{color:var(--white)}
 .p-emp .pe-vs{color:var(--dim2);font-size:9.5px}
 
-/* La cancha: azul de la paleta, no el verde césped que quedó de antes. */
-.mam-cancha{
-  position:relative;height:74px;margin:14px 0 4px;
-  border:1px solid var(--line);border-radius:6px;overflow:hidden;
-  background:
-    repeating-linear-gradient(90deg,
-      rgba(0,33,118,.55), rgba(0,33,118,.55) 22px,
-      rgba(0,20,66,.55) 22px, rgba(0,20,66,.55) 44px);
-}
-/* La línea del medio, para que se lea como media cancha */
-.mam-cancha::before{
-  content:'';position:absolute;left:0;right:0;top:50%;height:1px;
-  background:rgba(255,255,255,.18);
-}
-.mam-cancha .mam-rival,.mam-cancha .mam-yo{
-  position:absolute;left:50%;transform:translateX(-50%);
-  transition:left .5s cubic-bezier(.3,1.3,.5,1),transform .5s cubic-bezier(.3,1.3,.5,1);
-  filter:drop-shadow(0 2px 6px rgba(0,0,0,.6));
-}
-.mam-cancha .mam-rival{top:8px;font-size:30px}
-.mam-cancha .mam-yo{bottom:6px;font-size:22px}
-.mam-cancha .mam-yo.va-izq{left:22%}
-.mam-cancha .mam-yo.va-der{left:78%}
-.mam-cancha .mam-rival.va-izq{left:22%;transform:translateX(-50%) rotate(-20deg)}
-.mam-cancha .mam-rival.va-der{left:78%;transform:translateX(-50%) rotate(20deg)}
-
-/* Los botones, con el mismo tratamiento que las cartas de la mesa. */
-.sit.mam .palo{
-  padding:14px 8px;border-width:2px;
-  background:linear-gradient(160deg,rgba(0,22,72,.9),rgba(0,8,31,.92));
-  transition:border-color .15s,transform .12s,box-shadow .15s;
-}
-.sit.mam .palo:hover:not(:disabled){transform:translateY(-2px)}
-.sit.mam.tono-good .palo:hover:not(:disabled){border-color:var(--green);box-shadow:0 0 0 1px var(--green)}
-.sit.mam.tono-hot .palo:hover:not(:disabled){border-color:var(--naranja);box-shadow:0 0 0 1px var(--naranja)}
-.sit.mam.tono-risk .palo:hover:not(:disabled){border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
-.sit.mam .palo .pn{font-size:13px;letter-spacing:.5px}
-
 /* ---------- PENAL DEFINITORIO ---------- */
 .sit .p-emp{
   font-family:var(--tit);font-weight:800;text-transform:uppercase;
@@ -2221,36 +2183,6 @@ body{padding-bottom:36px}
 .sit.resuelta .sit-ico{font-size:clamp(52px,12vw,72px);line-height:1;margin:4px 0}
 
 
-/* ---------- EL MINI JUEGO: LAS DOS FIGURAS ---------- */
-/* Al resolverse, el que gana crece y el que pierde se apaga. */
-.mam-cancha.gano .mam-yo{animation:crece .5s cubic-bezier(.3,1.4,.5,1) both}
-.mam-cancha.gano .mam-rival{animation:apaga .5s ease-out both}
-.mam-cancha.perdio .mam-rival{animation:crece .5s cubic-bezier(.3,1.4,.5,1) both}
-.mam-cancha.perdio .mam-yo{animation:apaga .5s ease-out both}
-@keyframes crece{
-  0%  {transform:translateX(-50%) scale(1)}
-  55% {transform:translateX(-50%) scale(1.45)}
-  100%{transform:translateX(-50%) scale(1.25)}
-}
-@keyframes apaga{
-  to{opacity:.28;filter:grayscale(1) drop-shadow(0 2px 5px rgba(0,0,0,.5))}
-}
-/* El destello del choque. Vivía con el arco viejo de los penales; cuando ese
-   se fue, esta animación se quedó sin definición y el anillo del mini juego
-   aparecía quieto. */
-@keyframes paro{
-  from{transform:scale(.35);opacity:1}
-  to  {transform:scale(1.9);opacity:0}
-}
-
-/* El choque cuando los dos van al mismo lado. */
-.mam-cancha.choque::after{
-  content:'';position:absolute;left:var(--cx,50%);top:50%;
-  width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;
-  border:3px solid var(--gold);
-  animation:paro .6s cubic-bezier(.2,.8,.3,1) both;
-}
-
 /* La ilustración de la carta, como cabecera. */
 .mam-art{
   position:relative;margin:-10px -14px 12px;border-radius:7px;overflow:hidden;
@@ -2273,32 +2205,6 @@ body{padding-bottom:36px}
 .p-emp .pe-def b{color:var(--blue)}
 .p-emp .pe-riv b{color:var(--white)}
 .p-emp .pe-vs{color:var(--dim2);font-size:9px}
-
-/* La cancha: más alta, con las dos figuras grandes. */
-/* Compartía estas reglas con el arco viejo de los penales, que ya no existe. */
-.mam-cancha{
-  position:relative;height:104px;margin:14px 0 6px;
-  border:1px solid var(--line);border-radius:8px;overflow:hidden;
-  background:
-    repeating-linear-gradient(90deg,
-      rgba(0,33,118,.5), rgba(0,33,118,.5) 24px,
-      rgba(0,20,66,.5) 24px, rgba(0,20,66,.5) 48px);
-}
-.mam-cancha::before{
-  content:'';position:absolute;left:0;right:0;top:50%;height:1px;
-  background:rgba(255,255,255,.16);
-}
-.mam-cancha .mam-rival,.mam-cancha .mam-yo{
-  position:absolute;left:50%;transform:translateX(-50%);
-  transition:left .5s cubic-bezier(.3,1.3,.5,1),transform .5s cubic-bezier(.3,1.3,.5,1);
-  filter:drop-shadow(0 3px 8px rgba(0,0,0,.65));
-}
-.mam-cancha .mam-rival{top:8px;font-size:40px}
-.mam-cancha .mam-yo{bottom:8px;font-size:34px}
-.mam-cancha .mam-yo.va-izq{left:22%}
-.mam-cancha .mam-yo.va-der{left:78%}
-.mam-cancha .mam-rival.va-izq{left:22%;transform:translateX(-50%) rotate(-18deg)}
-.mam-cancha .mam-rival.va-der{left:78%;transform:translateX(-50%) rotate(18deg)}
 
 /* Los botones, como las opciones del menú. */
 .sit .palos{display:flex;gap:9px;margin-top:12px}
@@ -3220,9 +3126,6 @@ body{padding-bottom:36px}
   .sit .p-emp{font-size:14px;gap:12px;margin-bottom:14px}
   .p-emp b{font-size:23px}
   .p-emp .pe-vs{font-size:11.5px}
-  .mam-cancha{height:clamp(100px, 12vh, 132px);margin:18px 0 6px}
-  .mam-cancha .mam-rival{font-size:42px;top:10px}
-  .mam-cancha .mam-yo{font-size:31px;bottom:8px}
   .sit.mam .palo{padding:18px 12px}
   .sit.mam .palo .pn{font-size:16px;letter-spacing:1px}
 
@@ -4431,6 +4334,96 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .pz-n{font-size:14px;min-width:12px}
 }
 @media (prefers-reduced-motion:reduce){ .pz-t.ahora{animation:none} }
+
+/* ================= LA ESCENA DEL DUELO =================
+   Reemplaza la franja rayada con dos emoji y los dos botones de texto. Ahora
+   es una escena de costado —los dos enfrentados, la pelota entre ellos— y se
+   toca uno de los dos caminos.
+
+   Lo importante no es el dibujo sino lo que deja ver: en dos de los cuatro
+   duelos ganás **esquivando** y en dos **adivinando**, según de quién sea la
+   pelota, y esa regla vivía nada más que en el texto de la pregunta. Con la
+   pelota dibujada a los pies del que la tiene, se ve.
+
+   Mismo lenguaje que el arco de los penales: zonas que laten hasta que elegís,
+   figuras con los colores de cada escudo, y el rival sale primero para que se
+   vea el cruce. */
+.duelo{display:block;width:100%;margin:12px 0 2px;overflow:visible}
+.dl-cesped{fill:rgba(0,33,118,.42)}
+.dl-cesped2{fill:rgba(0,20,66,.42)}
+.dl-linea{fill:none;stroke:rgba(232,238,248,.26);stroke-width:1.5;stroke-dasharray:4 6}
+.dl-camino{fill:none;stroke:var(--fi-luz);stroke-width:2.4;stroke-linecap:round;stroke-dasharray:5 5;opacity:.5}
+
+/* Los dos lados, con la esquina redondeada. */
+.dl-z{
+  fill:var(--fi-luz);fill-opacity:.05;
+  stroke:var(--fi-luz);stroke-width:1.5;stroke-opacity:.35;
+  cursor:pointer;transition:fill-opacity .15s, stroke-opacity .15s;
+  animation:dlLate 1.7s ease-in-out infinite;
+}
+.dl-z[data-l="der"]{animation-delay:.35s}
+@keyframes dlLate{
+  0%,100%{stroke-opacity:.3;fill-opacity:.04}
+  50%    {stroke-opacity:1;fill-opacity:.16}
+}
+.dl-z:hover{fill-opacity:.2;stroke-opacity:1;animation:none}
+.dl-z.off{pointer-events:none;animation:none;stroke-opacity:.12;fill-opacity:0}
+.dl-z.sel{
+  animation:none;stroke:var(--gold);stroke-opacity:1;stroke-width:2.5;
+  fill:var(--gold);fill-opacity:.16;
+}
+
+.dl-fig{
+  transition:transform .46s cubic-bezier(.3,1.1,.4,1);
+  filter:drop-shadow(0 3px 7px rgba(0,0,0,.55));
+}
+.dl-fig.vaiven{animation:dlVaiven 1.9s ease-in-out infinite}
+.dl-fig.vaiven2{animation:dlVaiven2 1.9s ease-in-out infinite}
+@keyframes dlVaiven{0%,100%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+@keyframes dlVaiven2{0%,100%{transform:translateX(5px)}50%{transform:translateX(-5px)}}
+
+.dl-pel{
+  transition:transform .46s cubic-bezier(.25,.7,.4,1);
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,.6));
+}
+
+/* Los dos al mismo lado: el choque. */
+.dl-choque{fill:none;stroke:var(--gold);stroke-width:3;opacity:0}
+.dl-choque.on{animation:dlChoque .55s ease-out}
+@keyframes dlChoque{
+  0%  {opacity:0;transform:scale(.4)}
+  35% {opacity:1;transform:scale(1)}
+  100%{opacity:0;transform:scale(1.7)}
+}
+.dl-chog{transform-origin:100px 74px}
+
+.dl-hint{
+  font-family:var(--txt);font-weight:600;font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--dim2);margin-top:4px;
+}
+
+/* ---- LA PREGUNTA, MÁS GRANDE ----
+   Es la instrucción del momento —qué hay que hacer— y estaba escrita al mismo
+   cuerpo que un pie de foto, más chica que el nombre del duelo. Sube y pasa a
+   blanco: es lo que el jugador tiene que leer antes de tocar. */
+.sit.mam .s{
+  font-size:14px;letter-spacing:2.6px;text-indent:2.6px;
+  color:var(--white);margin-top:12px;
+}
+
+@media (min-width:1025px), (min-width:821px) and (orientation:landscape){
+  .duelo{margin:14px 0 4px}
+  .sit.mam .s{font-size:18px;letter-spacing:3.2px;margin-top:15px}
+  .dl-hint{font-size:11.5px;letter-spacing:2.6px;margin-top:6px}
+}
+@media (max-width:440px){
+  .sit.mam .s{font-size:12.5px;letter-spacing:2px;margin-top:10px}
+  .dl-hint{font-size:9px;letter-spacing:1.6px}
+}
+@media (prefers-reduced-motion:reduce){
+  .dl-z,.dl-fig.vaiven,.dl-fig.vaiven2{animation:none}
+  .dl-z{stroke-opacity:.8;fill-opacity:.12}
+}
 </style>
 </head>
 <body>
@@ -7646,6 +7639,57 @@ function polar(cx, cy, r, grados){
 /* Pop-up del uno contra uno. Devuelve true si ganás el duelo.
    Dos tiempos igual que el penal: elegís lado, sale la animación, y recién
    después se revela. El azar ya estaba decidido; el click le da el momento. */
+/* ---------------- LA ESCENA DEL DUELO ----------------
+   Eran dos emoji deslizándose sobre una franja rayada y dos botones de texto:
+   el mismo problema que tenían los penales antes del arco dibujado. Ahora es
+   una escena de costado —los dos enfrentados, con la pelota entre ellos— y
+   **se toca uno de los dos caminos**, no un botón.
+
+   Lo que gana con esto no es solo estética. En dos de los cuatro duelos ganás
+   **esquivando** y en dos **adivinando**, según de quién sea la pelota, y esa
+   regla vivía nada más que en el texto de la pregunta. Acá **la pelota está
+   dibujada a los pies del que la tiene**, así que se ve.
+
+   Cada uno va con los colores de su escudo, igual que el arquero de los
+   penales: vos con los tuyos, el rival con los suyos. */
+function figuraDuelo(esc, cls){
+  const A = COLORES[((esc && esc.c1) || 0) % COLORES.length].hex;
+  const B = COLORES[((esc && esc.c2) || 0) % COLORES.length].hex;
+  return '<g class="' + cls + '">' +
+    '<circle cx="0" cy="-22" r="7.5" fill="#f0c9a0" stroke="rgba(0,0,0,.35)" stroke-width="1"/>' +
+    '<path d="M-8 -13 h16 v20 h-16 z" fill="' + A + '" stroke="rgba(0,0,0,.35)" stroke-width="1"/>' +
+    '<path d="M-8 -12 h-5 v-6 h5 z M8 -12 h5 v-6 h-5 z" fill="' + A + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
+    '<path d="M-7 7 h6 v11 h-6 z M1 7 h6 v11 h-6 z" fill="' + B + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
+  '</g>';
+}
+
+function pelotaDuelo(x, y){
+  const r = 6;
+  return '<g class="dl-pel">' +
+    '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="#f2f4f8" stroke="rgba(0,0,0,.45)" stroke-width="1"/>' +
+    '<path d="M' + x + ' ' + (y - 4) + ' l3.8 2.8 -1.4 4.4 h-4.8 l-1.4 -4.4 z" fill="#16181d"/>' +
+  '</g>';
+}
+
+/* `mia` es de quién es la pelota: con la tuya ganás esquivando, con la de él
+   adivinando. Es el mismo dato que `adivinar`, dado vuelta. */
+function escenaDuelo(mia){
+  return '<svg class="duelo" viewBox="0 0 200 116" aria-label="El duelo">' +
+    '<rect class="dl-cesped" x="0" y="4" width="200" height="108" rx="8"/>' +
+    '<rect class="dl-cesped2" x="0" y="4" width="200" height="26"/>' +
+    '<path class="dl-linea" d="M4 96 H196"/>' +
+    /* los dos caminos, que son las dos zonas que se tocan */
+    '<path class="dl-camino" d="M92 92 C 70 78, 50 62, 44 40"/>' +
+    '<path class="dl-camino" d="M108 92 C 130 78, 150 62, 156 40"/>' +
+    '<g transform="translate(100,44) scale(.92)">' + figuraDuelo(G.escudoRival, 'dl-fig dl-riv vaiven2') + '</g>' +
+    '<g transform="translate(100,102) scale(.92)">' + figuraDuelo(G.escudo, 'dl-fig dl-yo vaiven') + '</g>' +
+    (mia ? pelotaDuelo(100, 112) : pelotaDuelo(100, 58)) +
+    '<g class="dl-chog"><circle class="dl-choque" cx="100" cy="74" r="20"/></g>' +
+    '<rect class="dl-z" data-l="izq" x="6" y="8" width="90" height="102" rx="8"/>' +
+    '<rect class="dl-z" data-l="der" x="104" y="8" width="90" height="102" rx="8"/>' +
+  '</svg>';
+}
+
 function manoAMano(tipo, mio, val){
   const M = MANOAMANO[tipo];
 
@@ -7663,46 +7707,41 @@ function manoAMano(tipo, mio, val){
           '<span class="pe-vs">vs</span>' +
           '<span class="pe-riv">' + TYPES[tipo].nm + ' <b>' + val + '</b></span></div>' +
         '<div class="t">' + M.tit + '</div>' +
-        '<div class="mam-cancha">' +
-          '<div class="mam-rival" id="mamR">' + (M.el || M.ico) + '</div>' +
-          '<div class="mam-yo" id="mamY">' + (M.yo || '⚽') + '</div>' +
-        '</div>' +
+        escenaDuelo(!M.adivinar) +
         '<div class="s">' + M.pregunta + '</div>' +
-        '<div class="palos">' +
-          '<button class="palo" data-l="izq"><span class="pn">' + M.izq + '</span></button>' +
-          '<button class="palo" data-l="der"><span class="pn">' + M.der + '</span></button>' +
-        '</div>' +
+        '<div class="dl-hint">tocá un lado</div>' +
       '</div>';
     document.body.appendChild(wrap);
 
-    wrap.querySelectorAll('.palo').forEach(btn => {
+    let elegido = false;
+    wrap.querySelectorAll('.dl-z').forEach(btn => {
       btn.onclick = async () => {
+        if(elegido) return; elegido = true;
         const mio2 = btn.dataset.l;
         const suyo = chance(.5) ? 'izq' : 'der';
         // con la pelota del rival ganás adivinando; con la tuya, esquivando
         const gana = M.adivinar ? (mio2 === suyo) : (mio2 !== suyo);
 
-        wrap.querySelectorAll('.palo').forEach(b => {
-          b.disabled = true;
-          if(b.dataset.l === mio2) b.classList.add('elegido');
+        wrap.querySelectorAll('.dl-z').forEach(z => {
+          z.classList.add('off');
+          if(z.dataset.l === mio2) z.classList.add('sel');
         });
         wrap.querySelector('.s').textContent = M.rival(suyo).toUpperCase() + '…';
+        const hint = wrap.querySelector('.dl-hint'); if(hint) hint.remove();
 
-        const yo = wrap.querySelector('#mamY'), riv = wrap.querySelector('#mamR');
-        const cancha = wrap.querySelector('.mam-cancha');
-        yo.classList.add('va-' + mio2);
-        await wait(300);
-        riv.classList.add('va-' + suyo);
+        /* Sale primero el rival y después vos: se ve el cruce, no dos figuras
+           moviéndose a la vez. La pelota va con el que la tiene. */
+        const yo = wrap.querySelector('.dl-yo'), riv = wrap.querySelector('.dl-riv');
+        const pel = wrap.querySelector('.dl-pel');
+        yo.classList.remove('vaiven'); riv.classList.remove('vaiven2');
+        const dxYo = mio2 === 'izq' ? -50 : 50, dxRiv = suyo === 'izq' ? -50 : 50;
+        riv.style.transform = 'translateX(' + dxRiv + 'px)';
+        await wait(120);
+        yo.style.transform = 'translateX(' + dxYo + 'px)';
+        pel.style.transform = 'translateX(' + (M.adivinar ? dxRiv : dxYo) + 'px)';
+        await wait(500);
+        if(mio2 === suyo) wrap.querySelector('.dl-choque').classList.add('on');
         await wait(420);
-
-        /* La cancha reacciona al cruce: el que gana crece, el que pierde se
-           apaga, y si los dos fueron al mismo lado salta el destello del
-           choque. Sin esto los dos se quedaban quietos y no se veía quién ganó
-           hasta que aparecía el texto. */
-        cancha.style.setProperty('--cx', mio2 === 'izq' ? '22%' : '78%');
-        cancha.classList.add(gana ? 'gano' : 'perdio');
-        if(mio2 === suyo) cancha.classList.add('choque');
-        await wait(620);
 
         const box = wrap.querySelector('.sit.mam');
         box.className = 'sit mam resuelta ' + (gana ? 'salvado' : 'gol');

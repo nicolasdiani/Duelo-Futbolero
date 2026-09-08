@@ -1380,6 +1380,41 @@ cuando frenan.
 La regla común del dibujo: **la pelota va maciza y el decorado en línea**. El
 ojo sigue a la pelota, y el arco, el guante o la barrera no le compiten.
 
+### Los mini juegos, cara a cara
+
+Eran **dos emoji deslizándose sobre una franja rayada** y dos botones de
+texto: el mismo problema que tenían los penales antes del arco dibujado.
+Ahora es una escena de costado —los dos enfrentados, la pelota entre ellos— y
+**se toca uno de los dos caminos**.
+
+Lo que gana con esto no es solo estética. En dos de los cuatro duelos ganás
+**esquivando** y en dos **adivinando**, según de quién sea la pelota, y esa
+regla vivía nada más que en el texto de la pregunta:
+
+| Duelo | La pelota es | Ganás |
+|---|---|---|
+| Mano a mano · arquero | tuya | esquivando |
+| Uno contra uno · defensor | tuya | esquivando |
+| La marca · medio | de él | adivinando |
+| Defender · delantero | de él | adivinando |
+
+**Ahora la pelota está dibujada a los pies del que la tiene**, así que se ve.
+Verificado en los cuatro: la posición de la pelota coincide siempre con el
+flag `adivinar`.
+
+Mismo lenguaje que el arco de los penales: las dos zonas laten hasta que
+elegís —con la esquina redondeada—, cada figura lleva **los colores de su
+escudo** (vos los tuyos, el rival los suyos), y el rival sale primero para que
+se vea el cruce. Si los dos van al mismo lado, salta el destello del choque.
+
+**La pregunta va más grande.** Es la instrucción del momento —qué hay que
+hacer— y estaba escrita al mismo cuerpo que un pie de foto, más chica que el
+nombre del duelo. Pasó de 11px a 18px en desktop, 14 en mobile, y de gris a
+blanco.
+
+Las zonas de toque miden **97x109 px en un 390**. Entra sin scroll en
+320x568, 360x640, 390x844 y 1440x900.
+
 ### Los penales, con arco de verdad
 
 Eran **dos emoji moviéndose adentro de una caja con borde**: un guante y una
