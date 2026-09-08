@@ -1199,9 +1199,18 @@ no todas del mismo color:
 |---|---|---|
 | 🟩 **Verde** | te suma | jugada clara, hinchada, taquilla, el duelo que **ganás** |
 | 🟥 **Rojo** | juega el rival o te resta | **todas las que dicen RIVAL**, contraataque, calambre, el duelo que **perdés** |
-| 🟨 **Amarillo** | está en el aire, y la pelota es tuya | penal, córner, tiro libre, y el empate del defensor o el medio |
+| 🩵 **Celeste** | hay un **porcentaje de gol** en juego | penal, pase gol, tiro libre, córner |
+| 🟨 **Amarillo** | se juega la **racha** en un empate | el empate del defensor o el medio |
 | 🟧 **Naranja** | está en el aire y **puede costarte el marcador** | el empate del **delantero rival** |
 | ⬜ Gris | no hace nada | offside |
+
+El celeste y el amarillo eran un solo color. Los dos casos quedaban iguales
+—«50% GOL» y un empate de duelo— cuando son decisiones distintas: uno es una
+chance de convertir, el otro es la racha jugándose a cara o cruz. Ahora el
+celeste marca el gol y el amarillo la racha.
+
+Es **el mismo celeste de las fichas** (`--fi-luz`), así que la mesa y los
+pop-ups hablan el mismo idioma.
 
 **El cartel del empate dice MINI JUEGO y el nombre del que sale**:
 

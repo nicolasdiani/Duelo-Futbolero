@@ -368,6 +368,9 @@ img{height:auto}
 }
 .play.good{border-color:var(--green)} .play.good .p-out{color:var(--green)}
 .play.bad{border-color:var(--red)}    .play.bad .p-out{color:var(--red)}
+/* El flash usa la misma clase de tono que la carta, así que el tono nuevo
+   necesita su regla acá o el penal y el córner se resuelven sin color. */
+.play.gol{border-color:var(--fi-luz)} .play.gol .p-out{color:var(--fi-luz)}
 .play.risk{border-color:var(--gold)}  .play.risk .p-out{color:var(--gold)}
 .play.hot{border-color:var(--naranja)}  .play.hot .p-out{color:var(--naranja)}
 .play.coin{border-color:var(--coin)}  .play.coin .p-out{color:var(--coin)}
@@ -834,6 +837,11 @@ img{height:auto}
 .cell .c-out .ra,.play .p-out .ra{color:var(--gold);font-weight:700}
 .c-out.good{color:var(--green)}
 .c-out.bad{color:var(--red)}
+/* El amarillo cubría dos cosas distintas: los porcentajes de gol y los empates
+   de duelo. Ahora el celeste se queda con los porcentajes —«50% GOL»— y el
+   amarillo con la racha, que es lo que se juega en los empates. Es el mismo
+   celeste de las fichas, así que la mesa y los pop-ups hablan igual. */
+.c-out.gol{color:var(--fi-luz)}
 .c-out.risk{color:var(--gold)}
 .c-out.hot{color:var(--naranja)}
 /* El GOL RIVAL dentro del empate del delantero: el peor resultado posible de
@@ -900,6 +908,13 @@ img{height:auto}
   border-color:rgba(255,59,82,.75);
   box-shadow:0 3px 14px rgba(255,59,82,.16);
 }
+/* Celeste: hay un porcentaje de gol en juego. */
+.row.hl .cell.tono-gol:not(.empty):not(.lock),
+.cell.colhl.tono-gol:not(.empty):not(.lock){
+  border-color:rgba(158,216,238,.8);
+  box-shadow:0 3px 14px rgba(158,216,238,.18);
+}
+/* Amarillo: se juega la racha en un empate. */
 .row.hl .cell.tono-risk:not(.empty):not(.lock),
 .cell.colhl.tono-risk:not(.empty):not(.lock){
   border-color:rgba(245,200,66,.75);
@@ -4929,10 +4944,10 @@ function predict(cell){
   if(t === 'autogol')   return { label:'GOL' + R, tone:'good' };
   if(t === 'contra')    return { label:'GOL RIVAL<span class="efe"><b>-1 <i class="ir"></i></b></span>', tone:'bad' };
   if(t === 'encontra')  return { label:'GOL RIVAL<span class="efe"><b>-1 <i class="ir"></i></b></span>', tone:'bad' };
-  if(t === 'penal')     return { label:'50% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'risk' };
-  if(t === 'pasegol')   return { label:'40% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'risk' };
-  if(t === 'libre')     return { label:'35% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'risk' };
-  if(t === 'corner')    return { label:'30% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'risk' };
+  if(t === 'penal')     return { label:'50% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
+  if(t === 'pasegol')   return { label:'40% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
+  if(t === 'libre')     return { label:'35% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
+  if(t === 'corner')    return { label:'30% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
   if(t === 'penalC')    return { label:'50% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
   if(t === 'pasegolC')  return { label:'40% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
   if(t === 'cornerC')   return { label:'30% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
