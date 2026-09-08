@@ -5836,6 +5836,14 @@ async function useItem(k){
     render();
     return;
   }
+
+  /* El mismo resaltado que dejan las cartas: al volver, el medidor que subió
+     late en verde. Sin esto el ítem se gastaba y el único rastro era la línea
+     del relato — había que buscar a mano si había cambiado el aguante o la
+     racha. Se toma la foto acá, después de los controles y antes de tocar
+     nada, así incluye lo que haga cada rama. */
+  const antes = snapshot();
+
   G.items[k]--;
   if(G.items[k] <= 0) delete G.items[k];
 
@@ -5862,6 +5870,7 @@ async function useItem(k){
     G.busy = false;
   }
   render();
+  pulseCambios(antes);
 }
 
 /* El VAR revisa una jugada anulada y la habilita: la carta trabada vuelve al
