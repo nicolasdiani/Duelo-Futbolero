@@ -1041,7 +1041,19 @@ img{height:auto}
   padding:8px 9px;cursor:pointer;font-family:inherit;
   transition:border-color .15s,background .15s,transform .15s;
 }
-.item:hover:not(:disabled){border-color:var(--gold);background:#16263f;transform:translateX(2px)}
+/* **El empujoncito del hover va con `left`, no con `transform`.**
+   Un `transform` convierte al botón en el bloque contenedor de sus hijos
+   `position:fixed` —así lo define la spec— y la ficha de ítem es justo eso en
+   mobile. En touch el `:hover` queda pegado al último elemento tocado, o sea
+   al ítem que abrió la ficha: el `left:10px;right:10px` de la ficha dejaba de
+   medirse contra la pantalla y se medía contra el botón de 86px, saliendo de
+   64px de ancho y 238 de alto, angosta y altísima encima del tablero.
+   El ítem ya es `position:relative`, así que `left` lo mueve igual sin crear
+   ningún bloque contenedor. */
+.item:hover:not(:disabled){border-color:var(--gold);background:#16263f;left:2px}
+/* Y por las dudas: con la ficha abierta el ítem nunca lleva transform, venga
+   de donde venga. */
+.item.abierto{transform:none !important}
 .item:disabled{opacity:.4;cursor:not-allowed}
 /* El ítem que ahora no haría nada: se ve apagado pero sigue clickeable, y al
    tocarlo explica por qué. Apagarlo del todo dejaría al jugador sin saber si
@@ -1900,6 +1912,15 @@ img{height:auto}
     width:auto;max-width:none;
     transform:translateY(-5px);
   }
+  /* Ocupando el ancho de la pantalla hay lugar de sobra: el nombre entra en
+     una línea, la descripción en una o dos, y los botones se pueden tocar. */
+  .item-ficha:not(.ficha-gol){padding:13px 15px;gap:10px}
+  .item-ficha:not(.ficha-gol) .if-nm{font-size:13.5px;gap:8px}
+  .item-ficha:not(.ficha-gol) .if-desc{font-size:12.5px;margin-top:4px}
+  .item-ficha:not(.ficha-gol) .if-btns{gap:8px}
+  .item-ficha:not(.ficha-gol) .if-btn{
+    padding:12px 10px;font-size:11.5px;letter-spacing:1.8px;
+  }
   .item-ficha.on{transform:none}
   /* El pico se para bajo el ítem, no bajo la esquina de la ficha. */
   .item-ficha::before{
@@ -2021,11 +2042,18 @@ img{height:auto}
   box-shadow:0 0 0 1px var(--gold);
 }
 
+/* En teléfonos angostos se afloja un poco, pero no se vuelve a la ficha
+   apretada de antes: sigue ocupando el ancho de la pantalla. */
 @media (max-width:440px){
-  .item-ficha{padding:8px 9px;gap:8px;grid-template-columns:minmax(0,1fr)}
+  .item-ficha{grid-template-columns:minmax(0,1fr)}
+  .item-ficha:not(.ficha-gol){padding:12px 13px;gap:9px}
   .if-btns{grid-column:1;justify-content:stretch}
-  .if-btn{flex:1;padding:6px 8px;font-size:10px}
-  .if-desc{font-size:11px}
+  .item-ficha:not(.ficha-gol) .if-nm{font-size:12.5px}
+  .item-ficha:not(.ficha-gol) .if-desc{font-size:11.5px}
+  .item-ficha:not(.ficha-gol) .if-btn{flex:1;padding:11px 8px;font-size:11px}
+  .item-ficha.ficha-gol{padding:8px 9px;gap:8px}
+  .item-ficha.ficha-gol .if-btn{padding:6px 8px;font-size:10px}
+  .item-ficha.ficha-gol .if-desc{font-size:11px}
 }
 
 /* ---------- EL SORTEO A LA VISTA ----------
@@ -3248,6 +3276,82 @@ body{padding-bottom:36px}
   .rg-txt{font-size:11.1px}
   .regla{padding:7px 0}
   .ps-desc{font-size:10.8px}
+}
+
+/* ================= LOS POP-UPS DE ACCIÓN, AL TAMAÑO DEL DESKTOP =================
+   `.play` y `.sit` ya se habían agrandado, pero el resto seguía chico y el
+   juego mostraba dos escalas distintas según qué te tocara. Los que faltaban:
+
+   - **el mini juego y el penal** (`.sit.mam`, `.sit.penal`): su regla propia
+     es más específica que la de `.sit`, así que el `max-width` grande del
+     bloque de desktop nunca les llegaba y quedaban clavados en 420px;
+   - **los avisos** (`.aviso`): racha llena, tiempo de descuento, empate y
+     fin de partido, que no tenían ninguna regla de desktop;
+   - **el cartel de gol con arte y el de tiro errado**, por la misma razón.
+
+   Va al final de la hoja a propósito: `.gf.con-art` está definido después del
+   bloque de desktop viejo, así que ahí adentro no habría servido de nada.
+
+   Todos comparten el mismo ancho —`clamp(480px, 42vw, 700px)`, la familia de
+   los que ya estaban— y el mismo tope de alto, así que ninguno se sale de la
+   pantalla por más texto que traiga. */
+@media (min-width:1025px), (min-width:821px) and (orientation:landscape){
+
+  /* ---- MINI JUEGO Y PENAL ---- */
+  .sit.mam, .sit.penal{
+    max-width:clamp(480px, 42vw, 700px);width:100%;
+    padding:32px 36px 30px;border-radius:12px;
+    max-height:88vh;overflow-y:auto;
+  }
+  .sit.mam .sit-tag, .sit.penal .sit-tag{font-size:12.5px;letter-spacing:3.5px}
+  .sit.mam .t, .sit.penal .t{font-size:clamp(34px, 3.2vw, 50px);margin:4px 0 6px}
+  .sit.mam .s, .sit.penal .s{font-size:14px;letter-spacing:3px;margin-top:14px}
+  .mam-art{margin:-12px -16px 16px}
+  .mam-art img{max-height:clamp(150px, 19vh, 250px)}
+  .sit .p-emp{font-size:14px;gap:12px;margin-bottom:14px}
+  .p-emp b{font-size:23px}
+  .p-emp .pe-vs{font-size:11.5px}
+  .mam-cancha{height:clamp(100px, 12vh, 132px);margin:18px 0 6px}
+  .mam-cancha .mam-rival{font-size:42px;top:10px}
+  .mam-cancha .mam-yo{font-size:31px;bottom:8px}
+  .sit.mam .palo{padding:18px 12px}
+  .sit.mam .palo .pn{font-size:16px;letter-spacing:1px}
+
+  /* ---- AVISOS: RACHA LLENA, DESCUENTO, EMPATE, FIN ---- */
+  .aviso{
+    max-width:clamp(480px, 42vw, 700px);
+    padding:34px 40px;
+    max-height:88vh;overflow-y:auto;
+  }
+  .aviso .a-ico{font-size:66px}
+  .aviso .a-t{font-size:clamp(38px, 3.6vw, 58px);letter-spacing:2.5px}
+  .aviso .a-s{font-size:15px;letter-spacing:2.5px;margin-top:13px}
+  .aviso .a-ops{gap:13px;margin-top:22px}
+  .aviso .a-op{padding:17px 13px}
+  .aviso .a-op .oi{font-size:33px}
+  .aviso .a-op .on{font-size:20px;letter-spacing:1.5px;margin-top:4px}
+  .aviso .a-op .od{font-size:13.2px;margin-top:8px;line-height:1.5}
+  .aviso .a-op.solo{padding:22px 20px}
+  .aviso .a-op.solo .oi{font-size:46px}
+  .aviso .a-op.solo .on{font-size:25px;letter-spacing:2px;margin-top:6px}
+  .aviso .a-op.solo .od{font-size:14.2px;margin-top:10px}
+  .aviso .e-tit{font-size:clamp(52px, 5vw, 82px)}
+  .aviso .e-marc{font-size:clamp(66px, 6.4vw, 104px);margin-top:9px}
+  /* El marcador chico —el que va debajo del título, en el descuento— sube en
+     la misma proporción, pero sigue siendo el chico de los dos. */
+  .aviso .a-t + .a-s + .e-marc{font-size:clamp(46px, 4.2vw, 66px);margin-top:11px}
+  .aviso .e-sub{font-size:14.5px;margin-top:10px}
+  .aviso .e-aviso{font-size:24px;letter-spacing:2.5px;margin-top:17px}
+
+  /* ---- CARTELES DE GOL ---- */
+  .gf.con-art{max-width:clamp(480px, 40vw, 660px);width:100%}
+  .gf.con-art .gf-txt{padding:22px 28px 24px}
+  .gf.con-art .t{font-size:clamp(40px, 3.6vw, 58px)}
+  .gf.con-art .s{font-size:14px;letter-spacing:3.5px}
+  .gf.fallo{max-width:clamp(430px, 34vw, 560px);padding:26px 40px}
+  .gf.fallo .fi{font-size:58px;margin-bottom:8px}
+  .gf.fallo .t{font-size:clamp(32px, 2.9vw, 46px)}
+  .gf.fallo .s{font-size:14px;margin-top:11px}
 }
 </style>
 </head>
