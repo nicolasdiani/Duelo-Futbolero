@@ -4218,7 +4218,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 .pp-post{fill:none;stroke:#e8eef8;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
 .pp-red{fill:none;stroke:rgba(232,238,248,.2);stroke-width:1}
 .pp-piso{fill:none;stroke:rgba(232,238,248,.28);stroke-width:2;stroke-dasharray:4 6}
-.pp-cost{fill:none;stroke:#16181d;stroke-width:.9;stroke-linecap:round}
+.pel-cost{fill:none;stroke:#16181d;stroke-width:.9;stroke-linecap:round}
 
 /* Las tres zonas: laten hasta que se dispara. */
 .pp-zona{
@@ -4239,9 +4239,13 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 }
 
 /* El arquero: vaivén mientras decidís, vuelo cuando disparás. */
+/* Mismo caso que la pelota: sin `fill-box` el `rotate` del vuelo pivotea
+   sobre el (0,0) del viewBox y le corre la figura entera, así que los guantes
+   no quedaban donde decían las cuentas. */
 .pp-arq{
   transition:transform .44s cubic-bezier(.3,1.1,.4,1);
   filter:drop-shadow(0 3px 7px rgba(0,0,0,.55));
+  transform-box:fill-box;transform-origin:center;
 }
 .pp-arq.idle{animation:arqVaiven 1.8s ease-in-out infinite}
 @keyframes arqVaiven{
@@ -4249,9 +4253,14 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   50%    {transform:translateX(7px) rotate(3deg)}
 }
 
+/* `transform-box:fill-box` es obligatorio para escalar en SVG: sin eso el
+   `transform-origin` es el (0,0) del viewBox y no el centro de la pelota, así
+   que el `scale` de la atajada la corría hacia el ángulo superior izquierdo.
+   Terminaba afuera del arco en vez de en el guante. */
 .pp-pel{
   transition:transform .46s cubic-bezier(.25,.7,.4,1);
   filter:drop-shadow(0 2px 5px rgba(0,0,0,.6));
+  transform-box:fill-box;transform-origin:center;
 }
 
 /* La red se infla en verde cuando entra. */
@@ -4385,17 +4394,20 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 .dl-pel{
   transition:transform .46s cubic-bezier(.25,.7,.4,1);
   filter:drop-shadow(0 2px 5px rgba(0,0,0,.6));
+  transform-box:fill-box;transform-origin:center;
 }
 
 /* Los dos al mismo lado: el choque. */
-.dl-choque{fill:none;stroke:var(--gold);stroke-width:3;opacity:0}
+.dl-choque{
+  fill:none;stroke:var(--gold);stroke-width:3;opacity:0;
+  transform-box:fill-box;transform-origin:center;
+}
 .dl-choque.on{animation:dlChoque .55s ease-out}
 @keyframes dlChoque{
   0%  {opacity:0;transform:scale(.4)}
   35% {opacity:1;transform:scale(1)}
   100%{opacity:0;transform:scale(1.7)}
 }
-.dl-chog{transform-origin:100px 74px}
 
 .dl-hint{
   font-family:var(--txt);font-weight:600;font-size:10px;letter-spacing:2px;
@@ -4423,6 +4435,49 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 @media (prefers-reduced-motion:reduce){
   .dl-z,.dl-fig.vaiven,.dl-fig.vaiven2{animation:none}
   .dl-z{stroke-opacity:.8;fill-opacity:.12}
+}
+
+/* ================= LA PELOTA, Y LO QUE PASA CON ELLA =================
+   Los cuatro mini juegos y el penal son **por la pelota**, y hasta ahora la
+   pelota no lo contaba: en el penal terminaba sobre el pecho del arquero como
+   si lo hubiera atravesado, y en los duelos se iba siempre con el que la
+   traía, así que un robo se veía como que se quedaba con el que la perdió.
+
+   Ahora la pelota es la misma en todas las escenas —un solo `pelotaSVG()`— y
+   termina donde tiene que terminar. */
+
+/* La atajada: el anillo del impacto sale del guante y el arquero se sacude. */
+.pp-atajo{
+  fill:none;stroke:var(--gold);stroke-width:3;opacity:0;
+  transform-box:fill-box;transform-origin:center;
+}
+.pp-atajo.on{animation:ppAtajo .55s cubic-bezier(.2,.8,.3,1)}
+@keyframes ppAtajo{
+  0%  {opacity:1;transform:scale(.35)}
+  100%{opacity:0;transform:scale(2)}
+}
+.pp-arq.sacude{animation:ppSacude .4s ease-out .04s}
+@keyframes ppSacude{
+  0%,100%{filter:drop-shadow(0 3px 7px rgba(0,0,0,.55))}
+  40%    {filter:drop-shadow(0 0 14px rgba(245,200,66,.85)) brightness(1.25)}
+}
+
+/* El quite del duelo: el anillo donde cambia de dueño. */
+.dl-robo{
+  fill:none;stroke:var(--gold);stroke-width:2.6;opacity:0;
+  transform-box:fill-box;transform-origin:center;
+}
+.dl-robo.on{animation:dlRobo .5s cubic-bezier(.2,.8,.3,1) .12s}
+@keyframes dlRobo{
+  0%  {opacity:1;transform:scale(.4)}
+  100%{opacity:0;transform:scale(1.9)}
+}
+
+/* La pelota del duelo tarda un poco más en el segundo tramo: es el cruce. */
+.dl-pel{transition:transform .5s cubic-bezier(.3,.9,.35,1)}
+
+@media (prefers-reduced-motion:reduce){
+  .pp-atajo,.pp-arq.sacude,.dl-robo{animation:none}
 }
 </style>
 </head>
@@ -7299,6 +7354,23 @@ async function serieDePenales(eqs, auto){
    definitorio tenía su propio dibujo y sus propios botones. */
 const PENAL_Z = [ {x:48, y:60}, {x:100, y:60}, {x:152, y:60} ];
 
+/* La pelota del juego: círculo, pentágono y costuras, con el mismo trazo que
+   el arco y la cancha. La usan el penal y los cuatro mini juegos — antes cada
+   escena dibujaba la suya y no eran iguales. */
+function pelotaSVG(x, y, r, cls){
+  const k = r / 7;   // el dibujo está pensado para r=7 y escala desde ahí
+  return '<g class="' + cls + '">' +
+    '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="#f2f4f8" stroke="rgba(0,0,0,.45)" stroke-width="1"/>' +
+    '<path d="M' + x + ' ' + (y - 4.6*k) + ' l' + (4.4*k) + ' ' + (3.2*k) + ' l' + (-1.7*k) + ' ' + (5.2*k) +
+      ' h' + (-5.4*k) + ' l' + (-1.7*k) + ' ' + (-5.2*k) + ' z" fill="#16181d"/>' +
+    '<path class="pel-cost" d="M' + x + ' ' + (y - 7.2*k) + ' v' + (2.6*k) +
+      ' M' + (x + 4.4*k) + ' ' + (y - 1.4*k) + ' l' + (2.5*k) + ' ' + (-0.8*k) +
+      ' M' + (x + 2.7*k) + ' ' + (y + 3.8*k) + ' l' + (1.6*k) + ' ' + (2.2*k) +
+      ' M' + (x - 2.7*k) + ' ' + (y + 3.8*k) + ' l' + (-1.6*k) + ' ' + (2.2*k) +
+      ' M' + (x - 4.4*k) + ' ' + (y - 1.4*k) + ' l' + (-2.5*k) + ' ' + (-0.8*k) + '"/>' +
+  '</g>';
+}
+
 function arcoPenalHTML(esc){
   const A = COLORES[((esc && esc.c1) || 0) % COLORES.length].hex;   // camiseta
   const B = COLORES[((esc && esc.c2) || 0) % COLORES.length].hex;   // guantes
@@ -7325,13 +7397,10 @@ function arcoPenalHTML(esc){
       '<rect x="76" y="55" width="12" height="12" rx="3.5" fill="' + B + '" stroke="rgba(0,0,0,.4)" stroke-width="1"/>' +
       '<rect x="112" y="55" width="12" height="12" rx="3.5" fill="' + B + '" stroke="rgba(0,0,0,.4)" stroke-width="1"/>' +
     '</g>' +
-    /* La pelota, dibujada con el mismo trazo que el arco. */
-    '<g class="pp-pel">' +
-      '<circle cx="100" cy="112" r="7" fill="#f2f4f8" stroke="rgba(0,0,0,.45)" stroke-width="1"/>' +
-      '<path d="M100 107.4 l4.4 3.2 -1.7 5.2 h-5.4 l-1.7 -5.2 z" fill="#16181d"/>' +
-      '<path class="pp-cost" d="M100 104.8 v2.6 M104.4 110.6 l2.5 -.8 M102.7 115.8 l1.6 2.2 ' +
-        'M97.3 115.8 l-1.6 2.2 M95.6 110.6 l-2.5 -.8"/>' +
-    '</g>' +
+    /* La pelota, con el mismo dibujo en todo el juego. */
+    pelotaSVG(100, 112, 7, 'pp-pel') +
+    /* El anillo del impacto cuando la ataja. */
+    '<circle class="pp-atajo" cx="100" cy="112" r="11"/>' +
     zonas +
   '</svg>';
 }
@@ -7352,11 +7421,32 @@ async function animarPenal(wrap, mio, suyo){
   arq.style.transform = 'translate(' + (ca.x - 100) + 'px,' + (ca.y - 62) + 'px)' +
                         ' rotate(' + ((ca.x - 100) * .17) + 'deg)';
   await wait(130);
-  pel.style.transform = 'translate(' + (cp.x - 100) + 'px,' + (cp.y - 112) + 'px)' +
-                        (atajado ? ' scale(.8)' : '');
+
+  /* **Atajada: la pelota frena en el guante, no en el medio del arco.** Antes
+     los dos terminaban en el centro de la misma zona y la pelota quedaba sobre
+     el pecho: se veía como que la atravesaba, no como que la agarró. Ahora se
+     corre al guante del lado al que se tiró y se queda ahí, un poco más chica
+     por el impacto. */
+  /* El guante del lado al que se tiró está en `ca.x ± 18`, a la altura 61.
+     La pelota se centra ahí: encima del guante, no del pecho ni de la cabeza.
+     Tirándose al medio atrapa contra el cuerpo, un poco más abajo. */
+  const dx = atajado ? (suyo === 0 ? -16 : suyo === 2 ? 16 : 0) : 0;
+  const dy = atajado ? (suyo === 1 ? 5 : -1) : 0;
+  pel.style.transform = 'translate(' + (cp.x - 100 + dx) + 'px,' + (cp.y - 112 + dy) + 'px)' +
+                        (atajado ? ' scale(.82)' : '');
   await wait(520);
-  if(!atajado) svg.querySelector('.pp-gol').classList.add('on');
-  await wait(300);
+
+  if(atajado){
+    /* El anillo sale del guante, no del centro. */
+    const an = svg.querySelector('.pp-atajo');
+    an.setAttribute('cx', cp.x + dx);
+    an.setAttribute('cy', cp.y + dy);
+    an.classList.add('on');
+    arq.classList.add('sacude');
+  } else {
+    svg.querySelector('.pp-gol').classList.add('on');
+  }
+  await wait(340);
 }
 
 /* Cinco por equipo, como en la cancha. En muerte súbita la pizarra sigue
@@ -7663,13 +7753,7 @@ function figuraDuelo(esc, cls){
   '</g>';
 }
 
-function pelotaDuelo(x, y){
-  const r = 6;
-  return '<g class="dl-pel">' +
-    '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="#f2f4f8" stroke="rgba(0,0,0,.45)" stroke-width="1"/>' +
-    '<path d="M' + x + ' ' + (y - 4) + ' l3.8 2.8 -1.4 4.4 h-4.8 l-1.4 -4.4 z" fill="#16181d"/>' +
-  '</g>';
-}
+const pelotaDuelo = (x, y) => pelotaSVG(x, y, 6.4, 'dl-pel');
 
 /* `mia` es de quién es la pelota: con la tuya ganás esquivando, con la de él
    adivinando. Es el mismo dato que `adivinar`, dado vuelta. */
@@ -7685,6 +7769,7 @@ function escenaDuelo(mia){
     '<g transform="translate(100,102) scale(.92)">' + figuraDuelo(G.escudo, 'dl-fig dl-yo vaiven') + '</g>' +
     (mia ? pelotaDuelo(100, 112) : pelotaDuelo(100, 58)) +
     '<g class="dl-chog"><circle class="dl-choque" cx="100" cy="74" r="20"/></g>' +
+    '<circle class="dl-robo" cx="100" cy="74" r="13"/>' +
     '<rect class="dl-z" data-l="izq" x="6" y="8" width="90" height="102" rx="8"/>' +
     '<rect class="dl-z" data-l="der" x="104" y="8" width="90" height="102" rx="8"/>' +
   '</svg>';
@@ -7738,10 +7823,33 @@ function manoAMano(tipo, mio, val){
         riv.style.transform = 'translateX(' + dxRiv + 'px)';
         await wait(120);
         yo.style.transform = 'translateX(' + dxYo + 'px)';
+
+        /* **La pelota sale con el dueño y termina con el que gana.** Antes se
+           iba siempre con el que la traía, así que un robo se veía como que la
+           pelota se quedaba con el que la había perdido. Los cuatro duelos son
+           por la pelota: quien gana, la tiene.
+
+              gano con la mía  -> la mantengo    (¡GOLAZO! · ¡LO PASÁS!)
+              pierdo la mía    -> me la sacan    (ATAJADÓN · LA PERDISTE)
+              gano la de él    -> se la robo     (¡SE LA ROBÁS! · ¡LO CORTÁS!)
+              pierdo la de él  -> se me escapa   (TE PASÓ · SE VA SOLO) */
         pel.style.transform = 'translateX(' + (M.adivinar ? dxRiv : dxYo) + 'px)';
         await wait(500);
+
         if(mio2 === suyo) wrap.querySelector('.dl-choque').classList.add('on');
-        await wait(420);
+
+        /* Si el duelo cambió de dueño, la pelota cruza a los pies del que
+           ganó, y sale el anillo del quite. */
+        const cambia = M.adivinar ? gana : !gana;
+        if(cambia){
+          const destino = gana ? dxYo : dxRiv;
+          const alto = M.adivinar ? 54 : -54;   // sube o baja según de dónde venía
+          pel.style.transform = 'translate(' + destino + 'px,' + alto + 'px)';
+          const ro = wrap.querySelector('.dl-robo');
+          ro.setAttribute('cx', 100 + destino);
+          ro.classList.add('on');
+        }
+        await wait(460);
 
         const box = wrap.querySelector('.sit.mam');
         box.className = 'sit mam resuelta ' + (gana ? 'salvado' : 'gol');

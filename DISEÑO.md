@@ -1380,6 +1380,45 @@ cuando frenan.
 La regla común del dibujo: **la pelota va maciza y el decorado en línea**. El
 ojo sigue a la pelota, y el arco, el guante o la barrera no le compiten.
 
+### La pelota, y lo que pasa con ella
+
+Los cuatro mini juegos y el penal son **por la pelota**, y la pelota no lo
+contaba.
+
+**En el penal**, la atajada terminaba con la pelota sobre el pecho del
+arquero, como si lo hubiera atravesado. Ahora se centra en el **guante del
+lado al que se tiró** —o contra el cuerpo si se quedó en el medio— y queda ahí,
+un poco más chica por el impacto, con un anillo dorado que sale del guante y
+el arquero sacudiéndose.
+
+**En los duelos**, la pelota se iba siempre con el que la traía: un robo se
+veía como que se quedaba con el que la había perdido. Ahora **termina con el
+que gana**:
+
+| | Ganás | Perdés |
+|---|---|---|
+| La pelota era tuya | la mantenés | te la sacan |
+| La pelota era de él | se la robás | se le escapa |
+
+Cuando cambia de dueño, cruza a los pies del que ganó y sale el anillo del
+quite. Verificado en las cuatro combinaciones, ocho corridas seguidas.
+
+**Y es la misma pelota en todos lados.** Antes cada escena dibujaba la suya y
+no eran iguales; ahora sale de un solo `pelotaSVG()`: círculo, pentágono y
+costuras, con el trazo del arco y de la cancha.
+
+#### El `transform-box` de los SVG
+
+Al centrar la pelota en el guante apareció un bug viejo: **en SVG, el
+`transform-origin` por defecto es el (0,0) del viewBox, no el centro del
+elemento.** Así que el `scale` de la atajada no achicaba la pelota en su
+lugar: la corría hacia el ángulo superior izquierdo, y terminaba fuera del
+arco. Lo mismo con el `rotate` del vuelo del arquero, que pivoteaba sobre el
+origen y le desplazaba la figura entera.
+
+Se arregla con `transform-box:fill-box; transform-origin:center`. Va en la
+pelota, el arquero y los anillos — todo lo que escale o rote en SVG.
+
 ### Los mini juegos, cara a cara
 
 Eran **dos emoji deslizándose sobre una franja rayada** y dos botones de
