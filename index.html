@@ -3632,7 +3632,9 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 .fx .pe{fill:currentColor;stroke:none}
 .fx .ten{opacity:.42}
 .fx .red{opacity:.28}
-.fx > *{animation-duration:1.15s;animation-fill-mode:forwards;animation-iteration-count:1}
+/* Tres vueltas y recién ahí se congela: una sola pasaba demasiado rápido
+   para leerla. 1,15s x 3 = 3,45s, que es lo que dura el cartel. */
+.fx > *{animation-duration:1.15s;animation-fill-mode:forwards;animation-iteration-count:3}
 
 /* 1 · ATAJADA — la pelota entra y se clava en la palma. */
 @keyframes fx-ataja-pel{
@@ -3815,6 +3817,170 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   border-color:var(--red);box-shadow:0 0 60px rgba(255,59,82,.3);
 }
 .sit.resuelta.salvado.lado-favor .t{color:var(--red)}
+
+/* ================= LOS DESENLACES, EN TODOS LOS CARTELES =================
+   Los mismos diez dibujos del tiro errado pasan a los otros seis carteles que
+   cierran una jugada: el mini juego, la situación de gol, el penal pateado, el
+   penal de la ronda, el resumen de la tanda y el sorteo de la moneda. Con seis
+   dibujos más —gol, gambeta, quite, copa y las dos caras de la moneda— quedan
+   dieciséis para todo el juego, y ningún cartel de desenlace usa ya un emoji.
+
+   GAMBETA y QUITE cubren los ocho finales del mini juego entre los dos, porque
+   son **los dos finales posibles de cualquier uno contra uno**: la pelota pasa
+   o se queda. Cuál te conviene depende de quién la tenía —la regla `adivinar`
+   del juego— y eso ya lo dice el color del cartel. */
+
+.sit .sit-ico .fx{display:block;width:1em;height:1em;margin:0 auto;overflow:visible}
+.fx .rd{opacity:.5}
+.fx .fg{opacity:.5}
+
+/* 11 · GOL — entra y la red se infla. */
+@keyframes fx-gol-pel{
+  0%  {transform:translate(19px,11px);opacity:0}
+  12% {opacity:1}
+  52% {transform:translate(0,0)}
+  62% {transform:translate(-1px,1.5px)}
+  100%{transform:translate(0,0)}
+}
+@keyframes fx-gol-red{
+  0%,50%{transform:scaleY(1);opacity:.5}
+  60%   {transform:scaleY(2.2);opacity:1}
+  82%   {transform:scaleY(1.2);opacity:.7}
+  100%  {transform:scaleY(1);opacity:.5}
+}
+.fx-golazo .pe{animation-name:fx-gol-pel;animation-timing-function:cubic-bezier(.25,.6,.4,1)}
+.fx-golazo .rd{animation-name:fx-gol-red;animation-timing-function:ease-out;transform-origin:24px 40px}
+
+/* 12 · GAMBETA — la pelota lo pasa por afuera y él se va para el otro lado. */
+@keyframes fx-gam-pel{
+  0%  {transform:translate(-33px,21px);opacity:0}
+  12% {opacity:1}
+  40% {transform:translate(-23px,15px)}
+  64% {transform:translate(-11px,17px)}
+  84% {transform:translate(-3px,8px)}
+  100%{transform:translate(0,0)}
+}
+@keyframes fx-gam-fig{
+  0%,36%{transform:rotate(0)}
+  62%   {transform:rotate(-9deg)}
+  100%  {transform:rotate(-5deg)}
+}
+.fx-gambeta .pe{animation-name:fx-gam-pel;animation-timing-function:cubic-bezier(.3,.5,.4,1)}
+.fx-gambeta .fg{animation-name:fx-gam-fig;animation-timing-function:ease-out;transform-origin:19px 41px}
+
+/* 13 · QUITE — entra el botín, se la lleva y el otro queda vendido. */
+@keyframes fx-qui-pel{
+  0%,30%{transform:translate(20px,-4px)}
+  100%  {transform:translate(0,0)}
+}
+@keyframes fx-qui-bota{
+  0%,18%{transform:translate(-13px,0) rotate(-26deg)}
+  48%   {transform:translate(2px,0) rotate(10deg)}
+  100%  {transform:translate(0,0) rotate(-6deg)}
+}
+@keyframes fx-qui-fig{
+  0%,42%{transform:rotate(0)}
+  64%   {transform:rotate(10deg)}
+  100%  {transform:rotate(6deg)}
+}
+.fx-quite .pe {animation-name:fx-qui-pel;animation-timing-function:cubic-bezier(.2,.7,.4,1)}
+.fx-quite .bo {animation-name:fx-qui-bota;animation-timing-function:cubic-bezier(.4,.1,.3,1);transform-origin:12px 33px}
+.fx-quite .fg {animation-name:fx-qui-fig;animation-timing-function:ease-out;transform-origin:33px 41px}
+
+/* 14 · LA COPA — entra de golpe y le salta el destello. */
+@keyframes fx-copa{
+  0%  {transform:scale(.55) rotate(-9deg);opacity:0}
+  34% {transform:scale(1.09) rotate(3deg);opacity:1}
+  56% {transform:scale(.97) rotate(0)}
+  100%{transform:scale(1) rotate(0);opacity:1}
+}
+@keyframes fx-brillo{
+  0%,32%{opacity:0;transform:scale(.5)}
+  52%   {opacity:1;transform:scale(1)}
+  88%   {opacity:0;transform:scale(1.3)}
+  100%  {opacity:0;transform:scale(1.3)}
+}
+.fx-copa .cp {animation-name:fx-copa;animation-timing-function:cubic-bezier(.3,1.5,.5,1);transform-origin:24px 41px}
+.fx-copa .br2{animation-name:fx-brillo;animation-timing-function:ease-out;transform-origin:24px 8px}
+
+/* 15 y 16 · LA MONEDA — gira de canto hasta frenar. Llena es CARA, anillo es
+   SECA: los mismos dos discos que ya usaba el sorteo. */
+@keyframes fx-moneda{
+  0%  {transform:scaleX(1) translateY(-10px);opacity:0}
+  10% {opacity:1}
+  24% {transform:scaleX(.08) translateY(-6px)}
+  38% {transform:scaleX(1) translateY(-2px)}
+  50% {transform:scaleX(.08) translateY(-4px)}
+  62% {transform:scaleX(1) translateY(0)}
+  74% {transform:scaleX(.3) translateY(-1px)}
+  86% {transform:scaleX(1) translateY(0)}
+  100%{transform:scaleX(1) translateY(0)}
+}
+.fx-cara .mo,.fx-seca .mo{
+  animation-name:fx-moneda;animation-timing-function:linear;transform-origin:24px 24px;
+}
+
+/* ================= EL DIBUJO MÁS GRANDE Y LA CONSECUENCIA MÁS FUERTE =======
+   El dibujo se veía chico: era el tamaño heredado del emoji, que a 42px ya
+   decía todo con la cara. Una escena con pelota, arco y guante necesita más
+   lugar para leerse. Sube en los dos carteles, y como se mide en `em` alcanza
+   con mover el `font-size` del contenedor.
+
+   Y lo que costó la jugada —el aguante que perdés, la racha que ganás— sale
+   del renglón gris y pasa a su propia chapa: es el dato por el que mirás el
+   cartel, y estaba escrito más chico que todo lo demás. */
+.gf.fallo .fi{font-size:58px;margin-bottom:6px}
+.sit.resuelta .sit-ico{font-size:clamp(66px,15vw,88px);margin:6px 0 2px}
+
+.ef-fin{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--tit);font-weight:800;
+  font-size:17px;letter-spacing:2.2px;text-indent:2.2px;text-transform:uppercase;
+  color:var(--white);
+  margin-top:11px;padding:6px 15px;border-radius:6px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(255,255,255,.06);
+}
+.ef-fin .ih,.ef-fin .ir{width:1.2em;height:1.2em;vertical-align:-.26em}
+/* El mismo tratamiento para el «+1 racha» de la situación de gol, que hasta
+   ahora era una línea dorada chiquita colgada del marcador. */
+.sit .sit-extra{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  width:fit-content;margin:13px auto 0;
+  font-family:var(--tit);font-weight:800;
+  font-size:16px;letter-spacing:2px;text-indent:2px;
+  color:var(--white);
+  padding:5px 14px;border-radius:6px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(255,255,255,.06);
+}
+
+/* ---- Y EL DIBUJO TOMA EL COLOR DEL DESENLACE ----
+   En el cartel de fallo salía solo, porque ahí el color vive en el contenedor.
+   En estos otros el color está puesto en el título, así que el dibujo quedaba
+   blanco al lado de un «¡TE SALVASTE!» verde. Se pone el color en la caja: no
+   pisa nada, porque el rótulo, el marcador y la chapa ya tienen el suyo, y el
+   único que lo hereda es el dibujo. */
+.sit.resuelta.salvado,
+.sit.mam.resuelta.salvado,
+.sit.penal.resuelta.salvado{color:var(--green)}
+.sit.resuelta.gol,
+.sit.mam.resuelta.gol,
+.sit.penal.resuelta.gol{color:var(--red)}
+/* Del lado tuyo la lectura se da vuelta: tu gol es lo bueno y errarla, lo malo. */
+.sit.resuelta.gol.lado-favor{color:var(--green)}
+.sit.resuelta.salvado.lado-favor{color:var(--red)}
+
+@media (min-width:1025px), (min-width:821px) and (orientation:landscape){
+  .gf.fallo .fi{font-size:80px;margin-bottom:10px}
+  .ef-fin{font-size:21px;padding:7px 18px;margin-top:14px}
+  .sit .sit-extra{font-size:20px;padding:6px 17px;margin-top:14px}
+}
+@media (max-width:440px){
+  .gf.fallo .fi{font-size:50px}
+  .ef-fin{font-size:15px;padding:5px 12px;letter-spacing:1.6px}
+  .sit .sit-extra{font-size:14.5px;padding:4px 11px}
+}
 </style>
 </head>
 <body>
@@ -4392,10 +4558,10 @@ function moneda(eqs, canta, titulo, bajada){
         box.className = 'sit moneda resuelta';
         box.innerHTML =
           '<div class="sit-tag">SALIÓ ' + (salio ? 'CARA' : 'SECA') + '</div>' +
-          '<div class="sit-ico">' + (salio ? '🌕' : '🌑') + '</div>' +
+          '<div class="sit-ico">' + icoDesenlace(salio ? 'cara' : 'seca') + '</div>' +
           '<div class="t">' + eqs[gana].club + '</div>' +
           '<div class="s">' + (acerto ? 'ACERTÓ EL SORTEO' : 'SE LO LLEVA IGUAL') + '</div>';
-        await esperarOClick(wrap, 2600);
+        await esperarOClick(wrap, ESPERA_FIN);
         resolve(gana);
       };
     });
@@ -4806,25 +4972,25 @@ const MANOAMANO = {
     tit:'MANO A MANO', ico:'🥅', yo:'⚽', el:'🧤', pregunta:'¿DÓNDE LA DEFINÍS?', adivinar:false,
     izq:'⬅ AL PALO IZQUIERDO', der:'AL PALO DERECHO ➡',
     rival:l => 'El arquero vuela al ' + (l === 'izq' ? 'palo izquierdo' : 'palo derecho'),
-    gana:'¡GOLAZO!', pierde:'ATAJADÓN'
+    gana:'¡GOLAZO!', pierde:'ATAJADÓN', gGana:'golazo', gPierde:'atajada'
   },
   defensor: {
     tit:'UNO CONTRA UNO', ico:'🧱', yo:'⚽', el:'👟', pregunta:'¿POR DÓNDE LO ENCARÁS?', adivinar:false,
     izq:'⬅ POR ADENTRO', der:'POR AFUERA ➡',
     rival:l => 'El defensor cierra ' + (l === 'izq' ? 'por adentro' : 'por afuera'),
-    gana:'¡LO PASÁS!', pierde:'LA PERDISTE'
+    gana:'¡LO PASÁS!', pierde:'LA PERDISTE', gGana:'gambeta', gPierde:'quite'
   },
   medio: {
     tit:'LA MARCA', ico:'🌀', yo:'👟', el:'⚽', pregunta:'¿DE QUÉ LADO LO MARCÁS?', adivinar:true,
     izq:'⬅ IZQUIERDA', der:'DERECHA ➡',
     rival:l => 'Se la lleva para ' + (l === 'izq' ? 'la izquierda' : 'la derecha'),
-    gana:'¡SE LA ROBÁS!', pierde:'TE PASÓ'
+    gana:'¡SE LA ROBÁS!', pierde:'TE PASÓ', gGana:'quite', gPierde:'gambeta'
   },
   delantero: {
     tit:'DEFENDER', ico:'👟', yo:'👟', el:'⚽', pregunta:'¿PARA QUÉ LADO LO MARCÁS?', adivinar:true,
     izq:'⬅ IZQUIERDA', der:'DERECHA ➡',
     rival:l => 'Encara por ' + (l === 'izq' ? 'la izquierda' : 'la derecha'),
-    gana:'¡LO CORTÁS!', pierde:'SE VA SOLO'
+    gana:'¡LO CORTÁS!', pierde:'SE VA SOLO', gGana:'quite', gPierde:'gambeta'
   }
 };
 
@@ -4995,6 +5161,11 @@ const MIN_POR_TURNO = 10;
    1250 contra una animación de 1500 y el aviso de racha llena salía 250ms antes
    de tiempo, tapando el final del gol. */
 const ESPERA_SIT = 2500;   // lo que queda un cartel de situación
+/* Los carteles de **desenlace** —los que dicen qué pasó y traen el dibujo
+   animado— duran más: el dibujo da tres vueltas de 1,15s y recién ahí queda
+   congelado en el fotograma final. Con 2,5s se cortaba a mitad de la
+   segunda. Se puede saltear con un toque, como todos. */
+const ESPERA_FIN = 3500;
 const ESPERA_GOL_POP = 3000;   // el gol dura un poco más: es el momento del partido
 const DURA_GOL   = 1500;
 const ESPERA_GOL = DURA_GOL + 120;
@@ -6702,7 +6873,7 @@ function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo){
           '<div class="sit-tag">' +
             (suelto ? 'EL PENAL' : yoPateo ? 'PATEÓ ' + eqs[quien].club : 'ATAJA ' + eqs[1 - quien].club) +
           '</div>' +
-          '<div class="sit-ico">' + (atajado ? '🧤' : '⚽') + '</div>' +
+          '<div class="sit-ico">' + icoDesenlace(atajado ? 'atajada' : 'golazo') + '</div>' +
           '<div class="t">' +
             (yoPateo ? (conv ? '¡GOL!' : 'ATAJADO')
                      : (atajado ? '¡ATAJADA!' : 'GOL RIVAL')) +
@@ -6711,7 +6882,7 @@ function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo){
             (yoPateo ? (conv ? 'Adentro' : 'Voló y la sacó')
                      : (atajado ? 'La adivinaste' : 'Fue del otro lado')) +
           '</div>';
-        await esperarOClick(wrap, 2600);
+        await esperarOClick(wrap, ESPERA_FIN);
         resolve(conv);
       };
     });
@@ -6745,12 +6916,12 @@ function mostrarPenales(eqs, tiros, ganador, primero){
     wrap.innerHTML =
       '<div class="sit penal resuelta salvado">' +
         '<div class="sit-tag">DEFINIDO EN LOS PENALES</div>' +
-        '<div class="sit-ico">🏆</div>' +
+        '<div class="sit-ico">' + icoDesenlace('copa') + '</div>' +
         '<div class="t">' + eqs[ganador].club + '</div>' +
         tandaHTML(eqs, tiros, primero, -1) +
       '</div>';
     document.body.appendChild(wrap);
-    esperarOClick(wrap, 3200).then(resolve);
+    esperarOClick(wrap, ESPERA_FIN).then(resolve);
   });
 }
 
@@ -6978,10 +7149,10 @@ function manoAMano(tipo, mio, val){
         box.className = 'sit mam resuelta ' + (gana ? 'salvado' : 'gol');
         box.innerHTML =
           '<div class="sit-tag">' + M.rival(suyo).toUpperCase() + '</div>' +
-          '<div class="sit-ico">' + (gana ? '<i class="ir"></i>' : M.ico) + '</div>' +
+          '<div class="sit-ico">' + icoDesenlace(gana ? M.gGana : M.gPierde) + '</div>' +
           '<div class="t">' + (gana ? M.gana : M.pierde) + '</div>';
 
-        await esperarOClick(wrap, ESPERA_SIT);
+        await esperarOClick(wrap, ESPERA_FIN);
         resolve(gana);
       };
     });
@@ -7405,7 +7576,7 @@ function situacionGol(lado, yaElegida){
       box.className = 'sit resuelta ' + (esGol ? 'gol' : 'salvado') + (favor ? ' lado-favor' : '');
       box.innerHTML =
         '<div class="sit-tag">' + S.nm + ' &nbsp;·&nbsp; ' + Math.round(S.p * 100) + '%</div>' +
-        '<div class="sit-ico">' + (esGol ? '⚽' : (favor ? '😖' : '🧤')) + '</div>' +
+        '<div class="sit-ico">' + icoDesenlace(esGol ? 'golazo' : (favor ? 'afuera' : 'atajada')) + '</div>' +
         '<div class="t">' +
           (esGol ? (favor ? '¡GOL!' : 'GOL RIVAL')
                  : (favor ? 'LA ERRASTE' : '¡TE SALVASTE!')) + '</div>' +
@@ -7413,7 +7584,7 @@ function situacionGol(lado, yaElegida){
           (levanta ? '<span class="sit-extra">+1 <i class="ir"></i> RACHA</span>' : '') + '</div>';
 
       render();
-      await esperarOClick(wrap, ESPERA_SIT);
+      await esperarOClick(wrap, ESPERA_FIN);
       if(levanta) await sumarRacha(1);
       resolve();
     };
@@ -7570,13 +7741,70 @@ const GESTOS = {
       '<circle class="fl" cx="16" cy="24" r="6"/>' +
       '<path class="fl" d="M6 42v-4a10 10 0 0 1 20 0v4"/>' +
     '</g>' +
-    '<circle class="pe" cx="27" cy="21" r="5"/>'
+    '<circle class="pe" cx="27" cy="21" r="5"/>',
+
+  /* ---- Y LOS QUE USAN LOS OTROS CARTELES DE DESENLACE ----
+     GAMBETA y QUITE son **los dos finales de cualquier uno contra uno**, y por
+     eso alcanzan para los ocho desenlaces del mini juego: la pelota pasa o se
+     queda. Cuál de los dos te conviene depende de quién la tenía, que es
+     justo la regla del juego (`adivinar`), y eso ya lo dice el color del
+     cartel — verde si te sirve, rojo si no—. Dibujar «lo pasás» y «te pasó»
+     por separado sería dibujar dos veces lo mismo. */
+  golazo:
+    '<path class="fl" d="M6 40V20h36v20"/>' +
+    '<path class="fn red" d="M6 30h36M15 20v20M24 20v20M33 20v20"/>' +
+    '<path class="fn rd" d="M12 40q12 7 24 0"/>' +
+    '<circle class="pe" cx="24" cy="32" r="5.4"/>',
+
+  gambeta:
+    '<g class="fg">' +
+      '<circle class="fn" cx="19" cy="13" r="4.6"/>' +
+      '<path class="fn" d="M12 41V24.5a7 7 0 0 1 14 0V41"/>' +
+    '</g>' +
+    '<path class="fn ten" d="M4 43h40"/>' +
+    '<circle class="pe" cx="40" cy="15" r="5"/>',
+
+  quite:
+    '<g class="fg">' +
+      '<circle class="fn" cx="33" cy="13" r="4.6"/>' +
+      '<path class="fn" d="M26 41V24.5a7 7 0 0 1 14 0V41"/>' +
+    '</g>' +
+    '<g class="bo">' +
+      '<path class="fl" d="M6 19v11a4 4 0 0 0 4 4h9a3 3 0 0 0 0-6h-4a2.5 2.5 0 0 1-2.5-2.5V19"/>' +
+    '</g>' +
+    '<path class="fn ten" d="M4 43h40"/>' +
+    '<circle class="pe" cx="9" cy="37" r="5"/>',
+
+  copa:
+    '<g class="cp">' +
+      '<path class="fl" d="M15 7h18v10a9 9 0 0 1-18 0z"/>' +
+      '<path class="fl" d="M15 10h-6a6 6 0 0 0 6 6"/>' +
+      '<path class="fl" d="M33 10h6a6 6 0 0 1-6 6"/>' +
+      '<path class="fl" d="M24 26v6"/>' +
+      '<path class="fl" d="M14 41h20"/>' +
+      '<path class="fl" d="M18 32h12v9"/>' +
+    '</g>' +
+    '<g class="br2">' +
+      '<path class="fn" d="M39 4l3-3"/><path class="fn" d="M43 9h4"/>' +
+      '<path class="fn" d="M7 5L4 2"/>' +
+    '</g>',
+
+  /* La moneda: llena es CARA, anillo es SECA — los dos discos de 🌕 y 🌑 que
+     ya usaba el sorteo, pero girando hasta frenar. */
+  cara:
+    '<g class="mo">' +
+      '<circle class="fl" cx="24" cy="24" r="13"/>' +
+      '<circle class="pe" cx="24" cy="24" r="8.5"/>' +
+    '</g>',
+
+  seca:
+    '<g class="mo"><circle class="fl" cx="24" cy="24" r="13"/></g>'
 };
 
 /* El SVG se dimensiona en `em`, así que hereda el `font-size` que ya tiene
    `.fi` en cada breakpoint —42px en mobile, 58px en desktop— y los tamaños
    que ya venían andando siguen mandando sin tocar una sola regla. */
-const icoFallo = g =>
+const icoDesenlace = g =>
   '<svg class="fx fx-' + g + '" viewBox="0 0 48 48" aria-hidden="true">' + (GESTOS[g] || '') + '</svg>';
 
 async function flashFallo(tipo, favor){
@@ -7587,16 +7815,15 @@ async function flashFallo(tipo, favor){
   wrap.className = 'gol-flash';
   wrap.innerHTML =
     '<div class="gf fallo ' + (favor ? 'favor' : 'contra') + '">' +
-      '<div class="fi">' + icoFallo(D.g) + '</div>' +
+      '<div class="fi">' + icoDesenlace(D.g) + '</div>' +
       '<div class="t">' + D.t + '</div>' +
-      '<div class="s">' + (favor ? 'NO ENTRÓ &nbsp;·&nbsp; -1 <i class="ih"></i> AGUANTE'
-                                 : 'NO ENTRÓ &nbsp;·&nbsp; +1 <i class="ir"></i> RACHA') + '</div>' +
+      '<div class="s">NO ENTRÓ</div>' +
+      '<div class="ef-fin">' + (favor ? '-1 <i class="ih"></i> AGUANTE'
+                                       : '+1 <i class="ir"></i> RACHA') + '</div>' +
     '</div>';
   document.body.appendChild(wrap);
-  /* Estos se van solos: informan un resultado corto —entró o no entró— y
-     cortarlos con un click rompía el ritmo del partido. Los que siguen
-     esperando el toque son los que traen una decisión o un dato largo. */
-  await esperarOClick(wrap, ESPERA_SIT);
+  /* Se va solo cuando el dibujo dio sus tres vueltas, o antes si tocás. */
+  await esperarOClick(wrap, ESPERA_FIN);
 }
 
 function flashGol(tipo){
@@ -7815,15 +8042,14 @@ function tirarPenal(){
         box.classList.add('resuelta', esGol ? 'salvado' : 'gol');
         box.innerHTML =
           '<div class="sit-tag">LA PONÉS ' + elegido.nm + ' · EL ARQUERO ' + arquero.arq.toUpperCase() + '</div>' +
-          '<div class="sit-ico">' + (esGol ? '⚽' : '🧤') + '</div>' +
+          '<div class="sit-ico">' + icoDesenlace(esGol ? 'golazo' : 'atajada') + '</div>' +
           '<div class="t">' + (esGol ? '¡GOL!' : 'TE LO ATAJÓ') + '</div>' +
           '<div class="s">' + (esGol ? 'PASÁS DE RONDA' : 'SE TERMINA ACÁ') + '</div>';
 
         say(esGol ? '⚽ La ponés ' + elegido.nm.toLowerCase() + ', el arquero ' + arquero.arq + '. ¡GOL!'
                   : '🧤 La ponés ' + elegido.nm.toLowerCase() + ' y el arquero ' + arquero.arq + '. Te la saca.', 'big');
 
-        await wait(1700);
-        wrap.remove();
+        await esperarOClick(wrap, ESPERA_FIN);
         resolve(esGol);
       };
     });

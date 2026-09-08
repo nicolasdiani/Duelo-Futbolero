@@ -1380,6 +1380,51 @@ cuando frenan.
 La regla común del dibujo: **la pelota va maciza y el decorado en línea**. El
 ojo sigue a la pelota, y el arco, el guante o la barrera no le compiten.
 
+### Los mismos dibujos en los siete carteles
+
+Lo que arrancó en el tiro errado se extendió a **todos los carteles que
+cierran una jugada**: el mini juego, la situación de gol, el penal pateado, el
+penal de la ronda, el resumen de la tanda y el sorteo de la moneda. Con seis
+dibujos más —gol, gambeta, quite, copa y las dos caras de la moneda— son
+**dieciséis para todo el juego**, y ningún cartel de desenlace usa ya un emoji.
+
+| Cartel | Desenlaces que usa |
+|---|---|
+| Mini juego | gol · atajada · gambeta · quite |
+| Situación de gol | gol · afuera · atajada |
+| Penal pateado | gol · atajada |
+| Penal de la ronda | gol · atajada |
+| Resumen de la tanda | copa |
+| Sorteo de la moneda | cara · seca |
+
+**GAMBETA y QUITE cubren los ocho finales del mini juego entre los dos.** Son
+los dos finales posibles de cualquier uno contra uno: la pelota pasa o se
+queda. Cuál te conviene depende de quién la tenía —la regla `adivinar`— y eso
+ya lo dice el color. Dibujar «lo pasás» y «te pasó» por separado sería dibujar
+dos veces lo mismo.
+
+En estos carteles el color del desenlace vive en el **título**, no en la caja,
+así que el dibujo salía blanco al lado de un «¡TE SALVASTE!» verde. Se pasó el
+color a la caja: no pisa nada —el rótulo, el marcador y la chapa ya tienen el
+suyo— y el único que lo hereda es el dibujo.
+
+### El dibujo, la chapa y los tres segundos
+
+**El dibujo va más grande.** 42px era el tamaño heredado del emoji, que a ese
+cuerpo ya dice todo con la cara; una escena con pelota, arco y guante necesita
+más lugar. Pasó a 58px en mobile y 80 en desktop, y como se mide en `em`
+alcanzó con mover el `font-size` del contenedor.
+
+**Lo que costó la jugada salió del renglón gris.** El aguante que perdés o la
+racha que ganás estaba escrito más chico que todo lo demás, al final de una
+línea tenue — y es el dato por el que mirás el cartel. Ahora va en su propia
+chapa (`.ef-fin`), centrada y al doble de cuerpo.
+
+**Y el cartel dura lo que dura el dibujo.** Tres vueltas de 1,15s son 3,45s, y
+el cartel vive 3,5s (`ESPERA_FIN`). Con los 2,5s de antes se cortaba a mitad de
+la segunda vuelta. Se saltea con un toque, como todos — incluido el penal de la
+ronda, que antes esperaba con un `wait` y no se podía apurar.
+
 ### El color se lee desde tu lado
 
 En los cinco carteles de desenlace del juego el color no cuenta lo que pasó en
