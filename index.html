@@ -1436,10 +1436,6 @@ img{height:auto}
 
 /* ---------- ESCUDO ---------- */
 .escudo{display:block}
-.esc-letra{
-  font-family:var(--tit);font-weight:800;font-size:52px;
-  fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.45);stroke-width:5;
-}
 .mq-esc{display:inline-flex;flex:0 0 auto}
 .mq-esc .escudo{filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
 .marcador .m-esc{display:block;margin:0 0 6px auto}
@@ -2522,7 +2518,10 @@ body{padding-bottom:36px}
   max-width:620px;width:100%;
   padding:20px 22px 18px;text-align:left;
   border-top:3px solid var(--gold);
-  max-height:calc(100vh - 72px);
+  /* Contra el hueco real del overlay y no contra un calc: el 72px se quedó
+     corto frente a los 76 que reserva el padding, y en una notebook de 700px
+     de alto la tarjeta sobresalía y scrolleaba el fondo. */
+  max-height:100%;
   display:flex;flex-direction:column;gap:12px;
 }
 .club-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
@@ -4264,6 +4263,134 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .fu-ahora em::before{content:'· '}
   .fu-linea{margin:18px -18px}
 }
+
+/* ================= LA PANTALLA DEL CLUB, EN VITRINA =================
+   Era un formulario: el escudo chico a la izquierda y a la derecha una lista
+   con cinco formas y **dos filas de nueve colores** —dieciocho botones a la
+   vez—. Es el único momento en que el jugador crea algo suyo y se veía como
+   un trámite.
+
+   Ahora el escudo va al centro y grande, sobre una peana con luz. Debajo, la
+   tira de formas con cada silueta dibujada **en los colores elegidos**, y una
+   sola fila de nueve con un interruptor de cuál se está pintando: la mitad de
+   botones en pantalla y el doble de tamaño cada uno.
+
+   Todo centrado: en una columna sola, alinear a la izquierda dejaba los
+   rótulos colgando de un lado y el escudo en el otro. */
+.card-club{text-align:center}
+.card-club .club-top{justify-content:center;gap:10px}
+
+.club-vitrina{position:relative;padding:10px 0 0;margin-top:2px}
+.club-vitrina::before{
+  content:'';position:absolute;left:50%;top:-6px;width:230px;height:230px;
+  transform:translateX(-50%);border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, rgba(245,200,66,.2), transparent 62%);
+}
+.club-vitrina .crear-prev{position:relative}
+.club-vitrina .escudo{margin:0 auto;filter:drop-shadow(0 10px 26px rgba(0,0,0,.75))}
+.club-peana{
+  width:150px;height:10px;margin:6px auto 0;border-radius:50%;
+  background:radial-gradient(ellipse, rgba(245,200,66,.3), transparent 70%);
+}
+
+.card-club input{text-align:center}
+.card-club .crear-lb{text-align:center;margin:10px 0 6px}
+
+/* La tira de formas: se desliza si no entra, y cada silueta lleva los colores
+   que el jugador eligió. */
+.club-tira{
+  display:flex;justify-content:center;gap:7px;
+  overflow-x:auto;padding:2px 2px 4px;scrollbar-width:thin;
+}
+.club-tira::-webkit-scrollbar{height:5px}
+.club-tira::-webkit-scrollbar-thumb{background:var(--line);border-radius:9px}
+.club-tira .op-esc{flex:0 0 auto;border-radius:8px;border-width:2px;padding:6px 8px}
+
+/* El interruptor de qué color se está pintando. */
+.club-sw{display:flex;justify-content:center;gap:8px;margin-bottom:9px}
+.sw-b{
+  display:flex;align-items:center;gap:8px;cursor:pointer;
+  border:2px solid var(--line);border-radius:8px;background:rgba(0,12,40,.7);
+  padding:6px 13px 6px 8px;transition:border-color .15s,color .15s;
+  font-family:var(--tit);font-weight:800;font-size:11.5px;letter-spacing:1.8px;
+  color:var(--dim);text-transform:uppercase;
+}
+.sw-b i{width:22px;height:22px;border-radius:4px;display:block;border:1px solid rgba(255,255,255,.25)}
+.sw-b.on{border-color:var(--gold);color:var(--gold)}
+
+/* Una sola fila de nueve, centrada y con los cuadrados más grandes: antes
+   había dos filas de estos mismos botones a 26px. */
+.card-club .col-fila{justify-content:center;gap:7px}
+.card-club .op-col{width:34px;height:34px;border-radius:7px;border-width:2px;padding:3px}
+.card-club .op-col span{border-radius:4px}
+.card-club .op-col.sel{box-shadow:0 0 0 2px rgba(245,200,66,.35)}
+
+.card-club .op-azar{margin-top:12px;border-radius:7px}
+
+@media (max-width:700px){
+  .club-vitrina::before{width:170px;height:170px}
+  .club-peana{width:112px}
+  .card-club .crear-lb{margin:8px 0 5px}
+  .club-tira{gap:5px;justify-content:flex-start}
+  .club-tira .op-esc{padding:5px 6px}
+  .club-sw{gap:6px;margin-bottom:7px}
+  .sw-b{font-size:10.5px;letter-spacing:1.4px;padding:5px 10px 5px 6px;gap:6px}
+  .sw-b i{width:18px;height:18px}
+  .card-club .col-fila{display:grid;grid-template-columns:repeat(9,1fr);gap:5px}
+  .card-club .op-col{width:100%;height:auto;aspect-ratio:1;border-radius:6px}
+}
+@media (max-width:820px) and (max-height:680px){
+  .club-vitrina{padding-top:4px}
+  .club-vitrina::before{width:130px;height:130px}
+  .club-peana{height:7px;margin-top:4px}
+  .card-club .crear-lb{margin:6px 0 4px}
+  .club-tira{gap:4px}
+  .club-sw{margin-bottom:6px}
+  .card-club .op-azar{margin-top:8px;padding:8px}
+}
+
+/* En pantallas de 620px de alto o menos —un 320x568— el escudo de 150px se
+   comía 180 de alto y los dos botones quedaban 43px abajo del corte. Se mide
+   contra `vh`: cede el escudo, que es lo que más ocupa, antes que los
+   controles. El `width:auto` es lo que deja mandar al alto, porque el SVG
+   trae los dos como atributos. */
+@media (max-width:820px) and (max-height:620px){
+  .club-vitrina .escudo{width:auto !important;height:clamp(92px, 19vh, 120px) !important}
+  .club-vitrina::before{width:104px;height:104px}
+  .club-peana{width:86px;height:6px}
+  .card-club .op-col{border-radius:5px}
+  .club-tira .op-esc{padding:4px 5px}
+}
+
+/* Y lo mismo en desktop bajo. Una notebook de 1280x700 tiene ancho de sobra
+   pero 700px de alto: la vitrina en una columna medía 681 contra 628 de hueco
+   y los dos botones quedaban afuera. Los tramos de arriba son `max-width:820`
+   y no la alcanzaban. */
+/* El tope va acá abajo y con las dos clases porque `.card` vuelve a declarar
+   `max-height:calc(100vh - 28px)` más adelante, con la misma especificidad y
+   más tarde: ganaba él y la tarjeta sobresalía del hueco del overlay, que
+   terminaba scrolleando el fondo. */
+.card.card-club{max-height:100%}
+
+@media (min-width:821px) and (max-height:800px){
+  .card-club{padding:14px 20px 14px;gap:8px}
+  .club-vitrina{padding-top:2px}
+  .club-vitrina .escudo{width:auto !important;height:clamp(100px, 17vh, 150px) !important}
+  .club-vitrina::before{width:142px;height:142px}
+  .club-peana{width:96px;height:7px;margin-top:3px}
+  .card-club .crear-lb{margin:6px 0 5px}
+  .club-sw{margin-bottom:7px}
+  .card-club .op-azar{margin-top:7px;padding:7px}
+}
+/* Y un escalón más para el landscape muy bajo —un 1024x640—, donde con lo de
+   arriba todavía sobraban 11px. */
+@media (min-width:821px) and (max-height:660px){
+  .card-club{padding:12px 18px 12px;gap:6px}
+  .club-vitrina .escudo{height:clamp(92px, 15vh, 120px) !important}
+  .club-vitrina::before{width:120px;height:120px}
+  .club-peana{width:84px;margin-top:2px}
+  .card-club .crear-lb{margin:5px 0 4px}
+}
 </style>
 </head>
 <body>
@@ -4641,7 +4768,11 @@ const COLORES = [
 
 /* El patrón interno depende de la forma: mitades, franja, sólido o diagonal.
    Se dibuja recortado contra la silueta con un clipPath. */
-function escudoSVG(size, forma, c1, c2, letra){
+/* Sin letra en el medio: el escudo se lee por su forma y sus dos colores, y
+   la inicial competía justo con las formas que traen franja —el banderín y el
+   inglés la partían al medio—. El nombre del club ya está al lado en todos los
+   lugares donde aparece el escudo. */
+function escudoSVG(size, forma, c1, c2){
   const F = ESCUDOS[forma % ESCUDOS.length];
   const A = COLORES[c1 % COLORES.length].hex;
   const B = COLORES[c2 % COLORES.length].hex;
@@ -4663,7 +4794,6 @@ function escudoSVG(size, forma, c1, c2, letra){
     '</g>' +
     '<path d="' + F.d + '" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="4"/>' +
     '<path d="' + F.d + '" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/>' +
-    (letra ? '<text x="50" y="72" text-anchor="middle" class="esc-letra">' + letra + '</text>' : '') +
   '</svg>';
 }
 
@@ -4681,8 +4811,8 @@ function escudoRivalNuevo(){
 }
 
 
-function escudoDe(e, size, letra){
-  return escudoSVG(size, e.forma, e.c1, e.c2, letra);
+function escudoDe(e, size){
+  return escudoSVG(size, e.forma, e.c1, e.c2);
 }
 
 /* Una fila de colores. `sel` es el elegido y `pre` el prefijo del data-attr,
@@ -4705,7 +4835,7 @@ function panelJugador(i){
 
   return '<div class="jp' + (suTurno ? ' turno' : '') + '">' +
     '<div class="jp-top">' +
-      '<span class="jp-esc">' + escudoDe(j.escudo, 30, j.club.charAt(0)) + '</span>' +
+      '<span class="jp-esc">' + escudoDe(j.escudo, 30) + '</span>' +
       '<span class="jp-nm">' + j.club + '</span>' +
       '<span class="jp-gol">' + goles + '</span>' +
     '</div>' +
@@ -4738,7 +4868,7 @@ function filaColores(sel, pre){
 }
 
 function miEscudo(size){
-  return escudoDe(G.escudo, size, (G.club || '?').trim().charAt(0).toUpperCase());
+  return escudoDe(G.escudo, size);
 }
 
 /* Arranca un partido de la serie. El mesa es uno solo y se agota entre los
@@ -5053,11 +5183,10 @@ function showDuelSetup(){
       '<span class="dl-esc">' + miEscudo(30) + '</span>' +
       '<span class="dl-nm">' + G.club + '</span>' +
       '<span class="dl-lb">LOCAL</span>';
-    const letra = ($('club2Input').value.trim() || '?').charAt(0).toUpperCase();
-    $('escPrev2').innerHTML = escudoSVG(70, G.escudoRival.forma, G.escudoRival.c1, G.escudoRival.c2, letra);
+    $('escPrev2').innerHTML = escudoSVG(70, G.escudoRival.forma, G.escudoRival.c1, G.escudoRival.c2);
     $('opsForma2').innerHTML = ESCUDOS.map((e, i) =>
       '<button class="op-esc' + (i === G.escudoRival.forma ? ' sel' : '') + '" data-f2="' + i + '">' +
-        escudoSVG(26, i, G.escudoRival.c1, G.escudoRival.c2, '') + '</button>').join('');
+        escudoSVG(26, i, G.escudoRival.c1, G.escudoRival.c2) + '</button>').join('');
     $('opsPaleta2').innerHTML =
       '<div class="col-lb">FONDO</div><div class="col-fila">' + filaColores(G.escudoRival.c1, 'v1') + '</div>' +
       '<div class="col-lb">DETALLE</div><div class="col-fila">' + filaColores(G.escudoRival.c2, 'v2') + '</div>';
@@ -6207,15 +6336,15 @@ function render(){
     const [a, b] = G.J;
     $('nomU').textContent = a.club;
     $('nomC').textContent = b.club;
-    $('escU').innerHTML = escudoDe(a.escudo, 26, a.club.charAt(0));
-    $('escC').innerHTML = escudoDe(b.escudo, 26, b.club.charAt(0));
+    $('escU').innerHTML = escudoDe(a.escudo, 26);
+    $('escC').innerHTML = escudoDe(b.escudo, 26);
     $('m-score').classList.toggle('turno-0', G.turno === 0);
     $('m-score').classList.toggle('turno-1', G.turno === 1);
   } else {
     $('nomU').textContent = G.club;
     $('nomC').textContent = R.rival;
     $('escU').innerHTML = miEscudo(26);
-    $('escC').innerHTML = escudoDe(G.escudoRival, 26, R.rival.trim().charAt(0).toUpperCase());
+    $('escC').innerHTML = escudoDe(G.escudoRival, 26);
   }
   if(G.modo === 'duelo'){
     /* Los goles se leen del jugador: `scoreU`/`scoreC` los escriben ahí en el
@@ -6939,7 +7068,7 @@ function duelPintarTienda(quien, primera){
       '<div class="tag">ENTRETIEMPO</div>' +
       '<h1>' + G.J[quien].club + '</h1>' +
       '<div class="duel-local">' +
-        '<span class="dl-esc">' + escudoDe(G.J[quien].escudo, 30, G.J[quien].club.charAt(0)) + '</span>' +
+        '<span class="dl-esc">' + escudoDe(G.J[quien].escudo, 30) + '</span>' +
         '<span class="dl-nm">' + plata(G.J[quien].dinero) + '</span>' +
         '<span class="dl-lb">PARA GASTAR</span>' +
       '</div>' +
@@ -6996,9 +7125,9 @@ function duelResultado(ganador, cerroSerie){
       (cerroSerie ? 'GANÓ' : 'PARTIDO ' + G.serie.partido) + '</div>' +
     '<div class="final-sub">' + G.J[ganador].club + (cerroSerie ? '' : ' se lleva este') + '</div>' +
     '<div class="marcador"><div class="m-fila">' +
-      '<span class="m-eq mio"><span class="m-esc">' + escudoDe(a.escudo, 34, a.club.charAt(0)) + '</span>' + a.club + '</span>' +
+      '<span class="m-eq mio"><span class="m-esc">' + escudoDe(a.escudo, 34) + '</span>' + a.club + '</span>' +
       '<span class="m-res">' + a.goles + '<span class="m-sep">-</span>' + b.goles + '</span>' +
-      '<span class="m-eq suyo"><span class="m-esc">' + escudoDe(b.escudo, 34, b.club.charAt(0)) + '</span>' + b.club + '</span>' +
+      '<span class="m-eq suyo"><span class="m-esc">' + escudoDe(b.escudo, 34) + '</span>' + b.club + '</span>' +
     '</div></div>' +
     (serie ? '<div class="serie">' +
       '<div class="serie-lb">LA SERIE</div>' +
@@ -8562,7 +8691,7 @@ function marcadorFinal(rival, byPens){
     '<div class="m-fila">' +
       '<span class="m-eq mio"><span class="m-esc">' + miEscudo(34) + '</span>' + G.club + '</span>' +
       '<span class="m-res">' + G.gU + '<span class="m-sep">-</span>' + G.gC + '</span>' +
-      '<span class="m-eq suyo"><span class="m-esc">' + escudoDe(G.escudoRival, 34, rival.trim().charAt(0).toUpperCase()) + '</span>' + rival + '</span>' +
+      '<span class="m-eq suyo"><span class="m-esc">' + escudoDe(G.escudoRival, 34) + '</span>' + rival + '</span>' +
     '</div>' +
     (byPens ? '<div class="m-pen">DEFINIDO EN LOS PENALES</div>' : '') +
   '</div>';
@@ -9100,23 +9229,27 @@ function showStart(irAlDuelo){
       '<h1 class="club-h1">TU <em>CLUB</em></h1>' +
     '</div>' +
 
-    '<div class="club-grid">' +
-      '<div class="club-prev">' +
-        '<div class="crear-prev" id="escPrev"></div>' +
-        '<div class="club-nm" id="clubNm">TU CLUB</div>' +
-      '</div>' +
-
-      '<div class="club-ops">' +
-        '<input id="clubInput" maxlength="18" placeholder="NOMBRE DE TU CLUB">' +
-        '<div class="crear-lb">ESCUDO</div>' +
-        '<div class="crear-ops" id="opsForma"></div>' +
-        '<div class="crear-lb">FONDO</div>' +
-        '<div class="col-fila" id="opsC1"></div>' +
-        '<div class="crear-lb">DETALLE</div>' +
-        '<div class="col-fila" id="opsC2"></div>' +
-        '<button class="op-azar" id="azarBtn">🎲 ALEATORIO</button>' +
-      '</div>' +
+    /* El escudo pasa al centro, sobre una peana con luz: es lo único que el
+       jugador crea en todo el juego y estaba tratado como un campo más de un
+       formulario. Debajo, la tira de formas —cada una dibujada con **los
+       colores elegidos**, para verse a sí mismo en cinco siluetas— y una sola
+       fila de colores con un interruptor de cuál se está pintando. Antes eran
+       dos filas de nueve, dieciocho botones a la vez. */
+    '<div class="club-vitrina">' +
+      '<div class="crear-prev" id="escPrev"></div>' +
+      '<div class="club-peana"></div>' +
     '</div>' +
+
+    '<input id="clubInput" maxlength="18" placeholder="NOMBRE DE TU CLUB">' +
+
+    '<div class="crear-lb">FORMA DEL ESCUDO</div>' +
+    '<div class="club-tira" id="opsForma"></div>' +
+
+    '<div class="crear-lb">COLORES</div>' +
+    '<div class="club-sw" id="opsSw"></div>' +
+    '<div class="col-fila" id="opsCol"></div>' +
+
+    '<button class="op-azar" id="azarBtn">🎲 SORPRENDEME</button>' +
 
     '<div class="club-pie">' +
       '<button class="cta" id="startBtn">' +
@@ -9132,23 +9265,25 @@ function showStart(irAlDuelo){
   G.escudo = { forma: rnd(ESCUDOS.length), c1: rnd(COLORES.length), c2: rnd(COLORES.length) };
   if(G.escudo.c2 === G.escudo.c1) G.escudo.c2 = (G.escudo.c2 + 1) % COLORES.length;
 
+  /* Cuál de los dos colores está pintando la fila de abajo. */
+  let cualColor = 'c1';
+
   const pintar = () => {
-    const nombre = $('clubInput').value.trim().toUpperCase();
-    const letra = (nombre || '?').charAt(0);
-    $('escPrev').innerHTML = escudoSVG(150, G.escudo.forma, G.escudo.c1, G.escudo.c2, letra);
-    $('clubNm').textContent = nombre || 'TU CLUB';
+    $('escPrev').innerHTML = escudoSVG(150, G.escudo.forma, G.escudo.c1, G.escudo.c2);
     $('opsForma').innerHTML = ESCUDOS.map((e, i) =>
       '<button class="op-esc' + (i === G.escudo.forma ? ' sel' : '') + '" data-forma="' + i + '" title="' + e.nm + '">' +
-        escudoSVG(30, i, G.escudo.c1, G.escudo.c2, '') + '</button>').join('');
-    $('opsC1').innerHTML = filaColores(G.escudo.c1, 'c1');
-    $('opsC2').innerHTML = filaColores(G.escudo.c2, 'c2');
+        escudoSVG(34, i, G.escudo.c1, G.escudo.c2) + '</button>').join('');
+    $('opsSw').innerHTML = ['c1', 'c2'].map((k, i) =>
+      '<button class="sw-b' + (cualColor === k ? ' on' : '') + '" data-sw="' + k + '">' +
+        '<i style="background:' + COLORES[G.escudo[k]].hex + '"></i>COLOR ' + (i + 1) + '</button>').join('');
+    $('opsCol').innerHTML = filaColores(G.escudo[cualColor], 'col');
 
     document.querySelectorAll('[data-forma]').forEach(b =>
       b.onclick = () => { G.escudo.forma = +b.dataset.forma; pintar(); });
-    document.querySelectorAll('[data-c1]').forEach(b =>
-      b.onclick = () => { G.escudo.c1 = +b.dataset.c1; pintar(); });
-    document.querySelectorAll('[data-c2]').forEach(b =>
-      b.onclick = () => { G.escudo.c2 = +b.dataset.c2; pintar(); });
+    document.querySelectorAll('[data-sw]').forEach(b =>
+      b.onclick = () => { cualColor = b.dataset.sw; pintar(); });
+    document.querySelectorAll('[data-col]').forEach(b =>
+      b.onclick = () => { G.escudo[cualColor] = +b.dataset.col; pintar(); });
   };
   pintar();
   $('clubInput').addEventListener('input', pintar);

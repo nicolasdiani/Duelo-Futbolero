@@ -1380,6 +1380,53 @@ cuando frenan.
 La regla común del dibujo: **la pelota va maciza y el decorado en línea**. El
 ojo sigue a la pelota, y el arco, el guante o la barrera no le compiten.
 
+### La pantalla del club, en vitrina
+
+Era un formulario: el escudo chico a la izquierda y a la derecha una lista con
+cinco formas y **dos filas de nueve colores** — dieciocho botones a la vez, de
+26px. Es el único momento en que el jugador crea algo suyo y se veía como un
+trámite.
+
+Ahora el escudo va **al centro y grande, sobre una peana con luz**. Debajo, la
+tira de formas con cada silueta dibujada **en los colores elegidos** —te ves a
+vos mismo en cinco siluetas— y una sola fila de nueve con un interruptor de
+**COLOR 1 / COLOR 2**: la mitad de botones en pantalla y cada uno de 34px.
+
+Todo centrado. En una columna sola, alinear a la izquierda dejaba los rótulos
+colgando de un lado y el escudo en el otro.
+
+#### Fuera la letra del escudo
+
+El escudo llevaba la inicial del club en el medio. Se sacó: se lee por su
+**forma y sus dos colores**, y la inicial competía justo con las formas que
+traen franja —el banderín y el inglés la partían al medio—. El nombre del club
+ya está al lado en todos los lugares donde aparece el escudo.
+
+Se sacó del dibujante (`escudoSVG`), así que vale también para la marquesina,
+los marcadores y la pantalla del 1 vs 1.
+
+#### El alto, en cuatro escalones
+
+La columna única es más alta que las dos columnas de antes, así que hubo que
+escalonarla. El escudo se mide contra `vh`: es lo que más ocupa, y cede él
+antes que los controles.
+
+| Pantalla | Escudo |
+|---|---|
+| Normal | 180px |
+| Desktop ≤800px de alto | 17vh (150 máx) |
+| Desktop ≤660px | 15vh |
+| Mobile ≤620px | 19vh (120 máx) |
+
+Y el tope de la tarjeta pasó a medirse contra el hueco real del overlay
+(`max-height:100%`) en vez de `calc(100vh - 72px)`, que se quedaba corto
+frente a los 76px que reserva el padding. Va con las dos clases
+—`.card.card-club`— porque `.card` vuelve a declararlo más adelante con la
+misma especificidad y ganaba él.
+
+Verificado en 320x568, 360x640, 390x844, 1024x640, 1280x700, 1366x768 y
+1440x900: la tarjeta entra entera, sin scroll propio ni del fondo.
+
 ### Cuando se te funde el equipo
 
 Quedarte sin aguante es el **único castigo permanente** del juego: perdés un
