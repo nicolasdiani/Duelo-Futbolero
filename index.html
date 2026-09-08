@@ -3981,6 +3981,46 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .ef-fin{font-size:15px;padding:5px 12px;letter-spacing:1.6px}
   .sit .sit-extra{font-size:14.5px;padding:4px 11px}
 }
+
+/* ============ EL PIE DE LA CARTA, MÁS GRANDE EN DESKTOP ============
+   Lo que dice qué te deja la carta —el efecto sobre los medidores, la chapa
+   del MINI JUEGO y el porcentaje de gol— se leía chico justo donde más lugar
+   hay. La razón: `.c-out` sí subía por tramo de ancho (11,5 → 12,5 → 13,5 →
+   14,5) pero **`.efe` y la chapa se declaraban una sola vez** en el bloque
+   base de desktop, así que en una pantalla de 1900px el renglón del efecto
+   seguía en 11,5px mientras el de arriba estaba en 14,5. El pie terminaba
+   siendo lo más chico de la carta, cuando es el dato con el que decidís.
+
+   Ahora los tres suben juntos y por tramo. El techo se lo pone el nombre de
+   la carta: el resultado queda **justo debajo** de él y el efecto debajo del
+   resultado, que es el orden en que se lee una carta —qué es, qué puede pasar,
+   qué te deja—. Emparejarlo con el título los volvía dos renglones del mismo
+   peso, con la misma tipografía. Mobile no se toca. */
+@media (min-width:1025px), (min-width:821px) and (orientation:landscape){
+  .cell .c-out{font-size:14.4px}          /* el nombre va en 15 */
+  .cell .c-out .efe{font-size:13.2px;margin-top:5px;padding-top:5px}
+  .cell .c-out .mj-lb{font-size:10.8px;letter-spacing:2.2px;padding:3px 9px;margin-bottom:5px}
+  .cell .c-out .mj-ico{font-size:12px}
+}
+/* La franja media, donde la mesa tiene menos ancho. */
+@media (max-width:1300px) and (min-width:1025px){
+  .cell .c-out{font-size:12.9px}          /* el nombre va en 13,6 */
+  .cell .c-out .efe{font-size:11.9px;margin-top:4px;padding-top:4px}
+  .cell .c-out .mj-lb{font-size:10px;letter-spacing:1.9px;padding:2px 8px}
+  .cell .c-out .mj-ico{font-size:11px}
+}
+@media (min-width:1600px){
+  .cell .c-out{font-size:15.6px}          /* el nombre va en 16,5 */
+  .cell .c-out .efe{font-size:14.3px}
+  .cell .c-out .mj-lb{font-size:11.6px;padding:3px 10px}
+  .cell .c-out .mj-ico{font-size:13px}
+}
+@media (min-width:1900px){
+  .cell .c-out{font-size:16.8px}          /* el nombre va en 18 */
+  .cell .c-out .efe{font-size:15.4px}
+  .cell .c-out .mj-lb{font-size:12.4px}
+  .cell .c-out .mj-ico{font-size:14px}
+}
 </style>
 </head>
 <body>
