@@ -3353,6 +3353,36 @@ body{padding-bottom:36px}
   .gf.fallo .t{font-size:clamp(32px, 2.9vw, 46px)}
   .gf.fallo .s{font-size:14px;margin-top:11px}
 }
+
+/* ============ EL BOTÓN DEL RELATO, ABAJO A LA IZQUIERDA (MOBILE) ============
+   Estaba abajo a la **derecha** y se apoyaba sobre la última fila: tapaba el
+   efecto de la carta de la esquina —22px de la carta quedaban debajo—.
+
+   Se muda al rincón izquierdo, que es el único tramo libre de la barra de
+   abajo: los dos links van centrados, así que de x=0 a ~100px no hay nada.
+   Como el botón es más alto que esa barra, el body reserva lo que sobresale
+   —y solo eso— para que no llegue a ninguna carta. Cuesta 17px de mesa, no
+   los 40 que costaría reservarlo entero.
+
+   Va al final de la hoja porque el bloque de "mobile chico" vuelve a declarar
+   `body{padding:5px}` y pisaría la reserva.
+
+   El `z-index` tiene que superar el de la barra de abajo (300), que si no lo
+   tapa con su fondo. */
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){
+  :root{--fab:40px}
+  body{padding-bottom:22px}
+  .log-fab{
+    left:7px;right:auto;bottom:4px;
+    width:var(--fab);height:var(--fab);
+    font-size:17px;z-index:310;
+  }
+  /* La línea de ayuda arranca después del botón, no debajo. */
+  .board-hint{padding-left:calc(var(--fab) + 10px)}
+  /* Y los créditos se centran en lo que queda, para que en pantallas de
+     320px el botón no se le monte al primer link. */
+  .ft{padding-left:calc(var(--fab) + 12px)}
+}
 </style>
 </head>
 <body>
