@@ -36,6 +36,27 @@
   --cesped2:#1a5230;
   --cal:rgba(255,255,255,.5);
 
+  /* ---- LAS FICHAS ----
+     La ficha del ítem y la de la posibilidad de gol son el mismo objeto: se
+     abren igual, se cierran igual y dicen lo mismo. Antes compartían estilo por
+     coincidencia —los mismos violetas escritos a mano en veintipico de lugares—
+     así que tocar una dejaba a la otra distinta. Ahora salen de acá.
+
+     El violeta venía de otra paleta y competía con el dorado. Este celeste
+     cálido sale del azul de la cancha, así que la ficha se lee como parte de la
+     transmisión y no como un cartel pegado encima. */
+  --fi-luz:#9ed8ee;                    /* el filo, el pico y los bordes */
+  --fi-claro:#f2f8fa;                  /* el texto que hay que leer */
+  --fi-suave:#afc8d6;                  /* la bajada, un escalón abajo */
+  --fi-fondo-a:rgba(10,38,70,.985);
+  --fi-fondo-b:rgba(4,18,40,.99);
+  --fi-borde:rgba(158,216,238,.5);
+  --fi-borde-suave:rgba(158,216,238,.28);
+  --fi-halo:rgba(90,180,230,.32);
+  --fi-btn-a:rgba(16,58,104,.95);
+  --fi-btn-b:rgba(6,24,52,.96);
+  --fi-mini:rgba(8,28,56,.75);
+
   --tit:'Saira Condensed',system-ui,sans-serif;
   --txt:'Archivo',system-ui,sans-serif;
 }
@@ -195,7 +216,12 @@ img{height:auto}
   grid-template-columns:245px minmax(0,1fr) 215px;
   gap:12px;align-items:start;
 }
-.lado{display:flex;flex-direction:column;gap:12px;position:sticky;top:14px}
+/* El `z-index` acá no es decorativo: `position:sticky` **crea un contexto de
+   apilamiento**, así que el `z-index:200` de la ficha del ítem solo competía
+   adentro de esta columna, no contra la mesa. Y como `.centro` viene después en
+   el DOM, el tablero le pasaba por encima. Elevando la columna, la ficha sale
+   por arriba de todo. */
+.lado{display:flex;flex-direction:column;gap:12px;position:sticky;top:14px;z-index:5}
 .centro{display:flex;flex-direction:column;gap:10px;min-width:0}
 
 .panel{
@@ -657,6 +683,18 @@ img{height:auto}
 /* Es la jugada más fuerte que podés tener disponible, así que va arriba de
    todo, ancha, en verde y titilando. Antes era un botón más dentro de la barra
    de columnas y se perdía entre ellos. */
+/* El contenedor que ancla la ficha al cartel de gol.
+   La ficha usa `top:calc(100% + 9px)`, que se mide contra el ancestro
+   posicionado más cercano. Como el cartel no tenía `position` y la ficha
+   quedaba como hermana suelta, ese ancestro terminaba siendo `.wrap`: el 100%
+   pasaba a ser **el alto de toda la página** y la ficha se desplegaba abajo de
+   todo, lejos del cartel que la abrió.
+
+   No alcanza con ponerle `position:relative` al cartel, porque la ficha es su
+   hermana y no su hija. Y no se puede meterla adentro: el cartel es un
+   `<button>` y anidar botones rompe la interacción. Por eso se lo envuelve. */
+.gol-ancla{position:relative;width:100%;display:block}
+
 /* Apagado (racha incompleta): gris y quieto, pero legible — se tiene que ver
    qué es y cuánto falta. Encendido: verde y latiendo. */
 .gol-banner{
@@ -984,7 +1022,13 @@ img{height:auto}
 /* El ítem que ahora no haría nada: se ve apagado pero sigue clickeable, y al
    tocarlo explica por qué. Apagarlo del todo dejaría al jugador sin saber si
    está roto o si no corresponde. */
-.item.inutil{opacity:.5;border-style:dashed}
+/* **El atenuado va en el contenido, no en el botón.** Con `opacity` en el
+   `.item`, la ficha quedaba al 50% por ser su hija — y justo la del ítem
+   inservible es la que más hay que poder leer, porque es la que explica por qué
+   no se puede usar. Encima, un `opacity` menor a 1 crea un contexto de
+   apilamiento: otra capa que encerraba a la ficha. */
+.item.inutil{border-style:dashed}
+.item.inutil > :not(.item-ficha){opacity:.5}
 .item.inutil .ief{opacity:.45}
 /* Apuntando con este ítem: queda encendido y el click lo cancela. */
 .item.apuntando{
@@ -1753,14 +1797,14 @@ img{height:auto}
   z-index:200;width:250px;
   display:grid;grid-template-columns:minmax(0,1fr);
   gap:9px;padding:11px 13px;
-  background:linear-gradient(160deg, rgba(46,30,78,.985), rgba(18,10,38,.99));
-  border:1px solid rgba(168,132,255,.55);
-  border-left:3px solid #a884ff;
+  background:linear-gradient(160deg, var(--fi-fondo-a), var(--fi-fondo-b));
+  border:1px solid var(--fi-borde);
+  border-left:3px solid var(--fi-luz);
   border-radius:9px;
   box-shadow:
     0 0 0 1px rgba(0,0,0,.5),
     0 14px 44px rgba(0,0,0,.7),
-    0 0 34px rgba(120,80,220,.32);
+    0 0 34px var(--fi-halo);
   opacity:0;pointer-events:none;
   transition:opacity .18s, transform .18s;
 }
@@ -1769,7 +1813,7 @@ img{height:auto}
 /* El pico que apunta al ítem. */
 .item-ficha::before{
   content:'';position:absolute;right:100%;top:50%;margin-top:-7px;
-  border:7px solid transparent;border-right-color:#a884ff;
+  border:7px solid transparent;border-right-color:var(--fi-luz);
 }
 
 .if-txt{min-width:0}
@@ -1777,32 +1821,32 @@ img{height:auto}
   font-family:var(--tit);font-weight:800;font-size:12.5px;letter-spacing:.8px;
   display:flex;align-items:center;gap:7px;flex-wrap:wrap;color:#fff;
 }
-.if-ef{font-size:.94em;color:#c9a9ff}
-.if-ef b{color:#c9a9ff;font-weight:800}
+.if-ef{font-size:.94em;color:var(--fi-luz)}
+.if-ef b{color:var(--fi-luz);font-weight:800}
 .if-desc{
-  font-family:var(--txt);font-size:11.5px;color:#b9a8d8;
+  font-family:var(--txt);font-size:11.5px;color:var(--fi-suave);
   line-height:1.35;margin-top:3px;
 }
 .if-btns{display:flex;gap:6px}
 .if-btn{
   flex:1;padding:8px 10px;border-radius:6px;cursor:pointer;
   font-family:var(--tit);font-weight:800;font-size:10.5px;letter-spacing:1.5px;
-  background:linear-gradient(160deg, rgba(72,44,124,.95), rgba(26,14,52,.96));
-  border:2px solid #a884ff;color:#dcc9ff;
+  background:linear-gradient(160deg, var(--fi-btn-a), var(--fi-btn-b));
+  border:2px solid var(--fi-luz);color:var(--fi-claro);
   transition:transform .12s, box-shadow .15s;
 }
-.if-btn:hover{transform:translateY(-1px);box-shadow:0 0 0 1px #a884ff}
+.if-btn:hover{transform:translateY(-1px);box-shadow:0 0 0 1px var(--fi-luz)}
 .if-btn.alt{
-  border-color:rgba(168,132,255,.28);color:#9b8cba;
-  background:linear-gradient(160deg, rgba(30,20,56,.95), rgba(14,8,30,.96));
+  border-color:var(--fi-borde-suave);color:var(--fi-suave);
+  background:linear-gradient(160deg, var(--fi-btn-a), var(--fi-btn-b));
 }
-.if-btn.alt:hover{border-color:#c9a9ff;color:#dcc9ff;box-shadow:none}
+.if-btn.alt:hover{border-color:var(--fi-luz);color:var(--fi-claro);box-shadow:none}
 .item-ficha .if-btn:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
 
 /* El ítem abierto se marca en el mismo lila. */
 .item.abierto{
-  border-color:#a884ff !important;
-  box-shadow:0 0 0 1px #a884ff, 0 0 18px rgba(120,80,220,.4);
+  border-color:var(--fi-luz) !important;
+  box-shadow:0 0 0 1px var(--fi-luz), 0 0 18px var(--fi-halo);
 }
 
 /* Si a la derecha no hay lugar —pantallas angostas— cae debajo del ítem. */
@@ -1814,7 +1858,7 @@ img{height:auto}
   .item-ficha.on{transform:none}
   .item-ficha::before{
     right:auto;left:16px;top:auto;bottom:100%;margin:0;
-    border-color:transparent;border-bottom-color:#a884ff;
+    border-color:transparent;border-bottom-color:var(--fi-luz);
   }
 }
 
@@ -1826,19 +1870,19 @@ img{height:auto}
   position:absolute;top:calc(100% + 9px);left:0;right:0;
   width:auto;transform:translateY(-5px);
   display:block;
-  background:linear-gradient(160deg, rgba(46,30,78,.985), rgba(18,10,38,.99));
-  border:1px solid rgba(168,132,255,.55);
-  border-left:3px solid #a884ff;
+  background:linear-gradient(160deg, var(--fi-fondo-a), var(--fi-fondo-b));
+  border:1px solid var(--fi-borde);
+  border-left:3px solid var(--fi-luz);
   box-shadow:
     0 0 0 1px rgba(0,0,0,.5),
     0 14px 44px rgba(0,0,0,.7),
-    0 0 34px rgba(120,80,220,.32);
+    0 0 34px var(--fi-halo);
 }
 .item-ficha.ficha-gol.on{transform:none}
 /* El pico apunta hacia arriba, al cartel. */
 .item-ficha.ficha-gol::before{
   right:auto;left:22px;top:auto;bottom:100%;margin:0;
-  border-color:transparent;border-bottom-color:#a884ff;
+  border-color:transparent;border-bottom-color:var(--fi-luz);
 }
 
 .fg-top{
@@ -1846,13 +1890,13 @@ img{height:auto}
   margin-bottom:9px;
 }
 .fg-nm{font-family:var(--tit);font-weight:800;font-size:12px;letter-spacing:.8px;color:#fff}
-.fg-esp{font-family:var(--tit);font-weight:800;font-size:12.5px;color:#c9a9ff}
+.fg-esp{font-family:var(--tit);font-weight:800;font-size:12.5px;color:var(--fi-luz)}
 
 .fg-minis{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
 .fg-mini{
   position:relative;text-align:center;padding:6px 2px;
-  border:1px solid rgba(168,132,255,.28);border-radius:6px;
-  background:rgba(20,12,44,.75);
+  border:1px solid var(--fi-borde-suave);border-radius:6px;
+  background:var(--fi-mini);
   transition:transform .14s, box-shadow .14s, border-color .14s, opacity .3s;
 }
 /* La que entra siempre, y la que se juega. */
@@ -1865,7 +1909,7 @@ img{height:auto}
 .fg-ico{display:block;font-size:16px;line-height:1}
 .fg-pct{
   display:block;font-family:var(--tit);font-weight:800;
-  font-size:9.2px;color:#c9a9ff;margin-top:3px;
+  font-size:9.2px;color:var(--fi-luz);margin-top:3px;
 }
 .fg-mini.seguro .fg-pct{color:#7de08f}
 .fg-mini.mj .fg-pct{color:var(--gold)}
@@ -1877,8 +1921,8 @@ img{height:auto}
   transform:translateY(-3px) scale(1.05);z-index:3;
 }
 .fg-mini.gana{
-  border-color:#dcc9ff !important;
-  box-shadow:0 0 0 3px #a884ff, 0 0 26px rgba(120,80,220,.6);
+  border-color:var(--fi-claro) !important;
+  box-shadow:0 0 0 3px var(--fi-luz), 0 0 26px var(--fi-halo);
   transform:translateY(-5px) scale(1.1);z-index:4;
 }
 .fg-mini.fuera{opacity:.28}
@@ -1890,8 +1934,8 @@ img{height:auto}
 .item-ficha.ficha-gol .if-btn{flex:0 1 auto;min-width:112px}
 
 .gol-banner.abierto{
-  border-color:#a884ff !important;
-  box-shadow:0 0 0 1px #a884ff, 0 0 18px rgba(120,80,220,.4);
+  border-color:var(--fi-luz) !important;
+  box-shadow:0 0 0 1px var(--fi-luz), 0 0 18px var(--fi-halo);
 }
 
 @media (max-width:400px){
@@ -2606,7 +2650,10 @@ body{padding-bottom:36px}
 
   #panelItems{grid-area:items;min-width:0;padding:0;background:none;border:none}
   #panelPlantel{grid-area:stats;justify-self:end}
-  .gol-banner{grid-area:gol}
+  /* El ancla envuelve al cartel, así que el hijo del grid pasa a ser ella.
+     Se nombran las dos: antes de que el jugador abra la ficha por primera vez
+     el cartel todavía está suelto, sin envolver. */
+  .gol-banner,.gol-ancla{grid-area:gol}
   .board-zona{
     grid-area:mesa;min-height:0;align-self:stretch;
     display:flex;flex-direction:column;
@@ -2758,7 +2805,7 @@ body{padding-bottom:36px}
   /* A la derecha, en vertical: lo que se usa arriba y el relato abajo. */
   #panelItems{grid-column:2;flex-direction:column}
   #panelItems .item-list{flex-direction:column}
-  .gol-banner{grid-column:2;max-width:none;margin:0}
+  .gol-banner,.gol-ancla{grid-column:2;max-width:none;margin:0}
   #panelPlantel{grid-column:2;margin:0;justify-content:space-between}
   #panelPlantel .stat{flex:1}
   .panel-log{grid-column:2}
@@ -5229,9 +5276,20 @@ function abrirFichaGol(btn){
     f = document.createElement('div');
     f.className = 'item-ficha';
   }
-  /* **Justo debajo del banner**, no al final de la columna: con `appendChild`
-     la ficha caía después de la mesa, lejos del cartel que la abrió. */
-  if(f.previousElementSibling !== banner) banner.after(f);
+  /* **Justo debajo del banner**, no al final de la columna.
+     Ser hermana del cartel no alcanzaba: como el cartel no es un ancestro
+     posicionado, el `top:100%` de la ficha se medía contra `.wrap` y la
+     desplegaba abajo de toda la página. Se envuelve el cartel en un ancla
+     posicionada y la ficha vive adentro, así el 100% es el alto del cartel. */
+  let ancla = banner.parentNode;
+  if(!ancla.classList.contains('gol-ancla')){
+    const nueva = document.createElement('div');
+    nueva.className = 'gol-ancla';
+    ancla.insertBefore(nueva, banner);
+    nueva.appendChild(banner);
+    ancla = nueva;
+  }
+  if(f.parentNode !== ancla) ancla.appendChild(f);
 
   const yaEstaba = btn.classList.contains('abierto');
   cerrarFichaItem();
