@@ -4266,3 +4266,75 @@ El que patea elige el palo; el arquero vuela al azar. El mesa de la tanda
 - **Sin cartas de dinero** en el último partido de una serie: no queda mercado
   donde gastarla
 - **Un partido o al mejor de 3**, a elección
+
+## Las señales que laten
+
+Cuatro cosas del tablero laten para pedir atención: el **último corazón**, la
+**racha llena**, las **cuatro columnas habilitadas** y el **cartel de
+posibilidad de gol**. Las cuatro funcionaban, pero laten poco: todas cambiaban
+*brillo y sombra* y **ninguna cambiaba de tamaño**, que es lo que el ojo detecta
+primero. Con el tablero lleno de cartas encendidas, se perdían.
+
+Ahora hay **dos intensidades**, según cuánto tenga que gritar cada una.
+
+### Un pulso parejo — la racha y las columnas
+
+Son cinco cosas que aparecen **juntas** —la racha se llena y en el mismo momento
+se habilitan las cuatro columnas— así que no pueden competir entre ellas. Late
+lo mismo de siempre, con más volumen: halos al doble, bordes un poco más gruesos
+y un crecimiento chico.
+
+| | Antes | Ahora |
+|---|---|---|
+| racha llena (`rachaviva`) | halo 14px al 45% | halo 20px al 60% + `scale(1.025)` |
+| columnas (`titilarBorde`) | borde 1→2px, halo 26px al 60% | borde 1→2.5px, halo 30px al 75% + crecimiento |
+
+Las columnas crecen **1,2% de ancho y 5,5% de alto**, no un 3% parejo. Son
+`flex:1` sobre un `gap:6px` **fijo**, así que el botón crece con la pantalla
+pero el hueco no: con un 3% parejo quedaban 0,4px entre botón y botón en 1366 y
+en 1920 —244px cada uno— **se superponían 1,4px** en el pico. El crecimiento que
+se ve pasa a ser el alto, que es a donde el botón tiene lugar de sobra.
+
+### Dos golpes y una pausa — el corazón y el gol
+
+Las dos que sí tienen que **interrumpir** lo que estés mirando. En vez de una
+onda pareja, un pulso de verdad: un golpe fuerte, uno más chico, y descanso.
+
+```
+0%   14%    28%   42%      60% ────────── 100%
+│     ▲      │     ▲        │
+│    fuerte  │   más chico  └─ y descansa más de medio ciclo
+```
+
+El ritmo irregular es lo que las hace imposibles de ignorar **sin subirles el
+brillo hasta molestar**: el pico dura poco y después se queda quieto.
+
+- `latido` — el último corazón (`scale(1.22)` + `brightness(1.7)` en el pico) y
+  el botón USAR del cartel
+- `golvivo` — el cartel entero: halo verde de 34px y `scale(1.03)`
+
+El **reloj** de las dos últimas jugadas se queda con el titileo parejo de
+siempre: es texto, y un número que cambia de tamaño mientras corre el reloj se
+lee peor, no mejor.
+
+### Lo que hubo que resolver para que crecieran
+
+- **El levantón del hover del cartel dejó de funcionar.** Estaba en
+  `transform:translateY(-2px)` y la animación —que ahora también anima
+  `transform`— le gana siempre. Pasó a la propiedad `translate`, que es aparte
+  y **se compone** con el `transform` de la animación, así que el cartel late y
+  se levanta a la vez. En touch, donde el `:hover` se queda pegado, el bloque
+  `(hover:none)` lo devuelve a `translate:none`.
+- **`prefers-reduced-motion`.** Antes eran pulsos de brillo y sombra y podían
+  quedar afuera; el tamaño es justo lo que la preferencia pide que no se mueva.
+  Ahora las cinco se apagan y la señal la sigue dando la sombra, **quieta**: se
+  ve igual de encendido, pero no se mueve.
+
+### Y el cartel, centrado en mobile
+
+En mobile el cartel esconde la descripción y queda solo el título y el botón,
+pero el título seguía **pegado a la izquierda** con todo el hueco a la derecha:
+`.gb-txt` es `flex:1` y se comía el ancho sobrante sin usarlo. Un
+`text-align:center` en el mismo bloque donde se esconde `.gb-s` y ocupa el
+ancho parejo. En desktop la descripción vuelve, y con ella la alineación a la
+izquierda.
