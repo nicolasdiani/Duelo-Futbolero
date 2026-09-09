@@ -5124,3 +5124,71 @@ Medido en catorce pantallas —320x568, 360x640, 390x780, 390x844, 414x896,
 640x480, 768x1024, 820x400, 844x390, 900x500, 1024x768, 1280x720, 1366x600,
 1366x768 y 1920x1080—, con los dos botones y con uno solo: **ninguna hace
 scroll**.
+
+
+## El fondo de la mesa: el césped, y nada más
+
+Había **dos canchas superpuestas y no se veía ninguna**.
+
+La primera era una foto aérea que en realidad no es una cancha: es una ciudad
+entera vista desde el aire —cielo, edificios, avenidas— con el estadio en el
+medio y la cancha ocupando cerca de **un octavo del cuadro**. La foto además
+viene ya desenfocada y oscurecida en el archivo, y encima llevaba un velo azul
+que llegaba al **94% de opacidad** en las esquinas. De verde no quedaba nada.
+
+La segunda eran las **dos áreas dibujadas** con líneas blancas, `body::before` y
+`body::after`, que sobraban de cuando el fondo era todo gradientes —«el fondo es
+la cancha: césped rayado, círculo central y los dos arcos», decía el comentario—
+y que después de meter la foto ya no coincidían con nada.
+
+El resultado era que **el tablero azul flotaba sobre un fondo azul**.
+
+### El césped ya estaba adentro de la foto
+
+No hizo falta arte nuevo. `pasto` es el rectángulo verde de `cancha`, recortado:
+
+| | |
+|---|---|
+| recorte | 450x190 del original de 1200x655 |
+| tratamiento | saturación x3,4, brillo +0,20, y el tinte azul sacado con `colorlevels` |
+| trae puestas | las franjas, el círculo central, las dos áreas y la línea de mitad de cancha |
+| peso | **15 KB** contra los 40 de la foto entera |
+
+`cancha` sigue igual y sigue en uso: la marquesina del menú sí quiere ver el
+estadio completo.
+
+### El velo pasa de azul a verde
+
+```
+radial-gradient(ellipse 118% 96% at 50% 45%,
+  rgba(6,32,18,.04) 0%, rgba(4,26,15,.5) 62%, rgba(2,14,9,.92) 100%)
+```
+
+Dos efectos de un solo movimiento:
+
+- **el verde aparece de verdad**, no como un detalle al centro que el velo apaga
+  hacia los bordes;
+- y como el verde es el opuesto del azul de las cartas, **el contraste sale
+  gratis**: el tablero se recorta solo, sin tener que iluminarlo.
+
+Las áreas dibujadas se fueron con `--cal`, la variable que solo ellas usaban. La
+cancha de la foto ya trae las suyas.
+
+### El filo de los paneles sube
+
+Sobre el azul de antes, un borde de `--line` (#12336e) alcanzaba: el panel y el
+fondo eran del mismo color y el borde solo marcaba dónde terminaba uno. Sobre el
+verde el trabajo es otro —separar dos colores opuestos— y ahí un filo oscuro se
+pierde. Entra `--filo` (#1c4a8f) para `.cell`, `.panel` y `.marquesina`, más una
+sombra proyectada y un reflejo de 1px arriba.
+
+Detalle de la marquesina: `border-color` pinta los cuatro lados, así que hay que
+devolverle el `border-top-color` dorado después.
+
+### Dónde se nota
+
+En **escritorio** es donde se juega la decisión: el tablero mide 1320px y
+alrededor queda césped a la vista. En un **teléfono** las dieciséis cartas tapan
+casi todo y del fondo quedan los milímetros del borde y los huecos entre
+filas — que ahora son verdes en vez de azules, y alcanzan para que cada carta
+se lea como una pieza suelta y no como parte de un bloque.
