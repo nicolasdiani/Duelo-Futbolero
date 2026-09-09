@@ -4915,17 +4915,17 @@ lo que es: una lista. **Los colores siguen sorteándose**, que es lo que hace qu
 la pantalla no abra como un molde vacío, y el dado sigue sorteando las tres
 cosas.
 
-### Del primer color al segundo, solo
+### El interruptor de color no se mueve solo
 
-Son dos colores y siempre se eligen en ese orden, así que el toque del medio
-—volver a subir al interruptor para pasar de COLOR 1 a COLOR 2— **no decidía
-nada**: solo hacía falta para seguir. Ahora, elegido el primero, la fila salta
-sola al segundo.
+Se probó que al elegir el primer color la fila saltara sola al segundo, para
+ahorrar el toque del medio. **Se volvió atrás.**
 
-Del segundo no salta a ningún lado: si querés corregir el primero, el
-interruptor sigue ahí. Verificado el ciclo entero — empieza en `c1`, elegís y
-queda en `c2`, elegís de nuevo y sigue en `c2`, con los dos colores guardados
-bien.
+El razonamiento a favor era bueno en el papel —son dos colores, siempre en ese
+orden, y el toque del interruptor no decide nada— pero en la mano no: el salto
+te cambia de contexto **justo cuando estás mirando el resultado del color que
+acabás de poner**. Elegís, levantás la vista al escudo, y la fila de abajo ya
+está pintando otra cosa. Cambiar de color es una decisión del jugador, no un
+trámite que convenga adelantarle.
 
 ## El mano a mano es un remate, no una carrera
 

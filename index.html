@@ -10315,17 +10315,13 @@ function showStart(irAlDuelo){
       b.onclick = () => { G.escudo.forma = +b.dataset.forma; pintar(); });
     document.querySelectorAll('[data-sw]').forEach(b =>
       b.onclick = () => { cualColor = b.dataset.sw; pintar(); });
+    /* El interruptor no se mueve solo. Se probó que al elegir el primer color
+       saltara al segundo, para ahorrar el toque del medio, pero el salto te
+       cambia de contexto justo cuando estás mirando el resultado del color que
+       acabás de poner: elegís, mirás el escudo, y la fila de abajo ya está
+       pintando otra cosa. Cambiar de color es una decisión del jugador. */
     document.querySelectorAll('[data-col]').forEach(b =>
-      b.onclick = () => {
-        G.escudo[cualColor] = +b.dataset.col;
-        /* Elegido el primero, la fila **salta sola al segundo**. Son dos
-           colores y siempre se eligen en ese orden, así que el toque del medio
-           —volver a subir al interruptor— no decidía nada: solo hacía falta
-           para seguir. Del segundo no se salta a ningún lado; si querés
-           corregir el primero, el interruptor sigue ahí. */
-        if(cualColor === 'c1') cualColor = 'c2';
-        pintar();
-      });
+      b.onclick = () => { G.escudo[cualColor] = +b.dataset.col; pintar(); });
   };
   pintar();
   $('clubInput').addEventListener('input', pintar);
