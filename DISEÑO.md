@@ -4550,11 +4550,45 @@ El velo lleva **dos capas** a propósito:
 Con una sola capa, o el logo quedaba flotando sobre verde claro, o la foto entera
 se veía apagada.
 
-**El logo se mide por alto, no por ancho.** Sobre una foto de alto fijo lo que
-tiene que quedar constante es cuánto de esa foto tapa. El `max-width` queda de
-seguro para las pantallas más angostas. (Dato: el logo es de **400x420**, casi
-cuadrado, no apaisado — dimensionarlo por ancho lo dejaba a menos de la mitad de
-su tamaño anterior.)
+**El logo se mide contra la marquesina, no contra la pantalla.** Al principio
+tenía su propio `clamp` en `vh` y había que mantener los dos números en sincro
+a mano: cada vez que cambiaba el alto del banner, el logo quedaba flotando en el
+medio o rozando el borde. Ahora es `calc(100% - 12px)` del banner, así que lo
+llena entero y **el único número que hay que tocar es el de arriba**. El
+`max-width` queda de seguro: en una pantalla muy angosta manda el ancho y el
+logo baja de alto solo.
+
+Con eso el logo es la pieza más grande de la pantalla en todos los tamaños —
+más que el recuadro de CAMPEONATO, que es lo que tiene que pasar en una
+portada:
+
+| Pantalla | Logo | Recuadro |
+|---|---|---|
+| 320 x 568 | 153 | 114 |
+| 390 x 844 | 233 | 169 |
+| 640 x 480 | 113 | 88 |
+| 820 x 400 | 84 | 72 |
+| 1366 x 768 | 211 | 154 |
+| 1920 x 1080 | 240 | 176 |
+
+(Dato: el logo es de **400x420**, casi cuadrado, no apaisado. Dimensionarlo por
+ancho lo dejaba a menos de la mitad de lo que medía en el menú viejo.)
+
+### Y el logo venía con tres marcas pegadas
+
+El export traía **restos de la herramienta de diseño** dentro del arte, que en
+el menú viejo pasaban desapercibidos y con el logo grande saltan a la vista:
+
+| Dónde | Qué era | Píxeles |
+|---|---|---|
+| Arriba a la izquierda | una banda dorada en diagonal | x 0-23, y 0-23 |
+| Abajo a la derecha | la grilla de puntos del tirador de tamaño | x 374-399, y 403-417 |
+| Abajo a la izquierda | una marquita triangular | x 0-6, y 413-419 |
+
+Se borran los tres recuadros y el resto del arte queda intacto. **Recortar la
+imagen no servía**: la punta del escudo baja hasta la fila 412 y un recorte
+rectangular que se llevara los puntos se llevaba también la punta. El archivo
+pasa de 41KB a 43KB.
 
 ### Abajo, el modo principal
 
