@@ -4926,3 +4926,31 @@ Del segundo no salta a ningún lado: si querés corregir el primero, el
 interruptor sigue ahí. Verificado el ciclo entero — empieza en `c1`, elegís y
 queda en `c2`, elegís de nuevo y sigue en `c2`, con los dos colores guardados
 bien.
+
+## El mano a mano es un remate, no una carrera
+
+En los otros tres duelos las dos figuras se cruzan —vos encarás, él sale a
+cortar— y mover los dos cuerpos cuenta bien lo que pasa. En el **mano a mano**
+no: enfrente hay **un arquero**, y un arquero no corre hacia vos. Vos definís
+desde donde estás y lo único que viaja es la pelota.
+
+Antes tu figura salía disparada al palo elegido junto con el balón, así que el
+mano a mano se veía como los otros tres: dos muñecos corriendo hacia los
+costados. Ahora, **solo en éste**:
+
+| | |
+|---|---|
+| tu figura | se queda quieta en el medio |
+| la pelota | sale sola al palo que elegiste, **y sube** — va a la altura del arquero, que es adonde se patea |
+| el arquero | sigue volando a su palo |
+
+Si él adivinó, los dos llegan al mismo punto y ahí sale el anillo de la
+atajada; si no, la pelota queda del otro lado, sola. Y como el balón **ya está
+arriba** cuando termina el vuelo, la segunda fase —la que en los otros duelos
+cruza la pelota al que ganó— no lo vuelve a mover: le pone el anillo y nada
+más.
+
+Verificado en los cuatro mini juegos: en el del arquero `yo` queda en `none`
+y la pelota en `(±50, -54)`; en los otros tres las dos figuras y el balón
+siguen yendo a `±50` como antes. Y con la atajada forzada, el anillo cae en
+`cx` 150 — el palo al que fueron los dos.

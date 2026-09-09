@@ -8516,9 +8516,20 @@ function manoAMano(tipo, mio, val){
         const pel = wrap.querySelector('.dl-pel');
         yo.classList.remove('vaiven'); riv.classList.remove('vaiven2');
         const dxYo = mio2 === 'izq' ? -50 : 50, dxRiv = suyo === 'izq' ? -50 : 50;
+
+        /* **El mano a mano no es una carrera: es un remate.** En los otros tres
+           duelos los dos cuerpos se cruzan —vos encarás, él sale a cortar— y
+           mover las dos figuras cuenta bien lo que pasa. Acá no: enfrente hay
+           **un arquero**, y un arquero no corre hacia vos. Vos definís desde
+           donde estás y lo único que viaja es la pelota.
+
+           Así que en éste el que se queda quieto sos vos, y el balón sale solo
+           hacia el palo que elegiste. El arquero sigue volando al suyo. */
+        const esRemate = tipo === 'arquero';
+
         riv.style.transform = 'translateX(' + dxRiv + 'px)';
         await wait(120);
-        yo.style.transform = 'translateX(' + dxYo + 'px)';
+        if(!esRemate) yo.style.transform = 'translateX(' + dxYo + 'px)';
 
         /* **La pelota sale con el dueño y termina con el que gana.** Antes se
            iba siempre con el que la traía, así que un robo se veía como que la
@@ -8528,8 +8539,15 @@ function manoAMano(tipo, mio, val){
               gano con la mía  -> la mantengo    (¡GOLAZO! · ¡LO PASÁS!)
               pierdo la mía    -> me la sacan    (ATAJADÓN · LA PERDISTE)
               gano la de él    -> se la robo     (¡SE LA ROBÁS! · ¡LO CORTÁS!)
-              pierdo la de él  -> se me escapa   (TE PASÓ · SE VA SOLO) */
-        pel.style.transform = 'translateX(' + (M.adivinar ? dxRiv : dxYo) + 'px)';
+              pierdo la de él  -> se me escapa   (TE PASÓ · SE VA SOLO)
+
+           En el remate la pelota además **sube**: va al palo y a la altura del
+           arquero, que es adonde se patea. Si él adivinó, los dos llegan al
+           mismo punto y ahí sale el anillo de la atajada; si no, la pelota
+           queda del otro lado, sola. */
+        pel.style.transform = esRemate
+          ? 'translate(' + dxYo + 'px,-54px)'
+          : 'translateX(' + (M.adivinar ? dxRiv : dxYo) + 'px)';
         await wait(500);
 
         if(mio2 === suyo) wrap.querySelector('.dl-choque').classList.add('on');
@@ -8540,7 +8558,9 @@ function manoAMano(tipo, mio, val){
         if(cambia){
           const destino = gana ? dxYo : dxRiv;
           const alto = M.adivinar ? 54 : -54;   // sube o baja según de dónde venía
-          pel.style.transform = 'translate(' + destino + 'px,' + alto + 'px)';
+          /* En el remate la pelota **ya está arriba**: la mandó el disparo, no
+             el quite. Se le pone el anillo y nada más. */
+          if(!esRemate) pel.style.transform = 'translate(' + destino + 'px,' + alto + 'px)';
           const ro = wrap.querySelector('.dl-robo');
           ro.setAttribute('cx', 100 + destino);
           ro.classList.add('on');
