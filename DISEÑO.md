@@ -4631,3 +4631,72 @@ Medido con la tarjeta abierta, en siete tamaños:
 En los siete, sin scroll adentro de la tarjeta. Y los seis caminos siguen
 llevando a donde llevaban: campeonato y partido único a la pantalla del club,
 1 vs 1 al club en modo duelo, y penales, opciones y créditos a las suyas.
+
+## El toque: la onda
+
+El juego apagaba el destello nativo de Android —el rectángulo celeste que
+Chrome pinta encima de lo que tocás— **y no ponía nada en su lugar**. Buscando
+`:active` en las 900KB del archivo no aparecía ni una vez. En un teléfono, donde
+no hay `:hover`, apretabas un botón y **no pasaba nada** hasta que el juego
+respondía, y entre el toque y la respuesta hay animaciones de medio segundo
+largo.
+
+Ahora sale una onda **del punto exacto donde apoyaste el dedo**, así que el
+botón no solo confirma que lo tocaste sino **dónde**.
+
+### Una regla, no siete
+
+Va en `currentColor`, o sea que **cada botón la tiñe con su propio color** sin
+necesitar una regla por familia: dorada la del CTA y las columnas, verde la del
+cartel de gol, blanca la de las cartas y las fichas del menú.
+
+Y la engancha **un solo oyente para todo el juego**, en `pointerdown` y en fase
+de captura —la onda tiene que salir cuando el dedo baja, no cuando se levanta—.
+Botón por botón habrían sido siete lugares que hay que acordarse de tocar cada
+vez que aparece uno nuevo; así cualquier cosa apretable lo tiene desde el
+momento en que existe, la dibuje quien la dibuje.
+
+**Qué cuenta como acción**, para que la onda aparezca *solo donde el toque hace
+algo*:
+
+```
+un <button> que no esté deshabilitado
+algo con role="button"
+cualquier otra cosa que tenga un onclick puesto
+```
+
+El tercer caso es el que importa: las **celdas del tablero** solo son
+clickeables mientras el VAR está apuntando, así que el resto del tiempo no
+hacen onda.
+
+### La onda trae su propia caja
+
+El botón **no lleva `overflow:hidden`**. Es a propósito, y es la trampa de esta
+implementación: la **ficha del ítem vive adentro del botón** y se despliega
+hacia afuera —`left: calc(100% + 10px)`—, así que recortar el botón la haría
+desaparecer del todo.
+
+En vez de eso la onda viene envuelta en un `.onda-caja` de `inset:0` que hereda
+el `border-radius` del botón, recorta solo a la onda y se va con ella.
+
+Dos detalles más:
+
+| | |
+|---|---|
+| `position:relative` | se pone desde JS y solo al botón que tocaste, no a los cientos que nadie tocó |
+| color de respaldo | un par de piezas heredan un color oscuro —el FAB del relato lo tiene en negro— y ahí la onda sería negra sobre azul negro. Si la luminancia del color del botón baja de 70, va blanca |
+
+### Y las zonas de SVG
+
+El arco de los penales y los dos caminos de los mini juegos son `<rect>` de
+SVG: no pueden llevar un `<span>` adentro. Su onda es un `<circle>` que sale
+del mismo punto, convirtiendo las coordenadas de pantalla a unidades del
+`viewBox` con `getScreenCTM().inverse()`. Va **detrás de la zona**, no encima, y
+lleva un `blur` para que sea el mismo halo difuso que la de HTML y no un disco
+de canto duro.
+
+Verificado en las once familias: CTA, fichas y recuadro del menú, opciones
+chicas, filas, columnas, ítems, cartel de gol, ayuda, FAB del relato, celdas
+del tablero con el VAR apuntando, zonas del arco y zonas del duelo. Treinta
+toques seguidos sobre el mismo botón dejan **cero** cajas colgadas, y la ficha
+del ítem sigue abriéndose entera.

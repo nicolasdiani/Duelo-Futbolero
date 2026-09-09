@@ -4740,6 +4740,61 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .mm-t-ico{font-size:16px}
   .mm-cuerpo{padding:8px 10px 9px}
 }
+
+/* ================= EL TOQUE: LA ONDA =================
+   El juego apagaba el destello nativo de Android y **no ponía nada en su
+   lugar**: no había una sola regla de `:active` en todo el archivo. En un
+   teléfono, donde no hay `:hover`, apretabas un botón y no pasaba nada hasta
+   que el juego respondía — y entre el toque y la respuesta hay animaciones de
+   medio segundo largo.
+
+   Ahora sale una onda **del punto exacto donde apoyaste el dedo**, así que el
+   botón no solo confirma que lo tocaste sino **dónde**. Va en `currentColor`,
+   o sea que cada botón la tiñe con su propio color sin necesitar una regla por
+   familia: dorada la del CTA, verde la del cartel de gol, blanca la de las
+   cartas. */
+
+/* La onda trae **su propia caja que recorta**, y el botón no lleva
+   `overflow:hidden`. Es a propósito: la ficha del ítem vive *adentro* del
+   botón y se despliega hacia afuera —`left:calc(100% + 10px)`—, así que
+   recortar el botón la haría desaparecer. La caja hereda el `border-radius`
+   para que la onda siga la forma de cada pieza. */
+.onda-caja{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;
+  border-radius:inherit;z-index:0;
+}
+.onda{
+  position:absolute;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, currentColor 0%, transparent 70%);
+  opacity:.5;transform:translate(-50%,-50%) scale(0);
+  animation:ondaSale .52s cubic-bezier(.25,.8,.35,1) forwards;
+}
+@keyframes ondaSale{
+  to{transform:translate(-50%,-50%) scale(1);opacity:0}
+}
+
+/* Y un hundido corto que acompaña, para que el dedo también lo sienta. */
+.onda-viva{transform:translateY(1px) !important;transition:transform .09s}
+
+/* Las zonas del arco y de los mini juegos son `<rect>` de SVG: no pueden
+   llevar un `<span>` adentro, así que su onda es un `<circle>` que sale del
+   mismo punto. */
+.onda-svg{
+  /* El borde se difumina para que sea el mismo halo que la de HTML —que usa un
+     degradado radial— y no un disco de canto duro. */
+  fill:currentColor;opacity:.42;pointer-events:none;filter:blur(5px);
+  transform-box:fill-box;transform-origin:center;
+  animation:ondaSvg .52s cubic-bezier(.25,.8,.35,1) forwards;
+}
+@keyframes ondaSvg{
+  from{transform:scale(.02);opacity:.4}
+  to  {transform:scale(1);opacity:0}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .onda,.onda-svg{display:none}
+  .onda-viva{transform:none !important}
+}
 </style>
 </head>
 <body>
@@ -9939,6 +9994,85 @@ function showStart(irAlDuelo){
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape') cancelarApuntado();
 });
+
+/* ---------------- EL TOQUE ----------------
+   Un solo oyente para todo el juego. Engancharlo botón por botón habría sido
+   siete lugares que hay que acordarse de tocar cada vez que aparece uno nuevo;
+   así, cualquier cosa que se pueda apretar lo tiene desde el momento en que
+   existe, la dibuje quien la dibuje.
+
+   Se escucha en **captura** y en `pointerdown`, no en `click`: la onda tiene
+   que salir cuando el dedo baja, no cuando se levanta. */
+(function(){
+  /* Qué es una acción: un `<button>` que no esté deshabilitado, algo marcado
+     como botón, o cualquier otra cosa que tenga un `onclick` puesto —que es el
+     caso de las celdas del tablero, que solo son clickeables mientras el VAR
+     está apuntando—. Así la onda aparece **solo donde el toque hace algo**. */
+  const APRETABLE = 'button, [role="button"], .cell';
+  const esAccion = el => !!el && !el.disabled &&
+    (el.tagName === 'BUTTON' || el.getAttribute('role') === 'button' || typeof el.onclick === 'function');
+
+  function ondaHTML(host, ev){
+    /* El marco de referencia: si el botón es `static`, la caja de la onda se
+       posicionaría contra un ancestro cualquiera. Se lo pone acá y no en la
+       hoja para no volver `relative` los cientos de botones que nadie tocó. */
+    if(getComputedStyle(host).position === 'static') host.style.position = 'relative';
+
+    const r = host.getBoundingClientRect();
+    const caja = document.createElement('span');
+    caja.className = 'onda-caja';
+    const o = document.createElement('span');
+    o.className = 'onda';
+    /* La onda va en `currentColor`, que es lo que la hace tomar el color de
+       cada botón sin una regla por familia. Pero un par de piezas heredan un
+       color oscuro —el FAB del relato lo tiene en negro— y ahí la onda sería
+       negra sobre azul negro: no se vería nada. Si el color del botón es muy
+       oscuro, se usa blanco. */
+    const c = (getComputedStyle(host).color.match(/d+/g) || []).map(Number);
+    if(c.length >= 3 && c[0]*.299 + c[1]*.587 + c[2]*.114 < 70) o.style.color = '#fff';
+    const d = Math.max(r.width, r.height) * 2.2;
+    o.style.width = o.style.height = d + 'px';
+    o.style.left = (ev.clientX - r.left) + 'px';
+    o.style.top  = (ev.clientY - r.top) + 'px';
+    caja.appendChild(o);
+    host.appendChild(caja);
+
+    host.classList.add('onda-viva');
+    setTimeout(() => host.classList.remove('onda-viva'), 130);
+    setTimeout(() => caja.remove(), 560);
+  }
+
+  function ondaSVG(zona, ev){
+    const svg = zona.ownerSVGElement;
+    if(!svg) return;
+    /* De píxeles de pantalla a unidades del viewBox. */
+    const m = svg.getScreenCTM();
+    if(!m) return;
+    const pt = svg.createSVGPoint();
+    pt.x = ev.clientX; pt.y = ev.clientY;
+    const q = pt.matrixTransform(m.inverse());
+
+    const caja = zona.getBBox();
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('class', 'onda-svg');
+    c.setAttribute('cx', q.x);
+    c.setAttribute('cy', q.y);
+    c.setAttribute('r', Math.max(caja.width, caja.height) * .8);
+    zona.parentNode.insertBefore(c, zona);   // detrás de la zona, no encima
+    setTimeout(() => c.remove(), 560);
+  }
+
+  document.addEventListener('pointerdown', ev => {
+    if(ev.button) return;                    // solo el principal
+    if(!ev.target || !ev.target.closest) return;
+
+    const zona = ev.target.closest('.pp-zona, .dl-z');
+    if(zona){ ondaSVG(zona, ev); return; }
+
+    const host = ev.target.closest(APRETABLE);
+    if(esAccion(host)) ondaHTML(host, ev);
+  }, true);
+})();
 
 /* El "?" de abajo de la mesa: reabre las reglas sin perder la partida. */
 document.addEventListener('DOMContentLoaded', () => {
