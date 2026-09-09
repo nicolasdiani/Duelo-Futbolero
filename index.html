@@ -463,8 +463,8 @@ img{height:auto}
 /* la versión a favor: misma caja, colores dados vuelta */
 .sit.lado-favor{border-color:var(--green);box-shadow:0 0 60px rgba(61,220,107,.3)}
 .sit.lado-favor .t{color:var(--green)}
-.sit.resuelta.gol.lado-favor{border-color:var(--green);box-shadow:0 0 60px rgba(61,220,107,.3)}
-.sit.resuelta.gol.lado-favor .t{color:var(--green)}
+/* No hay `.resuelta.gol.lado-favor`: el gol a favor de la situación ya no se
+   resuelve en esta caja, lo anuncia el cartel con foto. */
 .sit.resuelta.salvado.lado-favor{border-color:var(--dim2);box-shadow:none}
 .sit.resuelta.salvado.lado-favor .t{color:var(--dim)}
 
@@ -3907,8 +3907,9 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 .sit.resuelta.gol,
 .sit.mam.resuelta.gol,
 .sit.penal.resuelta.gol{color:var(--red)}
-/* Del lado tuyo la lectura se da vuelta: tu gol es lo bueno y errarla, lo malo. */
-.sit.resuelta.gol.lado-favor{color:var(--green)}
+/* Del lado tuyo la lectura se da vuelta: errar la situación que te dio la racha
+   llena es lo malo. El gol a favor no está acá porque ya no se resuelve en esta
+   caja: lo anuncia el cartel con foto. */
 .sit.resuelta.salvado.lado-favor{color:var(--red)}
 
 @media (min-width:1025px), (min-width:821px) and (orientation:landscape){
@@ -9337,20 +9338,35 @@ function situacionGol(lado, yaElegida){
          se monte encima de este. */
       const levanta = !favor && !esGol;
 
+      /* **Si entra, el gol lo anuncia el cartel con foto**, como cualquier otro
+         gol del juego. Antes la situación se resolvía en su propia caja con el
+         dibujo de la pelota entrando, y era el único gol del partido que no
+         mostraba el cartel grande: la jugada más importante —la que te dio la
+         racha llena o el aguante vacío— terminaba más chica que un córner.
+
+         El único que sigue mostrando los dos es el PENAL a favor, unas líneas
+         más arriba: ahí lo pateás vos, así que el mini juego tiene que contarte
+         si el arquero la sacó antes de que el cartel diga el resultado.
+
+         Y el dibujo se queda para lo que no es gol —LA ERRASTE, ¡TE SALVASTE!—,
+         que es el desenlace de la jugada y no el anuncio de un tanto. */
       if(esGol){
         if(favor) G.gU++; else G.gC++;
         say(S.gol + (favor ? ' ¡GOL! ' : ' Gol del rival. ') + G.gU + '-' + G.gC, 'big');
-      } else {
-        say(S.no + (favor ? '' : ' Te salvaste. +1 racha.'), favor ? 'bad' : 'good');
+        wrap.remove();
+        render();
+        await flashGol(favor ? 'favor' : 'contra');
+        resolve();
+        return;
       }
 
-      box.className = 'sit resuelta ' + (esGol ? 'gol' : 'salvado') + (favor ? ' lado-favor' : '');
+      say(S.no + (favor ? '' : ' Te salvaste. +1 racha.'), favor ? 'bad' : 'good');
+
+      box.className = 'sit resuelta salvado' + (favor ? ' lado-favor' : '');
       box.innerHTML =
         '<div class="sit-tag">' + S.nm + ' &nbsp;·&nbsp; ' + Math.round(S.p * 100) + '%</div>' +
-        '<div class="sit-ico">' + icoDesenlace(esGol ? 'golazo' : (favor ? 'afuera' : 'atajada')) + '</div>' +
-        '<div class="t">' +
-          (esGol ? (favor ? '¡GOL!' : 'GOL RIVAL')
-                 : (favor ? 'LA ERRASTE' : '¡TE SALVASTE!')) + '</div>' +
+        '<div class="sit-ico">' + icoDesenlace(favor ? 'afuera' : 'atajada') + '</div>' +
+        '<div class="t">' + (favor ? 'LA ERRASTE' : '¡TE SALVASTE!') + '</div>' +
         '<div class="s">' + G.gU + ' - ' + G.gC +
           (levanta ? '<span class="sit-extra">+1 <i class="ir"></i> RACHA</span>' : '') + '</div>';
 
@@ -9363,7 +9379,13 @@ function situacionGol(lado, yaElegida){
 }
 
 /* Cartel de gol: los dos casos tienen que ser imposibles de confundir, así que
-   cambian el texto, el color y el borde — no solo el marcador. */
+   cambian el texto, el color y el borde — no solo el marcador.
+
+   **La regla de cuál cartel sale**: el de la foto anuncia que se movió el
+   marcador del partido, y sale siempre que se mueva. El dibujo animado del
+   desenlace es otra cosa —el final de una jugada que estabas mirando— y por eso
+   queda para los tiros errados, para los penales de la tanda y para el penal de
+   definición, que tienen su propia pizarra y no tocan el marcador. */
 /* ---------------- cómo se erró ----------------
    Un tiro que no entra no es "no pasó nada": pasó algo, y merece verse. Cada
    situación tiene varios desenlaces posibles y se sortea uno solo por sabor

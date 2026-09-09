@@ -5192,3 +5192,64 @@ alrededor queda césped a la vista. En un **teléfono** las dieciséis cartas ta
 casi todo y del fondo quedan los milímetros del borde y los huecos entre
 filas — que ahora son verdes en vez de azules, y alcanzan para que cada carta
 se lea como una pieza suelta y no como parte de un bloque.
+
+
+## Un solo cartel de gol, y una regla para saber cuál
+
+El juego tiene **dos carteles** que dicen ¡GOL!, y no hacen el mismo trabajo:
+
+| | qué es | cómo se va |
+|---|---|---|
+| **el de la foto** (`flashGol`) | **anuncia**: aparece solo, dice el marcador y nada más | se va solo a los 3s |
+| **el del dibujo** (situación resuelta) | **resuelve**: es la misma ventana donde apretaste EJECUTAR, dada vuelta | espera un toque |
+
+Auditando las doce rutas por las que se puede mover el marcador apareció que la
+**situación de gol no se comportaba igual consigo misma**: cuatro de sus cinco
+cartas terminaban en el dibujo, y la quinta —el penal a favor— terminaba en los
+dos. Y era el único gol del partido que no mostraba el cartel grande: la jugada
+más importante, la que te dio la racha llena o te vació el aguante, terminaba
+más chica que un córner.
+
+### La regla
+
+**El cartel con foto sale siempre que se mueva el marcador del partido.**
+
+| de dónde viene el gol | qué se ve |
+|---|---|
+| las siete rutas de la mesa | foto |
+| situación de gol · racha llena | foto |
+| situación de gol · aguante vacío | foto |
+| situación de gol · si sale PENAL a favor | el mini juego, y después la foto |
+| tanda de penales · penal de definición | el dibujo, sin foto |
+
+El penal a favor sigue mostrando los dos **porque lo pateás vos**: el mini juego
+tiene que contarte si el arquero la sacó antes de que el cartel diga el
+resultado. Y la tanda y el penal de definición no muestran la foto porque **no
+tocan el marcador del partido**: tienen su propia pizarra.
+
+### Qué cambió en el código
+
+En `situacionGol`, la rama del gol deja de transformar la caja y pasa a sacarla:
+
+```js
+if(esGol){
+  if(favor) G.gU++; else G.gC++;
+  say(...);
+  wrap.remove();
+  render();
+  await flashGol(favor ? 'favor' : 'contra');
+  resolve();
+  return;
+}
+```
+
+El dibujo se queda para lo que **no** es gol —LA ERRASTE, ¡TE SALVASTE!—, que es
+el desenlace de la jugada y no el anuncio de un tanto, y ahí sigue apareciendo el
+`+1 ⚡ RACHA` cuando el rival falla la suya.
+
+Con eso quedaron dos reglas de CSS sin dueño: `.sit.resuelta.gol.lado-favor`
+—borde y color— ya no puede existir, porque el gol a favor de la situación no se
+resuelve más en esa caja. Se fueron.
+
+Verificado en los cuatro caminos: gol a favor, gol en contra, tiro errado a favor
+y penal a favor con su mini juego. El marcador se mueve bien en los cuatro.
