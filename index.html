@@ -8887,13 +8887,33 @@ async function scoreC(msg, desgaste, sinRacha){
    la misma expulsión.
 
    La bajada del máximo estaba escrita solo en la rama de la roja, así que la
-   doble amarilla te expulsaba sin ese costo. */
+   doble amarilla te expulsaba sin ese costo.
+
+   **Los tres corazones se cobran antes de recortar por el máximo nuevo.**
+   El recorte estaba arriba de todo, y ahí te robaba un corazón *antes* de
+   empezar a contar el golpe:
+
+       tenías 4/4
+       el máximo baja a 3   ->  el recorte te deja en 3/3   <- un corazón que
+       -3                   ->  3, 2, 1, 0                     nadie cobró
+       0                    ->  se te funde el equipo
+
+   La carta promete «-3 ❤» y «-1 ❤ de máximo», que con cuatro es quedar en
+   **uno**, no en cero y con el rival ganándose una llegada. Ahora:
+
+       tenías 4/4
+       el máximo baja a 3
+       -3                   ->  4, 3, 2, 1
+       queda 1/3
+
+   El recorte sigue existiendo pero va **al final**, para el caso raro de
+   terminar por encima del máximo nuevo; en el camino normal no hace nada. */
 async function expulsion(){
   G.aguanteMax = Math.max(AGUANTE_PISO, G.aguanteMax - 1);
-  G.aguante = Math.min(G.aguante, G.aguanteMax);
-  render();
   await hurt('Te quedás con uno menos y el equipo se rompe corriendo por el que falta. Máximo ' +
              G.aguanteMax + ' <i class="ih"></i>.', 3, true);
+  if(G.aguante > G.aguanteMax) G.aguante = G.aguanteMax;
+  render();
 }
 
 /* ---------------- fin del partido ---------------- */

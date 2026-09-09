@@ -3358,10 +3358,32 @@ caso:
 
 | Antes | Después | Situaciones | Bajadas de máximo |
 |---|---|---|---|
-| 4/4 | **3/3** | 1 | 1 |
+| 4/4 | **1/3** | **0** | 1 |
 | 2/4 | **2/3** | 1 | 1 |
 | 1/4 | **1/3** | 1 | 1 |
 | 2/2 | **1/2** | 1 | 1 |
+
+> **Tres. Con el aguante lleno, la roja te lo vaciaba.**
+>
+> El recorte por el máximo nuevo estaba **arriba de todo**, antes de contar el
+> golpe, y ahí te robaba un corazón que nadie cobró:
+>
+>     tenías 4/4
+>     el máximo baja a 3   ->  el recorte te deja en 3/3   <- el corazón fantasma
+>     -3                   ->  3, 2, 1, 0
+>     0                    ->  se te funde el equipo + una llegada para el rival
+>
+> La carta promete «-3 ❤» y «-1 ❤ de máximo»: con cuatro hay que quedar en
+> **uno**, no en cero. Ahora el recorte va **al final** —para el caso raro de
+> terminar por encima del máximo nuevo— y en el camino normal no hace nada:
+>
+>     tenías 4/4  ->  el máximo baja a 3  ->  4, 3, 2, 1  ->  queda 1/3
+>
+> Cambia **solo cuando el aguante está lleno** (`aguante == aguanteMax`): en
+> cualquier otro caso el recorte ya era una operación vacía, así que el resto
+> de la tabla queda igual. Verificado en el juego con 4/4→1/3, 5/5→2/4, 4/5→1/4
+> y 6/6→3/5, las cuatro **sin fundir**; y 3/4→3/3, que sí funde porque tenías
+> justo tres.
 
 > **Dos bugs encadenados, los dos encontrados jugando:**
 >
@@ -3395,7 +3417,7 @@ gol no se duplica.
 | 1/3 | → 2/2 | **1** |
 | 1/2 | → 2/2 | **1** |
 | 2/2 | → 1/2 | **1** |
-| 4/4 | → 2/2 | **1** |
+| 4/4 | → **1/3** | **0** |
 
 Antes, los casos `1/3` y `1/2` daban **2**. Vale para todo lo que lastima: roja,
 doble amarilla, lesión y calambre.
