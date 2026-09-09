@@ -1454,6 +1454,29 @@ blanco.
 Las zonas de toque miden **97x109 px en un 390**. Entra sin scroll en
 320x568, 360x640, 390x844 y 1440x900.
 
+**Y arriba dice de qué carta salió.** El mini juego era el único pop-up de
+acción sin el nombre de la carta en la cabecera: la regla `.sit.mam .sit-tag`
+existía desde el rebranding, pero el markup nunca la usaba. El nombre aparecía
+solo de costado, a 10px y mezclado con un número —«⚔ ATAQUE 5 vs ARQUERO RIVAL
+3»—, así que la carta que tocaste en la mesa y el pop-up que se abre no se
+leían como la misma cosa.
+
+Ahora el orden es el de todos los demás:
+
+```
+┌───────────────────────────┐
+│  [ la foto de la carta ]  │
+│      ARQUERO RIVAL        │  ← de qué carta salió
+│  ⚔ ATAQUE 5  vs  RIVAL 3  │  ← cuánto pega cada uno
+│      MANO A MANO          │  ← qué mini juego es
+└───────────────────────────┘
+```
+
+Y con el nombre arriba, el marcador dejó de nombrar: repetía «ARQUERO RIVAL»
+diez píxeles más abajo. Abajo va solo la fuerza, que es lo único que el
+marcador tiene que decir — y como los cuatro rivales terminan en «RIVAL», la
+palabra sola alcanza.
+
 ### Los penales, con arco de verdad
 
 Eran **dos emoji moviéndose adentro de una caja con borde**: un guante y una

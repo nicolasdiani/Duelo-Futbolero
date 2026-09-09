@@ -7839,10 +7839,11 @@ function manoAMano(tipo, mio, val){
          cartel que leíste en la mesa y el que se abre son la misma cosa. */
       '<div class="sit mam tono-' + (tipo === 'delantero' ? 'hot' : 'risk') + '">' +
         (artCarta(tipo) ? '<div class="mam-art"><img src="' + artCarta(tipo) + '" alt=""></div>' : '') +
+        '<div class="sit-tag">' + TYPES[tipo].nm + '</div>' +
         '<div class="p-emp"><span class="' + (TYPES[tipo].stat === 'atk' ? 'pe-atk' : 'pe-def') + '">' +
           (TYPES[tipo].stat === 'atk' ? '⚔ ATAQUE' : '🛡 DEFENSA') + ' <b>' + mio + '</b></span>' +
           '<span class="pe-vs">vs</span>' +
-          '<span class="pe-riv">' + TYPES[tipo].nm + ' <b>' + val + '</b></span></div>' +
+          '<span class="pe-riv">RIVAL <b>' + val + '</b></span></div>' +
         '<div class="t">' + M.tit + '</div>' +
         escenaDuelo(!M.adivinar) +
         '<div class="s">' + M.pregunta + '</div>' +
