@@ -4454,3 +4454,48 @@ racha, y el rayo sí es un ícono limpio que baja de tamaño sin romperse.
 **El 🎮 de la chapa MINI JUEGO se queda.** Es exactamente la misma que llevan
 las cartas del tablero; cambiarla acá la desalinearía de la mesa, que es lo
 contrario de lo que hace todo el resto de este cambio.
+
+## El botón de columna mide siempre lo mismo
+
+Cuando en una columna queda **una sola carta viva**, el porcentaje pasa de
+`25%` a `100%` y el texto se lleva un carácter más. Ese carácter tiraba el
+botón a dos renglones: la fila crecía de **27px a 48** y **empujaba el
+casillero entero hacia abajo**, en el medio de la partida. En un 320 pasaba
+incluso con el 25%, así que la mesa arrancaba corrida.
+
+Tres cosas lo dejan quieto:
+
+| | |
+|---|---|
+| `white-space:nowrap` | nunca hay un segundo renglón, así que el alto no depende del texto |
+| `line-height` fijo | el alto tampoco depende de la fuente que llegue a cargar |
+| `overflow:hidden` | si algún día un texto no entra, se recorta — no rompe la mesa |
+
+**Y el rayo se achica.** A `1.85em` era más alto que el renglón, así que era él
+—y no el texto— el que decidía el alto del botón. Dentro del botón de columna
+va a `1.4em`.
+
+### El tamaño lo decide el ancho de pantalla
+
+```css
+font-size: min(11px, 2.8vw)
+```
+
+Los cuatro botones se reparten el ancho de la mesa, así que **el hueco cambia
+con la pantalla** y un tamaño fijo que entra en un 414 no entra en un 320. El
+tope de 11px es para que en una tablet en vertical no se agrande de más, y el
+interletrado se va: en catorce caracteres se comía 3,5px él solo.
+
+Medido con el texto más largo del juego —`C4 · 100% −3⚡`— contra la caja de
+contenido del botón, con el latido congelado:
+
+| ancho | tamaño | sobra | alto del botón | tope de la mesa |
+|---|---|---|---|---|
+| 320 | 8,96px | 3,1px | 25,64px | 246,2 |
+| 360 | 10,08px | 5,0px | 27,50px | 227,1 |
+| 390 | 10,92px | 6,3px | 28,63px | 228,2 |
+| 414 | 11,00px | 9,1px | 28,81px | 228,4 |
+| 1366 | 13,00px | 48,9px | 35,88px | 238,9 |
+
+En los cinco, el alto del botón y el tope de la mesa son **idénticos** con 25,
+33, 50 y 100%.

@@ -741,11 +741,30 @@ img{height:auto}
   .gb-s{display:none}
   .gb-t{font-size:16px}
 }
+/* **El botón de columna mide siempre lo mismo, diga lo que diga.** Cuando en
+   una columna queda una sola carta el texto pasa de «C1 · 25% −3⚡» a
+   «C1 · 100% −3⚡», y ese carácter de más lo tiraba a dos renglones: la fila
+   crecía de 27px a 48 y **empujaba el casillero entero hacia abajo**, en el
+   medio de la partida.
+
+   Tres cosas lo dejan quieto:
+
+     `nowrap`        nunca hay un segundo renglón, así que el alto no depende
+                     del texto
+     `line-height`   fijo, así el alto tampoco depende de la fuente que llegue
+                     a cargar
+     `overflow`      si algún día un texto no entra, se recorta — no rompe la
+                     mesa
+
+   Y el rayo se achica: a `1.85em` era más alto que el renglón, así que era él
+   —y no el texto— el que decidía el alto del botón. */
 .col-pick{
-  flex:1;background:rgba(8,16,34,.75);border:1px solid var(--line);color:var(--dim2);
-  font-family:var(--tit);font-weight:800;font-size:14px;letter-spacing:1px;
+  flex:1;min-width:0;background:rgba(8,16,34,.75);border:1px solid var(--line);color:var(--dim2);
+  font-family:var(--tit);font-weight:800;font-size:14px;letter-spacing:1px;line-height:1.45;
+  white-space:nowrap;overflow:hidden;
   padding:6px;cursor:not-allowed;transition:background .15s,border-color .2s,color .2s;
 }
+.col-pick .ir{width:1.05em;height:1.4em;vertical-align:-.32em}
 /* Encendidas solo cuando la racha está llena */
 .col-picks.lista .col-pick{
   border-color:var(--gold);color:var(--gold);background:var(--panel);cursor:pointer;
@@ -2793,7 +2812,7 @@ body{padding-bottom:36px}
      Antes iba en 9,5px contra los 12px de la fila y parecía secundaria, cuando
      las dos son la misma decisión. */
   .col-pick{
-    padding:5px 3px;font-size:11.5px;letter-spacing:.3px;
+    padding:5px 2px;font-size:min(11px, 2.8vw);letter-spacing:0;
     font-family:var(--tit);font-weight:800;
   }
 
