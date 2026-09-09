@@ -4806,3 +4806,77 @@ En las doce, **sin scroll adentro de la tarjeta** y con la cinta al ancho
 exacto de la foto. Verificado también el flujo: GUARDARLA cierra y deja la
 racha en 4, JUGARLA la gasta y abre la situación de gol, y yendo abajo el botón
 de guardar directamente no existe.
+
+## El tutorial, con las piezas del juego
+
+Eran **seis párrafos de cuarenta palabras** con un emoji del teclado al costado
+—🎲, ⚔, 🎒, ⏱— y **ni una imagen del juego en toda la pantalla**. Es la única
+que se lee *antes* de ver una carta, así que las palabras tenían que hacer todo
+el trabajo solas.
+
+Ahora cada regla muestra **la pieza que nombra**, dibujada con lo que ya existe,
+y el texto baja a un título y una línea:
+
+| Regla | Qué se ve |
+|---|---|
+| Elegís una fila | una **fila de cuatro cartas** encendida, con nombre y foto |
+| El aguante | los **corazones del medidor**, tres llenos y uno gris |
+| La racha | los **cuatro rayos**, llenos |
+| Los duelos | los **chips de ataque y defensa** contra el número de la carta |
+| Los ítems | los **SVG de los ítems** que ya estaban en el archivo |
+| Nueve jugadas | el **reloj del marcador**, con su arco dorado |
+
+### La frase que faltaba
+
+Los dos medidores terminan en lo mismo y el texto no lo decía: el aguante
+hablaba de «situación de gol» y la racha de «posibilidad de gol al 51%», como si
+fueran dos premios distintos. **Son el mismo**, para el rival o para vos:
+
+```
+EL AGUANTE   Si se vacía, es una situación de gol para el rival.
+LA RACHA     Si se llena, es una situación de gol para vos.
+```
+
+Y entra la regla que no estaba en ningún lado: **con 3 ⚡ ya podés atacar por
+columna**. Va de nota al pie de la racha —separada por un punteado— para no
+sumar un séptimo renglón a la pantalla más larga del juego.
+
+### Lo que costó que entrara
+
+**Un error que rompía el juego entero.** `tutoItems` era una constante que
+llamaba a `icoItem()`, y `icoItem` se define 400 líneas más abajo: evaluarla
+ahí arriba tiraba un `ReferenceError` de zona muerta temporal que **cortaba el
+script antes de definir `$`**. La pantalla en blanco no tenía nada que ver con
+el tutorial. Pasó a ser una función, que resuelve `icoItem` recién al llamarla.
+
+**Y los escalones por alto no alcanzaban.** La columna de la izquierda pasó de
+30px —un emoji— a entre 42 y 106, así que la pantalla creció justo la que ya
+venía más justa. Aparecieron dos huecos:
+
+- En **escritorio** el título ocupaba **99px**, más que dos reglas juntas, y la
+  tarjeta se pasaba 31px. Se achica solo en el tutorial, con una clase propia
+  `.card-reglas` — los otros carteles que comparten `card-final` lo siguen
+  queriendo grande.
+- Los escalones que ya tenía el juego están **todos colgados de
+  `(max-width:820px)`**, así que un teléfono acostado de 844 se llevaba el
+  tratamiento de escritorio —padding de 30px, texto de 11.8— en 390px de
+  pantalla. El escalón nuevo **no mira el ancho: solo el alto**.
+
+En pantalla baja los dos botones pasan a ir **uno al lado del otro**: apilados
+se llevaban 68px de los 358 que hay, que son dos reglas enteras.
+
+Medido con la tarjeta abierta, en siete pantallas:
+
+| Pantalla | Tarjeta | Hueco |
+|---|---|---|
+| 320 x 568 | 437 | 433 |
+| 360 x 640 | 465 | 461 |
+| 390 x 844 | 589 | 585 |
+| 820 x 400 | 349 | 345 |
+| 844 x 390 | 350 | 346 |
+| 1366 x 768 | 719 | 715 |
+| 1920 x 1080 | 719 | 715 |
+
+En las siete, **sin scroll adentro de la tarjeta**. Y los dos caminos siguen
+funcionando: EMPEZAR LA COPA cierra y arranca el partido, VOLVER vuelve al menú,
+y desde el «?» del tablero sale con un solo botón.

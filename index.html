@@ -4916,6 +4916,157 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .dc-ops:not(.sola) .dc-art{flex:0 0 88px}
   .dc-ops:not(.sola) .dc-art img{min-height:56px}
 }
+
+/* ================= EL TUTORIAL, CON LAS PIEZAS DEL JUEGO =================
+   Todo se mide en `vh` con tope y piso, como el resto de lo que tiene que
+   entrar sin scroll: el tutorial es **la pantalla más larga del juego** y ya
+   tenía tres escalones por alto peleándola. La columna de la izquierda pasa de
+   30px —un emoji— a algo entre 58 y 96, así que lo que se recorta es el texto,
+   que ahora tiene una línea en vez de cuatro. */
+.regla{align-items:center}
+/* El envoltorio de los dos botones no cambia nada hasta que hace falta. */
+.rg-botones{display:contents}
+.rg-vis{
+  flex:0 0 clamp(58px, 15vw, 96px);
+  display:flex;align-items:center;justify-content:center;
+}
+.rg-txt .rg-tit{
+  display:block;font-family:var(--tit);font-weight:800;
+  font-size:clamp(11.5px, 2.9vw, 14px);letter-spacing:1.3px;color:var(--gold);
+}
+.rg-txt > span{display:block;margin-top:1px}
+/* El segundo escalón de la racha: la única regla que tiene dos. Va de nota, no
+   de renglón, para que la lista no crezca. */
+.rg-txt em{
+  display:block;font-style:normal;color:var(--gold);opacity:.85;
+  font-size:.86em;margin-top:3px;padding-top:3px;
+  border-top:1px dashed rgba(245,200,66,.28);
+}
+.rg-txt em .ir{width:1em;height:1.5em;vertical-align:-.45em}
+
+/* ---------- la fila de cartas ---------- */
+.tu-fila{display:flex;gap:2px;padding:2px;border-radius:4px;width:100%;
+  background:rgba(245,200,66,.12);box-shadow:0 0 0 1px var(--gold)}
+.tu-c{
+  flex:1;min-width:0;display:block;overflow:hidden;
+  border:1px solid var(--line);border-radius:2px;background:rgba(0,8,31,.75);padding:1px;
+}
+.tu-nm{
+  display:block;font-family:var(--tit);font-weight:800;color:var(--white);
+  font-size:clamp(4.2px, 1.05vw, 5.6px);line-height:1.1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.tu-art{
+  display:block;height:clamp(15px, 3.8vw, 24px);border-radius:1px;margin-top:1px;
+  background:rgba(0,16,52,.9) center/cover no-repeat;
+}
+
+/* ---------- los dos medidores ---------- */
+.tu-med{display:flex;gap:clamp(2px, .8vw, 5px);justify-content:center}
+.tu-med img,.tu-med i{display:block;object-fit:contain}
+.tu-med.cor img,.tu-med.cor i{width:clamp(13px, 3.3vw, 20px);height:clamp(13px, 3.3vw, 20px)}
+.tu-med.ray img,.tu-med.ray i{width:clamp(10px, 2.5vw, 15px);height:clamp(14px, 3.4vw, 20px)}
+.tu-med .off{filter:grayscale(1);opacity:.3}
+
+/* ---------- el duelo: los dos números ---------- */
+.tu-duelo{display:flex;align-items:center;gap:clamp(3px, 1vw, 6px)}
+.tu-duelo b{
+  font-family:var(--tit);font-weight:800;line-height:1;border:2px solid;border-radius:4px;
+  font-size:clamp(12px, 3.2vw, 17px);padding:2px clamp(4px, 1.4vw, 8px);
+}
+.tu-duelo .tu-a{border-color:var(--red);color:var(--red)}
+.tu-duelo .tu-b{border-color:var(--blue);color:var(--blue)}
+.tu-duelo i{font-style:normal;font-family:var(--txt);color:var(--dim2);
+  font-size:clamp(6px, 1.6vw, 8.4px);letter-spacing:1.2px}
+
+/* ---------- los ítems, con sus propios SVG ---------- */
+.tu-items{display:flex;gap:clamp(2px, .8vw, 4px)}
+.tu-items i{
+  font-style:normal;line-height:0;display:block;color:var(--gold);
+  border:1px solid var(--line);border-radius:4px;background:var(--panel2);
+  padding:clamp(1px, .5vw, 3px);
+}
+.tu-items .ii-svg{
+  width:clamp(11px, 2.9vw, 17px);height:clamp(11px, 2.9vw, 17px);display:block;
+}
+
+/* ---------- el reloj del marcador ---------- */
+.tu-reloj{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:clamp(28px, 7vw, 40px);height:clamp(28px, 7vw, 40px);
+}
+.tu-reloj svg{width:100%;height:100%;transform:rotate(-90deg)}
+.tu-ro{fill:none;stroke:rgba(18,51,110,.9);stroke-width:4}
+.tu-ra{fill:none;stroke:var(--gold);stroke-width:4;stroke-linecap:round;
+  stroke-dasharray:119;stroke-dashoffset:52}
+.tu-reloj em{
+  position:absolute;font-style:normal;font-family:var(--tit);font-weight:800;
+  font-size:clamp(11px, 2.8vw, 16px);color:var(--white);
+}
+
+/* ---------- y los escalones por alto ----------
+   Los mismos tres cortes que ya usaba la pantalla. Bajan los pisos, no los
+   topes: en un alto normal no cambia nada. */
+@media (max-width:820px) and (max-height:740px){
+  .rg-vis{flex-basis:clamp(52px, 14vw, 84px)}
+  .regla{padding:7px 0}
+}
+@media (max-width:820px) and (max-height:680px){
+  .rg-vis{flex-basis:clamp(48px, 13vw, 74px)}
+  .tu-art{height:clamp(13px, 3.2vw, 20px)}
+  .regla{padding:5px 0}
+}
+@media (max-width:820px) and (max-height:580px){
+  .rg-vis{flex-basis:clamp(44px, 12vw, 66px)}
+  .tu-art{height:clamp(11px, 2.8vw, 17px)}
+  .rg-txt em{margin-top:2px;padding-top:2px}
+  .regla{padding:4px 0}
+}
+@media (min-width:1025px), (min-width:821px) and (orientation:landscape){
+  .rg-vis{flex-basis:clamp(84px, 7vw, 106px)}
+  .rg-txt .rg-tit{font-size:15px;letter-spacing:1.6px}
+  .tu-art{height:24px}
+  .tu-nm{font-size:6.4px}
+  /* **El título ocupaba 99px en escritorio**, más que dos reglas juntas, y con
+     las seis piezas dibujadas la tarjeta se pasaba 31px del alto de pantalla.
+     Acá el título no es la noticia: la noticia son las seis reglas. Solo se
+     achica en el tutorial — los otros carteles que comparten `card-final` lo
+     siguen queriendo grande. */
+  .card-reglas h1{font-size:clamp(28px, 3vw, 40px)}
+  .card-reglas .regla{padding:8px 0}
+}
+
+/* El teléfono acostado: 358px de hueco contra 410 que pedía. Se apreta todo un
+   escalón más, y el título con ello. */
+/* Los escalones por alto que ya tenía el juego están todos colgados de
+   `(max-width:820px)`, así que **un teléfono acostado de 844 se lleva el
+   tratamiento de escritorio**: padding de 30px, texto de 11.8 y el título
+   grande, en 390px de pantalla. Este bloque no mira el ancho: solo el alto. */
+@media (max-height:430px){
+  .card-reglas{padding:9px 13px}
+  .card-reglas .tag{font-size:9px;margin-bottom:4px}
+  .card-reglas .rg-txt{font-size:9.6px}
+  .card-reglas h1{font-size:clamp(15px, 2.2vw, 19px)}
+  .card-reglas .rg-vis{flex-basis:clamp(42px, 11vw, 58px)}
+  .card-reglas .tu-art{height:clamp(10px, 2.4vw, 14px)}
+  .card-reglas .regla{padding:2px 0}
+  .card-reglas .reglas{margin-top:6px}
+  .card-reglas .rg-txt{line-height:1.28}
+  .card-reglas .rg-txt em{margin-top:2px;padding-top:2px;font-size:.82em}
+  .card-reglas .tu-med.cor img,.card-reglas .tu-med.cor i{width:13px;height:13px}
+  .card-reglas .tu-med.ray img,.card-reglas .tu-med.ray i{width:10px;height:14px}
+  /* El reloj se medía en `vw` y en una pantalla ancha y baja se iba a 40px:
+     era la pieza más alta y le marcaba el alto a su renglón él solo. */
+  .card-reglas .tu-reloj{width:26px;height:26px}
+  .card-reglas .tu-reloj em{font-size:11px}
+  .card-reglas .rg-txt .rg-tit{font-size:clamp(10.5px, 2.4vw, 12px)}
+  .card-reglas h1{font-size:clamp(17px, 2.6vw, 21px)}
+  /* Y los dos botones se ponen **uno al lado del otro**: apilados se llevaban
+     68px de los 358 que hay, que es dos reglas enteras. */
+  .card-reglas .rg-botones{display:flex;gap:8px;margin-top:8px}
+  .card-reglas .rg-botones .cta{flex:1;margin-top:0;font-size:13px;letter-spacing:2px;padding:6px}
+  .card-reglas .rg-botones .cta.alt{font-size:12px;padding:6px}
+}
 </style>
 </head>
 <body>
@@ -5560,56 +5711,91 @@ function repartoHTML(atk, def, quedan, pre){
    la mecánica de elegir, después qué miden los medidores, después los duelos, y
    al final el formato. `volver` es a dónde ir al cerrar — al empezar arranca la
    partida, y si se abre desde el partido, solo cierra. */
+/* ---------------- las piezas del tutorial ----------------
+   El tutorial mostraba seis emoji del teclado —🎲, ⚔, 🎒, ⏱— al lado de seis
+   párrafos de cuarenta palabras. Es **la única pantalla que se lee antes de
+   ver una carta**, así que las palabras tenían que hacer todo el trabajo
+   solas: ni una imagen del juego en toda la pantalla.
+
+   Ahora cada regla muestra **la pieza que nombra**, dibujada con lo que ya
+   existe —las ilustraciones de las cartas, los íconos de los medidores, los
+   SVG de los ítems— y el texto baja a un título y una línea. */
+function tutoFila(){
+  const c = tipo => {
+    const a = artCarta(tipo);
+    return '<span class="tu-c">' +
+      '<span class="tu-nm">' + TYPES[tipo].nm + '</span>' +
+      '<span class="tu-art"' + (a ? ' style="background-image:url(' + a + ')"' : '') + '></span>' +
+    '</span>';
+  };
+  return '<span class="tu-fila">' + ['corner','penal','defensor','jugada'].map(c).join('') + '</span>';
+}
+function tutoMed(clave, n, max, cls){
+  const a = ARTSRC(clave);
+  let h = '<span class="tu-med ' + cls + '">';
+  for(let i = 0; i < max; i++){
+    h += a ? '<img src="' + a + '"' + (i < n ? '' : ' class="off"') + ' alt="">'
+           : '<i' + (i < n ? '' : ' class="off"') + '></i>';
+  }
+  return h + '</span>';
+}
+const tutoDuelo = '<span class="tu-duelo"><b class="tu-a">2</b><i>vs</i><b class="tu-b">3</b></span>';
+/* Función y no constante: `icoItem` se define más abajo en el archivo, así que
+   evaluarlo acá arriba rompía el script entero antes de llegar a $. */
+const tutoItems = () => '<span class="tu-items">' +
+  ['suplentes','grito','revision'].map(k => '<i>' + icoItem(k) + '</i>').join('') + '</span>';
+/* El reloj del marcador: el arco dorado marca lo que va del partido. */
+const tutoReloj = '<span class="tu-reloj"><svg viewBox="0 0 44 44" aria-hidden="true">' +
+  '<circle class="tu-ro" cx="22" cy="22" r="19"/>' +
+  '<circle class="tu-ra" cx="22" cy="22" r="19"/></svg><em>5</em></span>';
+
+/* Un renglón: la pieza, el título y una línea. `pie` es la nota chica que solo
+   usa la racha, para su segundo escalón. */
+const tutoRegla = (vis, tit, txt, pie) =>
+  '<div class="regla">' +
+    '<div class="rg-vis">' + vis + '</div>' +
+    '<div class="rg-txt"><b class="rg-tit">' + tit + '</b>' +
+      '<span>' + txt + '</span>' +
+      (pie ? '<em>' + pie + '</em>' : '') +
+    '</div>' +
+  '</div>';
+
 function comoSeJuega(alEmpezar){
   openCard(
     '<div class="tag">CÓMO SE JUEGA</div>' +
     '<h1>DUELO<br><em>FUTBOLERO</em></h1>' +
     '<div class="reglas">' +
 
-      '<div class="regla">' +
-        '<div class="rg-ico">🎲</div>' +
-        '<div class="rg-txt"><b>Elegís una FILA y el azar cae en una de sus cartas.</b> ' +
-        'Vos elegís la fila; cuál de las cuatro te toca lo decide la suerte — pero ves lo que hace cada una <b>antes</b> de elegir. ' +
-        'Ahí está el juego: leer la mesa y decidir dónde te conviene arriesgar.</div>' +
-      '</div>' +
+      tutoRegla(tutoFila(), 'ELEGÍS UNA FILA',
+        'Cuál de las cuatro cartas te toca lo decide el azar. Pero las ves antes.') +
 
-      '<div class="regla">' +
-        '<div class="rg-ico"><i class="ih"></i></div>' +
-        '<div class="rg-txt"><b>El AGUANTE es el físico.</b> Lo bajan los duelos perdidos y los castigos. ' +
-        'Cuando se vacía, <b>el rival se gana una situación de gol</b> y el equipo vuelve entero pero con un corazón menos de máximo.</div>' +
-      '</div>' +
+      /* **La misma frase, dada vuelta.** Los dos medidores terminan en lo
+         mismo —una situación de gol— y el texto no lo decía: el aguante
+         hablaba de «situación de gol» y la racha de «posibilidad de gol al
+         51%», como si fueran dos premios distintos. Son el mismo, para el
+         rival o para vos. */
+      tutoRegla(tutoMed('ico_aguante', 3, 4, 'cor'), 'EL AGUANTE',
+        'Es el físico. Si se <b>vacía</b>, es una <b>situación de gol para el rival</b>.') +
 
-      '<div class="regla">' +
-        '<div class="rg-ico"><i class="ir"></i></div>' +
-        '<div class="rg-txt"><b>La RACHA es el envión.</b> La suben los duelos ganados y las jugadas que salen bien. ' +
-        'Con <b>3</b> podés atacar por la columna que elijas; con la racha <b>llena</b>, cambiarla por una ' +
-        '<b>posibilidad de gol</b> — una llegada clara al 51%, no un gol seguro.</div>' +
-      '</div>' +
+      tutoRegla(tutoMed('ico_racha', 4, 4, 'ray'), 'LA RACHA',
+        'Es el envión. Si se <b>llena</b>, es una <b>situación de gol para vos</b>.',
+        'Con 3 <i class="ir"></i> ya podés atacar por columna.') +
 
-      '<div class="regla">' +
-        '<div class="rg-ico">⚔</div>' +
-        '<div class="rg-txt"><b>Los duelos se ganan con stats.</b> Tu <b class="ef-ag">ATAQUE</b> contra defensores y arqueros, ' +
-        'tu <b class="ef-var">DEFENSA</b> contra medios y delanteros. Le ganás si tu número es mayor; ' +
-        'si <b>empatan</b>, se abre un <b>mini juego</b>: elegís un lado y tenés el <b>50%</b>.</div>' +
-      '</div>' +
+      tutoRegla(tutoDuelo, 'LOS DUELOS',
+        'Tu número contra el de la carta. Si empatan, <b>mini juego al 50%</b>.') +
 
-      '<div class="regla">' +
-        '<div class="rg-ico">🎒</div>' +
-        '<div class="rg-txt"><b>Los ÍTEMS cambian el partido.</b> Reponen aguante, cargan racha o destraban cartas. ' +
-        'Se compran con la <b class="ef-plata">plata</b> que juntás en la mesa y se usan cuando querés, ' +
-        'desde el panel de la izquierda.</div>' +
-      '</div>' +
+      tutoRegla(tutoItems(), 'LOS ÍTEMS',
+        'Reponen aguante, cargan racha o destraban cartas.') +
 
-      '<div class="regla">' +
-        '<div class="rg-ico">⏱</div>' +
-        '<div class="rg-txt"><b>Nueve jugadas por partido</b> — los 90 minutos. Cinco rondas hasta la copa, ' +
-        'y el que pierde queda afuera. Entre partido y partido sumás un refuerzo y pasás por el mercado.</div>' +
-      '</div>' +
+      tutoRegla(tutoReloj, 'NUEVE JUGADAS',
+        'Son los 90 minutos. Cinco rondas hasta la copa.') +
 
     '</div>' +
-    '<button class="cta" id="reglasGo">' + (alEmpezar ? 'EMPEZAR LA COPA' : 'VOLVER AL PARTIDO') + '</button>' +
-    (alEmpezar ? '<button class="cta alt" id="reglasBack">VOLVER</button>' : ''),
-    'card-final'
+    '<div class="rg-botones">' +
+      '<button class="cta" id="reglasGo">' + (alEmpezar ? 'EMPEZAR LA COPA' : 'VOLVER AL PARTIDO') + '</button>' +
+      (alEmpezar ? '<button class="cta alt" id="reglasBack">VOLVER</button>' : '') +
+    '</div>',
+    'card-final card-reglas'
   );
   $('reglasGo').onclick = () => {
     closeCard();
