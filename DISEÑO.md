@@ -4954,3 +4954,80 @@ Verificado en los cuatro mini juegos: en el del arquero `yo` queda en `none`
 y la pelota en `(±50, -54)`; en los otros tres las dos figuras y el balón
 siguen yendo a `±50` como antes. Y con la atajada forzada, el anillo cae en
 `cx` 150 — el palo al que fueron los dos.
+
+
+## El cartel de gol vuelve a tener foto, y el marcador no se pierde
+
+El cartel de **¡GOL!** y **GOL RIVAL** era solo tipografía sobre el azul. No
+era un olvido: ya se había probado con una foto de fondo y se sacó, porque la
+imagen ocupaba todo y **tapaba el marcador**, que es justo el dato que uno
+busca en ese momento —acabás de convertir o te acaban de convertir, y lo
+primero que querés saber es cómo va el partido.
+
+El error no era la foto: era ponerle el resultado encima. Ahora son **dos
+pisos**:
+
+| | |
+|---|---|
+| arriba | la foto, tamaño de póster, con la palabra al centro sobre un velo radial |
+| abajo | el marcador sobre el azul liso, en una banda propia |
+| entre las dos | un filo de 2px del color del gol — verde si es tuyo, rojo si es del rival |
+
+Es el mismo molde que ya usan la marquesina del menú, el tiempo de descuento y
+la situación de gol. No estrena lenguaje: lo único distinto es que acá la foto
+pesa el doble, porque el gol es **el** momento del partido.
+
+### Las dos imágenes son la misma foto
+
+`cartelGol` y `cartelGolC` salen del mismo original: un 9 festejando después
+de convertir, con la pelota adentro de la red y el arquero de cara al piso.
+
+| | qué muestra |
+|---|---|
+| `cartelGol` | el lado derecho del cuadro — el jugador viniendo de frente |
+| `cartelGolC` | el lado izquierdo — la pelota en la red y el arquero vencido |
+
+La pelota adentro del arco con el arquero en el piso **es** un gol recibido:
+no hizo falta arte nuevo para el cartel del rival, estaba en la otra mitad de
+la misma imagen. Y como los dos recortes vienen del mismo original, comparten
+luz, cancha y estadio: se leen como una pieza y su reverso, no como dos fotos
+que no se conocen.
+
+Pesan 58 y 60 KB —700px de ancho, WEBP al 62%—, en la familia de `cancha`
+(40 KB) y `logo` (44 KB), que son las otras dos grandes. Las cartas de la mesa
+son de 248x164 y pesan entre 4 y 10 KB: éstas se ven diez veces más grandes,
+así que no podían salir de ahí.
+
+### Si algún día no hay arte, el cartel vuelve a ser tipografía
+
+La clase `gol-foto` y los dos pisos **solo aparecen si `ARTSRC` devolvió
+algo**. Sin imagen, el cartel se arma como antes —palabra y marcador sobre el
+azul—, igual que el resto del `ART`, que está pensado para migrarse de a poco
+sin que nada quede a medias.
+
+### El tamaño, de 320px a 1920
+
+El bloque va **al final de la hoja** a propósito: `.gf.favor` y `.gf.contra`
+—que fijan el padding y el ancho del cartel viejo— tienen la misma
+especificidad que `.gf.gol-foto`, así que gana el que está más abajo.
+
+| | ancho del cartel | alto de la foto | la palabra |
+|---|---|---|---|
+| teléfono | `min(94vw, 430px)` | `clamp(158px, 27vh, 250px)` | `clamp(40px, 11vw, 62px)` |
+| escritorio | `clamp(500px, 42vw, 700px)` | `clamp(210px, 36vh, 360px)` | `clamp(52px, 4.6vw, 76px)` |
+| pantalla baja | — | `min(150px, 40vh)` | `min(46px, 12vh)` |
+
+El ancho de escritorio es el mismo `clamp(..., 42vw, 700px)` de los avisos, así
+que el cartel de gol entra en la familia de anchos que ya existía.
+
+La tercera fila es la que importa y es la que se olvida: **en una pantalla baja
+lo que desborda es el piso del `clamp`, no el término en `vh`**. Un teléfono
+acostado de 844x390 entra en la consulta de escritorio —es landscape y mide más
+de 821px— y ahí el piso de 210px de foto más la banda no entraban. Por eso el
+alto se fija con `min()`, que sí baja, en un bloque `@media (max-height:430px)`
+que va después: misma especificidad, gana el de abajo.
+
+Medido en 320x568, 360x640, 390x844, 640x480, 768x1024, 820x400, 844x390,
+1366x768 y 1920x1080, con `¡GOL!` y con `GOL RIVAL` —que es la palabra larga—:
+el cartel entra entero en la pantalla en las nueve y el título nunca desborda
+su caja. Va de 280x231 en el teléfono más chico a 700x464 en 1920.
