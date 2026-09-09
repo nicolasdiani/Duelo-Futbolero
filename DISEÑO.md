@@ -5031,3 +5031,92 @@ Medido en 320x568, 360x640, 390x844, 640x480, 768x1024, 820x400, 844x390,
 1366x768 y 1920x1080, con `¡GOL!` y con `GOL RIVAL` —que es la palabra larga—:
 el cartel entra entero en la pantalla en las nueve y el título nunca desborda
 su caja. Va de 280x231 en el teléfono más chico a 700x464 en 1920.
+
+
+## El tutorial: la pieza baja al medio del renglón
+
+Cada regla mostraba su pieza en una **columna de 58px a la izquierda**, con el
+título y el texto al lado. Esa columna es la que aplastaba las imágenes: las
+cuatro cartas de ELEGÍS UNA FILA entraban a 20px de alto con el nombre a
+**4,4px**, ilegible, y los medidores quedaban del tamaño de un emoji.
+
+Y sobraba lugar: la tarjeta usaba **589px de los 844** de un teléfono parado.
+Había 255px sin tocar.
+
+Ahora el orden es **título, pieza, texto**, y la pieza va a todo el ancho —318px
+en un teléfono, 420 en escritorio— dentro de una **banda hundida**: fondo más
+oscuro y un filo interno. La banda dice «esto es un pedazo del tablero», no «acá
+va un ícono». Es la misma idea que la cinta de RACHA LLENA en el descuento.
+
+| | antes | ahora |
+|---|---|---|
+| nombre de la carta | 4,2 – 5,6px | 6,4 – 9,5px |
+| ilustración de la carta | 15 – 24px | 30 – 50px |
+| corazón del aguante | 13 – 20px | 18 – 28px |
+| rayo de la racha | 10x14 – 15x20 | 13x18 – 20x28 |
+| ícono de ítem | 11 – 17px | 16 – 24px |
+| reloj | 28 – 40px | 34 – 48px |
+
+La fila de cartas es la única pieza que **no** lleva banda: ya trae su propio
+marco dorado y adentro quedaba enmarcada dos veces.
+
+### La pieza va adentro de `.rg-txt`, no al lado
+
+Podría ser hermana del título, que sería lo obvio leyendo el HTML. Pero
+`.rg-txt .rg-tit`, `.rg-txt > span` y `.rg-txt em` se ajustan en **cinco
+escalones por alto**, y sacar el título de ahí adentro los rompía todos.
+Metiendo la pieza **dentro** de `.rg-txt`, entre el título y el texto, el orden
+visual cambia y ninguna de esas reglas se entera.
+
+### Una columna cuando la pantalla es alta, dos cuando es ancha
+
+Apiladas, seis reglas con su pieza cuestan unos 190px más que antes. En un
+teléfono parado eso es justo el aire que sobraba. En **escritorio no alcanza**:
+en una sola columna piden 998px y la pantalla da 736, así que para entrar
+habría que dejar las piezas **más chicas que en un teléfono** — exactamente lo
+contrario de lo que se buscaba.
+
+Así que la regla quedó simple:
+
+| | columnas | alto de la tarjeta |
+|---|---|---|
+| teléfono parado | una | 520 – 717px |
+| escritorio y pantalla ancha | dos | 526 – 607px |
+| pantalla baja (≤560px de alto) | dos, apretadas | 343 – 350px |
+
+En dos columnas la tarjeta se ensancha —hasta 880px en escritorio, 860 en una
+pantalla baja— y ahí la fila de cartas **tampoco se queda a lo ancho**: con 420px
+por celda ya tiene más de lo que tenía una tarjeta entera en un teléfono, y
+dejándola en su celda son tres renglones en vez de cuatro. Ese renglón de menos
+es justo lo que hace entrar todo en un teléfono acostado.
+
+### Los dos botones, uno al lado del otro
+
+Apilados se llevaban **110px** —dos reglas enteras— y con la pieza en el medio de
+cada renglón ya no sobraban. Uno al lado del otro cuestan la mitad. Con un solo
+botón, que es cuando el tutorial se abre desde el partido, `flex:1` lo deja a
+todo el ancho igual.
+
+Su cuerpo y su interletrado se miden en `vw`: con la mitad del ancho, en una
+pantalla de 320px «EMPEZAR LA COPA» se partía en dos renglones y eso solo ya
+mandaba la tarjeta al scroll.
+
+### Los escalones, redibujados
+
+Los que había angostaban la columna de la izquierda, que ocupaba **ancho**. Los
+de ahora achican la banda y la pieza que tiene adentro, que es lo que ocupa
+**alto**. Y hay dos cortes nuevos:
+
+- el primero arranca en **800px** y no en 740, porque un teléfono de 390 deja
+  unos 780 útiles con la barra del navegador puesta y ahí se pasaba por 17px;
+- **≤700px de alto con pantalla ancha**: una ventana de escritorio de 600px deja
+  560 de hueco y las dos columnas pedían 607. Ahí las piezas bajan un tercio;
+- el corte de pantalla baja pasó de **430 a 560px**, porque el problema no era el
+  teléfono acostado sino el hueco: en 640x480 quedan 438px y seis reglas
+  apiladas piden 567. Un teléfono de 320x568 se queda afuera por ocho píxeles,
+  que es justo lo que hace falta: ahí las seis entran en una columna.
+
+Medido en catorce pantallas —320x568, 360x640, 390x780, 390x844, 414x896,
+640x480, 768x1024, 820x400, 844x390, 900x500, 1024x768, 1280x720, 1366x600,
+1366x768 y 1920x1080—, con los dos botones y con uno solo: **ninguna hace
+scroll**.

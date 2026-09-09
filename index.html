@@ -4931,13 +4931,40 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
    tenía tres escalones por alto peleándola. La columna de la izquierda pasa de
    30px —un emoji— a algo entre 58 y 96, así que lo que se recorta es el texto,
    que ahora tiene una línea en vez de cuatro. */
-.regla{align-items:center}
+/* **La pieza baja al medio del renglón**, entre el título y el texto. Vivía en
+   una columna de 58px a la izquierda y ahí no entraba: las cuatro cartas de la
+   fila salían a 20px de alto con el nombre a 4,4px, ilegible. Bajándola gana
+   los 318px de ancho de la tarjeta —500 en escritorio— y las piezas se ven.
+
+   El alto lo paga el aire que sobraba: la pantalla usaba 589px de los 844 de un
+   teléfono parado, así que había 255 sin usar. */
+.regla{display:block;padding:3px 0;border-top:1px solid rgba(18,51,110,.55)}
+.regla:first-child{border-top:none;padding-top:2px}
+.rg-txt{display:block}
 /* El envoltorio de los dos botones no cambia nada hasta que hace falta. */
 .rg-botones{display:contents}
-.rg-vis{
-  flex:0 0 clamp(58px, 15vw, 96px);
-  display:flex;align-items:center;justify-content:center;
+/* Y en el tutorial hace falta siempre: **apilados se llevan 110px**, que con la
+   pieza en el medio de cada regla ya no sobran. Uno al lado del otro cuestan
+   la mitad y la lista entera entra sin scroll. Con un solo botón —cuando el
+   tutorial se abre desde el partido— `flex:1` lo deja a todo el ancho igual. */
+.card-reglas .rg-botones{display:flex;gap:8px;margin-top:9px}
+.card-reglas .rg-botones .cta{
+  flex:1;margin-top:0;padding:9px 4px;
+  font-size:clamp(11.5px, 3.4vw, 13.5px);letter-spacing:clamp(.8px, .5vw, 2px);
 }
+.card-reglas .rg-botones .cta.alt{font-size:clamp(11px, 3.2vw, 12.5px)}
+/* La banda: la pieza sobre un fondo hundido, a todo el ancho. Es la misma idea
+   que la cinta de RACHA LLENA del descuento — dice «esto es un pedazo del
+   tablero», no «acá va un ícono». */
+.rg-vis{
+  display:flex;align-items:center;justify-content:center;
+  margin:4px 0;padding:5px clamp(6px, 2.2vw, 12px);
+  border-radius:7px;background:rgba(0,8,31,.55);
+  box-shadow:inset 0 0 0 1px rgba(18,51,110,.85);
+}
+/* La fila de cartas ya trae su propio marco dorado: adentro de la banda
+   quedaba enmarcada dos veces. */
+.regla.fila .rg-vis{background:none;box-shadow:none;padding:2px 0}
 .rg-txt .rg-tit{
   display:block;font-family:var(--tit);font-weight:800;
   font-size:clamp(11.5px, 2.9vw, 14px);letter-spacing:1.3px;color:var(--gold);
@@ -4961,47 +4988,47 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 }
 .tu-nm{
   display:block;font-family:var(--tit);font-weight:800;color:var(--white);
-  font-size:clamp(4.2px, 1.05vw, 5.6px);line-height:1.1;
+  font-size:clamp(6.4px, 2vw, 9.5px);line-height:1.1;letter-spacing:.2px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .tu-art{
-  display:block;height:clamp(15px, 3.8vw, 24px);border-radius:1px;margin-top:1px;
+  display:block;height:clamp(30px, 9vw, 50px);border-radius:2px;margin-top:2px;
   background:rgba(0,16,52,.9) center/cover no-repeat;
 }
 
 /* ---------- los dos medidores ---------- */
-.tu-med{display:flex;gap:clamp(2px, .8vw, 5px);justify-content:center}
+.tu-med{display:flex;gap:clamp(4px, 1.6vw, 9px);justify-content:center}
 .tu-med img,.tu-med i{display:block;object-fit:contain}
-.tu-med.cor img,.tu-med.cor i{width:clamp(13px, 3.3vw, 20px);height:clamp(13px, 3.3vw, 20px)}
-.tu-med.ray img,.tu-med.ray i{width:clamp(10px, 2.5vw, 15px);height:clamp(14px, 3.4vw, 20px)}
+.tu-med.cor img,.tu-med.cor i{width:clamp(18px, 5.4vw, 28px);height:clamp(18px, 5.4vw, 28px)}
+.tu-med.ray img,.tu-med.ray i{width:clamp(13px, 3.9vw, 20px);height:clamp(18px, 5.4vw, 28px)}
 .tu-med .off{filter:grayscale(1);opacity:.3}
 
 /* ---------- el duelo: los dos números ---------- */
-.tu-duelo{display:flex;align-items:center;gap:clamp(3px, 1vw, 6px)}
+.tu-duelo{display:flex;align-items:center;gap:clamp(5px, 1.8vw, 10px)}
 .tu-duelo b{
-  font-family:var(--tit);font-weight:800;line-height:1;border:2px solid;border-radius:4px;
-  font-size:clamp(12px, 3.2vw, 17px);padding:2px clamp(4px, 1.4vw, 8px);
+  font-family:var(--tit);font-weight:800;line-height:1;border:2px solid;border-radius:5px;
+  font-size:clamp(15px, 4.4vw, 22px);padding:3px clamp(6px, 2.2vw, 12px);
 }
 .tu-duelo .tu-a{border-color:var(--red);color:var(--red)}
 .tu-duelo .tu-b{border-color:var(--blue);color:var(--blue)}
 .tu-duelo i{font-style:normal;font-family:var(--txt);color:var(--dim2);
-  font-size:clamp(6px, 1.6vw, 8.4px);letter-spacing:1.2px}
+  font-size:clamp(7.5px, 2.2vw, 10px);letter-spacing:1.2px}
 
 /* ---------- los ítems, con sus propios SVG ---------- */
-.tu-items{display:flex;gap:clamp(2px, .8vw, 4px)}
+.tu-items{display:flex;gap:clamp(5px, 1.8vw, 10px)}
 .tu-items i{
   font-style:normal;line-height:0;display:block;color:var(--gold);
-  border:1px solid var(--line);border-radius:4px;background:var(--panel2);
-  padding:clamp(1px, .5vw, 3px);
+  border:1px solid var(--line);border-radius:5px;background:var(--panel2);
+  padding:clamp(2.5px, 1vw, 5px);
 }
 .tu-items .ii-svg{
-  width:clamp(11px, 2.9vw, 17px);height:clamp(11px, 2.9vw, 17px);display:block;
+  width:clamp(16px, 4.6vw, 24px);height:clamp(16px, 4.6vw, 24px);display:block;
 }
 
 /* ---------- el reloj del marcador ---------- */
 .tu-reloj{
   position:relative;display:inline-flex;align-items:center;justify-content:center;
-  width:clamp(28px, 7vw, 40px);height:clamp(28px, 7vw, 40px);
+  width:clamp(34px, 8.6vw, 48px);height:clamp(34px, 8.6vw, 48px);
 }
 .tu-reloj svg{width:100%;height:100%;transform:rotate(-90deg)}
 .tu-ro{fill:none;stroke:rgba(18,51,110,.9);stroke-width:4}
@@ -5009,60 +5036,143 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   stroke-dasharray:119;stroke-dashoffset:52}
 .tu-reloj em{
   position:absolute;font-style:normal;font-family:var(--tit);font-weight:800;
-  font-size:clamp(11px, 2.8vw, 16px);color:var(--white);
+  font-size:clamp(13px, 3.4vw, 19px);color:var(--white);
+  border:0;margin:0;padding:0;opacity:1;
 }
 
 /* ---------- y los escalones por alto ----------
-   Los mismos tres cortes que ya usaba la pantalla. Bajan los pisos, no los
-   topes: en un alto normal no cambia nada. */
-@media (max-width:820px) and (max-height:740px){
-  .rg-vis{flex-basis:clamp(52px, 14vw, 84px)}
-  .regla{padding:7px 0}
+   Los mismos tres cortes que ya usaba la pantalla. Ahora lo que se achica es la
+   banda y la pieza que tiene adentro, que es lo que ocupa el alto: antes se
+   angostaba la columna de la izquierda, que ocupaba ancho. */
+/* El primer escalón arranca en 800 y no en 740: un teléfono de 390 de ancho
+   deja unos 780 de alto útiles con la barra del navegador puesta, y ahí las
+   seis reglas con su banda se pasaban por 17px. */
+@media (max-width:820px) and (max-height:800px){
+  .rg-vis{margin:3px 0;padding:4px 8px}
+  .tu-art{height:clamp(26px, 7vw, 40px)}
+  .regla{padding:2px 0}
 }
 @media (max-width:820px) and (max-height:680px){
-  .rg-vis{flex-basis:clamp(48px, 13vw, 74px)}
-  .tu-art{height:clamp(13px, 3.2vw, 20px)}
-  .regla{padding:5px 0}
+  .rg-vis{margin:3px 0;padding:3px 7px}
+  .tu-art{height:clamp(22px, 6.4vw, 34px)}
+  .tu-med.cor img,.tu-med.cor i{width:clamp(16px, 4.6vw, 22px);height:clamp(16px, 4.6vw, 22px)}
+  .tu-med.ray img,.tu-med.ray i{width:clamp(12px, 3.4vw, 17px);height:clamp(16px, 4.6vw, 22px)}
+  .tu-reloj{width:clamp(30px, 7.4vw, 38px);height:clamp(30px, 7.4vw, 38px)}
+  .regla{padding:2px 0}
 }
 @media (max-width:820px) and (max-height:580px){
-  .rg-vis{flex-basis:clamp(44px, 12vw, 66px)}
-  .tu-art{height:clamp(11px, 2.8vw, 17px)}
+  .card-reglas .rg-botones{margin-top:6px}
+  .card-reglas .rg-botones .cta{padding:7px 4px}
+  .rg-vis{margin:2px 0;padding:2px 6px}
+  .tu-art{height:clamp(18px, 5.2vw, 26px)}
+  .tu-nm{font-size:clamp(5.4px, 1.6vw, 7.5px)}
+  .tu-duelo b{font-size:clamp(13px, 3.6vw, 17px);padding:2px clamp(5px, 1.7vw, 9px)}
+  .tu-items .ii-svg{width:clamp(13px, 3.6vw, 18px);height:clamp(13px, 3.6vw, 18px)}
+  .tu-reloj{width:clamp(26px, 6.4vw, 32px);height:clamp(26px, 6.4vw, 32px)}
   .rg-txt em{margin-top:2px;padding-top:2px}
-  .regla{padding:4px 0}
+  .regla{padding:2px 0}
 }
 @media (min-width:1025px), (min-width:821px) and (orientation:landscape){
-  .rg-vis{flex-basis:clamp(84px, 7vw, 106px)}
+  /* **En una pantalla ancha las reglas van de a dos.** Apiladas en una sola
+     columna, seis reglas con su pieza al medio piden 998px y la pantalla da
+     736: para entrar habría que dejar las piezas más chicas que en un
+     teléfono, que es exactamente lo contrario de lo que se buscaba.
+
+     La regla queda simple: **una columna cuando la pantalla es alta y
+     angosta, dos cuando es ancha.** Es la misma que usa el teléfono acostado,
+     unas líneas más abajo. */
+  .card-reglas{max-width:min(94vw, 880px)}
+  .card-reglas .reglas{display:grid;grid-template-columns:1fr 1fr;column-gap:22px}
+  /* Con 420px por columna la fila de cartas no necesita el ancho entero:
+     ya tiene más del que tenía la tarjeta completa en un teléfono. */
+  .rg-vis{margin:6px 0;padding:6px 14px;border-radius:8px}
   .rg-txt .rg-tit{font-size:15px;letter-spacing:1.6px}
-  .tu-art{height:24px}
-  .tu-nm{font-size:6.4px}
+  .tu-art{height:48px}
+  .tu-nm{font-size:9.5px}
+  .tu-med{gap:11px}
+  .tu-med.cor img,.tu-med.cor i{width:29px;height:29px}
+  .tu-med.ray img,.tu-med.ray i{width:21px;height:29px}
+  .tu-duelo{gap:11px}
+  .tu-duelo b{font-size:23px;padding:3px 13px}
+  .tu-duelo i{font-size:10px}
+  .tu-items{gap:11px}
+  .tu-items i{padding:5px}
+  .tu-items .ii-svg{width:25px;height:25px}
+  .tu-reloj{width:47px;height:47px}
+  .tu-reloj em{font-size:19px}
   /* **El título ocupaba 99px en escritorio**, más que dos reglas juntas, y con
      las seis piezas dibujadas la tarjeta se pasaba 31px del alto de pantalla.
      Acá el título no es la noticia: la noticia son las seis reglas. Solo se
      achica en el tutorial — los otros carteles que comparten `card-final` lo
      siguen queriendo grande. */
-  .card-reglas h1{font-size:clamp(28px, 3vw, 40px)}
-  .card-reglas .regla{padding:8px 0}
+  .card-reglas h1{font-size:clamp(26px, 2.6vw, 34px)}
+  .card-reglas .regla{padding:5px 0}
 }
 
-/* El teléfono acostado: 358px de hueco contra 410 que pedía. Se apreta todo un
-   escalón más, y el título con ello. */
-/* Los escalones por alto que ya tenía el juego están todos colgados de
-   `(max-width:820px)`, así que **un teléfono acostado de 844 se lleva el
+/* ---- PANTALLA ANCHA PERO NO TAN ALTA ----
+   Una ventana de escritorio de 600px de alto deja 560 de hueco y las dos
+   columnas piden 607. Un escalón intermedio: las piezas bajan un tercio y el
+   título deja de ser el más alto de la tarjeta. Sigue siendo la vista de dos
+   columnas, no la del teléfono acostado. */
+@media (min-width:821px) and (max-height:700px){
+  .rg-vis{margin:4px 0;padding:4px 12px}
+  .tu-art{height:38px}
+  .tu-nm{font-size:8.5px}
+  .tu-med.cor img,.tu-med.cor i{width:24px;height:24px}
+  .tu-med.ray img,.tu-med.ray i{width:18px;height:24px}
+  .tu-duelo b{font-size:19px;padding:2px 10px}
+  .tu-items i{padding:4px}
+  .tu-items .ii-svg{width:21px;height:21px}
+  .tu-reloj{width:38px;height:38px}
+  .tu-reloj em{font-size:16px}
+  .card-reglas h1{font-size:clamp(20px, 2.2vw, 26px)}
+  .card-reglas .regla{padding:3px 0}
+  .card-reglas .rg-txt .rg-tit{font-size:13px}
+}
+
+/* ---- Y LA PANTALLA BAJA DE VERDAD ----
+   Los escalones por alto que ya tenía el juego están todos colgados de
+   `(max-width:820px)`, así que **un teléfono acostado de 844 se llevaba el
    tratamiento de escritorio**: padding de 30px, texto de 11.8 y el título
-   grande, en 390px de pantalla. Este bloque no mira el ancho: solo el alto. */
-@media (max-height:430px){
+   grande, en 390px de pantalla. Este bloque no mira el ancho: solo el alto.
+
+   Arranca en 560px y no en 430 porque el problema no es el teléfono acostado
+   sino el hueco: una pantalla de 640x480 deja 438px y seis reglas apiladas
+   piden 567. Un teléfono parado de 320x568 se queda afuera por ocho píxeles,
+   que es justo lo que hace falta: ahí las seis entran en una columna. */
+@media (max-height:560px){
   .card-reglas{padding:9px 13px}
   .card-reglas .tag{font-size:9px;margin-bottom:4px}
   .card-reglas .rg-txt{font-size:9.6px}
   .card-reglas h1{font-size:clamp(15px, 2.2vw, 19px)}
-  .card-reglas .rg-vis{flex-basis:clamp(42px, 11vw, 58px)}
-  .card-reglas .tu-art{height:clamp(10px, 2.4vw, 14px)}
-  .card-reglas .regla{padding:2px 0}
+  /* **Acostado, las reglas van de a dos.** Apiladas, cada una cuesta título +
+     banda + línea, y seis de esas no entran en los 358px que deja un teléfono
+     de 844x390. Pero ancho sobra: en dos columnas son cuatro renglones en vez
+     de seis. La fila de cartas se queda a lo ancho, que es la única que lo
+     necesita. */
+  .card-reglas .reglas{display:grid;grid-template-columns:1fr 1fr;column-gap:14px}
+  /* Acá la fila **no** se queda a lo ancho como en el resto de las pantallas:
+     con la tarjeta a 860px cada columna mide 415, que es más de lo que tiene
+     una tarjeta entera en un teléfono parado. Dejándola en su celda son tres
+     renglones en vez de cuatro, y ese renglón de menos es justo lo que falta
+     para entrar sin scroll. */
+  /* Y la tarjeta se ensancha: acostado el hueco que falta es alto, no ancho, y
+     con 560px cada columna quedaba en 250 y todos los textos se partían en dos
+     renglones. Con la tarjeta a lo ancho de la pantalla entran en uno solo, que
+     son seis renglones menos. */
+  .card-reglas{max-width:min(96vw, 860px)}
+  .card-reglas .rg-vis{margin:2px 0;padding:2px 6px;border-radius:5px}
+  .card-reglas .tu-art{height:clamp(16px, 4vw, 26px)}
+  .card-reglas .tu-nm{font-size:clamp(5px, 1.3vw, 7px)}
+  .card-reglas .tu-duelo b{font-size:14px;padding:1px 7px}
+  .card-reglas .tu-items i{padding:2px}
+  .card-reglas .tu-items .ii-svg{width:14px;height:14px}
+  .card-reglas .regla{padding:1px 0}
   .card-reglas .reglas{margin-top:6px}
   .card-reglas .rg-txt{line-height:1.28}
   .card-reglas .rg-txt em{margin-top:2px;padding-top:2px;font-size:.82em}
-  .card-reglas .tu-med.cor img,.card-reglas .tu-med.cor i{width:13px;height:13px}
-  .card-reglas .tu-med.ray img,.card-reglas .tu-med.ray i{width:10px;height:14px}
+  .card-reglas .tu-med.cor img,.card-reglas .tu-med.cor i{width:15px;height:15px}
+  .card-reglas .tu-med.ray img,.card-reglas .tu-med.ray i{width:11px;height:15px}
   /* El reloj se medía en `vw` y en una pantalla ancha y baja se iba a 40px:
      era la pieza más alta y le marcaba el alto a su renglón él solo. */
   .card-reglas .tu-reloj{width:26px;height:26px}
@@ -5829,12 +5939,19 @@ const tutoReloj = '<span class="tu-reloj"><svg viewBox="0 0 44 44" aria-hidden="
   '<circle class="tu-ro" cx="22" cy="22" r="19"/>' +
   '<circle class="tu-ra" cx="22" cy="22" r="19"/></svg><em>5</em></span>';
 
-/* Un renglón: la pieza, el título y una línea. `pie` es la nota chica que solo
-   usa la racha, para su segundo escalón. */
-const tutoRegla = (vis, tit, txt, pie) =>
-  '<div class="regla">' +
-    '<div class="rg-vis">' + vis + '</div>' +
+/* Un renglón: el título, la pieza y una línea. `pie` es la nota chica que solo
+   usa la racha, para su segundo escalón; `cls` marca la fila de cartas, que es
+   la única pieza que se dibuja sin banda.
+
+   **La pieza va adentro de `.rg-txt`, no al lado.** Podría ser hermana del
+   título, pero entonces `.rg-txt .rg-tit`, `.rg-txt > span` y `.rg-txt em`
+   —que se ajustan en cinco escalones por alto— dejarían de encontrarla a la
+   primera. Metiéndola adentro, el orden visual cambia y ninguna de esas reglas
+   se entera. */
+const tutoRegla = (vis, tit, txt, pie, cls) =>
+  '<div class="regla' + (cls ? ' ' + cls : '') + '">' +
     '<div class="rg-txt"><b class="rg-tit">' + tit + '</b>' +
+      '<div class="rg-vis">' + vis + '</div>' +
       '<span>' + txt + '</span>' +
       (pie ? '<em>' + pie + '</em>' : '') +
     '</div>' +
@@ -5847,7 +5964,8 @@ function comoSeJuega(alEmpezar){
     '<div class="reglas">' +
 
       tutoRegla(tutoFila(), 'ELEGÍS UNA FILA',
-        'Cuál de las cuatro cartas te toca lo decide el azar. Pero las ves antes.') +
+        'Cuál de las cuatro cartas te toca lo decide el azar. Pero las ves antes.',
+        '', 'fila') +
 
       /* **La misma frase, dada vuelta.** Los dos medidores terminan en lo
          mismo —una situación de gol— y el texto no lo decía: el aguante
