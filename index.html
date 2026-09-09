@@ -4349,11 +4349,24 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   padding:5px 9px;transition:border-color .2s, background .2s;
 }
 .pz-f.turno{border-color:var(--gold);background:rgba(245,200,66,.09)}
+/* **La columna del nombre mide siempre lo mismo, mida lo que mida el nombre.**
+   Cada fila es su propia grilla, así que la columna `auto` del club la medía
+   cada equipo por su cuenta: con BOCA arriba y RIVER abajo las dos hileras de
+   círculos arrancaban en x distintos y quedaban corridas una respecto de la
+   otra. Con el ancho fijo las dos columnas miden igual pase lo que pase, y los
+   cinco tiros de cada equipo caen siempre uno debajo del otro.
+
+   El ▸ del turno tiene su propio lugar **reservado siempre**, encendido o
+   apagado: si apareciera y desapareciera del flujo movería el nombre del club
+   de un lado al otro en cada tiro. */
 .pz-nm{
+  display:flex;align-items:center;gap:3px;
   font-family:var(--tit);font-weight:800;font-size:12.5px;letter-spacing:.6px;
-  color:var(--white);max-width:11ch;text-transform:uppercase;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  color:var(--white);width:11ch;text-transform:uppercase;
 }
+.pz-club{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.pz-fl{flex:0 0 auto;font-style:normal;color:var(--gold);opacity:0;transition:opacity .2s}
+.pz-f.turno .pz-fl{opacity:1}
 .pz-tiros{display:flex;gap:5px;justify-content:center}
 .pz-t{
   width:15px;height:15px;border-radius:50%;
@@ -4361,11 +4374,20 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   display:flex;align-items:center;justify-content:center;
   transition:background .22s, border-color .22s, box-shadow .22s;
 }
+/* **El que erró se pinta igual que el que entró.** El gol era un círculo lleno
+   de verde y el fallo un círculo **vacío** con una rayita roja: de lejos el
+   fallo se parecía más a un tiro que todavía no se pateó que a uno errado.
+   Ahora los dos tiros jugados son círculos llenos —verde y rojo— y los huecos
+   son solo los que faltan.
+
+   La rayita se queda, pero pasa a ser **oscura sobre el rojo**: es la única
+   diferencia que no depende del color, y sin ella un daltonismo rojo-verde
+   deja la tanda ilegible. */
 .pz-t.gol{background:var(--green);border-color:var(--green);box-shadow:0 0 9px rgba(61,220,107,.55)}
-.pz-t.fallo{background:transparent;border-color:var(--red)}
+.pz-t.fallo{background:var(--red);border-color:var(--red);box-shadow:0 0 9px rgba(255,59,82,.5)}
 .pz-t.fallo::after{
-  content:'';width:7px;height:1.6px;background:var(--red);
-  transform:rotate(-45deg);border-radius:2px;
+  content:'';width:7px;height:1.6px;background:var(--black);
+  transform:rotate(-45deg);border-radius:2px;opacity:.7;
 }
 .pz-t.ahora{border-color:var(--gold);animation:pzLate 1.1s ease-in-out infinite}
 @keyframes pzLate{
@@ -4388,7 +4410,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 }
 @media (max-width:440px){
   .pz-f{padding:4px 7px;gap:6px}
-  .pz-nm{font-size:10.5px;max-width:8ch}
+  .pz-nm{font-size:10.5px;width:8ch;gap:2px}
   .pz-tiros{gap:4px}
   .pz-t{width:12px;height:12px;border-width:1.2px}
   .pz-t.fallo::after{width:6px;height:1.4px}
@@ -7589,7 +7611,8 @@ function tandaHTML(eqs, tiros, primero, turnoDe){
       huecos.push('<span class="pz-t' + cls + '"></span>');
     }
     return '<div class="pz-f' + (turnoDe === i ? ' turno' : '') + '">' +
-      '<span class="pz-nm">' + (turnoDe === i ? '▸ ' : '') + eqs[i].club + '</span>' +
+      '<span class="pz-nm"><i class="pz-fl">▸</i>' +
+        '<span class="pz-club">' + eqs[i].club + '</span></span>' +
       '<span class="pz-tiros">' + huecos.join('') + '</span>' +
       '<b class="pz-n">' + tiros[i].filter(t => t === true).length + '</b>' +
     '</div>';

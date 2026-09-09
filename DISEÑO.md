@@ -1518,8 +1518,30 @@ El marcador era una línea de ⚽ y ✖ de 13px con **solo los tiros ya**
 información — «le queda uno y va perdiendo» es todo el drama.
 
 Ahora van los **cinco huecos de cada equipo desde el primer tiro**: verde el
-que entró, tachado el que erró, vacío el que falta, y el que se está por
-patear late en dorado. La fila del que patea se enciende.
+que entró, rojo el que erró, vacío el que falta, y el que se está por patear
+late en dorado. La fila del que patea se enciende.
+
+**Los dos tiros jugados se pintan.** El gol era un círculo lleno de verde y el
+fallo un círculo **vacío** con una rayita roja al borde, así que de lejos el
+fallo se parecía más a un tiro que todavía no se pateó que a uno errado. Ahora
+los dos se pintan enteros y **los huecos son solo los que faltan**, que es la
+lectura que la pizarra tiene que dar de un vistazo.
+
+La rayita se queda, pero pasa a ser **oscura sobre el rojo**: es la única
+diferencia que no depende del color, y sin ella un daltonismo rojo-verde deja
+la tanda ilegible.
+
+**Y las dos hileras caen una debajo de la otra.** Cada fila es su propia
+grilla, así que la columna `auto` del nombre la medía cada equipo por su
+cuenta: con BOCA arriba y RIVER abajo los círculos arrancaban en x distintos y
+las dos hileras quedaban corridas. La columna del club pasa a **ancho fijo**
+—11ch, 8ch en mobile— y con eso miden igual pase lo que pase.
+
+El `▸` del turno tiene ahora su **lugar reservado siempre**, encendido o
+apagado. Iba adentro del texto del club y aparecía y desaparecía en cada tiro,
+así que movía el nombre de un lado al otro; con el ancho fijo además le habría
+comido una letra. Verificado con nombres cortos y largos en 320, 900 y 1366:
+los círculos de los dos equipos arrancan en el **mismo píxel** en los tres.
 
 ### La pantalla del club, en vitrina
 
