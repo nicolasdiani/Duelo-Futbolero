@@ -4732,3 +4732,77 @@ Medido botón por botón, la posición que entra es **pegada al ícono**
 Verificado con tres ítems y cantidades distintas, en mobile y en desktop: la
 chapita queda **2px libre del texto en el teléfono y 3px en escritorio**, y el
 ítem que tiene uno solo no muestra nada.
+
+## El tiempo de descuento
+
+### La racha llena, por fin nombrada
+
+El cartel decía que tenías la racha llena en **una línea gris de 11px** —«se
+acabaron los 90 con la racha llena»— y los cuatro rayos aparecían arriba **sin
+que nada los nombrara**. El dato que habilita la pantalla era lo que menos se
+veía.
+
+Ahora va en una **cinta dorada a todo el ancho**, pegada abajo de la foto: es lo
+primero que se lee después del título.
+
+> La cinta se sale del cartel con márgenes negativos de `--apx`, igual que la
+> foto de la cabecera. Y como la foto, se comió media hora hasta darme cuenta de
+> que el guardián global `*{max-width:100%}` se los estaba comiendo y la dejaba
+> **60px corta del lado derecho**. Entró en la lista de excepciones al lado de
+> `.a-foto` y `.mam-art`, que tuvieron exactamente el mismo problema.
+
+### Las dos opciones, con foto
+
+Pasan a ser **cartas**, el mismo molde que el pop-up de la situación de gol y el
+del mini juego: el cartel deja de tener un lenguaje propio. JUGARLA lleva la
+ilustración de la jugada clara y GUARDARLA la de la hinchada — ninguna de las
+dos es la de la cabecera, que es RACHA FULL, para que no se repita ninguna foto
+en la misma pantalla.
+
+### Perdiendo no se puede guardar
+
+**No es que convenga menos: es que no hay dónde guardarla.** Perder es
+`ELIMINADO` —la corrida se termina— y la única salida es `newRun()`, que
+arranca `G.racha = 0` sin importar si venías encadenando. Guardarla yendo abajo
+era un botón que decía «renunciar» disfrazado de decisión.
+
+| Cómo vas | Opciones | Por qué |
+|---|---|---|
+| Ganando | las dos | hay próximo partido seguro |
+| Empatando | las dos | se va a penales, y de ahí se puede salir ganando |
+| **Perdiendo** | **solo JUGARLA** | no hay próximo partido donde usarla |
+
+Con una sola carta ocupa todo el ancho y la foto respira más: es la única
+salida, no una de dos. Y la nota al pie lo dice: «si no la jugás ahora no hay
+próximo partido, así que guardarla no es una opción».
+
+### Que entre en todos lados
+
+Dos problemas de alto, con causas distintas:
+
+**Apiladas, las cartas no entraban.** De 420px para abajo `.a-ops` se pone en
+columna —una regla que ya existía para las dos tarjetas de texto— y con la foto
+arriba cada carta medía 145px: las dos juntas se comían el cartel y en un
+320x568 la nota del pie quedaba abajo del corte. **Acostadas** —foto a la
+izquierda, texto a la derecha— cada una mide 66 y entra todo.
+
+**Y en pantalla baja se acuestan siempre**, aunque haya ancho de sobra: un
+teléfono acostado tiene 340px de hueco y el cartel pedía 474. Acá el problema no
+es el ancho sino el alto, así que esa regla se cuelga del **alto** y no del
+ancho — y acostar las cartas solo devolvía la mitad, así que también se aprietan
+el título, el marcador y los textos.
+
+Medido con la tarjeta abierta, en las tres situaciones de marcador y en cuatro
+pantallas:
+
+| Pantalla | Ganando | Empatando | Perdiendo |
+|---|---|---|---|
+| 320 x 568 | 365 | 354 | 350 |
+| 390 x 844 | 453 | 439 | 441 |
+| 820 x 400 | 218 | 218 | — |
+| 1366 x 768 | 487 | 487 | 486 |
+
+En las doce, **sin scroll adentro de la tarjeta** y con la cinta al ancho
+exacto de la foto. Verificado también el flujo: GUARDARLA cierra y deja la
+racha en 4, JUGARLA la gasta y abre la situación de gol, y yendo abajo el botón
+de guardar directamente no existe.

@@ -108,7 +108,7 @@ img{height:auto}
    ancho del contenido y pegadas a la izquierda, con el hueco del padding
    visible a la derecha—. Es el mismo caso que `.c-art`: no desbordan la
    pantalla, llenan su propia tarjeta. */
-.c-art,.a-foto,.mam-art{max-width:none}
+.c-art,.a-foto,.mam-art,.dc-cinta{max-width:none}
 
 /* ---------- LA MARQUESINA: el partido, arriba y al medio ---------- */
 .marquesina{
@@ -4809,6 +4809,113 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .onda,.onda-svg{display:none}
   .onda-viva{transform:none !important}
 }
+
+/* ================= EL DESCUENTO: LA CINTA Y LAS DOS CARTAS =================
+   La cinta se sale del cartel con `--apx`, el mismo padding que usa la foto de
+   la cabecera, y va pegada abajo de ella — por eso la foto pierde su margen. */
+.aviso.dc .a-foto{margin-bottom:0}
+.dc-cinta{
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  /* La cinta se sale del cartel con los márgenes negativos, pero el guardán
+     global `*{max-width:100%}` se los comía y la dejaba 60px corta del lado
+     derecho. Por eso entra en la lista de excepciones, al lado de `.a-foto`
+     y `.mam-art`, que tuvieron exactamente el mismo problema. */
+  margin:0 calc(var(--apx) * -1) 12px;padding:7px 12px;
+  background:linear-gradient(90deg,
+    rgba(245,200,66,.22), rgba(245,200,66,.07) 50%, rgba(245,200,66,.22));
+  border-bottom:1px solid rgba(245,200,66,.45);
+}
+.dc-cinta b{
+  font-family:var(--txt);font-weight:700;font-size:10.4px;letter-spacing:2.6px;color:var(--gold);
+}
+.dc-cinta .a-rayos{margin-top:0;gap:5px}
+.dc-cinta .a-rayos img,.dc-cinta .a-rayos .ir{width:14px;height:19px;filter:drop-shadow(0 0 6px rgba(245,200,66,.55))}
+
+/* Las dos cartas: el molde del pop-up de la situación de gol. */
+.dc-op{padding:0;overflow:hidden;border-radius:7px;background:rgba(0,8,31,.6)}
+.dc-art{display:block;position:relative;overflow:hidden}
+.dc-art img{display:block;width:100%;height:clamp(62px, 9vh, 92px);object-fit:cover}
+.dc-art::after{
+  content:'';position:absolute;inset:auto 0 0;height:70%;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(0,8,31,.95));
+}
+.dc-txt{display:block;padding:8px 9px 10px}
+/* Los dos son `<span>` adentro de un botón: sin esto el nombre y la descripción
+   salen pegados en el mismo renglón. */
+.dc-op .on,.dc-op .od{display:block}
+.dc-op .on{margin-top:0}
+.dc-op .od{margin-top:4px}
+
+/* **Yendo abajo queda una sola carta**, así que ocupa todo el ancho y la foto
+   respira un poco más: es la única salida, no una de dos. */
+.dc-ops.sola .dc-art img{height:clamp(78px, 11vh, 118px)}
+
+@media (min-width:1025px), (min-width:821px) and (orientation:landscape){
+  .dc-cinta{padding:9px 14px}
+  .dc-cinta b{font-size:12px;letter-spacing:3px}
+  .dc-cinta .a-rayos img,.dc-cinta .a-rayos .ir{width:17px;height:23px}
+  .dc-txt{padding:10px 12px 12px}
+}
+
+/* **Apiladas, las cartas se acuestan.** De 420px para abajo `.a-ops` se pone en
+   columna —una regla que ya existía para las dos tarjetas de texto— y con la
+   foto arriba cada carta pasaba a medir 145px: las dos juntas se comían el
+   cartel y en un 320x568 la nota del pie quedaba abajo del corte. Acostadas
+   —foto a la izquierda, texto a la derecha— cada una mide 66 y entra todo.
+
+   La que queda sola cuando vas perdiendo no se acuesta: no tiene con quién
+   competir por el alto, así que se queda con la foto grande. */
+@media (max-width:420px){
+  .dc-ops:not(.sola) .dc-op{display:flex;align-items:stretch;text-align:left;min-height:66px}
+  .dc-ops:not(.sola) .dc-art{flex:0 0 104px}
+  .dc-ops:not(.sola) .dc-art img{height:100%;min-height:66px}
+  .dc-ops:not(.sola) .dc-art::after{inset:0 auto 0 auto;right:0;width:38%;height:auto;
+    background:linear-gradient(90deg,transparent,rgba(0,8,31,.9))}
+  .dc-ops:not(.sola) .dc-txt{flex:1;min-width:0;padding:7px 10px;
+    display:flex;flex-direction:column;justify-content:center}
+  .dc-ops:not(.sola) .dc-op .od{margin-top:2px}
+}
+
+/* **Y en pantalla baja se acuestan siempre**, aunque haya ancho de sobra: un
+   teléfono acostado tiene 340px de hueco y con la foto arriba el cartel pedía
+   474. Acá el problema no es el ancho sino el alto, así que la regla se cuelga
+   del alto y no del ancho. */
+@media (max-height:430px){
+  .dc-ops .dc-op{display:flex;align-items:stretch;text-align:left;min-height:52px}
+  .dc-ops .dc-art{flex:0 0 84px}
+  .dc-ops .dc-art img{height:100%;min-height:52px}
+  .dc-ops .dc-art::after{
+    inset:0 auto 0 auto;right:0;width:38%;height:auto;
+    background:linear-gradient(90deg,transparent,rgba(0,8,31,.9));
+  }
+  .dc-ops .dc-txt{flex:1;min-width:0;padding:6px 9px;
+    display:flex;flex-direction:column;justify-content:center}
+  .dc-op .od{margin-top:2px}
+  /* Y todo lo demás se aprieta: con 340px de hueco el cartel pedía 474, y
+     acostar las cartas solo devolvía la mitad. El título también baja — a
+     46px no entraba en una foto de 52 y se cortaba al medio. */
+  .aviso.dc{--apy:10px; --apx:16px}
+  .aviso.dc .a-foto img{max-height:clamp(44px, 11vh, 62px)}
+  .aviso.dc .a-t{font-size:clamp(19px, 3.4vw, 26px)}
+  .aviso.dc .a-s{font-size:9.8px;letter-spacing:1.2px;margin-top:5px;line-height:1.35}
+  .aviso.dc .e-marc{font-size:clamp(24px, 4vw, 30px);margin-top:2px}
+  .dc-cinta{margin-bottom:6px;padding:4px 8px}
+  .dc-ops{margin-top:8px}
+  .dc-ops .dc-art{flex:0 0 72px}
+  .dc-op .on{font-size:14px}
+  .dc-op .od{font-size:9px;line-height:1.32}
+}
+
+@media (max-width:820px) and (max-height:680px){
+  .dc-cinta{padding:5px 10px;margin-bottom:9px}
+  .dc-cinta b{font-size:9.4px;letter-spacing:2px}
+  .dc-cinta .a-rayos img,.dc-cinta .a-rayos .ir{width:12px;height:16px}
+  .dc-art img{height:clamp(48px, 7.5vh, 68px)}
+  .dc-txt{padding:6px 7px 8px}
+  .dc-ops:not(.sola) .dc-op{min-height:56px}
+  .dc-ops:not(.sola) .dc-art{flex:0 0 88px}
+  .dc-ops:not(.sola) .dc-art img{min-height:56px}
+}
 </style>
 </head>
 <body>
@@ -7948,6 +8055,20 @@ async function finDeJugadaDuelo(){
 /* Tiempo de descuento: la racha quedó llena justo cuando se terminaba el
    partido. Cobrarla ahora es la última chance de cambiar el marcador;
    guardarla la lleva entera al próximo partido —pero solo si ganás este. */
+/* Cada opción del descuento es una carta con foto: la ilustración arriba a
+   sangre, el nombre y el costo abajo. La foto de la cabecera es RACHA FULL, así
+   que las de las cartas son otras dos para que no se repita ninguna. */
+function dcCarta(id, tono, arte, nm, desc){
+  const art = ARTSRC(arte);
+  return '<button class="a-op btn dc-op ' + tono + '" id="' + id + '">' +
+    (art ? '<span class="dc-art"><img src="' + art + '" alt=""></span>' : '') +
+    '<span class="dc-txt">' +
+      '<span class="on">' + nm + '</span>' +
+      '<span class="od">' + desc + '</span>' +
+    '</span>' +
+  '</button>';
+}
+
 function descuento(){
   // el mismo promedio que el aviso de racha llena, calculado y no escrito
   const esperadoFavor = Math.round(
@@ -7955,9 +8076,17 @@ function descuento(){
     SIT_FAVOR.reduce((a, x) => a + x.peso, 0) * 100);
 
   const empata = G.gU === G.gC, pierde = G.gU < G.gC;
-  // la nota cambia según cómo vayas: es lo que decide entre las dos opciones
+
+  /* **Perdiendo no se puede guardar.** No es que convenga menos: es que
+     *no hay dónde guardarla*. Perder es `ELIMINADO` —la corrida se termina— y
+     la única salida es `newRun()`, que arranca `G.racha = 0` sin importar si
+     venías encadenando. Guardarla yendo abajo era un botón que decía
+     «renunciar» disfrazado de decisión.
+
+     Empatando sí se puede: el partido se va a penales y de ahí se puede salir
+     ganando, así que la racha guardada sirve. */
   const nota = pierde
-    ? { txt:'Vas perdiendo. Si no la jugás ahora, no hay próximo partido.', cls:'urge' }
+    ? { txt:'Vas perdiendo: si no la jugás ahora no hay próximo partido, así que guardarla no es una opción.', cls:'urge' }
     : empata
       ? { txt:'Están empatados. Si no entra, se define por penales.', cls:'urge' }
       : { txt:'Vas ganando. Guardarla te la deja entera para el próximo partido.', cls:'' };
@@ -7966,24 +8095,28 @@ function descuento(){
     const wrap = document.createElement('div');
     wrap.className = 'sit-flash';
     wrap.innerHTML =
-      /* Mismo esqueleto que el aviso de racha llena: ícono, título, subtítulo,
-         opciones y nota al pie. Lo que cambia es que acá hay que elegir, así
-         que las dos tarjetas son botones y el marcador va grande — es el dato
-         que decide. */
-      '<div class="aviso con-foto">' +
+      /* **La racha llena, por fin nombrada.** El cartel lo decía en una línea
+         gris de 11px —«se acabaron los 90 con la racha llena»— y los cuatro
+         rayos aparecían arriba sin que nada los nombrara: el dato que habilita
+         esta pantalla era lo que menos se veía. Ahora va en una cinta dorada a
+         todo el ancho, pegada abajo de la foto, que es lo primero que se lee
+         después del título.
+
+         Y las dos opciones pasan a ser **cartas con foto**, el mismo molde que
+         el pop-up de la situación de gol y el del mini juego: el cartel deja de
+         tener un lenguaje propio. */
+      '<div class="aviso con-foto dc">' +
         fotoRacha('TIEMPO DE DESCUENTO') +
-        rayosLlenos() +
-        '<div class="a-s">SE ACABARON LOS 90 CON LA RACHA LLENA</div>' +
+        '<div class="dc-cinta">' + rayosLlenos() + '<b>RACHA LLENA</b></div>' +
+        '<div class="a-s">' +
+          (pierde ? 'Se acabaron los 90 · te queda una sola salida'
+                  : 'Se acabaron los 90 · elegí qué hacer con ella') + '</div>' +
         '<div class="e-marc">' + G.gU + ' <span>-</span> ' + G.gC + '</div>' +
-        '<div class="a-ops">' +
-          '<button class="a-op btn gol" id="dJugar">' +
-            '<div class="oi">' + icoPelota() + '</div><div class="on">JUGARLA</div>' +
-            '<div class="od">Una última situación de gol al ' + esperadoFavor + '%, antes del pitazo. Gasta la racha entera.</div>' +
-          '</button>' +
-          '<button class="a-op btn col" id="dGuardar">' +
-            '<div class="oi">' + icono('ico_racha', '🎒', 'ico-alto') + '</div><div class="on">GUARDARLA</div>' +
-            '<div class="od">Te la llevás cargada al próximo partido, lista para usar desde la primera jugada.</div>' +
-          '</button>' +
+        '<div class="a-ops dc-ops' + (pierde ? ' sola' : '') + '">' +
+          dcCarta('dJugar', 'gol', 'jugada', 'JUGARLA',
+            'Una última llegada al ' + esperadoFavor + '%, antes del pitazo. Gasta la racha entera.') +
+          (pierde ? '' : dcCarta('dGuardar', 'col', 'hinchada', 'GUARDARLA',
+            'Te la llevás cargada al próximo partido, lista desde la primera jugada.')) +
         '</div>' +
         '<div class="a-s ' + nota.cls + '">' + nota.txt + '</div>' +
       '</div>';
@@ -7997,9 +8130,11 @@ function descuento(){
       await situacionGol('favor');
       resolve();
     };
-    wrap.querySelector('#dGuardar').onclick = () => {
+    /* Yendo abajo esta tarjeta no se dibuja, así que el enganche es opcional. */
+    const guardar = wrap.querySelector('#dGuardar');
+    if(guardar) guardar.onclick = () => {
       wrap.remove();
-      say('🎒 Te guardás la racha para el próximo partido.', 'good');
+      say('<i class="ir"></i> Te guardás la racha para el próximo partido.', 'good');
       resolve();
     };
   });
