@@ -1101,7 +1101,17 @@ img{height:auto}
   font-family:var(--tit);font-weight:700;font-size:12.5px;letter-spacing:1.5px;
   display:flex;justify-content:space-between;gap:6px;
 }
-.item .iq{color:var(--gold)}
+/* La chapita de la cantidad, en la esquina del ícono. El anillo oscuro la
+   despega del dibujo de abajo y sirve igual con el ítem apuntando, que cambia
+   el fondo del botón. */
+.item .ii{position:relative}
+.item .iq{
+  position:absolute;right:-6px;bottom:-4px;
+  font-family:var(--txt);font-weight:700;font-size:9.5px;letter-spacing:0;
+  line-height:1;padding:1px 4px;border-radius:99px;
+  background:var(--gold);color:var(--black);
+  box-shadow:0 0 0 1.5px rgba(0,8,31,.92);
+}
 .item .idesc{font-size:9.6px;line-height:1.4;color:var(--dim);margin-top:3px}
 
 /* ---------- EFECTO DE LOS ÍTEMS ---------- */
@@ -2752,7 +2762,10 @@ body{padding-bottom:36px}
     font-size:8.4px;letter-spacing:.2px;color:var(--white);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   }
-  .item .inm .iq{display:none}        /* la cantidad no entra en 89px */
+  /* Ya no se esconde: fuera del nombre no le quita ancho a nada. */
+  /* Pegada al ícono y no afuera: con 4px de hueco hasta el texto del efecto,
+     un pelín más a la derecha y la chapita le tapaba el signo. */
+  .item .iq{font-size:8.4px;padding:1px 3px;right:-1px;bottom:-3px}
   /* El tope de 30px venía de cuando los ítems eran angostos y de ancho libre.
      Ahora cada uno es una columna fija, así que el efecto usa lo que hay y, si
      no entra, corta con puntos suspensivos en vez de partir la palabra al
@@ -2878,6 +2891,7 @@ body{padding-bottom:36px}
      distingue un ítem de otro cuando tenés los cuatro y los efectos se parecen.
      Antes se ocultaba y quedaban cuatro cajas casi iguales. */
   .item .inm{font-size:7.8px;letter-spacing:0}
+  .item .iq{font-size:7.8px;padding:0 3px;right:-1px;bottom:-3px}
   .item .ief{font-size:8.8px}
   .item .ii{font-size:12px}
   .item{padding:3px 4px;gap:3px}
@@ -7012,13 +7026,26 @@ function renderItems(){
     if(inutil) b.title = inutil;
     // la descripción va a la vista, no escondida en un title que en celular
     // no existe: si no se lee lo que hace, el ítem no se usa
+    /* **La cantidad va de chapita sobre el ícono, y solo si hay más de uno.**
+       Antes vivía adentro del nombre —«SUPLENTES x2»— y ahí tenía dos
+       problemas: le comía ancho al nombre, que en mobile ya se corta con
+       puntos suspensivos, y por eso mismo estaba **escondida en el teléfono**
+       con un `display:none`. O sea que justo donde se juega, no se veía nunca
+       cuántos te quedaban.
+
+       Sobre el ícono no le pelea el ancho a nada, es donde la busca cualquiera
+       que jugó a algo con inventario, y el «x1» desaparece: si hay uno solo, el
+       número no informa nada. */
+    const cuantos = G.items[k];
     b.innerHTML =
-      '<span class="ii">' + icoItem(k) + '</span>' +
+      '<span class="ii">' + icoItem(k) +
+        (cuantos > 1 ? '<b class="iq">' + cuantos + '</b>' : '') +
+      '</span>' +
       '<span class="itx">' +
         /* En la caja va el nombre corto: son 69px de ancho y «GRITO DEL DT»
            entraba como «GRITO DE…». El nombre entero se lee en la ficha, que
            es donde se decide si usarlo. */
-        '<span class="inm">' + (I.corto || I.nm) + '<span class="iq">x' + G.items[k] + '</span></span>' +
+        '<span class="inm">' + (I.corto || I.nm) + '</span>' +
         '<span class="ief">' + I.efecto + '</span>' +
         '<span class="idesc">' + I.desc + '</span>' +
       '</span>';

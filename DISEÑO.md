@@ -4700,3 +4700,35 @@ chicas, filas, columnas, ítems, cartel de gol, ayuda, FAB del relato, celdas
 del tablero con el VAR apuntando, zonas del arco y zonas del duelo. Treinta
 toques seguidos sobre el mismo botón dejan **cero** cajas colgadas, y la ficha
 del ítem sigue abriéndose entera.
+
+## Cuántos te quedan de cada ítem
+
+La cantidad **existía y no se veía**. Vivía adentro del nombre —«SUPLENTES x2»—
+con dos problemas encadenados: le comía ancho al nombre, que en mobile ya se
+corta con puntos suspensivos, y **por eso mismo estaba escondida en el
+teléfono** con un `display:none` y el comentario «la cantidad no entra en 89px».
+O sea que justo donde se juega, no se veía nunca cuántos quedaban.
+
+Ahora va de **chapita dorada sobre el ícono**, que es donde la busca cualquiera
+que jugó a algo con inventario y donde no le pelea el ancho a nadie. Y el «x1»
+desaparece: **si hay uno solo, el número no informa nada**.
+
+### Los tres píxeles que costó
+
+La chapita arrancó en la esquina de abajo a la derecha del ícono, saliéndose
+6px hacia afuera — que es lo que se hace normalmente. Pero entre el ícono y el
+texto hay **4px de hueco**, y el texto de abajo es el efecto: la chapita le
+tapaba el signo del «+1 ❤».
+
+Medido botón por botón, la posición que entra es **pegada al ícono**
+(`right:-1px`), no afuera:
+
+| | Se pisa con el efecto |
+|---|---|
+| `right:-4px` | **+1px** — tapaba |
+| `right:-1px` | **-2px** — limpio |
+| a la izquierda del ícono | -9px, pero se sale del botón |
+
+Verificado con tres ítems y cantidades distintas, en mobile y en desktop: la
+chapita queda **2px libre del texto en el teléfono y 3px en escritorio**, y el
+ítem que tiene uno solo no muestra nada.
