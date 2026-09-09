@@ -4213,8 +4213,16 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 
 /* La tira de formas: se desliza si no entra, y cada silueta lleva los colores
    que el jugador eligió. */
+/* **`safe center`, no `center` a secas.** La tira scrollea, y centrar una caja
+   que desborda deja la primera forma **abajo del borde izquierdo, sin manera de
+   llegar a ella**: el scroll arranca en cero y el contenido está corrido. Por
+   eso en mobile había un `flex-start` que la dejaba pegada a la izquierda con
+   un hueco a la derecha, aunque entrara entera.
+
+   `safe` es exactamente esa condición: centra mientras entra, y se cae a
+   `start` recién cuando desbordaría. */
 .club-tira{
-  display:flex;justify-content:center;gap:7px;
+  display:flex;justify-content:safe center;gap:7px;
   overflow-x:auto;padding:2px 2px 4px;scrollbar-width:thin;
 }
 .club-tira::-webkit-scrollbar{height:5px}
@@ -4246,7 +4254,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .club-vitrina::before{width:170px;height:170px}
   .club-peana{width:112px}
   .card-club .crear-lb{margin:8px 0 5px}
-  .club-tira{gap:5px;justify-content:flex-start}
+  .club-tira{gap:5px}
   .club-tira .op-esc{padding:5px 6px}
   .club-sw{gap:6px;margin-bottom:7px}
   .sw-b{font-size:10.5px;letter-spacing:1.4px;padding:5px 10px 5px 6px;gap:6px}
@@ -10258,10 +10266,16 @@ function showStart(irAlDuelo){
     'card-club'
   );
 
-  /* El escudo arranca **al azar** cada vez que se abre la pantalla: así el
+  /* Los colores arrancan **al azar** cada vez que se abre la pantalla: así el
      jugador ve algo armado en vez de un molde vacío, y si le gusta lo deja.
-     Antes siempre empezaba en azul y amarillo. */
-  G.escudo = { forma: rnd(ESCUDOS.length), c1: rnd(COLORES.length), c2: rnd(COLORES.length) };
+
+     La **forma** no: arranca siempre en la primera. Sorteándola también, la
+     tira de abajo abría con la selección en cualquier lado —a veces en la
+     última, fuera de la vista en una pantalla angosta— y no se entendía que
+     esos cinco botones eran para elegir. Empezando por la primera, la tira se
+     lee de izquierda a derecha como lo que es: una lista. El dado sigue
+     sorteando las tres cosas. */
+  G.escudo = { forma: 0, c1: rnd(COLORES.length), c2: rnd(COLORES.length) };
   if(G.escudo.c2 === G.escudo.c1) G.escudo.c2 = (G.escudo.c2 + 1) % COLORES.length;
 
   /* Cuál de los dos colores está pintando la fila de abajo. */
@@ -10282,7 +10296,16 @@ function showStart(irAlDuelo){
     document.querySelectorAll('[data-sw]').forEach(b =>
       b.onclick = () => { cualColor = b.dataset.sw; pintar(); });
     document.querySelectorAll('[data-col]').forEach(b =>
-      b.onclick = () => { G.escudo[cualColor] = +b.dataset.col; pintar(); });
+      b.onclick = () => {
+        G.escudo[cualColor] = +b.dataset.col;
+        /* Elegido el primero, la fila **salta sola al segundo**. Son dos
+           colores y siempre se eligen en ese orden, así que el toque del medio
+           —volver a subir al interruptor— no decidía nada: solo hacía falta
+           para seguir. Del segundo no se salta a ningún lado; si querés
+           corregir el primero, el interruptor sigue ahí. */
+        if(cualColor === 'c1') cualColor = 'c2';
+        pintar();
+      });
   };
   pintar();
   $('clubInput').addEventListener('input', pintar);

@@ -4880,3 +4880,49 @@ Medido con la tarjeta abierta, en siete pantallas:
 En las siete, **sin scroll adentro de la tarjeta**. Y los dos caminos siguen
 funcionando: EMPEZAR LA COPA cierra y arranca el partido, VOLVER vuelve al menú,
 y desde el «?» del tablero sale con un solo botón.
+
+## Tres arreglos en la pantalla del club
+
+### Las formas, centradas de verdad
+
+La tira tenía `justify-content:center`, pero en mobile había un
+`flex-start` que la pisaba, y las cinco formas quedaban pegadas a la izquierda
+con un hueco a la derecha.
+
+Ese `flex-start` **no era un descuido**: la tira scrollea, y centrar una caja
+que desborda deja la primera forma **abajo del borde izquierdo, sin manera de
+llegar a ella** —el scroll arranca en cero y el contenido está corrido hacia la
+izquierda—. Elegir entre centrar y poder tocar la primera es un falso dilema:
+
+```css
+justify-content: safe center
+```
+
+`safe` es exactamente esa condición: **centra mientras entra, y se cae a
+`start` recién cuando desbordaría**. Medido en 320, 390 y 1366: los tres
+centrados al píxel —35,5 de aire a cada lado en el más chico, 140 en el más
+grande— y en ninguno la tira desborda.
+
+### La primera forma, siempre
+
+La forma arrancaba **sorteada**, igual que los colores. Con eso la tira de abajo
+abría con la selección en cualquier lado —a veces en la última, fuera de la
+vista en una pantalla angosta— y no se entendía que esos cinco botones eran para
+elegir.
+
+Ahora arranca en la **primera**, así la tira se lee de izquierda a derecha como
+lo que es: una lista. **Los colores siguen sorteándose**, que es lo que hace que
+la pantalla no abra como un molde vacío, y el dado sigue sorteando las tres
+cosas.
+
+### Del primer color al segundo, solo
+
+Son dos colores y siempre se eligen en ese orden, así que el toque del medio
+—volver a subir al interruptor para pasar de COLOR 1 a COLOR 2— **no decidía
+nada**: solo hacía falta para seguir. Ahora, elegido el primero, la fila salta
+sola al segundo.
+
+Del segundo no salta a ningún lado: si querés corregir el primero, el
+interruptor sigue ahí. Verificado el ciclo entero — empieza en `c1`, elegís y
+queda en `c2`, elegís de nuevo y sigue en `c2`, con los dos colores guardados
+bien.
