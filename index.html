@@ -4938,7 +4938,10 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 
    El alto lo paga el aire que sobraba: la pantalla usaba 589px de los 844 de un
    teléfono parado, así que había 255 sin usar. */
-.regla{display:block;padding:3px 0;border-top:1px solid rgba(18,51,110,.55)}
+/* Y el renglón va centrado: con la pieza al medio, el título y el texto
+   apoyados a la izquierda dejaban la columna coja. Centrado, las tres cosas
+   comparten el mismo eje. */
+.regla{display:block;text-align:center;padding:3px 0;border-top:1px solid rgba(18,51,110,.55)}
 .regla:first-child{border-top:none;padding-top:2px}
 .rg-txt{display:block}
 /* El envoltorio de los dos botones no cambia nada hasta que hace falta. */

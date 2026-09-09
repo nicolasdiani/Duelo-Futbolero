@@ -5048,6 +5048,10 @@ en un teléfono, 420 en escritorio— dentro de una **banda hundida**: fondo má
 oscuro y un filo interno. La banda dice «esto es un pedazo del tablero», no «acá
 va un ícono». Es la misma idea que la cinta de RACHA LLENA en el descuento.
 
+Y el renglón entero va **centrado**. Con la pieza al medio, el título y el texto
+apoyados a la izquierda dejaban la columna coja: la banda tiraba al centro y las
+otras dos líneas al borde. Centrado, las tres cosas comparten el mismo eje.
+
 | | antes | ahora |
 |---|---|---|
 | nombre de la carta | 4,2 – 5,6px | 6,4 – 9,5px |
