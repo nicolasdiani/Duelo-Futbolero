@@ -317,7 +317,10 @@ img{height:auto}
 
 /* Aviso de amarilla acumulada. Va en amarillo de tarjeta, no en el rojo del
    resto de las advertencias: es la misma señal que ves en la cancha. */
-.amarilla-aviso{border-bottom:none}
+.amarilla-aviso{border-bottom:none;display:none}
+.amarilla-aviso.hay{display:flex}
+/* La tarjeta suelta es solo del teléfono: en escritorio el aviso es la caja. */
+.am-tag{display:none}
 .am-caja{
   display:flex;align-items:center;gap:8px;
   border:1px solid var(--gold);background:rgba(245,200,66,.09);
@@ -2740,6 +2743,29 @@ body{padding-bottom:36px}
     padding:0;border:none;background:none;
     display:flex;align-items:center;flex:0 0 auto;
   }
+
+  /* ---- LA AMARILLA ACUMULADA, SIN ROBARLE ALTO A LA MESA ----
+     La caja grande se va y queda **la tarjeta sobre el aguante**: el anillo se
+     dibuja con `outline`, que no ocupa lugar en el flujo, así que de ancho la
+     advertencia cuesta solo el emoji y su margen. En esta línea sobran 34px y
+     eso entra; si costara más, la línea volvería a envolver y estaríamos en el
+     mismo problema. */
+  .amarilla-aviso.hay{display:none}
+  #m-aguante.con-amarilla .hearts{
+    outline:1px solid var(--gold);outline-offset:2px;border-radius:99px;
+    background:rgba(245,200,66,.1);
+  }
+  /* La tarjeta va **fuera del flujo**: puesta como un elemento más se llevaba
+     su ancho más el hueco de la línea —35px contra los 34 que sobran— y la
+     línea volvía a envolver, que es justo lo que se venía a arreglar. Absoluta,
+     se apoya en el hueco que ya hay entre el aguante y la racha y no cuesta
+     nada. */
+  #m-aguante{position:relative}
+  #m-aguante.con-amarilla .am-tag{
+    display:block;position:absolute;right:-17px;top:50%;transform:translateY(-50%);
+    font-size:12px;line-height:1;pointer-events:none;
+    filter:drop-shadow(0 0 5px rgba(245,200,66,.65));
+  }
   .rec-lb{display:none}
   .hearts,.racha-track{display:grid;grid-template-columns:repeat(4,26px);
                        justify-items:center;align-items:center;gap:0}
@@ -2857,6 +2883,12 @@ body{padding-bottom:36px}
   .ir{width:1.1em;height:1.45em;vertical-align:-.4em}
 
   .board-hint{font-size:9px;padding:0}
+  /* El aviso de abajo se queda —es el que lo explica con palabras— pero antes
+     no le cabía al renglón: el texto de ayuda se partía en dos líneas y el
+     aviso se le montaba encima. Ahora la ayuda cede primero y se corta con
+     puntos suspensivos, que es lo que se puede perder de los dos. */
+  #hint{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #cards{font-size:9px;letter-spacing:.6px;flex:0 0 auto}
 
   /* ---- EL RELATO, EN UN BOTÓN FLOTANTE ----
      Ocupaba una franja fija arriba de la mesa. Ahora vive detrás de un botón
@@ -5394,6 +5426,8 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
         <div class="rec" id="m-aguante">
           <span class="rec-lb">AGUANTE</span>
           <div class="hearts" id="hearts"></div>
+          <!-- solo en el teléfono, y solo si hay una amarilla encima -->
+          <span class="am-tag" title="Amarilla acumulada: la próxima es roja">🟨</span>
         </div>
 
         <div class="rec" id="m-racha">
@@ -5407,7 +5441,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
         </div>
 
         <!-- solo aparece si arrastrás una amarilla -->
-        <div class="rec amarilla-aviso" id="m-amarilla" style="display:none">
+        <div class="rec amarilla-aviso" id="m-amarilla">
           <span class="rec-lb">TARJETAS</span>
           <div class="am-caja">
             <span class="am-ico">🟨</span>
@@ -7343,8 +7377,18 @@ function render(){
   // La amarilla acumulada se muestra en el panel del equipo, no perdida en una
   // línea de texto: cambia el valor de una carta entera de la mesa y hay que
   // tenerla presente al elegir.
+  /* **La misma advertencia, dos formas según el lugar.** En escritorio hay
+     columna de sobra y va la caja entera. En el teléfono la caja no entra —
+     mide 158x51 contra 301 de ancho de línea, así que envolvía y se llevaba un
+     renglón: 55px que salían de la mesa, 14 de alto por carta— y en su lugar va
+     **la tarjeta pegada al aguante**, que es justo lo que la amarilla amenaza.
+     Abajo, la línea de ayuda lo sigue diciendo con palabras.
+
+     Se maneja con clases y no con `style.display`: el estilo en línea le gana a
+     la hoja, y el teléfono necesita poder esconder la caja. */
   const conAmarilla = G.amarillas > 0 && G.phase === 'match';
-  $('m-amarilla').style.display = conAmarilla ? 'flex' : 'none';
+  $('m-amarilla').classList.toggle('hay', conAmarilla);
+  $('m-aguante').classList.toggle('con-amarilla', conAmarilla);
   $('cards').innerHTML = conAmarilla ? '🟨 amarilla acumulada' : '';
 
   renderBoard();

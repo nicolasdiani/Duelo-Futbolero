@@ -5320,3 +5320,64 @@ exactamente lo mismo que el del pop-up, uno arriba del otro.
 Verificado en cinco estados de pizarra —serie normal a mitad de camino, el
 primero de la muerte súbita, mitad de ronda, ronda nueva y resumen final— y en
 los dos resúmenes, con y sin muerte súbita.
+
+
+## La amarilla acumulada, en el teléfono, sin robarle alto a la mesa
+
+El aviso de amarilla acumulada es una caja de **158x51** y la línea de medidores
+del teléfono mide **301px de ancho**. No le cabía: envolvía y se llevaba un
+renglón entero.
+
+| en un teléfono de 390x844 | sin amarilla | con amarilla |
+|---|---|---|
+| la franja del equipo | 24px | **79px** |
+| la mesa | 575px | **520px** |
+| cada carta | 140px | **126px** |
+
+Catorce píxeles menos por carta es lo que hacía que el texto se le empezara a
+salir: nombres partidos en dos líneas y el efecto montado encima del nombre.
+
+Y el aviso **se mostraba dos veces**: la caja arriba, y abajo, en la línea de
+ayuda, un «🟨 amarilla acumulada» que además se le montaba al texto del hint
+porque los dos juntos no entraban en el renglón.
+
+### La misma advertencia, dos formas según el lugar
+
+| | qué se ve |
+|---|---|
+| escritorio | la caja entera, en la columna del equipo, que tiene lugar de sobra |
+| teléfono | **la tarjeta pegada al aguante** —que es justo lo que la amarilla amenaza— y la línea de abajo, que lo dice con palabras |
+
+En el teléfono el aguante se enmarca en dorado y lleva el 🟨 al costado. Es la
+relación que importa: la segunda amarilla cuesta **−3 ❤**, así que el aviso vive
+encima de los corazones que se van a ir.
+
+### Los dos trucos para que cueste cero
+
+**El anillo se dibuja con `outline`**, no con `border` ni `padding`: no ocupa
+lugar en el flujo, así que enmarcar los corazones no empuja nada.
+
+**La tarjeta va fuera del flujo.** El primer intento la puso como un elemento
+más de la línea y volvió a envolver: se llevaba su ancho más el hueco de la
+línea —unos 35px contra los **34 que sobran** ahí— y estábamos en el mismo
+problema, con 15px de mesa perdidos en vez de 55. Absoluta, se apoya en el hueco
+que ya existe entre el aguante y la racha y no cuesta nada.
+
+Medido con y sin amarilla en 320x568, 360x640, 390x780, 390x844 y 414x896: la
+franja, la mesa y las cartas miden **exactamente lo mismo** en los dos estados, y
+ninguna hace scroll. En 320 la línea envuelve, pero envuelve igual sin amarilla:
+ahí los tres medidores ya no entran en 231px.
+
+### Y la línea de abajo deja de pisarse
+
+El aviso de abajo se queda —es el que lo explica con palabras— pero antes no le
+cabía al renglón. Ahora la ayuda cede primero: `overflow:hidden` con puntos
+suspensivos. De los dos textos, el que se puede perder es el que dice siempre lo
+mismo.
+
+### La visibilidad pasa a ser una clase
+
+`render` escribía `style.display` en línea, y un estilo en línea le gana a la
+hoja: el teléfono no tenía forma de esconder la caja. Ahora es
+`classList.toggle('hay', …)`, y el bloque del teléfono la apaga con una regla
+normal.
