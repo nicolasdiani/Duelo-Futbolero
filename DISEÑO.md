@@ -4521,3 +4521,79 @@ contenido del botón, con el latido congelado:
 
 En los cinco, el alto del botón y el tope de la mesa son **idénticos** con 25,
 33, 50 y 100%.
+
+## La pantalla de arranque: la marquesina y el modo principal
+
+Era **el logo y cuatro botones iguales apilados**, y tenía dos problemas a la
+vez. Uno: los cuatro modos **pesaban lo mismo** —CAMPEONATO, que es el modo de
+verdad, el que dura cinco rondas, se distinguía solo por el borde dorado, que en
+un teléfono se pierde—. Dos: era **la única pantalla del juego** que no usaba el
+molde de todas las demás —foto a sangre arriba, título encima del degradado—, así
+que el logo flotaba sobre un panel liso y la cancha del fondo quedaba tapada por
+la tarjeta.
+
+### Arriba, la marquesina
+
+La misma pieza que ya usan el aviso de RACHA LLENA, el mini juego y la situación
+de gol. La foto es **el estadio desde arriba**, y va recortada de cerca: la
+imagen entera se ve lejos —media ciudad alrededor del estadio— así que se agranda
+un 140% y se corre hacia abajo, hasta que quedan el cuenco de la tribuna y el
+césped.
+
+El velo lleva **dos capas** a propósito:
+
+| | |
+|---|---|
+| lineal, de arriba abajo | baja el brillo del césped para que el logo no compita |
+| radial, desde abajo | apoya el logo sobre una sombra, no sobre el pasto |
+
+Con una sola capa, o el logo quedaba flotando sobre verde claro, o la foto entera
+se veía apagada.
+
+**El logo se mide por alto, no por ancho.** Sobre una foto de alto fijo lo que
+tiene que quedar constante es cuánto de esa foto tapa. El `max-width` queda de
+seguro para las pantallas más angostas. (Dato: el logo es de **400x420**, casi
+cuadrado, no apaisado — dimensionarlo por ancho lo dejaba a menos de la mitad de
+su tamaño anterior.)
+
+### Abajo, el modo principal
+
+CAMPEONATO pasa a un **recuadro grande con foto** —la de los dos jugadores de
+espaldas, la misma de siempre— y los otros tres bajan a **tres fichas**: una
+puerta y tres atajos. De paso el menú ocupa menos alto que antes, que en las
+pantallas bajas venía justo.
+
+Las dos fotos son **a propósito distintas**: un plano general verde arriba y un
+primer plano azul abajo. Con dos primeros planos seguidos el banner competía con
+el botón en vez de acompañarlo.
+
+El BETA del 1 vs 1 no entra al lado del nombre en una ficha tan angosta, así que
+va de **chapita en la esquina**.
+
+### Que entre en todos lados
+
+Todo se mide en `vh` con tope y piso, como el resto de lo que tiene que entrar
+sí o sí. Pero los `vh` solos no alcanzaban: **lo que desborda en un teléfono
+acostado no es el `vh` sino el piso de cada clamp**. Con los mínimos originales
+—148 de foto, 112 de recuadro, 62 de ficha— la tarjeta pedía 443px en un 820x400
+que solo tiene 359 de hueco, y aparecía scroll adentro de la tarjeta.
+
+Dos escalones más, que bajan los pisos y no los topes, así en un alto normal no
+cambia nada. En el segundo —teléfono acostado, 430px de alto o menos— se va
+también el subtítulo del recuadro: el nombre y la foto ya dicen cuál es.
+
+Medido con la tarjeta abierta, en siete tamaños:
+
+| Pantalla | Alto de la tarjeta | Hueco | Entra |
+|---|---|---|---|
+| 320 x 568 | 440 | 530 | sí |
+| 390 x 844 | 585 | 806 | sí |
+| 640 x 480 | 375 | 371 | sí |
+| 820 x 400 | 313 | 309 | sí |
+| 844 x 390 | 317 | 313 | sí |
+| 1366 x 768 | 552 | 730 | sí |
+| 1920 x 1080 | 604 | 601 | sí |
+
+En los siete, sin scroll adentro de la tarjeta. Y los seis caminos siguen
+llevando a donde llevaban: campeonato y partido único a la pantalla del club,
+1 vs 1 al club en modo duelo, y penales, opciones y créditos a las suyas.

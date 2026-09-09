@@ -4597,6 +4597,151 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 @media (prefers-reduced-motion:reduce){
   .pp-atajo,.pp-arq.sacude,.dl-robo{animation:none}
 }
+
+/* ================= EL MENÚ: LA MARQUESINA Y EL MODO PRINCIPAL =================
+   Todo se mide en `vh` con tope y piso, igual que los otros elementos que
+   tienen que entrar sí o sí: así los tres escalones de pantalla baja que ya
+   existen no necesitan una regla propia para cada pieza. */
+
+/* La foto va a sangre, así que el padding pasa a vivir adentro. */
+.card-menu{padding:0;overflow:hidden}
+
+/* ---------- la marquesina ---------- */
+.mm-marq{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+/* **El estadio, de cerca.** La foto entera se ve lejos —media ciudad alrededor
+   del estadio— así que se agranda un 55% y se corre hacia abajo: quedan el
+   cuenco de la tribuna y el césped, que es lo que dice «acá se juega». */
+.mm-foto{
+  display:block;width:100%;height:clamp(148px, 26vh, 228px);
+  object-fit:cover;object-position:center 58%;
+  transform:scale(2.4);transform-origin:center 70%;
+}
+/* El velo tiene dos capas: la de arriba baja el brillo del césped y la de
+   abajo apoya el logo. Con una sola, o el logo quedaba flotando sobre verde
+   claro, o la foto entera se veía apagada. */
+.mm-marq::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(125% 82% at 50% 104%, rgba(0,8,31,.95), rgba(0,8,31,0) 72%),
+    linear-gradient(180deg,
+      rgba(0,8,31,.55) 0%, rgba(0,8,31,.12) 26%,
+      rgba(0,8,31,.55) 56%, rgba(0,8,31,.9) 82%, rgba(0,8,31,.99) 100%);
+}
+/* El logo se mide **por alto**, no por ancho: sobre una foto de alto fijo, lo
+   que tiene que quedar constante es cuánto de esa foto tapa. El `max-width`
+   es el seguro para las pantallas más angostas. */
+.card-menu .logo-main{
+  position:absolute;left:50%;bottom:6px;z-index:2;transform:translateX(-50%);
+  width:auto;max-width:62%;height:clamp(92px, 16.5vh, 156px);max-height:none;
+  object-fit:contain;margin:0;
+  filter:drop-shadow(0 4px 12px rgba(0,4,16,.98)) drop-shadow(0 0 26px rgba(0,4,16,.95));
+}
+.card-menu .logo-txt{
+  position:absolute;left:0;right:0;bottom:8px;z-index:2;margin:0;
+  font-size:clamp(24px,7vw,38px);line-height:.95;
+  text-shadow:0 3px 14px rgba(0,4,16,.95);
+}
+
+/* ---------- el cuerpo ---------- */
+.mm-cuerpo{padding:13px 14px 14px}
+
+/* ---------- el recuadro de CAMPEONATO ---------- */
+.mm-hero{
+  position:relative;display:block;width:100%;overflow:hidden;padding:0;
+  height:clamp(112px, 20vh, 176px);
+  border:2px solid var(--gold);border-radius:10px;cursor:pointer;
+  font-family:inherit;color:var(--white);
+  background:linear-gradient(160deg, rgba(38,32,4,.9), rgba(0,12,40,.96));
+  transition:transform .16s, box-shadow .18s;
+}
+.mm-h-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%}
+.mm-hero::after{
+  content:'';position:absolute;inset:auto 0 0;height:86%;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(0,8,31,.55) 38%,rgba(0,8,31,.97));
+}
+.mm-h-txt{position:absolute;inset:auto 0 0;z-index:2;padding:0 13px 10px;text-align:left;display:block}
+.mm-h-lb{display:block;font-family:var(--txt);font-weight:700;font-size:8.6px;letter-spacing:2.6px;color:var(--gold)}
+.mm-h-nm{
+  display:block;font-family:var(--tit);font-weight:800;
+  font-size:clamp(23px, 6.2vw, 34px);letter-spacing:1.6px;line-height:1;margin-top:2px;
+}
+.mm-h-s{display:block;font-family:var(--txt);font-size:10.2px;color:var(--dim);margin-top:2px;line-height:1.3}
+.mm-hero:hover{transform:translateY(-3px);box-shadow:0 12px 34px rgba(245,200,66,.3)}
+
+/* ---------- las tres fichas ---------- */
+.mm-tres{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:9px}
+.mm-tile{
+  position:relative;overflow:hidden;
+  background:linear-gradient(160deg, rgba(0,22,72,.95), rgba(0,8,31,.96));
+  border:2px solid var(--line);border-radius:8px;padding:12px 4px 10px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  text-align:center;min-height:clamp(62px, 10.5vh, 84px);
+  color:var(--white);font-family:inherit;
+  transition:border-color .18s, transform .14s, box-shadow .18s;
+}
+.mm-tile:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 6px 18px rgba(245,200,66,.2)}
+.mm-t-ico{font-size:clamp(18px, 5vw, 25px);line-height:1;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+.mm-t-nm{
+  font-family:var(--tit);font-weight:800;
+  font-size:clamp(9.4px, 2.9vw, 11.6px);letter-spacing:1.1px;line-height:1.12;
+}
+.mm-t-beta{
+  position:absolute;top:4px;right:4px;margin:0;
+  font-size:6.6px;letter-spacing:1.2px;padding:1px 4px;
+}
+.card-menu .menu-fila{margin-top:9px}
+.card-menu .ver{margin-top:9px}
+
+/* ---------- y en touch, sin relieve pegado ---------- */
+@media (hover:none){
+  .mm-hero:hover, .mm-tile:hover{transform:none;box-shadow:none}
+  .mm-tile:hover{border-color:var(--line)}
+}
+@media (prefers-reduced-motion:reduce){
+  .mm-hero, .mm-tile{transition:none}
+}
+
+/* ---------- desktop: la misma pieza, con aire ---------- */
+@media (min-width:1025px), (min-width:821px) and (orientation:landscape){
+  .card-menu{max-width:470px}
+  .mm-cuerpo{padding:15px 16px 16px}
+  .mm-h-lb{font-size:9.4px;letter-spacing:3px}
+  .mm-h-s{font-size:11px}
+  .mm-t-nm{letter-spacing:1.3px}
+}
+
+/* ---------- y las pantallas bajas ----------
+   Los `vh` solos no alcanzan: lo que desborda en un teléfono acostado no es el
+   `vh` sino el **piso** de cada clamp. Con los mínimos de arriba —148 de foto,
+   112 de recuadro, 62 de ficha— la tarjeta pedía 443px en un 820x400 que solo
+   tiene 359 de hueco, y aparecía scroll adentro.
+
+   Dos escalones, con el mismo criterio que ya usan las otras pantallas: bajan
+   los pisos, no los topes. En un alto normal no cambia nada. */
+@media (max-height:520px){
+  .mm-foto{height:clamp(104px, 24vh, 150px)}
+  .card-menu .logo-main{height:clamp(66px, 15vh, 104px)}
+  .mm-hero{height:clamp(88px, 18vh, 120px)}
+  .mm-h-nm{font-size:clamp(20px, 5.4vw, 26px)}
+  .mm-tile{min-height:clamp(52px, 9.5vh, 66px);padding:9px 4px 8px}
+  .mm-cuerpo{padding:10px 11px 11px}
+  .mm-tres{margin-top:7px}
+  .card-menu .menu-fila{margin-top:7px}
+  .card-menu .ver{margin-top:6px}
+}
+/* El teléfono acostado: 390 de alto y menos. Acá el subtítulo del recuadro se
+   va —el nombre y la foto ya dicen cuál es— para que entren las tres fichas. */
+@media (max-height:430px){
+  .mm-foto{height:clamp(84px, 22vh, 110px)}
+  .card-menu .logo-main{height:clamp(54px, 13.5vh, 78px)}
+  .mm-hero{height:clamp(72px, 17vh, 96px)}
+  .mm-h-nm{font-size:20px}
+  .mm-h-s{display:none}
+  .mm-h-txt{padding:0 11px 8px}
+  .mm-tile{min-height:46px;padding:7px 3px 6px;gap:4px}
+  .mm-t-ico{font-size:16px}
+  .mm-cuerpo{padding:8px 10px 9px}
+}
 </style>
 </head>
 <body>
@@ -9598,27 +9743,55 @@ function showCreditos(){
    directo a crear el club, así que el 1v1 y el resto quedaban escondidos detrás
    de un botón secundario. */
 function showMenu(){
-  const logo = ARTSRC('logo');
+  const logo   = ARTSRC('logo');
+  const foto   = ARTSRC('cancha');   // el estadio desde arriba, para la marquesina
+  const artCam = ARTSRC('noche');    // los dos de espaldas, para el recuadro grande
+
   openCard(
-    (logo ? '<img class="logo-main" src="' + logo + '" alt="Duelo Futbolero">'
-          : '<h1 class="logo-txt">DUELO<br><em>FUTBOLERO</em></h1>') +
-    '<div class="menu">' +
-      '<button class="menu-op principal" data-menu="campeonato">' +
-        '<span class="mo-ico">🏆</span>' +
-        '<span class="mo-txt"><b>CAMPEONATO</b><i>Cinco rondas hasta la copa</i></span>' +
+    /* **La marquesina.** El menú era la única pantalla del juego que no usaba
+       el molde de todas las demás —foto a sangre arriba, título encima del
+       degradado—: el logo flotaba sobre un panel liso y la cancha del fondo
+       quedaba tapada por la tarjeta. Ahora la foto entra adentro.
+
+       La del banner es **el estadio desde arriba**, recortado de cerca, y la
+       del recuadro de CAMPEONATO sigue siendo la de los dos jugadores de
+       espaldas. Son a propósito dos fotos que no se parecen: un plano general
+       verde arriba y un primer plano azul abajo. Con dos primeros planos
+       seguidos el banner competía con el botón en vez de acompañarlo. */
+    '<div class="mm-marq">' +
+      (foto ? '<img class="mm-foto" src="' + foto + '" alt="">' : '') +
+      (logo ? '<img class="logo-main" src="' + logo + '" alt="Duelo Futbolero">'
+            : '<h1 class="logo-txt">DUELO<br><em>FUTBOLERO</em></h1>') +
+    '</div>' +
+    '<div class="mm-cuerpo">' +
+      /* **Y los cuatro modos dejan de pesar lo mismo.** Eran cuatro botones
+         idénticos apilados: CAMPEONATO —el modo de verdad, el que dura cinco
+         rondas— se distinguía solo por el borde dorado, que en un teléfono se
+         pierde. Ahora es un recuadro grande con foto y los otros tres bajan a
+         tres fichas: una puerta y tres atajos. De paso ocupa menos alto que
+         antes, que en las pantallas bajas venía justo. */
+      '<button class="mm-hero" data-menu="campeonato">' +
+        (artCam ? '<img class="mm-h-art" src="' + artCam + '" alt="">' : '') +
+        '<span class="mm-h-txt">' +
+          '<span class="mm-h-lb">🏆 EL MODO PRINCIPAL</span>' +
+          '<span class="mm-h-nm">CAMPEONATO</span>' +
+          '<span class="mm-h-s">Cinco rondas hasta la copa</span>' +
+        '</span>' +
       '</button>' +
-      '<button class="menu-op" data-menu="unico">' +
-        '<span class="mo-ico">⚽</span>' +
-        '<span class="mo-txt"><b>PARTIDO ÚNICO</b><i>Un partido suelto, mismas reglas</i></span>' +
-      '</button>' +
-      '<button class="menu-op" data-menu="duelo">' +
-        '<span class="mo-ico">🤝</span>' +
-        '<span class="mo-txt"><b>1 vs 1<span class="beta">BETA</span></b><i>Dos jugadores, misma mesa</i></span>' +
-      '</button>' +
-      '<button class="menu-op" data-menu="penales">' +
-        '<span class="mo-ico">🥅</span>' +
-        '<span class="mo-txt"><b>SERIE DE PENALES</b><i>Directo a la tanda</i></span>' +
-      '</button>' +
+      '<div class="mm-tres">' +
+        '<button class="mm-tile" data-menu="unico">' +
+          '<span class="mm-t-ico">⚽</span><span class="mm-t-nm">PARTIDO<br>ÚNICO</span>' +
+        '</button>' +
+        /* El BETA no entra al lado del nombre en una ficha tan angosta, así que
+           va de chapita en la esquina. */
+        '<button class="mm-tile" data-menu="duelo">' +
+          '<span class="beta mm-t-beta">BETA</span>' +
+          '<span class="mm-t-ico">🤝</span><span class="mm-t-nm">1 vs 1</span>' +
+        '</button>' +
+        '<button class="mm-tile" data-menu="penales">' +
+          '<span class="mm-t-ico">🥅</span><span class="mm-t-nm">PENALES</span>' +
+        '</button>' +
+      '</div>' +
       '<div class="menu-fila">' +
         '<button class="menu-op chico" data-menu="opciones">' +
           '<span class="mo-ico">⚙</span><span class="mo-txt"><b>OPCIONES</b></span>' +
@@ -9627,8 +9800,8 @@ function showMenu(){
           '<span class="mo-ico">★</span><span class="mo-txt"><b>CRÉDITOS</b></span>' +
         '</button>' +
       '</div>' +
-    '</div>' +
-    '<div class="ver">v' + VERSION + '</div>',
+      '<div class="ver">v' + VERSION + '</div>' +
+    '</div>',
     'card-menu'
   );
 
