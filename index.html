@@ -8344,11 +8344,13 @@ function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo){
     wrap.innerHTML =
       '<div class="sit penal">' +
         '<div class="sit-tag">' +
-          (suelto ? 'POSIBILIDAD DE GOL' : muerte ? 'MUERTE SÚBITA' : 'PENAL ' + ronda + ' DE 5') +
+          (suelto ? 'POSIBILIDAD DE GOL'
+           : muerte ? 'MUERTE SÚBITA · PENAL ' + (ronda - TANDA_TIROS)
+           : 'PENAL ' + ronda + ' DE 5') +
         '</div>' +
         '<div class="t">' + (suelto ? '🎯 PENAL'
                                     : yoPateo ? 'PATEA ' + eqs[quien].club : 'ATAJÁS VOS') + '</div>' +
-        (suelto ? '' : tandaHTML(eqs, tiros, primero, quien)) +
+        (suelto ? '' : tandaHTML(eqs, tiros, primero, quien, muerte)) +
         arcoPenalHTML(eqs[1 - quien].escudo) +
         '<div class="s">' + (yoPateo ? '¿A QUÉ PALO LA MANDÁS?' : '¿A QUÉ PALO VOLÁS?') + '</div>' +
         '<div class="pp-hint">tocá adentro del arco</div>' +
@@ -8399,7 +8401,7 @@ function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo){
    arriba— sin importar quién patea primero: si el orden cambiara según el
    sorteo, el marcador se leería invertido justo cuando el rival gana la moneda.
    Al que le toca patear se le marca la flecha. */
-function tandaHTML(eqs, tiros, primero, turnoDe){
+function tandaHTML(eqs, tiros, primero, turnoDe, muerte){
   /* **Los cinco tiros, siempre a la vista.** Antes se dibujaba un ⚽ o una ✖
      por tiro *ya pateado*: no se veía cuántos quedaban, que en una tanda es la
      mitad de la información —«le queda uno y va perdiendo» es todo el drama—.
@@ -8407,13 +8409,35 @@ function tandaHTML(eqs, tiros, primero, turnoDe){
      Ahora van los cinco huecos de cada equipo desde el primer tiro: verde el
      que entró, tachado el que erró, vacío el que falta, y el que se está por
      patear late en dorado. */
+  /* **Pasados los cinco, la pizarra se reinicia.** La muerte súbita es otra
+     serie —uno cada uno hasta que se defina— y con los cinco huecos fijos los
+     tiros del sexto en adelante no tenían dónde dibujarse: el índice se iba más
+     allá de la última casilla, así que la pizarra se quedaba congelada en el
+     5-5 mientras el partido seguía. Ahora las casillas son las de **esta**
+     serie y arrancan de cero.
+
+     Lo que **no** se reinicia es el número de la derecha: ese es el marcador de
+     la tanda entera —5, 6, 7…— y es el que dice quién va ganando.
+
+     `muerte` la manda quien llama, no se deduce de acá: cuando se está por
+     patear el primero de la muerte súbita los dos equipos tienen exactamente
+     cinco tiros, que es lo mismo que se ve al terminar la serie normal. */
+  const desde = [tiros[0].length - TANDA_TIROS, tiros[1].length - TANDA_TIROS];
+  const vivo = turnoDe >= 0;
+  /* Cuántas casillas dibujar en muerte súbita: la ronda que se está jugando.
+     Si los dos patearon lo mismo y la serie sigue, se suma la que viene. */
+  const cols = muerte
+    ? (Math.max(desde[0], desde[1]) + (vivo && desde[0] === desde[1] ? 1 : 0)) || 1
+    : TANDA_TIROS;
+  const base = muerte ? TANDA_TIROS : 0;
+
   const fila = i => {
     const huecos = [];
-    for(let k = 0; k < TANDA_TIROS; k++){
-      const t = tiros[i][k];
+    for(let k = 0; k < cols; k++){
+      const t = tiros[i][base + k];
       const cls = t === true ? ' gol'
                 : t === false ? ' fallo'
-                : (turnoDe === i && k === tiros[i].length ? ' ahora' : '');
+                : (turnoDe === i && base + k === tiros[i].length ? ' ahora' : '');
       huecos.push('<span class="pz-t' + cls + '"></span>');
     }
     return '<div class="pz-f' + (turnoDe === i ? ' turno' : '') + '">' +
@@ -8433,10 +8457,12 @@ function mostrarPenales(eqs, tiros, ganador, primero){
     wrap.className = 'sit-flash';
     wrap.innerHTML =
       '<div class="sit penal resuelta salvado">' +
-        '<div class="sit-tag">DEFINIDO EN LOS PENALES</div>' +
+        '<div class="sit-tag">' +
+          (tiros[0].length > TANDA_TIROS ? 'DEFINIDO EN MUERTE SÚBITA' : 'DEFINIDO EN LOS PENALES') +
+        '</div>' +
         '<div class="sit-ico">' + icoDesenlace('copa') + '</div>' +
         '<div class="t">' + eqs[ganador].club + '</div>' +
-        tandaHTML(eqs, tiros, primero, -1) +
+        tandaHTML(eqs, tiros, primero, -1, tiros[0].length > TANDA_TIROS) +
       '</div>';
     document.body.appendChild(wrap);
     esperarOClick(wrap, ESPERA_FIN).then(resolve);

@@ -5253,3 +5253,70 @@ resuelve más en esa caja. Se fueron.
 
 Verificado en los cuatro caminos: gol a favor, gol en contra, tiro errado a favor
 y penal a favor con su mini juego. El marcador se mueve bien en los cuatro.
+
+
+## La pizarra de los penales se reinicia en la muerte súbita
+
+La tanda son **cinco cada uno**, y si terminan empatados sigue de **a uno por
+cabeza** hasta que uno convierta y el otro no. Eso funcionaba bien: el bucle
+alternaba y cortaba donde tenía que cortar.
+
+Lo que no funcionaba era la pizarra. Dibujaba **siempre cinco casillas por
+equipo**, del índice 0 al 4:
+
+```js
+for(let k = 0; k < TANDA_TIROS; k++){
+  const t = tiros[i][k];
+  ...
+```
+
+Del sexto tiro en adelante el índice se iba más allá de la última casilla, así
+que **los penales de la muerte súbita no tenían dónde dibujarse**: la pizarra se
+quedaba congelada en el 5-5 de la serie normal mientras el partido seguía. El
+único que se movía era el número de la derecha, que cuenta todos los goles.
+
+Ahora, pasados los cinco, las casillas son las de **esta** serie y arrancan de
+cero: una por ronda, verde la que entró, roja la que erró, y la que se está por
+patear late en dorado, igual que en la serie normal.
+
+| | casillas | número |
+|---|---|---|
+| serie normal | las cinco, desde el primer tiro | goles de la tanda |
+| muerte súbita | las de la muerte súbita, desde cero | goles de la tanda, **sin reiniciar** |
+
+El número no se reinicia a propósito: ese es el marcador de la tanda entera —5,
+6, 7…— y es el que dice quién va ganando. Reiniciarlo también dejaría la pantalla
+sin ese dato.
+
+### `muerte` la manda quien llama
+
+No se puede deducir de `tiros`. Cuando se está por patear el primero de la
+muerte súbita los dos equipos tienen **exactamente cinco tiros**, que es
+indistinguible de lo que se ve al terminar la serie normal. Así que `tandaHTML`
+recibe un quinto parámetro: el pop-up del penal le pasa su propio `muerte`, y el
+resumen final lo calcula con `tiros[0].length > TANDA_TIROS`.
+
+Cuántas casillas dibujar es la ronda que se está jugando:
+
+```js
+const cols = muerte
+  ? (Math.max(desde[0], desde[1]) + (vivo && desde[0] === desde[1] ? 1 : 0)) || 1
+  : TANDA_TIROS;
+```
+
+Si los dos patearon lo mismo y la serie sigue, se suma la que viene; si uno va
+uno arriba, ya está contada. En el resumen final —`vivo` es falso— son las
+rondas jugadas y nada más.
+
+### Los dos rótulos
+
+El del pop-up pasa de `MUERTE SÚBITA` a **`MUERTE SÚBITA · PENAL n`**, y el del
+resumen de `DEFINIDO EN LOS PENALES` a **`DEFINIDO EN MUERTE SÚBITA`** cuando
+corresponde. Con eso las casillas reiniciadas se explican solas.
+
+Hubo un intento de poner además un rótulo sobre la pizarra y se sacó: decía
+exactamente lo mismo que el del pop-up, uno arriba del otro.
+
+Verificado en cinco estados de pizarra —serie normal a mitad de camino, el
+primero de la muerte súbita, mitad de ronda, ronda nueva y resumen final— y en
+los dos resúmenes, con y sin muerte súbita.
