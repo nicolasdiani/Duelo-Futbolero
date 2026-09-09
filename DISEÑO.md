@@ -4392,3 +4392,65 @@ La caja pasa a `flex:0 1 auto`: mide lo que mide el texto, no más, y el
 bloque. En 390px quedan 110px de aire parejo a cada lado; en 320px, 75px, con el
 título todavía en una sola línea. En desktop la descripción vuelve, `.gb-txt`
 recupera su `flex:1` y con él la alineación a la izquierda de siempre.
+
+## Los emojis que quedaban en el flujo de la racha
+
+Usar la racha llena son cuatro pantallas seguidas, y dos ya mostraban la
+ilustración de las cartas mientras las otras seguían con los emoji del
+teclado. La peor era la del medio: la ficha te mostraba **la foto del PENAL** y
+tres segundos después el pop-up que anuncia esa misma carta te mostraba **un 🎯
+de 66 píxeles**. Misma carta, dos dibujos distintos, con tres segundos de
+diferencia.
+
+### La foto de la carta en el pop-up de qué salió
+
+El cambio grande, y va para los dos lados —la racha llena tuya y la fundida del
+rival—. Es el **mismo molde del pop-up del mini juego**: foto a sangre arriba,
+nombre grande abajo en el color del resultado. `.sit.con-art` toma el padding
+de `.sit.mam`, así los márgenes negativos de `.mam-art` —que están calculados
+contra ese padding— sirven para los dos sin duplicar nada.
+
+Con eso los **dos pop-ups de acción del juego pasan a ser la misma pieza**, y la
+carta que viste frenar en la ruleta es la que ves acá.
+
+La pantalla siguiente —¡GOL! / LA ERRASTE— no se toca: sigue con su
+`icoDesenlace` animado, que ya estaba bien.
+
+#### De qué carta sale la foto
+
+```
+artSituacion(key, favor)  ->  favor ? la carta tuya : ART_RIVAL[key] || la tuya
+```
+
+Hoy **solo el córner tiene arte propio del rival** (10KB contra los 6 de la
+tuya). `penalC` y `libreC` son alias que apuntan a las tuyas y `pasegolC` no
+tiene imagen, así que las otras cuatro caen en la carta tuya. Cuando lleguen
+las cinco del rival se cambian en `ART_RIVAL` y el pop-up no se toca.
+
+### Y la pelota de los carteles
+
+Los otros tres lugares que hablan de la posibilidad de gol —el cartel verde de
+la mesa, el título de la ficha y las tarjetas de los dos avisos— mostraban un
+**⚽ del sistema**, que además es azul y blanco y no pega con la paleta.
+
+> **`ico_gol` no servía.** El archivo trae un `ico_gol` y un `ico_golrival`
+> guardados y sin un solo uso, y la idea era usar esos. Pero al probarlos en
+> tamaño resultó que **no son un ícono, son una chapa**: un escudo verde con un
+> arco adentro, aro de luz, fondo de tribuna y la palabra GOL escrita, en
+> 101x128. Se lee de 29px para arriba; abajo de eso es una mancha verde. Y los
+> cuatro lugares miden **16, 19, 24 y 29**.
+
+La pelota que sí funciona en todos ya estaba dibujada: **`pelotaSVG()`**, la
+misma del penal y de los cuatro mini juegos. Es vector, así que es nítida a 16
+y a 46, y es el dibujo con el que el juego ya cuenta las jugadas. `icoPelota()`
+la devuelve suelta, medida en `em`, así cada lugar la escala con su propio
+`font-size` y no hay un tamaño escrito cuatro veces.
+
+La chapa queda guardada para cuando haya un lugar grande donde luzca.
+
+**El 🎒 de GUARDARLA** pasa al rayo de la racha: guardarla es quedarte con la
+racha, y el rayo sí es un ícono limpio que baja de tamaño sin romperse.
+
+**El 🎮 de la chapa MINI JUEGO se queda.** Es exactamente la misma que llevan
+las cartas del tablero; cambiarla acá la desalinearía de la mesa, que es lo
+contrario de lo que hace todo el resto de este cambio.

@@ -542,6 +542,13 @@ img{height:auto}
 .aviso .a-ops{display:flex;gap:9px;margin-top:16px}
 .aviso .a-op{flex:1;border:1px solid var(--line);padding:11px 8px;background:var(--panel2)}
 .aviso .a-op .oi{font-size:24px;line-height:1.2}
+/* Los íconos se miden en `em`, así que el tamaño lo sigue dando el
+   `font-size` de la tarjeta. Van centrados a mano porque son `display:block`
+   y el `text-align` del aviso no los alcanza. */
+.aviso .a-op .oi .ico-art,
+.aviso .a-op .oi .ico-pel{margin:0 auto}
+/* El rayo no es cuadrado: con 1em de alto y 1em de ancho quedaría chico. */
+.aviso .a-op .oi .ico-alto{width:.8em;height:1.08em}
 .aviso .a-op .on{font-size:15px;letter-spacing:1px;margin-top:2px}
 .aviso .a-op .od{font-family:var(--txt);font-size:10.6px;letter-spacing:0;color:var(--dim);margin-top:5px;line-height:1.45}
 .aviso .a-op.gol{border-color:var(--green)} .aviso .a-op.gol .on{color:var(--green)}
@@ -689,7 +696,13 @@ img{height:auto}
   padding:11px 15px;cursor:not-allowed;text-align:left;font-family:inherit;
   transition:translate .15s,background .15s,border-color .2s;
 }
-.gol-banner .gb-ico{font-size:29px;line-height:1;filter:grayscale(1);opacity:.5}
+/* El ícono se mide en `em`, así los tres tamaños del cartel —29px acá, 16 en
+   mobile, 26 en el desktop grande— lo siguen manejando con `font-size` y no
+   hay que repetir un ancho por breakpoint. */
+.gol-banner .gb-ico{
+  display:block;font-size:29px;line-height:1;filter:grayscale(1);opacity:.5;
+  width:1em;height:1em;flex:0 0 auto;
+}
 .gb-txt{flex:1;min-width:0}
 .gb-t{
   display:block;font-family:var(--tit);font-weight:800;
@@ -1915,7 +1928,11 @@ img{height:auto}
   display:flex;align-items:baseline;justify-content:space-between;gap:8px;
   margin-bottom:9px;
 }
-.fg-nm{font-family:var(--tit);font-weight:800;font-size:12px;letter-spacing:.8px;color:#fff}
+.fg-nm{
+  display:flex;align-items:center;gap:5px;
+  font-family:var(--tit);font-weight:800;font-size:12px;letter-spacing:.8px;color:#fff;
+}
+.fg-nm .ico-art,.fg-nm .ico-pel{width:1.35em;height:1.35em}
 .fg-esp{font-family:var(--tit);font-weight:800;font-size:12.5px;color:var(--fi-luz)}
 
 .fg-minis{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
@@ -2068,6 +2085,7 @@ img{height:auto}
 /* La imagen ocupa exactamente el lugar que ocupaba el emoji, así el layout no
    cambia cuando se reemplaza uno por otro. */
 .ico-art{display:block;width:1em;height:1em;object-fit:contain}
+.ico-pel{display:block;width:1em;height:1em;overflow:visible}
 .ico-emoji{display:block;line-height:1}
 
 /* La ilustración de la carta: ocupa todo el espacio del ícono, recortada.
@@ -2183,11 +2201,18 @@ body{padding-bottom:36px}
 /* ---------- EL MINI JUEGO ----------
    Mismo lenguaje que el menú: azul profundo con filo del color de la carta,
    tipografía de títulos y botones que se encienden al pasar. */
-.sit.mam, .sit.penal{
+/* `.sit.con-art` toma **el mismo padding** que el mini juego: así los márgenes
+   negativos de `.mam-art` —que están calculados contra este padding— sirven
+   para los dos sin duplicar nada. */
+.sit.mam, .sit.penal, .sit.con-art{
   border-width:2px;border-radius:10px;
   padding:22px 24px 20px;
   max-width:420px;width:92vw;
 }
+/* Con la foto arriba el cartel crece unos 110px. En una pantalla baja eso lo
+   saca del viewport, así que se le pone tope y scroll propio, igual que al de
+   la fundida. */
+.sit.con-art{max-height:calc(100dvh - 78px);overflow-y:auto}
 .sit.mam .t, .sit.penal .t{
   font-family:var(--tit);font-weight:800;
   font-size:clamp(24px,5.5vw,32px);line-height:1;
@@ -3164,7 +3189,7 @@ body{padding-bottom:36px}
 @media (min-width:1025px), (min-width:821px) and (orientation:landscape){
 
   /* ---- MINI JUEGO Y PENAL ---- */
-  .sit.mam, .sit.penal{
+  .sit.mam, .sit.penal, .sit.con-art{
     max-width:clamp(480px, 42vw, 700px);width:100%;
     padding:32px 36px 30px;border-radius:12px;
     max-height:88vh;overflow-y:auto;
@@ -4643,7 +4668,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
     <main class="centro">
       <!-- la posibilidad de gol: arriba de todo, para que no se pierda -->
       <button class="gol-banner" id="golBanner" style="display:none">
-        <span class="gb-ico">⚽</span>
+        <span class="gb-ico"></span>
         <span class="gb-txt">
           <span class="gb-t">POSIBILIDAD DE GOL</span>
           <span class="gb-s">Cambiás la racha por una llegada clara &middot; 51% de gol &middot; gasta una jugada</span>
@@ -4863,6 +4888,19 @@ const ARTSRC = k => {
   if(v && v[0] === '@') v = ART[v.slice(1)];
   return v ? 'data:image/webp;base64,' + v : null;
 };
+
+/* La ilustración de una llegada, según de qué lado sea. Del lado tuyo es la
+   carta misma; del lado del rival, su variante — cuando existe.
+
+   Hoy solo el córner tiene arte propio del rival: `penalC` y `libreC` son
+   alias de las tuyas y `pasegolC` no tiene imagen, así que las cuatro caen en
+   la tuya. **Cuando lleguen las cinco del rival se cambian acá y listo**: el
+   pop-up no se toca. */
+const ART_RIVAL = {
+  jugada:'jugadaC', penal:'penalC', pasegol:'pasegolC', corner:'cornerC', libre:'libreC'
+};
+const artSituacion = (key, favor) =>
+  (favor ? null : artCarta(ART_RIVAL[key])) || artCarta(key);
 
 /* Devuelve la imagen si existe, y si no el emoji. Así se puede ir migrando de a
    poco: la carta que todavía no tiene arte sigue mostrando su emoji. */
@@ -6856,7 +6894,7 @@ function abrirFichaGol(btn){
      8px flotando en el borde. */
   f.innerHTML =
     '<div class="fg-top">' +
-      '<span class="fg-nm">⚽ POSIBILIDAD DE GOL</span>' +
+      '<span class="fg-nm">' + icoPelota() + 'POSIBILIDAD DE GOL</span>' +
       '<span class="fg-esp">' + esperado + '% de gol' +
         '<em>una de las cinco, al azar</em></span>' +
     '</div>' +
@@ -7695,11 +7733,11 @@ function descuento(){
         '<div class="e-marc">' + G.gU + ' <span>-</span> ' + G.gC + '</div>' +
         '<div class="a-ops">' +
           '<button class="a-op btn gol" id="dJugar">' +
-            '<div class="oi">⚽</div><div class="on">JUGARLA</div>' +
+            '<div class="oi">' + icoPelota() + '</div><div class="on">JUGARLA</div>' +
             '<div class="od">Una última situación de gol al ' + esperadoFavor + '%, antes del pitazo. Gasta la racha entera.</div>' +
           '</button>' +
           '<button class="a-op btn col" id="dGuardar">' +
-            '<div class="oi">🎒</div><div class="on">GUARDARLA</div>' +
+            '<div class="oi">' + icono('ico_racha', '🎒', 'ico-alto') + '</div><div class="on">GUARDARLA</div>' +
             '<div class="od">Te la llevás cargada al próximo partido, lista para usar desde la primera jugada.</div>' +
           '</button>' +
         '</div>' +
@@ -7829,6 +7867,15 @@ function figuraDuelo(esc, cls){
 }
 
 const pelotaDuelo = (x, y) => pelotaSVG(x, y, 6.4, 'dl-pel');
+
+/* La misma pelota, suelta, para los carteles que hablan de la posibilidad de
+   gol: el cartel del tablero, la ficha y los dos avisos. Se mide en `em`, así
+   que cada lugar la escala con su propio `font-size` y no hay un tamaño
+   escrito cuatro veces. */
+const icoPelota = (cls) =>
+  '<svg class="ico-pel' + (cls ? ' ' + cls : '') + '" viewBox="0 0 22 22" aria-hidden="true">' +
+    pelotaSVG(11, 11, 9.4, 'pel-ico') +
+  '</svg>';
 
 /* `mia` es de quién es la pelota: con la tuya ganás esquivando, con la de él
    adivinando. Es el mismo dato que `adivinar`, dado vuelta. */
@@ -8268,7 +8315,7 @@ function avisoRacha(){
         '<div class="a-s">SE HABILITA LA POSIBILIDAD DE GOL</div>' +
         '<div class="a-ops">' +
           '<div class="a-op gol solo">' +
-            '<div class="oi">⚽</div><div class="on">SITUACIÓN DE GOL</div>' +
+            '<div class="oi">' + icoPelota() + '</div><div class="on">SITUACIÓN DE GOL</div>' +
             '<div class="od">Una llegada clara al ' + esperadoFavor + '%, sin riesgo de que te lastimen. Gasta la racha entera y una jugada.</div>' +
           '</div>' +
         '</div>' +
@@ -8416,14 +8463,22 @@ function fundidaRival(cayoMax){
 function situacionGol(lado, yaElegida){
   const favor = lado === 'favor';
   const S = yaElegida || pick((favor ? SIT_FAVOR : SIT_RIVAL).map(s => [s, s.peso]))[0];
+  const art = artSituacion(S.key, favor);
 
   return new Promise(resolve => {
     const wrap = document.createElement('div');
     wrap.className = 'sit-flash';
     wrap.innerHTML =
-      '<div class="sit' + (favor ? ' lado-favor' : '') + '">' +
+      /* **La foto de la carta arriba, no un emoji de 66px.** Tres segundos
+         antes la ruleta te mostró la ilustración de esta misma carta y acá
+         reaparecía como un ⚽ o un 🎯 del teclado: misma carta, dos dibujos
+         distintos. Es el molde del pop-up del mini juego —foto a sangre
+         arriba, nombre grande abajo en el color del resultado— así que los dos
+         pop-ups de acción del juego pasan a ser la misma pieza. */
+      '<div class="sit' + (favor ? ' lado-favor' : '') + (art ? ' con-art' : '') + '">' +
+        (art ? '<div class="mam-art"><img src="' + art + '" alt=""></div>' : '') +
         '<div class="sit-tag">' + (favor ? '<i class="ir"></i> RACHA LLENA' : 'SE TERMINÓ EL AGUANTE') + '</div>' +
-        '<div class="sit-ico">' + S.ico + '</div>' +
+        (art ? '' : '<div class="sit-ico">' + S.ico + '</div>') +
         '<div class="t">' + S.nm + '</div>' +
         '<div class="s">' +
           (favor && S.key === 'penal' ? 'LO PATEÁS VOS · ELEGÍ EL PALO'
@@ -9693,6 +9748,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if(co) document.documentElement.style.setProperty('--ico-aguante', 'url(' + co + ')');
   const ra = ARTSRC('ico_racha');
   if(ra) document.documentElement.style.setProperty('--ico-racha', 'url(' + ra + ')');
+
+  /* El cartel de la mesa vive en el HTML, así que la pelota se le pone acá y no
+     duplicando el dibujo dentro del markup. */
+  const gi = document.querySelector('#golBanner .gb-ico');
+  if(gi) gi.innerHTML = icoPelota();
 })();
 
 /* ---------------- arranque ---------------- */
