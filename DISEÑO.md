@@ -5393,7 +5393,7 @@ Tres de las cinco llegadas del rival no tenían ilustración propia:
 | `libreC` | alias de `libre` | foto propia |
 | `pasegolC` | **sin imagen** | foto propia |
 | `cornerC` | ya tenía la suya | igual |
-| `jugadaC` | no existe | sigue cayendo en la tuya |
+| `jugadaC` | **no existía** | foto propia |
 
 Que compartieran imagen no era un detalle: **en la mesa la única diferencia que
 importa mirar antes de elegir una fila es de quién es la llegada**, y PENAL y
@@ -5406,9 +5406,15 @@ Las tres nuevas cuentan la misma escena desde el otro lado:
   la tuya el que centra es el de azul.
 - **LIBRE RIVAL** y **PENAL RIVAL**: el árbitro cobra, el de blanco está en el
   piso y **el que hizo la falta sos vos** — se ve la pierna azul.
+- **JUGADA CLARA RIVAL**: los dos de blanco encarando solos contra tu arquero.
+  En la tuya los que encaran son los de azul.
 
-Miden 248x164 y pesan 9, 9 y 11 KB, que es la familia de las que ya estaban
-(entre 6 y 10). El archivo pasó de 1,14 a 1,19 MB.
+Miden 248x164 y pesan entre 9 y 11 KB, que es la familia de las que ya estaban
+(entre 6 y 10). El archivo pasó de 1,14 a 1,20 MB.
+
+Con `jugadaC` quedan **las cinco llegadas del rival con ilustración propia**:
+jugada clara, penal, pase gol, córner y tiro libre. Ninguna se ve ya como la
+tuya, ni en la mesa ni en el pop-up de situación de gol.
 
 ### El alias que queda
 
@@ -5417,5 +5423,5 @@ del rival **son la misma escena** —la pelota entrando en un arco por error—,
 que ahí compartir imagen no confunde nada. Los otros cuatro eran jugadas
 opuestas disfrazadas de la misma.
 
-Verificado que las cuatro devuelven arte distinto del propio, en la mesa y en el
+Verificado que las cinco devuelven arte distinto del propio, en la mesa y en el
 pop-up de situación de gol, que las toma por `ART_RIVAL` sin tocar nada más.
