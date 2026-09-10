@@ -872,10 +872,11 @@ img{height:auto}
 /* Cuando en el empate se juega un gol TUYO, va en verde: es lo único bueno que
    puede salir de esa carta. */
 .cell .c-out .efe .esgol{
+  display:block;
   color:var(--green);font-weight:800;letter-spacing:.5px;
   text-shadow:0 0 10px rgba(61,220,107,.55);
 }
-.play .p-out .efe .esgol{color:var(--green);font-weight:700}
+.play .p-out .efe .esgol{display:block;color:var(--green);font-weight:700}
 .cell .c-out .ra,.play .p-out .ra{color:var(--gold);font-weight:700}
 .c-out.good{color:var(--green)}
 .c-out.bad{color:var(--red)}
@@ -2422,6 +2423,10 @@ body{padding-bottom:36px}
   letter-spacing:2.5px;text-indent:2.5px;text-transform:uppercase;
   margin:2px 0 4px;
 }
+/* El título del mini juego se escribe **como se quiere leer**. Los cuatro
+   venían en mayúscula igual, así que el `uppercase` no se notaba — hasta que
+   «1 vs 1» salió «1 VS 1» en el pop-up mientras la carta lo decía bien. */
+.sit.mam .t{text-transform:none}
 .sit.mam .s, .sit.penal .s{
   font-family:var(--txt);font-weight:600;
   font-size:11px;letter-spacing:2.5px;text-indent:2.5px;color:var(--dim);
@@ -6591,7 +6596,7 @@ const MANOAMANO = {
     gana:'¡GOLAZO!', pierde:'ATAJADÓN', gGana:'golazo', gPierde:'atajada'
   },
   defensor: {
-    tit:'UNO CONTRA UNO', ico:'🧱', yo:'⚽', el:'👟', pregunta:'¿POR DÓNDE LO ENCARÁS?', adivinar:false,
+    tit:'1 vs 1', ico:'🧱', yo:'⚽', el:'👟', pregunta:'¿POR DÓNDE LO ENCARÁS?', adivinar:false,
     izq:'⬅ POR ADENTRO', der:'POR AFUERA ➡',
     rival:l => 'El defensor cierra ' + (l === 'izq' ? 'por adentro' : 'por afuera'),
     gana:'¡LO PASÁS!', pierde:'LA PERDISTE', gGana:'gambeta', gPierde:'quite'
@@ -7448,14 +7453,28 @@ function predict(cell){
   // que de un vistazo se ve qué te da racha aunque la carta sea mala.
   const R = ' <span class="ra">+<i class="ir"></i></span>';
 
-  if(t === 'defensor')  return duelo(cell, ATK(), 'PASA', '-' + costoDuelo(cell) + ' <i class="ih"></i>',
+  /* **La carta dice qué pasa, no sólo cuánto cuesta.** Ganado, el cartel era un
+     sustantivo seco —PASA, ROBO, CORTE— y perdido no era nada: sólo el `-1 ❤`.
+     Tres de las cuatro cartas se veían iguales cuando ibas a perder, y no había
+     forma de saber si te la robaban, te gambeteaban o te la atajaban.
+
+     Ahora los dos lados llevan **la palabra del mini juego**: leés LO PASÁS en
+     la mesa y, si las stats están empatadas y el duelo se juega, leés ¡LO PASÁS!
+     en el cartel. Dos pantallas, una sola frase. El número se va abajo, a la
+     línea del efecto, que es donde ya vivía en el lado ganador. */
+  const pierdo = txt => txt + '<span class="efe"><b>-' + costoDuelo(cell) + ' <i class="ih"></i></b></span>';
+
+  if(t === 'defensor')  return duelo(cell, ATK(), 'LO PASÁS', pierdo('LA PERDÉS'),
                                      '<span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>-' + costoDuelo(cell) + ' <i class="ih"></i></b>');
-  if(t === 'arquero')   return duelo(cell, ATK(), 'GOL',  '-' + costoDuelo(cell) + ' <i class="ih"></i>',
-                                     '<span class="esgol">⚽ GOL</span> <span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>-' + costoDuelo(cell) + ' <i class="ih"></i></b>');
-  if(t === 'medio')     return duelo(cell, DEF(), 'ROBO', '-' + costoDuelo(cell) + ' <i class="ih"></i>',
+  /* El gol va **solo en su renglón** y los dos medidores abajo: son las dos
+     puntas del 50/50 y mezclados en una sola línea se leía «GOL +1 ⚡ o -2 ❤»,
+     como si el gol fuera parte de la cuenta. `.esgol` es un bloque, así que
+     alcanza con eso. */
+  if(t === 'arquero')   return duelo(cell, ATK(), 'GOL', pierdo('ATAJADÓN'),
+                                     '<span class="esgol">⚽ GOL</span><span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>-' + costoDuelo(cell) + ' <i class="ih"></i></b>');
+  if(t === 'medio')     return duelo(cell, DEF(), 'SE LA ROBÁS', pierdo('TE PASA'),
                                      '<span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>-' + costoDuelo(cell) + ' <i class="ih"></i></b>');
-  if(t === 'delantero') return duelo(cell, DEF(), 'CORTE',
-                                     'GOL RIVAL<span class="efe"><b>-' + costoDuelo(cell) + ' <i class="ih"></i></b></span>',
+  if(t === 'delantero') return duelo(cell, DEF(), 'LO CORTÁS', pierdo('GOL RIVAL'),
                                      '<span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>⚽ GOL RIVAL -' + costoDuelo(cell) + ' <i class="ih"></i></b>');
   if(t === 'jugada')    return { label:'GOL' + R, tone:'good' };
   if(t === 'autogol')   return { label:'GOL' + R, tone:'good' };

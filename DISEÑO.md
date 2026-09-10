@@ -5675,3 +5675,65 @@ Repasando los carteles aparecieron dos que prometían de menos en el empate:
 - **ARQUERO RIVAL** decía `⚽ GOL o −2 ❤`, sin el **+1 ⚡** que carga ese gol.
   Todas las demás cartas que dicen GOL llevan el ⚡ al lado; ésta era la
   excepción.
+
+
+## Las cartas de stat dicen qué pasa, no sólo cuánto cuesta
+
+Las cuatro cartas de duelo tienen tres estados: tu stat es mayor y ganás solo,
+es menor y perdés solo, o están empatados y sale el mini juego. Sólo el del
+medio tenía nombre.
+
+Ganando, el cartel era **un sustantivo seco** —PASA, ROBO, CORTE—. Y perdiendo
+no era nada: sólo el `-1 ❤`. Tres de las cuatro cartas se veían **idénticas**
+cuando ibas a perder, y no había forma de saber si te la robaban, te
+gambeteaban o te la atajaban. Se sabía cuánto costaba, no qué pasaba.
+
+Ahora los dos lados llevan **la palabra del mini juego**:
+
+| carta | ganás | empate | perdés |
+|---|---|---|---|
+| DEFENSOR RIVAL | **LO PASÁS** | 1 vs 1 | **LA PERDÉS** |
+| ARQUERO RIVAL | **GOL** | MANO A MANO | **ATAJADÓN** |
+| MEDIO RIVAL | **SE LA ROBÁS** | LA MARCA | **TE PASA** |
+| DELANTERO RIVAL | **LO CORTÁS** | DEFENDER | **GOL RIVAL** |
+
+Leés LO PASÁS en la mesa y, si el duelo se juega, leés ¡LO PASÁS! en el cartel:
+dos pantallas, una sola frase. El número se va abajo, al renglón del efecto, que
+es donde ya vivía del lado ganador — así los tres estados tienen la misma forma.
+
+### 1 vs 1
+
+«UNO CONTRA UNO» eran catorce caracteres en una carta de 62px: el nombre del
+mini juego era el más largo de los cuatro y el que menos entraba. **1 vs 1** dice
+lo mismo en seis.
+
+Escrito así, en minúscula, aparecía bien en la carta y mal en el pop-up: `.sit`
+pone `text-transform:uppercase` y ahí salía «1 VS 1». Los otros tres títulos ya
+venían escritos en mayúscula, así que el `uppercase` nunca se había notado. Se
+apaga para el título del mini juego y el nombre se lee **como está escrito**.
+
+### El gol del arquero, en su propio renglón
+
+El empate del ARQUERO decía `⚽ GOL +1 ⚡ o -2 ❤` todo seguido, como si el gol
+fuera parte de la cuenta. `.esgol` pasa a ser `display:block`: el gol arriba,
+los dos medidores abajo. Vale igual en la carta y en el pop-up de la jugada.
+
+### Lo que costó, medido
+
+Todas las palabras entran en un renglón salvo una: **SE LA ROBÁS mide 56px y en
+un teléfono de 320px el hueco de la carta es de 54**, así que ahí se parte en
+dos. En 360 (64px de hueco) y en 390 (72px) entra sin problema. Las siguientes
+más largas —LO CORTÁS y LA PERDÉS, 47px— entran en los tres.
+
+Y el mismo tablero de doce cartas, antes y después:
+
+| | 320×568 | 360×640 | 390×844 | 1366×768 |
+|---|---|---|---|---|
+| cartas que recortan | 9 → **12** | 4 → **4** | 0 → **0** | 0 → **0** |
+| alto de la página | igual | igual | igual | igual |
+
+En 320px las tres cartas de «perdés» pasan a recortar: antes tenían un número
+suelto y ahora tienen una palabra más el renglón del efecto. Conviene leerlo con
+lo que ya pasaba ahí: **en 320×568 la carta queda en 67px de alto y la
+ilustración se achica hasta desaparecer**, y nueve de las doce ya recortaban sin
+tocar nada. Es un problema de esa pantalla, anterior a esto y pendiente aparte.
