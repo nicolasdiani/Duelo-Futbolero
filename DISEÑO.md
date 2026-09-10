@@ -5503,3 +5503,80 @@ En un **teléfono acostado** la tarjeta sigue con scroll adentro: 523px contra
 358 de hueco. Los renglones ya van de a dos —ancho sobra, son 844px— y eso la
 bajó de 681 a 523, pero con cabecera, franja, cuatro ítems y botón no hay forma
 de entrar en 358. Es scroll de la tarjeta, no de la página.
+
+
+## El vestuario: dos barras que crecen
+
+Elegir el refuerzo eran **dos botones iguales** con un emoji del teclado y un
+«3 → 4» suelto. Decían cuánto sumabas pero no **cuánto te faltaba**, que es la
+otra mitad de la decisión: con ATAQUE 3 de 6 y DEFENSA 2 de 6, saber que uno va
+por la mitad y el otro por un tercio cambia la respuesta.
+
+Ahora cada stat es una **barra de tramos**: los que tenés en su color, **el que
+vas a ganar en dorado y latiendo**, y los que quedan vacíos. Elegir es mirar cuál
+barra crece.
+
+El plantel arranca en ATAQUE 2 y DEFENSA 1 y se refuerza una vez por ronda
+—cuatro veces—, así que un stat puede llegar a 6. El tope de la barra es
+`Math.max(6, n + 2)`: si alguna vez pasara de ahí, la barra crece en vez de
+dejar un tramo sin dibujar.
+
+### Los dos íconos que faltaban
+
+El ⚔ y el 🛡 eran **los últimos dos emoji del teclado** en una pantalla de
+decisión, y encima eran los mismos que ya usa el panel PLANTEL de la mesa. Se
+dibujaron dos SVG en el estilo de los cuatro de ítems:
+
+| | qué es |
+|---|---|
+| `i-atk` | la pelota saliendo, con las tres líneas del remate detrás |
+| `i-def` | el escudo, con el corte adentro |
+
+### Y la advertencia deja de gritar
+
+«Los rivales se acomodan…» estaba en **13,5px y en dorado pleno**, compitiendo
+con las dos opciones. Baja a `clamp(9.2px, 2.7vw, 11px)` con opacidad .78: sigue
+estando, pero deja de pelear con lo que hay que mirar.
+
+Todo se mide en `vw` con tope y piso, así que la misma barra sirve en 320px y en
+la tarjeta de 520 del escritorio. Medido en 320x568, 390x844, 1366x768 y
+1920x1080: **371, 445, 596 y 596px**, sin scroll en ninguna.
+
+## Al tocar, se nota; al abrir, no queda nada enfocado
+
+Dos cambios que valen para **todo el juego**, no para una pantalla.
+
+### El toque se siente en toda la pieza
+
+La onda sola no alcanzaba. En las piezas grandes —una carta de la mesa, una
+opción del descuento— el círculo se abre en un rincón y la pieza entera no acusa
+el golpe. Ahora son tres cosas juntas:
+
+| | antes | ahora |
+|---|---|---|
+| la onda | opacidad .5 | **.62**, y dura 560ms |
+| el hundido | `translateY(1px)` | `translateY(1.5px) scale(.985)` |
+| la pieza | — | la caja de la onda se **aclara** un 10% |
+
+El aclarado se queda incluso con `prefers-reduced-motion`: no es movimiento, y
+sin él no quedaría ninguna respuesta al toque.
+
+### Ninguna pantalla abre con algo enfocado
+
+El navegador le deja el foco puesto al botón que tocaste. En un juego que se
+juega a dedazos eso se lee como «esto quedó elegido» — y peor: si ese botón abre
+otra pantalla, **el foco viaja con vos** y la pantalla nueva aparece con algo
+resaltado que nadie eligió.
+
+Se resuelve en dos lugares:
+
+- un `pointerup` global que saca el foco de donde esté;
+- y `openCard`, que hace lo mismo al abrir, porque **muchas pantallas se abren
+  solas** —al terminar un partido, al vencerse el reloj, al resolverse una
+  jugada— y ahí no hubo ningún toque que lo limpiara.
+
+Dos cosas quedan intactas a propósito. **Los campos de texto**: tocar un input es
+justamente pedirle el foco, así que `INPUT`, `TEXTAREA` y lo editable quedan
+afuera. Y **el teclado**: `pointerup` no dispara al navegar con Tab ni al activar
+con Enter, así que el anillo de `:focus-visible` sigue entero para quien lo
+necesita.
