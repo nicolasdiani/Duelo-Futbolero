@@ -5766,3 +5766,66 @@ salía de la caja** y `overflow:hidden` le comía la cola. Peor que antes.
 Sin la pelota son **50px** y entra en las cuatro pantallas medidas —320, 360, 390
 y 1366— siempre en un renglón. El ⚽ se queda donde sí hace falta: en el «⚽ GOL»
 verde del arquero, que es lo único bueno que puede salir de esa carta.
+
+
+## El remate del campeonato
+
+CAMPEÓN y ELIMINADO eran **una lista**: el título suelto arriba, el marcador, el
+camino, la plata flotando sin rótulo, un párrafo de letra chica y tres botones
+del mismo dorado. Lo primero que la pantalla te ofrecía tocar era COMPARTIR, y
+JUGAR OTRO CAMPEONATO —lo que casi todo el mundo quiere hacer— estaba último.
+
+Ahora las dos son la misma pieza, con cabecera:
+
+| | qué es |
+|---|---|
+| **la banda** | la palabra a todo el ancho, sobre un degradé del color del desenlace |
+| **la cinta** | una línea: el dato duro —la copa, la ronda— y al lado la frase |
+| **el cuerpo** | marcador, camino, y los números en **chapas** con su rótulo |
+
+Los dos números que decidían —la plata que te queda y el máximo con el que
+arranca el próximo campeonato— estaban uno flotando y el otro escondido en el
+párrafo de abajo. Ahora cada uno tiene su chapa. En ELIMINADO las chapas dicen
+otra cosa: hasta dónde llegaste y con qué plantel terminaste.
+
+### El botón que manda
+
+Volver a jugar va **primero** y es el **único botón relleno de todo el juego**:
+los demás son contorno, así que no hay forma de confundirlo con COMPARTIR. Verde
+—el color de «te suma»— también en ELIMINADO: perder no lo vuelve menos la
+acción que querés.
+
+### La foto que no entró
+
+Se probó con la ilustración de campeón que el juego trae guardada y **se
+descartó**: la imagen tiene su propio «¡¡CAMPEON!!» pintado adentro y la palabra
+terminaba dos veces en la misma pantalla. La banda quedó como tipografía sola.
+
+### Que no se corte abajo
+
+Dos cosas, las dos medidas:
+
+`.card` ya trae `max-height:calc(100vh - 28px)` y `overflow-y:auto`: en una
+pantalla baja la tarjeta se topa con el techo y **rueda por dentro**. La primera
+versión de esto le puso `overflow:hidden` por costumbre —no hace falta, `.card`
+no tiene esquinas redondeadas— y en vez de rodar **se recortaba**: a 320×568 el
+contenido pedía 721px, la caja quedaba en 530 y el botón verde no existía.
+
+Y debajo de **700px de alto** el camino deja de ser una lista de cinco filas y
+pasa a ser **cinco tramos en una sola fila**: el resultado grande, la ronda
+abreviada arriba. Son los mismos 250px de lista en 60. No cambia una línea de
+HTML —son las mismas filas, puestas en fila—; se cae el nombre del rival, que no
+entra en 55px de ancho, y «ganado en penales» se abrevia a PEN.
+
+Con eso, en 320×568 la pantalla de CAMPEÓN **entra entera**: 521px de contenido
+en 525 de caja, sin rodar y con el botón a la vista.
+
+| | 320×568 | 360×640 | 390×844 | 414×896 | 1366×768 |
+|---|---|---|---|---|---|
+| CAMPEÓN | 521 / **entra** | 521 / **entra** | 757 / **entra** | 748 / **entra** | 760 / rueda 6px |
+| ELIMINADO | 591 / rueda 61px | 591 / rueda | 745 / **entra** | 745 / **entra** | 746 / rueda 6px |
+
+ELIMINADO es más alta porque lleva además **las copas ganadas antes de caer**,
+que también se apretaron: el trofeo y el título pasan a compartir renglón en vez
+de ocupar tres. En 320×568 lo que queda abajo del borde es la fila de COMPARTIR
+y COPIAR; el botón principal se ve.

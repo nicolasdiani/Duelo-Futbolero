@@ -5487,6 +5487,146 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .gf.gol-foto .gm-n{font-size:min(40px, 10vh)}
   .gf.gol-foto .gm-sep{font-size:20px}
 }
+
+/* ============ EL REMATE DEL CAMPEONATO ============
+   CAMPEÓN y ELIMINADO eran una lista: el título suelto arriba, el marcador,
+   el camino, la plata flotando, un párrafo de letra chica y **tres botones
+   del mismo color** con el de volver a jugar último. Lo primero que la
+   pantalla te ofrecía tocar era COMPARTIR.
+
+   Ahora es una pieza con cabecera: una **banda** con la palabra a todo el
+   ancho, una **cinta** con el dato de la corrida, y el cuerpo con márgenes
+   propios. Los números sueltos —la plata, el máximo del próximo campeonato—
+   pasan a **chapas**, el mismo molde que el resto del juego. */
+.card-remate{padding:0;max-width:520px}
+
+/* La banda: la palabra sola, sin foto. La ilustración de campeón se probó y
+   se descartó — trae su propio «¡¡CAMPEON!!» pintado adentro y la palabra
+   terminaba dos veces en la misma pantalla. */
+.rm-banner{
+  padding:14px 14px 12px;
+  border-bottom:1px solid rgba(245,200,66,.38);
+  background:linear-gradient(180deg, rgba(245,200,66,.17), rgba(245,200,66,.03));
+}
+.rm-banner .final-tit{font-size:clamp(37px,10.2vw,58px)}
+.card-remate.cae .rm-banner{
+  border-bottom-color:rgba(255,59,82,.38);
+  background:linear-gradient(180deg, rgba(255,59,82,.16), rgba(255,59,82,.03));
+}
+
+/* La cinta: una línea, dos pesos. A la izquierda el dato duro —la copa, la
+   ronda— y al lado la frase. */
+.rm-cinta{
+  display:flex;align-items:baseline;justify-content:center;gap:9px;flex-wrap:wrap;
+  padding:6px 12px;
+  background:linear-gradient(90deg,rgba(245,200,66,.07),rgba(245,200,66,.19),rgba(245,200,66,.07));
+  border-bottom:1px solid rgba(245,200,66,.22);
+}
+.rm-cinta b{font-family:var(--tit);font-weight:800;font-size:13.5px;letter-spacing:2.4px;color:var(--gold)}
+.rm-cinta span{font-family:var(--txt);font-size:11px;letter-spacing:.5px;color:var(--dim)}
+.card-remate.cae .rm-cinta{
+  background:linear-gradient(90deg,rgba(255,59,82,.06),rgba(255,59,82,.16),rgba(255,59,82,.06));
+  border-bottom-color:rgba(255,59,82,.2);
+}
+.card-remate.cae .rm-cinta b{color:var(--red)}
+
+.rm-cuerpo{padding:0 16px 16px}
+.rm-cuerpo .marcador{margin-top:14px}
+
+/* Los dos números que decidían quedaban sueltos: un €48M flotando entre el
+   camino y la letra chica, sin decir qué era. Ahora cada uno tiene su chapa
+   con el rótulo arriba. */
+.rm-chapas{display:flex;gap:9px;margin-top:13px}
+.rm-chapas .chapa{
+  flex:1;min-width:0;border:1px solid var(--line);border-radius:7px;
+  background:rgba(8,32,70,.55);padding:8px 9px;
+  display:flex;flex-direction:column;gap:2px;align-items:center;
+}
+.rm-chapas .chapa span{
+  font-family:var(--txt);font-size:9.4px;letter-spacing:1.8px;color:var(--dim2);
+  text-transform:uppercase;text-align:center;line-height:1.2;
+}
+.rm-chapas .chapa b{
+  font-family:var(--tit);font-weight:800;font-size:20px;letter-spacing:1px;
+  white-space:nowrap;display:flex;align-items:center;gap:3px;
+}
+.rm-chapas .plata{color:var(--coin)}
+.rm-chapas .ag{color:var(--red)}
+.rm-chapas .st{color:var(--white)}
+.rm-chapas .ch-ico{width:1em;height:1em;fill:currentColor;opacity:.9}
+
+/* ---- el botón que manda ----
+   Volver a jugar es lo que casi todo el mundo quiere hacer al ver esta
+   pantalla, y estaba **último y del mismo dorado** que COMPARTIR. Ahora va
+   primero y es el único botón **relleno** de todo el juego: los demás son
+   contorno, así que no hay forma de confundirlo. */
+.cta.jugar{
+  background:linear-gradient(165deg,#4ae87a,#25b955);
+  border-color:#8ff5ae;color:#04220f;
+  font-size:19px;letter-spacing:3.2px;padding:14px;margin-top:15px;
+  box-shadow:0 10px 30px rgba(61,220,107,.3), inset 0 1px 0 rgba(255,255,255,.45);
+}
+.cta.jugar:hover{
+  background:linear-gradient(165deg,#5cf089,#2ecb60);
+  box-shadow:0 14px 36px rgba(61,220,107,.42), inset 0 1px 0 rgba(255,255,255,.5);
+}
+.rm-cuerpo .cta-fila{margin-top:9px}
+.rm-cuerpo .cta.chica{font-size:14px;letter-spacing:2.2px;padding:9px;margin-top:0}
+
+/* El cuerpo entero se aprieta un punto para que la pantalla termine **arriba
+   del borde del teléfono**: en 390x844 el hueco real es de 768px —el overlay
+   se reserva 20 arriba y 56 abajo para la franja del pie—. */
+.rm-cuerpo .hist{margin-top:12px;padding:8px 11px}
+.rm-cuerpo .hist-fila{padding:4px 0}
+.rm-cuerpo .final-pie{margin-top:11px;font-size:11px}
+/* Las copas ganadas antes de caer, en **una línea**. Sueltas ocupaban tres
+   renglones —el trofeo en 26px, el título en otro, las corridas debajo— y
+   empujaban el botón abajo del borde del teléfono. */
+.rm-cuerpo .copas{
+  margin-top:12px;padding:8px 11px;border-radius:7px;
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 9px;
+}
+.rm-cuerpo .copas-n{font-size:17px;line-height:1}
+.rm-cuerpo .copas-t{font-size:12.5px;margin-top:0;letter-spacing:1.6px}
+.rm-cuerpo .copas-c{width:100%;margin-top:2px;padding-top:5px}
+.rm-cuerpo .copas-c .cc-n,.rm-cuerpo .copas-c .cc-p{font-size:10px}
+@media (max-height:760px){
+  .rm-banner{padding:10px 14px 9px}
+  .rm-banner .final-tit{font-size:clamp(31px,8.4vw,46px)}
+  .rm-cuerpo .hist-fila{padding:3px 0}
+  .rm-cuerpo .hist-fila .hm{font-size:17px}
+  .cta.jugar{font-size:17px;padding:12px;margin-top:12px}
+}
+
+/* En una pantalla baja el camino como lista se come 250px y empuja el botón
+   fuera de la vista: había que rodar la tarjeta para encontrarlo. Debajo de
+   700px de alto las cinco rondas pasan a ser **cinco tramos** en una sola
+   fila —el resultado grande, la ronda abreviada arriba— y ocupan 60. Es el
+   mismo dato, leído de una pasada en vez de cinco.
+
+   No cambia el HTML: son las mismas filas, puestas en fila. El nombre del
+   rival es lo único que se cae —no entra en 55px de ancho— y «ganado en
+   penales» se abrevia a PEN con un `::after`. */
+@media (max-height:700px){
+  .rm-cuerpo .hist{display:flex;gap:4px;padding:7px 8px;margin-top:10px}
+  .rm-cuerpo .hist-lb{display:none}
+  .rm-cuerpo .hist-fila{
+    flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:1px;
+    border:1px solid var(--line);border-bottom:2px solid var(--green);
+    border-radius:5px;padding:5px 2px;
+  }
+  .rm-cuerpo .hist-fila.no{border-bottom-color:var(--red)}
+  .rm-cuerpo .hist-fila .hv{display:none}
+  .rm-cuerpo .hist-fila .hr{font-size:7.4px;letter-spacing:.3px;text-align:center;line-height:1.1}
+  .rm-cuerpo .hist-fila .hm{font-size:15px;grid-row:auto}
+  .rm-cuerpo .hist-fila .hp{font-size:0;letter-spacing:0}
+  .rm-cuerpo .hist-fila .hp:not(:empty)::after{content:"PEN";font-size:7px;letter-spacing:1px}
+  .rm-cuerpo .marcador{margin-top:10px}
+  .rm-chapas{margin-top:10px}
+  .rm-chapas .chapa b{font-size:17px}
+  .rm-cuerpo .final-pie{margin-top:9px;font-size:10.4px}
+  .rm-cuerpo .copas{margin-top:10px}
+}
 </style>
 </head>
 <body>
@@ -10213,26 +10353,33 @@ function matchWon(byPens){
     G.copas++;
     G.campeonatos.push({ n:G.copas, partidos:G.historial.slice() });
 
+    /* El máximo con el que arranca el próximo campeonato: cada copa desgasta
+       un corazón hasta el piso. Va en su propia chapa, no escondido en el
+       párrafo de abajo — si el próximo arrancara con menos sin avisar,
+       parecería un bug. */
+    const proxMax = Math.max(AGUANTE_PISO, AGUANTE_BASE - G.copas);
+
     openCard(
-      '<div class="final-tit campeon">CAMPEÓN</div>' +
-      '<div class="final-sub">' +
-        (G.copas > 1 ? '<b>' + G.copas + ' copas seguidas</b> · el equipo no para'
-                     : 'Clasificaste y ganaste las cuatro') + '</div>' +
-      marcadorFinal(R.rival, byPens) +
-      historialHTML() +
-      '<div class="wallet">' + plata(G.dinero) + '</div>' +
-      /* Avisar el desgaste acá es clave: si el próximo campeonato arrancara con
-         menos aguante sin explicación, parecería un bug. */
-      '<div class="final-pie">Seguís con la plata y los ítems que te quedan.<br>' +
-        (G.copas < AGUANTE_BASE - AGUANTE_PISO + 1
-          ? 'Pero el equipo llega gastado: el próximo campeonato arranca con <b class="ef-ag">' +
-            Math.max(AGUANTE_PISO, AGUANTE_BASE - G.copas) + ' <i class="ih"></i></b> de máximo. ' +
-            'El <b>💪 SEGUNDO AIRE</b> lo recupera.'
-          : 'El equipo ya no baja más: <b class="ef-ag">' + AGUANTE_PISO + ' <i class="ih"></i></b> de máximo.') +
-      '</div>' +
-      botonesFinal(true) +
-      '<button class="cta" id="againBtn">JUGAR OTRO CAMPEONATO</button>',
-      'card-final'
+      '<div class="rm-banner"><div class="final-tit campeon">CAMPEÓN</div></div>' +
+      '<div class="rm-cinta"><b>' + G.copas + (G.copas === 1 ? 'ª COPA' : 'ª COPA') + '</b>' +
+        '<span>' + (G.copas > 1 ? G.copas + ' seguidas · el equipo no para'
+                                : 'Clasificaste y ganaste las cuatro') + '</span></div>' +
+      '<div class="rm-cuerpo">' +
+        marcadorFinal(R.rival, byPens) +
+        historialHTML() +
+        '<div class="rm-chapas">' +
+          '<div class="chapa"><span>TE QUEDA</span><b class="plata">' + plata(G.dinero) + '</b></div>' +
+          '<div class="chapa"><span>PRÓXIMO MÁXIMO</span><b class="ag">' + proxMax + ' <i class="ih"></i></b></div>' +
+        '</div>' +
+        '<div class="final-pie">Seguís con la plata y los ítems que te quedan. ' +
+          (proxMax > AGUANTE_PISO
+            ? 'El <b>💪 SEGUNDO AIRE</b> recupera el corazón que gastaste.'
+            : 'El equipo ya no baja más de <b class="ef-ag">' + AGUANTE_PISO + ' <i class="ih"></i></b>.') +
+        '</div>' +
+        '<button class="cta jugar" id="againBtn">JUGAR OTRO CAMPEONATO</button>' +
+        botonesFinal(true) +
+      '</div>',
+      'card-final card-remate'
     );
     engancharCompartir();
     $('againBtn').onclick = () => { closeCard(); newRun(true); };
@@ -10363,18 +10510,29 @@ function matchLost(byPens){
     return;
   }
 
+  /* Mismo molde que CAMPEÓN, en rojo. Las dos pantallas son el remate de la
+     corrida y no había razón para que se leyeran distinto: cambia el color de
+     la banda y qué dicen las dos chapas, nada más. El botón sigue siendo
+     verde y relleno — perder no lo vuelve menos la acción que querés. */
   openCard(
-    '<div class="final-tit eliminado">ELIMINADO</div>' +
-    '<div class="final-sub">' + R.rival + ' te dejó afuera en ' + R.name +
-      (byPens ? ' · <b>por penales</b>' : '') + '</div>' +
-    marcadorFinal(R.rival, byPens) +
-    copasHTML() +
-    historialHTML() +
-    '<div class="final-pie">Llegaste a la ronda ' + (G.ronda + 1) + ' de ' + RONDAS.length +
-      ' con ataque ' + G.atk + ' y defensa ' + G.def + '</div>' +
-    botonesFinal(false) +
-    '<button class="cta" id="retryBtn">EMPEZAR DE NUEVO</button>',
-    'card-final'
+    '<div class="rm-banner"><div class="final-tit eliminado">ELIMINADO</div></div>' +
+    '<div class="rm-cinta"><b>' + R.name + '</b>' +
+      '<span>' + R.rival + ' te dejó afuera' + (byPens ? ' por penales' : '') + '</span></div>' +
+    '<div class="rm-cuerpo">' +
+      marcadorFinal(R.rival, byPens) +
+      copasHTML() +
+      historialHTML() +
+      '<div class="rm-chapas">' +
+        '<div class="chapa"><span>LLEGASTE A</span><b class="st">' + (G.ronda + 1) + ' DE ' + RONDAS.length + '</b></div>' +
+        '<div class="chapa"><span>TERMINASTE CON</span><b class="st">' +
+          '<svg class="ch-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-atk"/></svg>' + G.atk +
+          '<svg class="ch-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-def"/></svg>' + G.def +
+        '</b></div>' +
+      '</div>' +
+      '<button class="cta jugar" id="retryBtn">EMPEZAR DE NUEVO</button>' +
+      botonesFinal(false) +
+    '</div>',
+    'card-final card-remate cae'
   );
   engancharCompartir();
   $('retryBtn').onclick = () => { closeCard(); newRun(); };
