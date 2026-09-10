@@ -5627,6 +5627,78 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .rm-cuerpo .final-pie{margin-top:9px;font-size:10.4px}
   .rm-cuerpo .copas{margin-top:10px}
 }
+
+/* ---- PASASTE DE RONDA ----
+   Mismo molde que el remate del campeonato, en verde: es la tercera pantalla
+   de fin de partido y no había razón para que se leyera distinto. */
+.card-remate.pasa{border-top-color:var(--green)}
+.card-remate.pasa .rm-banner{
+  border-bottom-color:rgba(61,220,107,.4);
+  background:linear-gradient(180deg, rgba(61,220,107,.15), rgba(61,220,107,.03));
+}
+.card-remate.pasa .rm-banner .final-tit{font-size:clamp(34px,9vw,50px)}
+.final-tit.pasa{color:var(--green);text-shadow:0 0 30px rgba(61,220,107,.5)}
+.rm-sub{
+  font-family:var(--txt);font-size:11.5px;letter-spacing:1.4px;
+  color:var(--dim);margin-top:5px;text-transform:uppercase;
+}
+
+/* Las dos cajas. La de la derecha va en dorado porque es la que importa para
+   lo que sigue: con ese rival adelante elegís el refuerzo. */
+.pr-dos{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+.pd-caja{
+  border:1px solid var(--line);border-radius:7px;background:rgba(8,32,70,.5);
+  padding:9px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;
+}
+.pd-caja.viene{border-color:var(--gold);background:rgba(245,200,66,.09)}
+.pd-lb{font-family:var(--txt);font-size:9px;letter-spacing:2px;color:var(--dim2);text-transform:uppercase}
+.pd-caja.viene .pd-lb{color:var(--gold)}
+.pd-esc{display:flex}
+.pd-m{font-family:var(--tit);font-weight:800;font-size:23px;letter-spacing:1px;color:var(--green);line-height:1}
+.pd-m.ronda{font-size:15px;color:var(--gold);letter-spacing:1.6px;text-align:center}
+.pd-nm{font-family:var(--txt);font-size:10px;color:var(--white);opacity:.85;text-align:center;line-height:1.2}
+.pd-pen{font-family:var(--txt);font-size:9px;color:var(--gold);letter-spacing:.6px}
+
+/* El cuadro en cinco tramos, en vez de cinco chips que se partían en dos
+   renglones. Es el mismo lenguaje que el camino del remate. */
+.pr-esc{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:14px}
+.pe-t{
+  border:1px solid var(--line);border-bottom:2px solid var(--line);border-radius:5px;
+  background:rgba(8,32,70,.5);padding:6px 2px 5px;min-width:0;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.pe-t.ok{border-bottom-color:var(--green)}
+.pe-t.va{border-color:var(--gold);border-bottom-color:var(--gold);background:rgba(245,200,66,.1)}
+.pe-r{
+  font-family:var(--txt);font-size:7.4px;letter-spacing:.4px;color:var(--dim2);
+  text-transform:uppercase;text-align:center;line-height:1.1;
+}
+.pe-t.va .pe-r{color:var(--gold)}
+.pe-p{font-family:var(--tit);font-weight:800;font-size:12px;letter-spacing:1px;color:var(--dim2)}
+.pe-t.ok .pe-p{color:var(--green)}
+.pe-t.va .pe-p{color:var(--gold)}
+
+/* Con qué llegás: los mismos medidores del panel, en la franja de siempre. */
+.pr-franja{
+  display:flex;gap:9px;margin-top:13px;
+  border:1px solid var(--line);border-radius:7px;background:rgba(8,32,70,.55);padding:9px 11px;
+}
+.pr-franja .fr-it{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.pr-franja .fr-lb{
+  font-family:var(--txt);font-size:9.2px;letter-spacing:1.7px;color:var(--dim2);
+  text-transform:uppercase;text-align:center;
+}
+.pr-franja .fr-n{font-family:var(--tit);font-weight:800;font-size:19px;letter-spacing:1px;white-space:nowrap}
+.pr-franja .fr-n.plata{color:var(--coin)}
+/* Los medidores del panel vienen con un grid fijo de 26px por casilla; acá
+   van sueltos, uno al lado del otro. */
+.pr-franja .hearts{font-size:15px;letter-spacing:0;display:flex;grid-template-columns:none}
+.pr-franja .racha-track{font-size:14px;letter-spacing:0;display:flex;grid-template-columns:none}
+@media (max-height:700px){
+  .pr-dos{margin-top:10px}
+  .pr-esc,.pr-franja{margin-top:10px}
+  .pd-esc svg{width:32px;height:38px}
+}
 </style>
 </head>
 <body>
@@ -6097,14 +6169,23 @@ function escudoSVG(size, forma, c1, c2){
 
 /* El rival estrena escudo en cada partido. Se evita la paleta del jugador para
    que los dos escudos del marcador no se confundan. */
-function escudoRivalNuevo(){
+function escudoRivalNuevo(evitar){
   /* Dos colores distintos entre sí, y el de fondo distinto al tuyo: en el
-     marcador los dos escudos van uno al lado del otro. */
+     marcador los dos escudos van uno al lado del otro.
+
+     `evitar` es el escudo del rival anterior. En la pantalla de PASASTE los
+     dos van juntos —el que acabás de ganar y el que viene—, así que además
+     se le esquiva el fondo y la forma: dos escudos iguales al lado del otro
+     se leen como el mismo equipo. */
+  const otro = (v, tope) => (v + 1 + rnd(tope - 1)) % tope;
   let c1 = rnd(COLORES.length);
-  if(c1 === G.escudo.c1) c1 = (c1 + 1 + rnd(COLORES.length - 1)) % COLORES.length;
+  if(c1 === G.escudo.c1) c1 = otro(c1, COLORES.length);
+  if(evitar && c1 === evitar.c1) c1 = otro(c1, COLORES.length);
   let c2 = rnd(COLORES.length);
-  if(c2 === c1) c2 = (c2 + 1 + rnd(COLORES.length - 1)) % COLORES.length;
-  return { forma: rnd(ESCUDOS.length), c1, c2 };
+  if(c2 === c1) c2 = otro(c2, COLORES.length);
+  let forma = rnd(ESCUDOS.length);
+  if(evitar && forma === evitar.forma) forma = otro(forma, ESCUDOS.length);
+  return { forma, c1, c2 };
 }
 
 
@@ -10386,12 +10467,41 @@ function matchWon(byPens){
     return;
   }
 
+  /* **Dos cajas: lo que cerraste y lo que se abre.** La pantalla decía
+     PASASTE DE RONDA, mostraba el cuadro y el marcador, y usaba 339 de los
+     768px que tenía. No decía **contra quién jugás ahora** —el dato que
+     decide el refuerzo que vas a elegir dos toques después— ni **con qué
+     llegás**, que también viaja entre partidos.
+
+     El escudo del que viene se sortea acá y se guarda: es el que va a estar
+     en la cancha. */
+  const Sig = RONDAS[G.ronda + 1];
+  G.escudoProx = escudoRivalNuevo(G.escudoRival);
+
   openCard(
-    '<div class="tag">' + R.name + '</div>' +
-    '<h1>PASASTE<br><em>DE RONDA</em></h1>' +
-    bracketHTML(G.ronda + 1) +
-    marcadorFinal(R.rival, byPens) +
-    '<button class="cta" id="shopBtn">IR AL VESTUARIO</button>'
+    '<div class="rm-banner"><div class="final-tit pasa">PASASTE</div>' +
+      '<div class="rm-sub">de ' + R.name + ' a ' + Sig.name + '</div></div>' +
+    '<div class="rm-cuerpo">' +
+      '<div class="pr-dos">' +
+        '<div class="pd-caja">' +
+          '<span class="pd-lb">GANASTE</span>' +
+          '<span class="pd-esc">' + escudoDe(G.escudoRival, 40) + '</span>' +
+          '<b class="pd-m">' + G.gU + '-' + G.gC + '</b>' +
+          '<span class="pd-nm">' + R.rival + '</span>' +
+          (byPens ? '<span class="pd-pen">en penales</span>' : '') +
+        '</div>' +
+        '<div class="pd-caja viene">' +
+          '<span class="pd-lb">AHORA VA</span>' +
+          '<span class="pd-esc">' + escudoDe(G.escudoProx, 40) + '</span>' +
+          '<b class="pd-m ronda">' + Sig.name + '</b>' +
+          '<span class="pd-nm">' + Sig.rival + '</span>' +
+        '</div>' +
+      '</div>' +
+      escaleraHTML(G.ronda + 1) +
+      estadoRondaHTML() +
+      '<button class="cta jugar" id="shopBtn">IR AL VESTUARIO</button>' +
+    '</div>',
+    'card-final card-remate pasa'
   );
   $('shopBtn').onclick = () => showRefuerzo();
 }
@@ -10641,10 +10751,36 @@ function historialHTML(){
   '</div>';
 }
 
-function bracketHTML(done){
-  return '<div class="bracket">' + RONDAS.map((r,i) =>
-    '<span class="bstep ' + (i < done ? 'done' : i === done ? 'now' : '') + '">' + r.name + '</span>'
-  ).join('') + '</div>';
+/* **El cuadro, en cinco tramos.** Eran cinco chips del mismo tamaño que se
+   partían en dos renglones y no decían en qué estado estaba cada ronda: el
+   verde y el dorado tenían que deducirse. Ahora cada tramo lleva su marca
+   —✓ ganada, VA la que viene, · la que falta— y entran los cinco en una
+   fila hasta en un teléfono de 320px. */
+function escaleraHTML(hechas){
+  return '<div class="pr-esc">' + RONDAS.map((r, i) => {
+    const cls = i < hechas ? 'ok' : i === hechas ? 'va' : '';
+    return '<div class="pe-t ' + cls + '">' +
+      '<span class="pe-r">' + (r.name === 'CLASIFICATORIA' ? 'CLASIF.' : r.name) + '</span>' +
+      '<span class="pe-p">' + (i < hechas ? '✓' : i === hechas ? 'VA' : '·') + '</span>' +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+/* Con qué llegás al próximo partido. Es lo que vas a mirar dos toques
+   después, en el vestuario, para decidir qué comprar — y hasta ahora la
+   pantalla que te manda ahí no lo mostraba. */
+function estadoRondaHTML(){
+  let corazones = '';
+  for(let i = 0; i < G.aguanteMax; i++)
+    corazones += '<span class="' + (i < G.aguante ? 'heart-on' : 'heart-off') + '"><i class="ih"></i></span>';
+  let rayos = '';
+  for(let i = 0; i < G.rachaMax; i++)
+    rayos += '<span class="' + (i < G.racha ? 'ray-on' : 'ray-off') + '"><i class="ir"></i></span>';
+  return '<div class="pr-franja">' +
+    '<div class="fr-it"><span class="fr-lb">LLEGÁS CON</span><span class="hearts">' + corazones + '</span></div>' +
+    '<div class="fr-it"><span class="fr-lb">RACHA</span><div class="racha-track">' + rayos + '</div></div>' +
+    '<div class="fr-it"><span class="fr-lb">EN CAJA</span><b class="fr-n plata">' + plata(G.dinero) + '</b></div>' +
+  '</div>';
 }
 
 /* ---------------- mercado de pases ---------------- */
@@ -11335,7 +11471,11 @@ function startMatch(){
   G.reloj = R.reloj;
   G.amarillas = 0;
   G.fundidas = 0;
-  G.escudoRival = escudoRivalNuevo();   // cada rival, su escudo
+  /* Cada rival estrena escudo. Si la pantalla de PASASTE ya se lo mostró al
+     jugador, se usa **ése**: prometer un escudo y sacar otro en la cancha
+     sería un cambio de camiseta sin explicación. */
+  G.escudoRival = G.escudoProx || escudoRivalNuevo();
+  G.escudoProx = null;
   // El máximo vuelve al techo de la corrida en cada partido —el equipo
   // descansa— pero el aguante con el que llegás es el que traés del anterior.
   G.aguanteMax = G.maxCampeonato;

@@ -5829,3 +5829,62 @@ ELIMINADO es más alta porque lleva además **las copas ganadas antes de caer**,
 que también se apretaron: el trofeo y el título pasan a compartir renglón en vez
 de ocupar tres. En 320×568 lo que queda abajo del borde es la fila de COMPARTIR
 y COPIAR; el botón principal se ve.
+
+
+## Pasaste de ronda: lo que cerraste y lo que se abre
+
+Es la pantalla que aparece cuatro veces por campeonato y usaba **339 de los
+768px** que tiene: el título, cinco chips del cuadro que se partían en dos
+renglones, el marcador y el botón. El resto era aire.
+
+Y le faltaban las dos cosas que se necesitan **dos toques después**, en el
+vestuario, para elegir el refuerzo:
+
+- **contra quién jugás ahora** — no se mencionaba;
+- **con qué llegás** — aguante, racha y plata viajan entre partidos y tampoco.
+
+De yapa, el nombre de la ronda aparecía dos veces con dos sentidos distintos:
+arriba la que ganaste, y en el cuadro un chip verde con ese mismo nombre
+mientras el dorado era **otra** ronda, la que viene.
+
+Ahora la pantalla son **dos cajas lado a lado** —lo que cerraste y lo que se
+abre— con el mismo molde que el remate del campeonato, en verde:
+
+| | |
+|---|---|
+| **GANASTE** | el escudo del rival, el marcador y su nombre |
+| **AHORA VA** | en dorado: el escudo del que viene, la ronda y su nombre |
+
+Debajo, **el cuadro en cinco tramos** —✓ la ganada, VA la que viene, · las que
+faltan— y **la franja del estado**: con cuántos ❤, cuánta ⚡ y cuánta plata
+llegás. Y el botón verde relleno, el mismo de las otras dos pantallas de fin de
+partido.
+
+### El escudo del que viene es el que vas a ver en la cancha
+
+El rival estrena escudo en cada partido, pero se sorteaba **dentro de
+`startMatch`**: cuando esta pantalla se dibuja, ese escudo todavía no existe.
+Mostrar uno cualquiera y después sacar otro en la cancha sería un cambio de
+camiseta sin explicación.
+
+Así que el sorteo se adelanta acá y se guarda en `G.escudoProx`; `startMatch`
+lo usa si está y lo limpia. Verificado: lo que promete la pantalla es lo que
+aparece en el partido.
+
+`escudoRivalNuevo` además ahora acepta **a quién esquivar**. Evitaba la paleta
+del jugador —los dos escudos van juntos en el marcador— pero no la del rival
+anterior, y en esta pantalla los dos van uno al lado del otro: dos escudos
+parecidos se leen como el mismo equipo. Ahora esquiva el fondo **y la forma**.
+
+### Medido
+
+| | 320×568 | 360×640 | 390×844 | 414×896 | 1366×768 |
+|---|---|---|---|---|---|
+| alto | 398 | 398 | 438 | 440 | 452 |
+| entra sin rodar | sí | sí | sí | sí | sí |
+
+Los cinco tramos del cuadro entran **en una sola fila** en las cinco, y ninguno
+recorta su texto. La única que rueda es la horizontal de 390px de alto, donde no
+entra ninguna pantalla del juego.
+
+El `bracketHTML` de los cinco chips se borró: era su único uso.
