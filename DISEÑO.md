@@ -5425,3 +5425,81 @@ opuestas disfrazadas de la misma.
 
 Verificado que las cinco devuelven arte distinto del propio, en la mesa y en el
 pop-up de situación de gol, que las toma por `ART_RIVAL` sin tocar nada más.
+
+
+## El mercado de ítems: una franja y cuatro renglones
+
+Era la única pantalla que había quedado afuera del rebranding, y la que peor se
+portaba: **hacía scroll en las dos**. 815px de contenido contra 764 de hueco en
+un teléfono, y 915 contra 736 en escritorio, así que el botón de JUGAR quedaba
+abajo del corte.
+
+| | antes | ahora |
+|---|---|---|
+| teléfono 390x844 | 815px, con scroll | **515px** |
+| teléfono 320x568 | con scroll | **469px** |
+| escritorio 1366x768 | 915px, con scroll | **647px** |
+| teléfono acostado 844x390 | 915px | 523px, con scroll adentro |
+
+### Lo que se fue, y por qué
+
+**El inventario.** Un bloque «YA TENÉS» arriba que listaba los ítems con su
+cantidad… y después cada botón repetía «TENÉS x2». La misma información dos
+veces en la misma pantalla. Ahora el `x2` vive pegado al nombre, en el renglón
+que corresponde, y el bloque desapareció.
+
+**La descripción larga.** «Entra sangre nueva del banco» repetía en prosa lo que
+el efecto dice en tres caracteres: **+1 ❤**. Para decidir una compra alcanza con
+el efecto.
+
+**La plata suelta.** Flotaba sin marco en el medio de la pantalla, entre el
+inventario y la lista, cuando es el dato que gobierna todo lo demás.
+
+### Lo que entró
+
+**La franja**: los tres datos con los que se compra, en tres columnas separadas
+por un filo — **presupuesto, aguante y racha**. La plata primero porque decide
+qué se puede; las otras dos porque dicen qué conviene: sin aguante, un SUPLENTES
+vale más que un VAR.
+
+**El faltante escrito.** Antes, lo que no te alcanzaba solo bajaba a opacidad
+.32 y **el precio seguía en verde**: había que comparar €25M contra €30M de
+cabeza. Ahora el precio va en rojo y debajo dice **«faltan €5M»**.
+
+### Dos trampas del camino
+
+**La ✕ de devolver no puede ir adentro del renglón.** El renglón es un
+`<button>` y un botón adentro de otro es HTML inválido: el navegador rompe la
+interacción de los dos. Es el mismo problema que tuvo la ficha del cartel de
+gol. Se resolvió igual: el renglón es una caja con el botón de comprar y la ✕
+como **hermana**, posicionada en la esquina, fuera del flujo.
+
+**Los medidores traían una grilla de la mesa.** El bloque del teléfono le pone a
+`.hearts` y a `.racha-track` cuatro columnas fijas de 26px —104px cada
+medidor— para que en la franja de la mesa caigan alineados uno debajo del otro.
+En 320px de ancho eso hacía que la franja del mercado se pisara a sí misma.
+Adentro de `.franja` se les desarma la grilla y se miden en `vw`, con los topes
+de siempre: en un teléfono normal y en escritorio no cambia nada.
+
+### El vestuario va con el mismo renglón
+
+El mercado del campeonato, el entretiempo del 1v1 y el vestuario del partido
+único comparten la lista. Los tres usan `filaItem`; lo único que cambia es lo
+que va a la derecha:
+
+| | a la derecha |
+|---|---|
+| mercado y entretiempo | el precio, y el faltante si no alcanza |
+| vestuario | un **+** si podés sumar, **listo** si llegaste al tope del ítem, **sin cupo** si se acabaron los tres |
+
+Y de paso apareció un bug viejo: **los tres cupos del vestuario nunca se habían
+dibujado**. El HTML emitía `<span class="cupo">` desde el primer día y `.cupo`
+no tenía una sola regla en toda la hoja, así que quedaba el «te quedan 3» solo,
+sin los puntos que lo explican. Ahora son tres círculos que se llenan en dorado.
+
+### Lo que queda
+
+En un **teléfono acostado** la tarjeta sigue con scroll adentro: 523px contra
+358 de hueco. Los renglones ya van de a dos —ancho sobra, son 844px— y eso la
+bajó de 681 a 523, pero con cabecera, franja, cuatro ítems y botón no hay forma
+de entrar en 358. Es scroll de la tarjeta, no de la página.

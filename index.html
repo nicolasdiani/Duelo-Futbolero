@@ -1302,6 +1302,106 @@ img{height:auto}
 }
 
 .wallet{font-family:var(--tit);font-weight:800;font-size:26px;color:var(--coin);margin-top:14px}
+
+/* ================= EL MERCADO: LA FRANJA Y LOS RENGLONES =================
+   La franja son los tres datos con los que se compra —plata, aguante, racha—
+   en tres columnas separadas por un filo. La plata va primero porque es la que
+   decide qué se puede; las otras dos dicen qué conviene. */
+.mk-p{font-size:12.4px;color:var(--dim);line-height:1.45}
+.franja{
+  display:flex;align-items:center;gap:8px;margin-top:12px;padding:9px 6px;
+  border:1px solid var(--line);border-radius:8px;background:rgba(0,12,40,.55);
+}
+.fr-it{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:5px}
+.fr-it + .fr-it{border-left:1px solid rgba(18,51,110,.8)}
+.fr-lb{font-family:var(--txt);font-weight:700;font-size:clamp(7px, 2.3vw, 8.6px);
+  letter-spacing:clamp(1px, .6vw, 2.4px);white-space:nowrap;
+  color:var(--dim2);text-transform:uppercase}
+.fr-plata{font-family:var(--tit);font-weight:800;font-size:clamp(16px, 5.2vw, 22px);line-height:1;color:var(--coin)}
+/* Las tres columnas se miden en `vw`: en 320px los cuatro corazones más los
+   cuatro rayos más la plata no entran a tamaño fijo y la franja se pisa a sí
+   misma. Los topes son los de siempre, así que en un teléfono normal y en
+   escritorio no cambia nada. */
+/* Y hay que **desarmarles la grilla**: el bloque del teléfono le pone a
+   `.hearts` y a `.racha-track` cuatro columnas fijas de 26px —104px cada
+   medidor— porque en la franja de la mesa tienen que caer alineados uno debajo
+   del otro. Acá no: acá tienen que entrar. */
+.franja .hearts,.franja .racha-track{
+  display:flex;grid-template-columns:none;gap:1px;letter-spacing:1px;
+  justify-content:center;flex-wrap:nowrap;
+}
+.franja .hearts > span,.franja .racha-track > span{flex:0 0 auto}
+.franja .hearts{font-size:clamp(13px, 4.4vw, 20px)}
+.franja .racha-track{font-size:clamp(12px, 4vw, 19px)}
+
+/* El renglón. La caja existe solo para colgarle la ✕ afuera del botón. */
+.shop.lista{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.fila-caja{position:relative}
+.fila{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  border:1px solid var(--filo);border-radius:8px;background:rgba(0,20,64,.72);
+  padding:9px 11px;color:var(--white);font-family:inherit;cursor:pointer;
+  transition:border-color .15s, transform .15s, background .15s;
+}
+.fila:hover:not(:disabled){border-color:var(--gold);transform:translateX(3px)}
+.fila.off{border-color:var(--line);background:rgba(0,10,30,.6);cursor:not-allowed}
+.fila.off .f-nm,.fila.off .f-ef{opacity:.5}
+.fila.off .f-ico{opacity:.4}
+.f-ico{flex:0 0 auto;display:flex}
+.f-ico .ii-svg{width:24px;height:24px;display:block;color:var(--gold)}
+.f-tx{flex:1;min-width:0}
+.f-nm{display:block;font-family:var(--tit);font-weight:800;font-size:16px;letter-spacing:.8px}
+.f-x,.f-max{
+  font-family:var(--tit);font-weight:800;font-size:10px;letter-spacing:1px;color:var(--gold);
+  border:1px solid var(--gold);border-radius:99px;padding:0 6px;margin-left:7px;vertical-align:2px;
+}
+.f-max{color:var(--dim2);border-color:var(--line)}
+.f-ef{display:block;font-size:11.4px;margin-top:2px}
+.f-pr{
+  flex:0 0 auto;text-align:right;white-space:nowrap;
+  font-family:var(--tit);font-weight:800;font-size:19px;color:var(--coin);
+}
+.fila.off .f-pr{color:var(--red)}
+/* El faltante escrito: es más rápido que restar dos números de cabeza. */
+.f-pr em{display:block;font-family:var(--txt);font-style:normal;font-weight:600;
+  font-size:9px;letter-spacing:.4px;color:var(--red)}
+.f-mas{font-size:24px;color:var(--gold);line-height:1}
+.f-tope{font-family:var(--txt);font-style:normal;font-weight:600;font-size:9.4px;
+  letter-spacing:1.4px;color:var(--dim2);text-transform:uppercase}
+/* La ✕ se apoya en la esquina y no ocupa lugar en el renglón. */
+.f-dev{
+  position:absolute;top:-6px;right:-6px;z-index:2;
+  width:20px;height:20px;border-radius:50%;line-height:1;
+  border:1px solid var(--red);background:var(--panel);color:var(--red);
+  font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.f-dev:hover{background:rgba(255,59,82,.18)}
+.mk-nota{font-size:10.4px;color:var(--dim2);line-height:1.4;margin-top:9px}
+
+/* ---- ACOSTADO, LOS RENGLONES VAN DE A DOS ----
+   En un teléfono de 844x390 el hueco es de 350px y la tarjeta pide 681: cuatro
+   renglones apilados no entran de ninguna manera. En dos columnas son dos
+   renglones en vez de cuatro y la tarjeta baja a unos 550 — sigue habiendo
+   scroll adentro de la tarjeta, pero la mitad. Ancho sobra: son 844px. */
+@media (max-height:560px) and (min-width:700px){
+  .shop.lista{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+}
+
+/* ---- LOS CUPOS DEL VESTUARIO ----
+   Tres huecos que se llenan al elegir. **Nunca se habían dibujado**: el HTML
+   emitía `<span class="cupo">` desde el primer día y `.cupo` no tenía una sola
+   regla en toda la hoja, así que quedaba el «te quedan 3» solo, sin los puntos
+   que lo explican. */
+.cupos{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px}
+.cupo{
+  width:13px;height:13px;border-radius:50%;flex:0 0 auto;
+  border:1.5px solid var(--line);background:rgba(0,8,31,.7);
+}
+.cupo.lleno{background:var(--gold);border-color:var(--gold);box-shadow:0 0 9px rgba(245,200,66,.5)}
+.cupo-lb{
+  font-family:var(--txt);font-weight:700;font-size:9.6px;letter-spacing:2.2px;
+  color:var(--dim2);text-transform:uppercase;margin-left:6px;
+}
 .ver{font-family:var(--txt);font-size:10px;letter-spacing:2px;color:var(--dim2);margin-top:16px}
 
 /* ---------- LA MONEDA ---------- */
@@ -8099,7 +8199,6 @@ function duelPintarTienda(quien, primera){
       '<p>Sumá <b>' + DUELO.PUNTOS_ET + ' puntos</b> al plantel y comprá lo que necesites. Todo queda para el segundo tiempo.</p>' +
       '<div id="repET"></div>' +
       tiendaHTML() +
-      inventarioHTML() +
       '<button class="cta" id="etBtn">' + (quien === 0 ? 'LISTO · PASA EL OTRO' : 'AL SEGUNDO TIEMPO') + '</button>',
       'card-final'
     );
@@ -10265,21 +10364,22 @@ function showElegirItems(){
           '<span class="cupo' + (i < usados ? ' lleno' : '') + '"></span>').join('') +
         '<span class="cupo-lb">' + (quedan ? 'te quedan ' + quedan : 'listo') + '</span>' +
       '</div>' +
-      inventarioHTML() +
-      '<div class="shop">' +
+      /* El mismo renglón que el mercado, pero contando cupos en vez de plata:
+         a la derecha va el + cuando podés sumar y el tope cuando no. */
+      '<div class="shop lista">' +
         Object.keys(ITEMS).map(k => {
-          const I = ITEMS[k];
           const tope = TOPE_POR_ITEM[k] || ITEMS_UNICO;
           const tengo = G.items[k] || 0;
           const lleno = quedan <= 0 || tengo >= tope;
-          return '<button class="shop-item' + (lleno ? ' caro' : '') + '" data-elegir="' + k + '"' +
-            (lleno ? ' disabled' : '') + '>' +
-            '<span class="shop-nm">' + icoItem(k) + ' ' + I.nm +
-              (tengo ? '<span class="shop-tengo">x' + tengo + '</span>' : '') +
-              (tope < ITEMS_UNICO ? '<span class="shop-tope">máx 1</span>' : '') + '</span>' +
-            '<span class="shop-ef">' + I.efecto + '</span>' +
-            '<span class="shop-desc">' + I.desc + '</span>' +
-          '</button>';
+          /* Cuando el tope es del ítem, el rótulo del nombre ya dice «máx 1»:
+             repetirlo a la derecha era decir dos veces lo mismo en el mismo
+             renglón. Ahí va el estado —ya lo tenés— y no la regla. */
+          const der = lleno
+            ? '<em class="f-tope">' + (tengo >= tope ? 'listo' : 'sin cupo') + '</em>'
+            : '<b class="f-mas">+</b>';
+          const extra = tope < ITEMS_UNICO ? '<span class="f-max">máx ' + tope + '</span>' : '';
+          return filaItem(k, der, lleno, extra, tengo > 0)
+            .replace('data-buy="item:' + k + '"', 'data-elegir="' + k + '"');
         }).join('') +
       '</div>' +
       '<button class="cta" id="unicoGo"' + (usados ? '' : ' disabled') + '>' +
@@ -10296,8 +10396,8 @@ function showElegirItems(){
         pintar();
       };
     });
-    /* La ✕ del inventario devuelve el cupo. */
-    document.querySelectorAll('.inv-x').forEach(b => {
+    /* La ✕ del renglón devuelve el cupo. */
+    document.querySelectorAll('.f-dev').forEach(b => {
       b.onclick = e => {
         e.stopPropagation();
         const k = b.dataset.dev;
@@ -10319,82 +10419,107 @@ function showMarket(primeraVez){
      firmes. */
   if(primeraVez) G.compras = {};
 
-  let html =
+  /* **Una franja con los tres datos, y la lista debajo.** Antes eran cuatro
+     bloques apilados —el estado, el inventario, la plata suelta y la grilla— y
+     la pantalla se pasaba: 815px de contenido contra 764 de hueco en un
+     teléfono, así que el botón de JUGAR quedaba abajo del corte.
+
+     Lo que se fue: el inventario repetía en un bloque propio lo que cada
+     renglón ya dice con su `x2`, y la descripción larga de cada ítem repetía
+     en prosa lo que el efecto dice en tres caracteres. Lo que entró: la plata
+     deja de flotar suelta y se sienta al lado del aguante y la racha, que es
+     con lo que se decide qué comprar. */
+  const html =
     '<div class="tag">MERCADO</div>' +
     '<h1>ÍTEMS</h1>' +
-    '<p>La plata solo compra ítems. Gastá ahora o guardá para las rondas de arriba, donde la mesa ya casi no te regala nada.</p>' +
-    estadoEquipo() +
-    inventarioHTML() +
-    '<div class="wallet">' + plata(G.dinero) + '</div>' +
-    '<div class="shop">';
-
-  Object.keys(ITEMS).forEach(k => {
-    const I = ITEMS[k];
-    html += shopBtn('item:' + k, icoItem(k) + ' ' + I.nm, I.desc, I.price, G.items[k] || 0, I.efecto);
-  });
-
-  html += '</div><button class="cta" id="nextBtn">JUGAR ' + RONDAS[G.ronda + 1].name + '</button>';
+    '<p class="mk-p">Gastá ahora o guardá para las rondas de arriba, donde la mesa ya casi no te regala nada.</p>' +
+    franjaMercado() +
+    tiendaHTML() +
+    (Object.keys(G.compras).length
+      ? '<div class="mk-nota">Lo que compraste ahora se puede devolver con la ✕. Al pasar de ronda queda firme.</div>'
+      : '') +
+    '<button class="cta" id="nextBtn">JUGAR ' + RONDAS[G.ronda + 1].name + '</button>';
   openCard(html);
   engancharTienda();
   $('nextBtn').onclick = () => { closeCard(); G.ronda++; startMatch(); };
 }
 
-/* La grilla de compra, sola. Se usa en el mercado del campeonato y en el
+/* Los tres datos con los que se compra, en una tira: **con cuánta plata, con
+   cuántos corazones y con cuánta racha llegás**. La plata primero porque es la
+   que decide qué se puede, y las otras dos porque son las que dicen qué
+   conviene: sin aguante, un SUPLENTES vale más que un VAR. */
+function franjaMercado(){
+  let corazones = '', puntos = '';
+  for(let i = 0; i < G.aguanteMax; i++)
+    corazones += '<span class="' + (i < G.aguante ? 'heart-on' : 'heart-off') + '"><i class="ih"></i></span>';
+  for(let i = 0; i < G.rachaMax; i++)
+    puntos += '<span class="' + (i < G.racha ? 'ray-on' : 'ray-off') + '"><i class="ir"></i></span>';
+
+  return '<div class="franja">' +
+    '<div class="fr-it"><span class="fr-lb">PRESUPUESTO</span>' +
+      '<b class="fr-plata">' + plata(G.dinero) + '</b></div>' +
+    '<div class="fr-it"><span class="fr-lb">LLEGÁS CON</span>' +
+      '<span class="hearts">' + corazones + '</span></div>' +
+    '<div class="fr-it"><span class="fr-lb">RACHA</span>' +
+      '<div class="racha-track">' + puntos + '</div></div>' +
+  '</div>';
+}
+
+/* Un renglón de la tienda: el ícono, el nombre con lo que ya tenés, el efecto,
+   y a la derecha lo que cuesta.
+
+   **La ✕ de devolver va afuera del botón.** Un `<button>` adentro de otro es
+   HTML inválido y el navegador rompe la interacción de los dos, así que el
+   renglón es una caja con el botón de comprar y la ✕ como hermana, apoyada en
+   la esquina. Es el mismo problema que tuvo la ficha del cartel de gol. */
+function filaItem(k, der, off, extra, dev){
+  const I = ITEMS[k];
+  const tengo = G.items[k] || 0;
+  return '<div class="fila-caja">' +
+    '<button class="fila' + (off ? ' off' : '') + '" data-buy="item:' + k + '"' +
+      (off ? ' disabled' : '') + '>' +
+      '<span class="f-ico">' + icoItem(k) + '</span>' +
+      '<span class="f-tx">' +
+        '<b class="f-nm">' + I.nm +
+          (tengo ? '<span class="f-x">x' + tengo + '</span>' : '') +
+          (extra || '') + '</b>' +
+        '<span class="f-ef">' + I.efecto + '</span>' +
+      '</span>' +
+      '<span class="f-pr">' + der + '</span>' +
+    '</button>' +
+    (dev ? '<button class="f-dev" data-dev="' + k + '" ' +
+           'title="Devolver uno y recuperar ' + plata(I.price) + '">✕</button>' : '') +
+  '</div>';
+}
+
+/* La lista de compra, sola. Se usa en el mercado del campeonato y en el
    entretiempo del 1v1. */
 function tiendaHTML(){
-  return '<div class="shop">' +
+  return '<div class="shop lista">' +
     Object.keys(ITEMS).map(k => {
       const I = ITEMS[k];
-      return shopBtn('item:' + k, icoItem(k) + ' ' + I.nm, I.desc, I.price, G.items[k] || 0, I.efecto);
+      const alcanza = G.dinero >= I.price;
+      const der = plata(I.price) +
+        (alcanza ? '' : '<em>faltan ' + plata(I.price - G.dinero) + '</em>');
+      return filaItem(k, der, !alcanza, '', (G.compras[k] || 0) > 0);
     }).join('') +
   '</div>';
 }
 
 function engancharTienda(){
-  document.querySelectorAll('.shop-item').forEach(b => {
+  document.querySelectorAll('.fila[data-buy]').forEach(b => {
     b.onclick = () => buy(b.dataset.buy);
   });
-  document.querySelectorAll('.inv-x').forEach(b => {
+  document.querySelectorAll('.f-dev').forEach(b => {
     b.onclick = e => { e.stopPropagation(); devolver(b.dataset.dev); };
   });
 }
 
-/* Lo que ya tenés guardado. Sin esto, comprar es a ciegas: no sabés si te
-   faltan gritos para la racha o suplentes para aguantar. */
-function inventarioHTML(){
-  const tengo = Object.keys(ITEMS).filter(k => (G.items[k] || 0) > 0);
-  if(!tengo.length){
-    return '<div class="inv vacio">NO TENÉS NINGÚN ÍTEM GUARDADO</div>';
-  }
-  return '<div class="inv">' +
-    '<div class="inv-lb">YA TENÉS</div>' +
-    '<div class="inv-list">' +
-      tengo.map(k => {
-        const nuevos = G.compras[k] || 0;
-        return '<span class="inv-it' + (nuevos ? ' nuevo' : '') + '" title="' + ITEMS[k].desc + '">' +
-          icoItem(k) + ' ' + ITEMS[k].nm + ' <b>x' + G.items[k] + '</b>' +
-          '<span class="inv-ef">' + ITEMS[k].efecto + '</span>' +
-          // solo se devuelve lo comprado en este mercado
-          (nuevos ? '<button class="inv-x" data-dev="' + k + '" ' +
-                    'title="Devolver uno y recuperar ' + plata(ITEMS[k].price) + '">✕</button>' : '') +
-        '</span>';
-      }).join('') +
-    '</div>' +
-    (Object.keys(G.compras).length
-      ? '<div class="inv-nota">Lo que compraste ahora se puede devolver con ✕. Al pasar de ronda queda firme.</div>'
-      : '') +
-  '</div>';
-}
-
-function shopBtn(id, name, desc, price, tengo, efecto){
-  const can = G.dinero >= price;
-  return '<button class="shop-item" data-buy="' + id + '"' + (can ? '' : ' disabled') + '>' +
-    '<span><span class="shop-name">' + name +
-      (tengo ? '<span class="shop-tengo">TENÉS x' + tengo + '</span>' : '') + '</span>' +
-      (efecto ? '<span class="shop-ef">' + efecto + '</span>' : '') +
-      '<span class="shop-desc">' + desc + '</span></span>' +
-    '<span class="shop-price">' + plata(price) + '</span></button>';
-}
+/* Se fueron `inventarioHTML` y `shopBtn`. El inventario decía en un bloque
+   aparte lo que ahora dice cada renglón con su `x2`, y la ✕ de devolver se
+   mudó al renglón que corresponde. `shopBtn` era el renglón viejo, con la
+   descripción larga que repetía en prosa lo que el efecto dice en tres
+   caracteres. */
 
 function buy(what){
   if(what.startsWith('item:')){
