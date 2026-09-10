@@ -5171,6 +5171,9 @@ Dos efectos de un solo movimiento:
 - y como el verde es el opuesto del azul de las cartas, **el contraste sale
   gratis**: el tablero se recorta solo, sin tener que iluminarlo.
 
+> *Lo segundo resultó falso al medirlo, y el velo se sacó entero: ver «El velo
+> se va, y el contraste sube» al final del documento.*
+
 Las áreas dibujadas se fueron con `--cal`, la variable que solo ellas usaban. La
 cancha de la foto ya trae las suyas.
 
@@ -6004,3 +6007,45 @@ lo correcto: no es parte del botón, está anclada a la pantalla.
 Probado con `.onda-viva` puesta a mano en los cuatro ítems: la ficha abre en
 `10,145 370x117` en los cuatro, el botón computa `transform:none`, USAR sigue
 gastando el ítem y cobrando el efecto, y no queda ninguna ficha en el DOM.
+
+
+## El velo se va, y el contraste sube
+
+El fondo de la mesa era la foto del césped **más un velo radial** que abría al
+centro y cerraba casi a negro en los bordes. La idea era que el tablero se
+recortara mejor. Medido, hacía **lo contrario**.
+
+El promedio real de la foto —sacado pixel a pixel— es **rgb(73, 137, 104)**. El
+relleno de la carta es casi opaco (`.95`), así que queda en **rgb(4, 28, 74)**:
+casi negro. Con las cartas tan oscuras, **cuanto más se oscurece el fondo menos
+se despegan**. El velo no las hacía resaltar: las escondía.
+
+Contraste WCAG entre la carta y el fondo que la rodea, en tres puntos:
+
+| fondo | centro | costados | esquina |
+|---|---|---|---|
+| con velo | 3,8:1 | 1,9:1 | **1,0:1** |
+| **sin velo** | **4,0:1** | **4,0:1** | **4,0:1** |
+
+**1,0:1 quiere decir que la carta y el fondo tienen la misma luminancia.** En las
+esquinas —donde caen las filas 1 y 4— la carta se fundía con el pasto.
+
+Se compararon seis fondos en la mesa real a 390px: el de hoy, la foto sola, la
+foto con el verde levantado (`saturate(1.3) brightness(1.08)`, 4,7:1 pero un
+verde que la foto no tiene), un velo plano (2,0:1, se come la mitad), la viñeta a
+la mitad (3,9 / 2,8 / 1,9) y un verde liso sin foto (3,1 / 2,0 / 1,3).
+
+Queda **la foto sola**: es el verde real de la cancha, el contraste más alto sin
+retocar nada y el único parejo de punta a punta.
+
+```css
+background:
+  var(--fondo-pasto, none) center/cover no-repeat,
+  #0a3a20;
+```
+
+### Lo que se pierde
+
+El velo no estaba sólo por contraste: **bajaba el ruido** de la foto en los
+bordes y llevaba la vista al centro. Sin él el césped se ve entero, con su
+textura y sus líneas. Es el precio de que el verde sea el que la cancha tiene.

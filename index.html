@@ -80,11 +80,25 @@
    esquinas, de verde no quedaba nada: **el tablero azul flotaba sobre un fondo
    azul**.
 
-   Ahora va el césped solo —`pasto`, el recorte de esa misma foto— y el velo que
-   cierra hacia los bordes es **verde oscuro en vez de azul**. Dos efectos de
-   una: el verde aparece de verdad, y como es el opuesto del azul de las
-   cartas, el tablero se recorta solo. Las áreas dibujadas se fueron: la cancha
-   de la foto ya trae las suyas. */
+   Ahora va el césped solo —`pasto`, el recorte de esa misma foto—, **sin velo**.
+   Las áreas dibujadas se fueron: la cancha de la foto ya trae las suyas.
+
+   Hubo un velo verde que cerraba hacia los bordes y **se sacó, midiendo**. La
+   idea era que el tablero se recortara mejor, y hacía justo lo contrario: el
+   promedio de la foto es rgb(73, 137, 104) y el relleno de la carta, que es
+   casi opaco, queda en rgb(4, 28, 74) —casi negro—. Con las cartas tan
+   oscuras, **cuanto más se oscurece el fondo menos se despegan**. Contraste
+   medido entre la carta y el fondo que la rodea:
+
+       con velo    3,8:1 en el centro   1,9 en los costados   1,0 en la esquina
+       sin velo    4,0:1 parejo de punta a punta
+
+   1,0:1 quiere decir que la carta y el fondo tienen la misma luminancia: en
+   las esquinas —donde caen las filas 1 y 4— la carta se fundía con el pasto.
+
+   Lo que el velo sí hacía era **bajar el ruido** de la foto en los bordes y
+   llevar la vista al centro. Eso se pierde: ahora el césped se ve entero, con
+   su textura y sus líneas. */
 body{
   color:var(--white);
   font-family:var(--txt);
@@ -92,7 +106,6 @@ body{
   display:flex;justify-content:center;
   padding:14px;
   background:
-    radial-gradient(ellipse 118% 96% at 50% 45%, rgba(6,32,18,.04) 0%, rgba(4,26,15,.5) 62%, rgba(2,14,9,.92) 100%),
     var(--fondo-pasto, none) center/cover no-repeat,
     #0a3a20;
   background-attachment:fixed;
