@@ -5627,3 +5627,51 @@ No aparece **ningún** corte ni ningún renglón partido que no estuviera antes:
 teléfono el tablero mide exactamente lo mismo, porque los 2 o 3px que gana el
 texto se los cede la ilustración. Lo que ya venía recortado a 320px lo sigue
 estando igual, ni más ni menos.
+
+
+## El mini juego dice qué te dejó
+
+Los cuatro duelos terminaban contando **cómo salió** —¡LO PASÁS!, ATAJADÓN, SE
+VA SOLO— y nada más. El medidor se movía después, en el HUD, con el cartel ya
+cerrado: la carta te había prometido «+1 ⚡ o −1 ❤» antes de elegir el lado, y
+el resultado no cerraba la frase.
+
+Ahora la cierra, en la **misma chapa** que ya usaba el cartel de fallo (`.ef-fin`).
+El mini juego sale solo con las stats empatadas, así que los ocho desenlaces son
+fijos:
+
+| carta | mini juego | ganás | perdés |
+|---|---|---|---|
+| DEFENSOR RIVAL | UNO CONTRA UNO | ¡LO PASÁS! · **+1 ⚡** | LA PERDISTE · **−1 ❤** |
+| MEDIO RIVAL | LA MARCA | ¡SE LA ROBÁS! · **+1 ⚡** | TE PASÓ · **−1 ❤** |
+| ARQUERO RIVAL | MANO A MANO | ¡GOLAZO! · **GOL · +1 ⚡** | ATAJADÓN · **−2 ❤** |
+| DELANTERO RIVAL | DEFENDER | ¡LO CORTÁS! · **+3 ⚡** | SE VA SOLO · **GOL RIVAL · −1 ❤** |
+
+Los números no están escritos: salen de `premioDuelo` y `costoDuelo`, **las
+mismas funciones que después cobra `resolveCell`**. No hay una segunda tabla que
+se pueda desincronizar el día que cambie un premio.
+
+Los dos desenlaces que mueven además el marcador lo dicen adelante. El del
+delantero es el que más falta hacía: perder ese duelo es gol en contra **y**
+encima cuesta aguante por ser un duelo perdido, y de las dos cosas no se veía
+ninguna.
+
+### Dos puntas y un separador
+
+A 320px «GOL EN CONTRA» se partía en dos renglones dentro de la caja. Cada punta
+va ahora en su propio `.ef-p` con `white-space:nowrap`, la chapa envuelve entre
+puntas y no dentro de ellas, y se dice **GOL RIVAL** —que es lo que dicen la
+carta y el cartel de gol— en vez de «GOL EN CONTRA». Medido a 320px: la chapa
+más larga ocupa 222px de los 250 disponibles, en un solo renglón, y la caja del
+pop-up sigue midiendo lo mismo.
+
+### Y dos cartas que se quedaban cortas
+
+Repasando los carteles aparecieron dos que prometían de menos en el empate:
+
+- **DELANTERO RIVAL** decía `+3 ⚡ o ⚽ GOL RIVAL`, sin el **−1 ❤** que además
+  cuesta. Fuera del empate el mismo cartel sí lo decía, así que el empate era el
+  único lugar donde la carta escondía la mitad del castigo.
+- **ARQUERO RIVAL** decía `⚽ GOL o −2 ❤`, sin el **+1 ⚡** que carga ese gol.
+  Todas las demás cartas que dicen GOL llevan el ⚡ al lado; ésta era la
+  excepción.

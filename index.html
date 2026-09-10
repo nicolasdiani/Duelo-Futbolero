@@ -4067,6 +4067,14 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   background:rgba(255,255,255,.06);
 }
 .ef-fin .ih,.ef-fin .ir{width:1.2em;height:1.2em;vertical-align:-.26em}
+/* Los desenlaces que mueven dos cosas a la vez —GOL · +1 ⚡, GOL RIVAL · -1 ❤—
+   se leen como dos puntas y un separador apagado en el medio. Cada punta va
+   entera: si no entran las dos en el ancho, baja la segunda completa en vez
+   de partir «GOL RIVAL» por la mitad, que era lo que pasaba a 320px. */
+.ef-fin{flex-wrap:wrap;justify-content:center;row-gap:2px}
+.ef-fin .ef-p{white-space:nowrap}
+.ef-fin .ef-y{opacity:.42;font-weight:600}
+@media (max-width:360px){ .ef-fin{font-size:15px;letter-spacing:1.6px;padding:5px 12px} }
 /* El mismo tratamiento para el «+1 racha» de la situación de gol, que hasta
    ahora era una línea dorada chiquita colgada del marcador. */
 .sit .sit-extra{
@@ -7443,12 +7451,12 @@ function predict(cell){
   if(t === 'defensor')  return duelo(cell, ATK(), 'PASA', '-' + costoDuelo(cell) + ' <i class="ih"></i>',
                                      '<span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>-' + costoDuelo(cell) + ' <i class="ih"></i></b>');
   if(t === 'arquero')   return duelo(cell, ATK(), 'GOL',  '-' + costoDuelo(cell) + ' <i class="ih"></i>',
-                                     '<span class="esgol">⚽ GOL</span> o <b>-' + costoDuelo(cell) + ' <i class="ih"></i></b>');
+                                     '<span class="esgol">⚽ GOL</span> <span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>-' + costoDuelo(cell) + ' <i class="ih"></i></b>');
   if(t === 'medio')     return duelo(cell, DEF(), 'ROBO', '-' + costoDuelo(cell) + ' <i class="ih"></i>',
                                      '<span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>-' + costoDuelo(cell) + ' <i class="ih"></i></b>');
   if(t === 'delantero') return duelo(cell, DEF(), 'CORTE',
                                      'GOL RIVAL<span class="efe"><b>-' + costoDuelo(cell) + ' <i class="ih"></i></b></span>',
-                                     '<span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>⚽ GOL RIVAL</b>');
+                                     '<span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>⚽ GOL RIVAL -' + costoDuelo(cell) + ' <i class="ih"></i></b>');
   if(t === 'jugada')    return { label:'GOL' + R, tone:'good' };
   if(t === 'autogol')   return { label:'GOL' + R, tone:'good' };
   if(t === 'contra')    return { label:'GOL RIVAL<span class="efe"><b>-1 <i class="ir"></i></b></span>', tone:'bad' };
@@ -8957,6 +8965,31 @@ function escenaDuelo(mia){
   '</svg>';
 }
 
+/* **Qué te deja el duelo, escrito en el cartel.** Los cuatro mini juegos
+   terminaban diciendo solo cómo salió —¡LO PASÁS!, ATAJADÓN, SE VA SOLO— y
+   el medidor se movía después, en el HUD, cuando el cartel ya no estaba. La
+   carta sí avisaba «+1 ⚡ o -1 ❤» antes de elegir; el resultado no cerraba
+   la frase. Ahora la cierra, en la misma chapa que usa el cartel de fallo.
+
+   Los números salen de `premioDuelo` y `costoDuelo`, los mismos que cobra
+   `resolveCell`: no hay una segunda tabla que se pueda desincronizar. El
+   mini juego sale **solo con las stats empatadas**, así que alcanza con el
+   tipo y el valor de la carta para reconstruirla.
+
+   Dos desenlaces mueven además el marcador y van con eso adelante: ganarle
+   al arquero es GOL y perder con el delantero es GOL EN CONTRA —y ése,
+   encima, cuesta aguante por ser un duelo perdido—. */
+function efectoDuelo(tipo, val, gana){
+  const cell = { type:tipo, val };
+  const parte = h => '<span class="ef-p">' + h + '</span>';
+  const rac = n => parte('+' + n + ' <i class="ir"></i> RACHA');
+  const agu = n => parte('-' + n + ' <i class="ih"></i> AGUANTE');
+  const y = '<span class="ef-y">·</span>';
+  if(gana) return (tipo === 'arquero' ? parte('GOL') + y : '') + rac(premioDuelo(cell));
+  if(tipo === 'delantero') return parte('GOL RIVAL') + y + agu(costoDuelo(cell));
+  return agu(costoDuelo(cell));
+}
+
 function manoAMano(tipo, mio, val){
   const M = MANOAMANO[tipo];
 
@@ -9059,7 +9092,8 @@ function manoAMano(tipo, mio, val){
         box.innerHTML =
           '<div class="sit-tag">' + M.rival(suyo).toUpperCase() + '</div>' +
           '<div class="sit-ico">' + icoDesenlace(gana ? M.gGana : M.gPierde) + '</div>' +
-          '<div class="t">' + (gana ? M.gana : M.pierde) + '</div>';
+          '<div class="t">' + (gana ? M.gana : M.pierde) + '</div>' +
+          '<div class="ef-fin">' + efectoDuelo(tipo, val, gana) + '</div>';
 
         await esperarOClick(wrap, ESPERA_FIN);
         resolve(gana);
