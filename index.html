@@ -5699,6 +5699,36 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .pr-esc,.pr-franja{margin-top:10px}
   .pd-esc svg{width:32px;height:38px}
 }
+
+/* ---- EL HUNDIDO NO PUEDE IR EN EL BOTÓN DEL ÍTEM ----
+   La ficha del ítem es **hija** del botón y en mobile va `position:fixed`.
+   Cualquier `transform` en un ancestro lo convierte en el bloque contenedor
+   de los descendientes fijos, así que la ficha deja de medirse contra la
+   pantalla y pasa a medirse contra el botón, que tiene 73px de ancho.
+
+   Medido en 390x844, con el transform puesto y sacado:
+
+       sin transform   370x117 en (10, 145)   <- su lugar
+       con transform    51x283 en (92, 254)   <- una columna rota, abajo
+
+   `.onda-viva` —el hundido del toque— pone ese transform durante 130ms. Eso
+   era el pop-up viejo y roto que aparecía **antes** del bueno: no era viejo,
+   era el mismo, deformado mientras duraba el hundido.
+
+   No le pasaba a la ficha de la posibilidad de gol porque ésa vive en
+   `.gol-ancla`, que es el **padre** del cartel que se toca, no su hijo.
+
+   La solución: el botón no se hunde, se hunde **lo que tiene adentro**. Se ve
+   igual y no crea bloque contenedor. La ficha queda afuera del hundido, que
+   además es lo correcto: no es parte del botón, está anclada a la pantalla. */
+.item.onda-viva{transform:none !important}
+.item.onda-viva > *:not(.item-ficha){
+  transform:translateY(1.5px) scale(.985);
+  transition:transform .09s;
+}
+@media (prefers-reduced-motion:reduce){
+  .item.onda-viva > *:not(.item-ficha){transform:none}
+}
 </style>
 </head>
 <body>

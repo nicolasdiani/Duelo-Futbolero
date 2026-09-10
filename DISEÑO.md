@@ -5951,3 +5951,56 @@ deja **una sola** ficha con el contenido del ítem nuevo; el segundo toque en el
 mismo ítem la cierra; tocar afuera la cierra y **no queda ninguna en el DOM**;
 USAR gasta el ítem y cobra el efecto; y abrir un ítem con la ficha de gol
 abierta no arrastra ni la clase `ficha-gol` ni sus cinco casillas.
+
+
+## El pop-up roto no era viejo: era el mismo, deformado
+
+La limpieza de la ficha no alcanzó, y el dato que lo resolvió fue **que a la
+ficha de la posibilidad de gol no le pasaba**. Las dos son el mismo elemento con
+el mismo CSS; lo único distinto es **de quién cuelgan**:
+
+| | dónde vive | qué se toca |
+|---|---|---|
+| ficha de ítem | **adentro** del botón del ítem | el botón, su padre |
+| ficha de gol | en `.gol-ancla` | el cartel, su **hermano** |
+
+Y en mobile la ficha va `position:fixed`, con `top:var(--fy); left:10px;
+right:10px`. Un `transform` en cualquier ancestro convierte a ese ancestro en el
+**bloque contenedor** de los descendientes fijos: la ficha deja de medirse contra
+la pantalla y pasa a medirse contra el botón, que tiene 73px de ancho.
+
+`.onda-viva` —el hundido del toque, `translateY(1.5px) scale(.985)`— pone
+exactamente ese transform en lo que tocás, **durante 130ms**.
+
+Medido en 390×844, poniendo y sacando el transform con la ficha abierta:
+
+```
+sin transform    370x117 en (10, 145)   <- su lugar
+con transform     51x283 en (92, 254)   <- una columna rota, abajo de todo
+```
+
+Eso es lo que se veía: no un pop-up viejo, **el mismo pop-up deformado** mientras
+duraba el hundido, y después saltando a su lugar. 130ms alcanzan para verlo.
+
+La ficha de gol se salvaba porque el transform va en el cartel y ella cuelga del
+padre del cartel, no del cartel.
+
+### El arreglo
+
+El botón **no se hunde**; se hunde **lo que tiene adentro**:
+
+```css
+.item.onda-viva{transform:none !important}
+.item.onda-viva > *:not(.item-ficha){
+  transform:translateY(1.5px) scale(.985);
+  transition:transform .09s;
+}
+```
+
+Se ve igual —el ícono, el texto y la caja de la onda bajan lo mismo— y el botón
+deja de crear bloque contenedor. La ficha queda fuera del hundido, que además es
+lo correcto: no es parte del botón, está anclada a la pantalla.
+
+Probado con `.onda-viva` puesta a mano en los cuatro ítems: la ficha abre en
+`10,145 370x117` en los cuatro, el botón computa `transform:none`, USAR sigue
+gastando el ítem y cobrando el efecto, y no queda ninguna ficha en el DOM.
