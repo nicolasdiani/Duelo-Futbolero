@@ -8105,21 +8105,17 @@ function abrirFichaGol(btn){
 
   const banner = document.getElementById('golBanner');
   if(!banner || !banner.parentNode) return cobrarRacha();
-  const fila = banner.parentNode;
-  fila.style.position = 'relative';
+  const yaEstaba = btn.classList.contains('abierto');
+  cerrarFichaItem();
+  if(yaEstaba) return;                      // el segundo toque cierra
 
-  /* La ficha es una sola, pero **se muda** al contenedor que la abre: si se
-     quedara donde nació, la de gol aparecería colgada del panel de ítems. */
-  let f = document.querySelector('.item-ficha');
-  if(!f){
-    f = document.createElement('div');
-    f.className = 'item-ficha';
-  }
   /* **Justo debajo del banner**, no al final de la columna.
      Ser hermana del cartel no alcanzaba: como el cartel no es un ancestro
      posicionado, el `top:100%` de la ficha se medía contra `.wrap` y la
      desplegaba abajo de toda la página. Se envuelve el cartel en un ancla
-     posicionada y la ficha vive adentro, así el 100% es el alto del cartel. */
+     posicionada y la ficha vive adentro, así el 100% es el alto del cartel.
+     El `position:relative` se lo pone el CSS de `.gol-ancla`; ponérselo a
+     mano al contenedor de afuera no servía de nada. */
   let ancla = banner.parentNode;
   if(!ancla.classList.contains('gol-ancla')){
     const nueva = document.createElement('div');
@@ -8128,17 +8124,13 @@ function abrirFichaGol(btn){
     nueva.appendChild(banner);
     ancla = nueva;
   }
-  if(f.parentNode !== ancla) ancla.appendChild(f);
 
-  const yaEstaba = btn.classList.contains('abierto');
-  cerrarFichaItem();
-  if(yaEstaba) return;
+  const f = nuevaFicha('ficha-gol');
   btn.classList.add('abierto');
 
   const total = SIT_FAVOR.reduce((a, x) => a + x.peso, 0);
   const esperado = Math.round(SIT_FAVOR.reduce((a, x) => a + x.peso * x.p, 0) / total * 100);
 
-  f.classList.add('ficha-gol');
   /* Cada casilla muestra **la ilustración de su propia carta**, la misma que
      se ve en la mesa. Antes iban cinco emoji: para saber cuál era cuál había
      que acordarse de que 🚩 es el córner y 🚧 el tiro libre. Con la foto la
@@ -8175,14 +8167,16 @@ function abrirFichaGol(btn){
       '<button class="if-btn alt" id="fgVolver">VOLVER</button>' +
     '</div>';
 
-  requestAnimationFrame(() => f.classList.add('on'));
-  document.getElementById('fgUsar').onclick = async (ev) => {
+  ancla.appendChild(f);
+  mostrarFicha(f);
+
+  f.querySelector('#fgUsar').onclick = async (ev) => {
     ev.stopPropagation();
     const elegida = await sorteoGol(f);   // el sorteo, a la vista
     cerrarFichaItem();
     cobrarRacha(elegida);                 // y se resuelve **esa** misma
   };
-  document.getElementById('fgVolver').onclick = (ev) => { ev.stopPropagation(); cerrarFichaItem(); };
+  f.querySelector('#fgVolver').onclick = (ev) => { ev.stopPropagation(); cerrarFichaItem(); };
   f.onclick = (ev) => ev.stopPropagation();
 }
 
@@ -8228,50 +8222,52 @@ async function sorteoGol(ficha, lista){
    Va anclada a la fila y no centrada en la pantalla, así el juego sigue a la
    vista mientras decidís. */
 function cerrarFichaItem(){
-  const f = document.querySelector('.item-ficha');
-  if(f){ f.classList.remove('on'); f.classList.remove('ficha-gol'); }
+  /* **La ficha se borra, no se esconde.** Antes se le sacaba la clase `on` y
+     nada más: el elemento quedaba colgado del ítem anterior con su contenido
+     y sus coordenadas viejas, esperando. Abrir otro ítem lo mudaba al ancla
+     nueva **con lo viejo todavía adentro**, y recién después lo reemplazaba.
+
+     Y eran varias, no una: se cerraba con `querySelector`, en singular. */
+  document.querySelectorAll('.item-ficha').forEach(f => f.remove());
   document.querySelectorAll('.gol-banner.abierto').forEach(b => b.classList.remove('abierto'));
   document.querySelectorAll('.item.abierto').forEach(b => b.classList.remove('abierto'));
+}
+
+/* Cada apertura arma la suya. Se llena **antes** de colgarla del ancla, así no
+   existe el instante en que el contenido de un ítem está puesto sobre otro. */
+function nuevaFicha(clase){
+  const f = document.createElement('div');
+  f.className = 'item-ficha' + (clase ? ' ' + clase : '');
+  return f;
+}
+
+/* Y se enciende **en el mismo tick**: se fuerza el reflow para que la
+   transición arranque igual. Antes la encendía un `requestAnimationFrame` que
+   nadie cancelaba —si algo la cerraba en el medio, el frame siguiente la abría
+   lo mismo, con lo viejo— y que en una pestaña con los frames demorados no
+   llegaba a correr nunca: la ficha se quedaba en `opacity:0` para siempre. */
+function mostrarFicha(f){
+  void f.offsetWidth;
+  f.classList.add('on');
 }
 
 function abrirFicha(k, btn){
   const I = ITEMS[k];
   if(!I) return;
 
-  /* Se ancla **al ítem mismo**, para salir a su derecha con el pico apuntándolo.
-     El botón necesita `position:relative` para ser el marco de referencia. */
-  const fila = btn;
-  btn.style.position = 'relative';
-
-  /* La ficha es una sola, pero **se muda** al contenedor que la abre: si se
-     quedara donde nació, la de gol aparecería colgada del panel de ítems. */
-  let f = document.querySelector('.item-ficha');
-  if(!f){
-    f = document.createElement('div');
-    f.className = 'item-ficha';
-  }
-  if(f.parentNode !== fila) fila.appendChild(f);
-
-  /* En mobile la ficha se ancla a la pantalla, no al botón: el CSS la pone en
-     `position:fixed` y necesita de acá lo único que no puede saber solo —dónde
-     está el ítem—. `--fy` la baja justo debajo del ítem y `--fx` para el pico
-     en su centro, que es lo que mantiene el vínculo con el que la abrió.
-
-     Se calcula siempre, aunque en desktop el CSS lo ignore: cuesta nada y evita
-     que una rotación de pantalla deje la ficha con la posición de la anterior. */
-  const r = btn.getBoundingClientRect();
-  const barra = (document.querySelector('.item-list') || btn).getBoundingClientRect();
-  f.style.setProperty('--fy', Math.round(barra.bottom + 8) + 'px');
-  f.style.setProperty('--fx', Math.round(r.left + r.width / 2 - 10) + 'px');
-
   const yaEstaba = btn.classList.contains('abierto');
   cerrarFichaItem();
   if(yaEstaba) return;              // el segundo toque cierra
-  btn.classList.add('abierto');
+
+  /* Se ancla **al ítem mismo**, para salir a su derecha con el pico
+     apuntándolo. El botón necesita `position:relative` para ser el marco de
+     referencia. */
+  btn.style.position = 'relative';
 
   /* Si el ítem no sirve ahora, la ficha lo dice y no ofrece usarlo. */
   const porQueNo = itemInutil(k);
 
+  const f = nuevaFicha();
   f.innerHTML =
     '<div class="if-txt">' +
       '<div class="if-nm">' + icoItem(k) + ' ' + I.nm +
@@ -8283,11 +8279,26 @@ function abrirFicha(k, btn){
       '<button class="if-btn alt" id="ifVolver">' + (porQueNo ? 'ENTENDIDO' : 'VOLVER') + '</button>' +
     '</div>';
 
-  requestAnimationFrame(() => f.classList.add('on'));
+  /* En mobile la ficha se ancla a la pantalla, no al botón: el CSS la pone en
+     `position:fixed` y necesita de acá lo único que no puede saber solo —dónde
+     está el ítem—. `--fy` la baja justo debajo de la barra de ítems y `--fx`
+     pone el pico en el centro del que la abrió.
 
-  const usar = document.getElementById('ifUsar');
+     Se calcula siempre, aunque en desktop el CSS lo ignore: cuesta nada y
+     evita que una rotación de pantalla deje la ficha con la posición de la
+     anterior. */
+  const r = btn.getBoundingClientRect();
+  const barra = (document.querySelector('.item-list') || btn).getBoundingClientRect();
+  f.style.setProperty('--fy', Math.round(barra.bottom + 8) + 'px');
+  f.style.setProperty('--fx', Math.round(r.left + r.width / 2 - 10) + 'px');
+
+  btn.appendChild(f);
+  btn.classList.add('abierto');
+  mostrarFicha(f);
+
+  const usar = f.querySelector('#ifUsar');
   if(usar) usar.onclick = (ev) => { ev.stopPropagation(); cerrarFichaItem(); useItem(k); };
-  document.getElementById('ifVolver').onclick = (ev) => { ev.stopPropagation(); cerrarFichaItem(); };
+  f.querySelector('#ifVolver').onclick = (ev) => { ev.stopPropagation(); cerrarFichaItem(); };
   f.onclick = (ev) => ev.stopPropagation();
 }
 

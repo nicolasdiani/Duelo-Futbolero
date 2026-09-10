@@ -5888,3 +5888,66 @@ recorta su texto. La única que rueda es la horizontal de 390px de alto, donde n
 entra ninguna pantalla del juego.
 
 El `bracketHTML` de los cinco chips se borró: era su único uso.
+
+
+## La ficha del ítem se borra, no se esconde
+
+Al abrir la ficha de un ítem se veía **primero una vieja y rota, y después la
+buena**. La ficha era **un solo elemento reciclado** y cerrarla sólo le sacaba
+la clase `on`. Medido después de cerrar:
+
+```
+sigueEnElDOM: true      padre: SUPLENTES
+conservaContenido: true nm: "SUPLENTES +1"
+opacity: 0              --fx: 31px   --fy: 145px
+```
+
+Un zombi con el contenido del ítem anterior y las coordenadas del ancla
+anterior, esperando a que alguien lo encendiera. Y tres formas de que eso
+pasara:
+
+1. **Se mudaba al ancla nueva antes de cambiarle el contenido.**
+   `fila.appendChild(f)` iba diez líneas antes que `f.innerHTML = …`.
+2. **La encendía un `requestAnimationFrame` sin guarda.** `cerrarFichaItem()`
+   no lo cancelaba: si algo la cerraba en el mismo frame —el click global que
+   cierra al tocar afuera, un `render()`— el frame siguiente la abría lo mismo,
+   con lo viejo.
+3. **Se cerraba en singular.** `querySelector('.item-ficha')`, y si alguna vez
+   quedaban dos, la segunda no se cerraba nunca.
+
+Ahora:
+
+- `cerrarFichaItem()` **las borra del DOM**, todas, con `querySelectorAll`.
+- `nuevaFicha()` arma una en cada apertura y **se llena antes de colgarla** del
+  ancla: no existe el instante en que el contenido de un ítem esté puesto sobre
+  otro.
+- `mostrarFicha()` la enciende **en el mismo tick**, forzando el reflow
+  (`void f.offsetWidth`) para que la transición arranque igual. Sin
+  `requestAnimationFrame` no hay nada pendiente que pueda reabrirla.
+- Los handlers se buscan **dentro de la ficha** (`f.querySelector`) y no por
+  `getElementById`, que podía encontrar el botón de una ficha vieja.
+
+Vale para las dos que comparten el elemento: la de ítems y la de la posibilidad
+de gol.
+
+### De paso, dos cosas que estaban de más
+
+`abrirFichaGol` le ponía `position:relative` **al contenedor de afuera** del
+banner, no al ancla; el `.gol-ancla` ya lo trae del CSS. Y le agregaba la clase
+`ficha-gol` a mano, que ahora viene con `nuevaFicha('ficha-gol')`.
+
+### Lo que no se pudo mirar, y por qué importa
+
+En el panel del navegador de trabajo la página corre **oculta**
+(`visibilityState: 'hidden'`) y ahí **`requestAnimationFrame` no dispara nunca**
+—0 frames en 1,2s, medido—. Con el código viejo eso significaba que la ficha
+**no aparecía en absoluto**: quedaba en `opacity: 0` para siempre. No era el bug
+que se reportó, pero es el mismo `rAF` el culpable de las dos cosas, y sacarlo
+arregla las dos.
+
+Probado con la transición desactivada para poder medir el estado final: la ficha
+abre en `opacity: 1`, 370×117 en el teléfono, anclada en `--fy`. Cambiar de ítem
+deja **una sola** ficha con el contenido del ítem nuevo; el segundo toque en el
+mismo ítem la cierra; tocar afuera la cierra y **no queda ninguna en el DOM**;
+USAR gasta el ítem y cobra el efecto; y abrir un ítem con la ficha de gol
+abierta no arrastra ni la clase `ficha-gol` ni sus cinco casillas.
