@@ -7472,7 +7472,7 @@ function predict(cell){
      alcanza con eso. */
   if(t === 'arquero')   return duelo(cell, ATK(), 'GOL', pierdo('ATAJADÓN'),
                                      '<span class="esgol">⚽ GOL</span><span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>-' + costoDuelo(cell) + ' <i class="ih"></i></b>');
-  if(t === 'medio')     return duelo(cell, DEF(), 'SE LA ROBÁS', pierdo('TE PASA'),
+  if(t === 'medio')     return duelo(cell, DEF(), 'LA ROBÁS', pierdo('TE PASA'),
                                      '<span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>-' + costoDuelo(cell) + ' <i class="ih"></i></b>');
   if(t === 'delantero') return duelo(cell, DEF(), 'LO CORTÁS', pierdo('GOL RIVAL'),
                                      '<span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>⚽ GOL RIVAL -' + costoDuelo(cell) + ' <i class="ih"></i></b>');

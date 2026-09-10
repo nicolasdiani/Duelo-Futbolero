@@ -5694,7 +5694,7 @@ Ahora los dos lados llevan **la palabra del mini juego**:
 |---|---|---|---|
 | DEFENSOR RIVAL | **LO PASÁS** | 1 vs 1 | **LA PERDÉS** |
 | ARQUERO RIVAL | **GOL** | MANO A MANO | **ATAJADÓN** |
-| MEDIO RIVAL | **SE LA ROBÁS** | LA MARCA | **TE PASA** |
+| MEDIO RIVAL | **LA ROBÁS** | LA MARCA | **TE PASA** |
 | DELANTERO RIVAL | **LO CORTÁS** | DEFENDER | **GOL RIVAL** |
 
 Leés LO PASÁS en la mesa y, si el duelo se juega, leés ¡LO PASÁS! en el cartel:
@@ -5720,10 +5720,14 @@ los dos medidores abajo. Vale igual en la carta y en el pop-up de la jugada.
 
 ### Lo que costó, medido
 
-Todas las palabras entran en un renglón salvo una: **SE LA ROBÁS mide 56px y en
-un teléfono de 320px el hueco de la carta es de 54**, así que ahí se parte en
-dos. En 360 (64px de hueco) y en 390 (72px) entra sin problema. Las siguientes
-más largas —LO CORTÁS y LA PERDÉS, 47px— entran en los tres.
+**Las ocho palabras entran en un renglón en las tres pantallas.** El hueco de la
+carta —su ancho menos los 4px de padding de cada lado— es de 54px en un teléfono
+de 320, 64 en uno de 360 y 72 en uno de 390. Las más largas son LO CORTÁS y LA
+PERDÉS con 47px, y después ATAJADÓN con 46.
+
+La única que no entraba era **SE LA ROBÁS: 56px contra 54 de hueco**. Se quedó en
+**LA ROBÁS**, que son 43 y dice lo mismo. El cartel del mini juego sigue diciendo
+«¡SE LA ROBÁS!» —ahí hay lugar de sobra y la exclamación pide la frase entera—.
 
 Y el mismo tablero de doce cartas, antes y después:
 
