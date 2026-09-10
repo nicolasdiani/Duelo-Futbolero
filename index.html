@@ -868,6 +868,9 @@ img{height:auto}
   font-size:12.5px;letter-spacing:0;color:var(--dim);line-height:1.35;
 }
 .cell .c-out .efe b{font-weight:800;color:var(--red);font-size:1.04em}
+/* «GOL RIVAL» es una sola cosa: o entra al lado del «o», o baja entero al
+   renglón de abajo. Partido en «GOL / RIVAL» se lee como dos avisos. */
+.c-out .efe .junto, .p-out .efe .junto{white-space:nowrap}
 .cell .c-out .efe .ra{font-weight:800;font-size:1.04em}
 /* Cuando en el empate se juega un gol TUYO, va en verde: es lo único bueno que
    puede salir de esa carta. */
@@ -7475,7 +7478,7 @@ function predict(cell){
   if(t === 'medio')     return duelo(cell, DEF(), 'LA ROBÁS', pierdo('TE PASA'),
                                      '<span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>-' + costoDuelo(cell) + ' <i class="ih"></i></b>');
   if(t === 'delantero') return duelo(cell, DEF(), 'LO CORTÁS', pierdo('GOL RIVAL'),
-                                     '<span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>⚽ GOL RIVAL -' + costoDuelo(cell) + ' <i class="ih"></i></b>');
+                                     '<span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b class="junto">GOL RIVAL</b>');
   if(t === 'jugada')    return { label:'GOL' + R, tone:'good' };
   if(t === 'autogol')   return { label:'GOL' + R, tone:'good' };
   if(t === 'contra')    return { label:'GOL RIVAL<span class="efe"><b>-1 <i class="ir"></i></b></span>', tone:'bad' };

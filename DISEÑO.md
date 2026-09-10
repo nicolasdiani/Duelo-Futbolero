@@ -5671,7 +5671,8 @@ Repasando los carteles aparecieron dos que prometían de menos en el empate:
 
 - **DELANTERO RIVAL** decía `+3 ⚡ o ⚽ GOL RIVAL`, sin el **−1 ❤** que además
   cuesta. Fuera del empate el mismo cartel sí lo decía, así que el empate era el
-  único lugar donde la carta escondía la mitad del castigo.
+  único lugar donde la carta escondía la mitad del castigo. *(Se agregó, y más
+  tarde se volvió a sacar: ver «El empate del delantero, sin el aguante» abajo.)*
 - **ARQUERO RIVAL** decía `⚽ GOL o −2 ❤`, sin el **+1 ⚡** que carga ese gol.
   Todas las demás cartas que dicen GOL llevan el ⚡ al lado; ésta era la
   excepción.
@@ -5741,3 +5742,27 @@ suelto y ahora tienen una palabra más el renglón del efecto. Conviene leerlo c
 lo que ya pasaba ahí: **en 320×568 la carta queda en 67px de alto y la
 ilustración se achica hasta desaparecer**, y nueve de las doce ya recortaban sin
 tocar nada. Es un problema de esa pantalla, anterior a esto y pendiente aparte.
+
+
+## El empate del delantero, sin el aguante
+
+`+3 ⚡ o ⚽ GOL RIVAL -1 ❤` era la línea más larga de las cuatro cartas de duelo,
+y se rompía en el peor lugar: **«GOL / RIVAL»**, partido en dos renglones, se lee
+como dos avisos en vez de uno.
+
+Se saca el `-1 ❤`. Lo que está en juego en ese 50/50 es **el gol**; el aguante es
+el costo de haber perdido un duelo, que vale igual para las cuatro cartas y ya se
+cobra solo. Escribirlo ahí alargaba la única línea que no tenía lugar.
+
+Y «GOL RIVAL» pasa a ser `white-space:nowrap`: o entra al lado del «o», o baja
+entero.
+
+### La pelota se queda en el lado bueno
+
+Con `nowrap`, «⚽ GOL RIVAL» ya no se partía —pero medía **66px contra los 54 de
+hueco** que tiene la carta en un teléfono de 320, así que en vez de partirse **se
+salía de la caja** y `overflow:hidden` le comía la cola. Peor que antes.
+
+Sin la pelota son **50px** y entra en las cuatro pantallas medidas —320, 360, 390
+y 1366— siempre en un renglón. El ⚽ se queda donde sí hace falta: en el «⚽ GOL»
+verde del arquero, que es lo único bueno que puede salir de esa carta.
