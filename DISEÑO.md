@@ -5580,3 +5580,50 @@ justamente pedirle el foco, así que `INPUT`, `TEXTAREA` y lo editable quedan
 afuera. Y **el teclado**: `pointerup` no dispara al navegar con Tab ni al activar
 con Enter, así que el anillo de `:focus-visible` sigue entero para quien lo
 necesita.
+
+
+## El resultado de la carta, un 20% más grande
+
+«GOL» en JUGADA CLARA y «GOL RIVAL» en CONTRAATAQUE se leían chicos: son la
+razón por la que tocás esa carta y estaban en **9,6px** contra los 11,2 del
+nombre. La palabra no tiene tamaño propio —vive en `.c-out`, la línea de
+resultado que comparten las dieciséis cartas—, así que agrandarla es agrandar
+toda la línea, incluidos los «30% GOL», los «50% RIVAL» y los «+€20M».
+
+Se comparó **hoy contra +10%, +20% y agrandar solo la palabra**, y se eligió el
++20% parejo. La línea sube en todos los tramos:
+
+| pantalla | antes | ahora | el nombre va en |
+|---|---|---|---|
+| teléfono chico (≤440) | 9,6 | **11,5** | 11,2 |
+| tableta en pie / ≤820 | 9,2 | **11** | 12,6 |
+| acostado bajo (≤560 de alto) | 9 | **10,8** | 10,4 |
+| desktop | 14,4 | **17,3** | 15 |
+| franja media (1025–1300) | 12,9 | **15,5** | 13,6 |
+| ≥1600 | 15,6 | **18,7** | 16,5 |
+| ≥1900 | 16,8 | **20,2** | 18 |
+
+En desktop el resultado queda **por encima del nombre**, y es a propósito: el
+nombre dice de qué va la jugada, el resultado dice qué te deja, y en la mesa se
+decide por lo segundo.
+
+`.efe` —el renglón de los medidores, «−1 ⚡ o +1 ⚡»— **no se tocó**. En la
+comparación tampoco se movía, y dejarlo quieto es lo que abre la distancia entre
+las dos líneas: antes eran casi el mismo cuerpo, ahora el resultado manda.
+
+### Lo que se midió antes de tocarlo
+
+La duda era si una línea más grande parte las etiquetas largas o desborda la
+carta. Se midió el **mismo tablero** con los dos tamaños, alternando una hoja de
+estilo que revierte los siete tramos:
+
+| | 320×568 | 360×640 | 390×844 | 768×1024 | 844×390 | 1366×768 | 1920×1080 |
+|---|---|---|---|---|---|---|---|
+| cartas recortadas | 13 → **13** | 2 → **2** | 0 → **0** | 0 → **0** | 0 → **0** | 0 → **0** | 0 → **0** |
+| etiquetas en dos renglones | 3 → **3** | 3 → **3** | 3 → **3** | 3 → **3** | 12 → **13** | 3 → **2** | 3 → **3** |
+| alto de la página | igual | igual | igual | igual | +21px | +13px | +16px |
+
+No aparece **ningún** corte ni ningún renglón partido que no estuviera antes: en
+teléfono el tablero mide exactamente lo mismo, porque los 2 o 3px que gana el
+texto se los cede la ilustración. Lo que ya venía recortado a 320px lo sigue
+estando igual, ni más ni menos.
