@@ -6587,3 +6587,61 @@ En escritorio sí está anclada, pero se abre **hacia la derecha** del panel de
 
 Lo que sí cambió es el radio: la ficha pasa de 9 a 12px y sus botones a 8, para
 que hable el mismo idioma que la consola.
+
+
+## Las filas y las columnas, con el material del tablero
+
+Eran **los dos únicos rectángulos del juego sin una sola esquina redondeada**, y
+los últimos con el borde viejo de `--line`, mientras las cartas, la consola, los
+ítems y los carteles ya habían pasado a `--filo` y radios de 9 a 12px. Ahora
+llevan el degradado de las cartas, el filo y 12px.
+
+### Los pesos, dados vuelta
+
+Lo que se decide al tocar una fila es **el porcentaje** —cuántas cartas quedan
+por jugar ahí—, no el número de fila. «F1» es un nombre, y ya está escrito cuatro
+veces en la pantalla. Así que F1 baja a rótulo de 9,5px y el 25% sube a número
+de 19.
+
+La columna era **una sola cadena de texto**: `'C1 · 25% −3⚡'`, con las tres
+cosas pesando igual. Ahora son tres partes envueltas: el nombre de rótulo, el
+porcentaje de número, y el costo apartado por un hilo, porque es lo único que
+*te sale* en vez de lo que ganás.
+
+Los tamaños de esas tres partes van en **`em`, no en píxeles**: el botón ya se
+achica por breakpoint —en el teléfono es `min(11px, 2.8vw)`— y así las tres se
+achican con él sin repetir la escala en cada media query. Y el color se hereda,
+que es lo que mantiene el encendido intacto: apagada la columna es `--dim2`, con
+la racha llena es dorada, y el porcentaje se pone blanco sólo cuando de verdad
+se puede jugar.
+
+### El `line-height:1.25` que no es al ojo
+
+Pasar el texto de una cadena a tres hijos flex **borra el strut** de la caja de
+línea del botón, y ahí se perdían 3px de alto. La mesa, que es `flex:1`, se
+comía esos 3px — justo lo que no se puede mover.
+
+El número va a `1.25em` con `line-height:1.25`. Se probó primero `1.16`, que es
+el ratio exacto en el papel (`1.25 × 1.16 = 1.45em`, la caja de línea de antes),
+y dejaba el botón en 25px contra los 26 de siempre: el strut no se recupera con
+la cuenta, hay que medirlo. Con `1.25` el botón vuelve a medir **exactamente**
+lo de antes en los tres teléfonos.
+
+### Medido, antes y después
+
+Comparado guardando el cambio en un `stash` y midiendo las dos versiones:
+
+| | fila | columna | tablero | scroll |
+|---|---|---|---|---|
+| 320×568 | 38×68 → **38×68** | 63×26 → **63×26** | 310×285 → **310×285** | ninguno |
+| 360×640 | 38×85 → **38×85** | 73×28 → **73×28** | 350×356 → 350×355 | ninguno |
+| 390×844 | 38×136 → **38×136** | 81×29 → **81×29** | 380×558 → **380×558** | ninguno |
+| 740×400 apaisado | — | 122×29 | 534×269 | ninguno |
+
+En 320 y en 390 los tres números son idénticos. En 360 el tablero queda 1px más
+bajo por acumulación de subpíxeles, sin scroll de ningún lado. En escritorio la
+columna crece 0,4px —de 35,9 a 36,3— sobre una página que ya scrollea por
+diseño, así que no mueve nada.
+
+El texto de la columna entra en todos lados: pide 61px de los 63 que hay en un
+320, 79 de 81 en un 390 y 120 de 122 apaisado.

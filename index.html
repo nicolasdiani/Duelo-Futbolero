@@ -689,17 +689,32 @@ img{height:auto}
   /* Con 'F1' en vez de 'FILA 1' alcanza la mitad de ancho, y ese espacio se lo
      lleva la mesa, que es lo que hay que mirar. */
   width:var(--fpick);flex-shrink:0;
-  background:var(--panel);border:1px solid var(--line);
+  /* El mismo material que el resto del tablero: el degradado de las cartas,
+     el filo y un radio de 12px. Eran los dos únicos rectángulos del juego sin
+     una sola esquina redondeada, y los últimos con el borde viejo de
+     `--line`. */
+  background:linear-gradient(180deg,rgba(0,20,64,.92),rgba(0,8,31,.95));
+  border:1px solid var(--filo);border-radius:12px;
   color:var(--dim);cursor:pointer;
   font-family:var(--txt);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
   transition:border-color .15s,background .15s,color .15s;
 }
-.row-pick .pk{font-family:var(--tit);font-weight:800;font-size:19px;letter-spacing:1px}
-/* El porcentaje de la fila va en **blanco**: es un dato neutro —cuántas cartas
-   quedan por jugar— y en dorado competía con la racha y el filo de las cartas,
+/* **Los pesos, dados vuelta.** Lo que se decide al tocar la fila es el
+   porcentaje —cuántas cartas quedan por jugar ahí—, no el número de fila. F1
+   es un nombre y ya está escrito cuatro veces en la pantalla; el 25% es el
+   único dato. Así que F1 baja a rótulo y el porcentaje sube a número grande.
+
+   Va en **blanco**: en dorado competía con la racha y el filo de las cartas,
    que sí significan algo. */
-.row-pick .pc{font-size:14px;color:var(--white);opacity:.82}
+.row-pick .pk{
+  font-family:var(--txt);font-weight:700;
+  font-size:9.5px;letter-spacing:2px;color:var(--dim2);line-height:1.15;
+}
+.row-pick .pc{
+  font-family:var(--tit);font-weight:800;
+  font-size:19px;letter-spacing:.5px;color:var(--white);opacity:1;line-height:1.05;
+}
 /* El botón de la fila se enciende junto con sus cartas: blanco, con borde y
    fondo propios. Antes solo cambiaba de color la mesa y el botón quedaba
    apagado, como si no fuera parte de lo mismo. */
@@ -828,11 +843,38 @@ img{height:auto}
    Y el rayo se achica: a `1.85em` era más alto que el renglón, así que era él
    —y no el texto— el que decidía el alto del botón. */
 .col-pick{
-  flex:1;min-width:0;background:rgba(8,16,34,.75);border:1px solid var(--line);color:var(--dim2);
+  flex:1;min-width:0;
+  background:linear-gradient(180deg,rgba(0,20,64,.92),rgba(0,8,31,.95));
+  border:1px solid var(--filo);border-radius:12px;color:var(--dim2);
   font-family:var(--tit);font-weight:800;font-size:14px;letter-spacing:1px;line-height:1.45;
   white-space:nowrap;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;gap:4px;
   padding:6px;cursor:not-allowed;transition:background .15s,border-color .2s,color .2s;
 }
+/* **Las tres partes, cada una con su peso.** El botón se armaba como una sola
+   cadena —`C1 · 25% −3⚡`— y las tres cosas pesaban igual. Ahora el nombre es
+   un rótulo, el porcentaje es el número, y el costo queda apartado por un hilo
+   porque es lo único que *te sale* en vez de lo que ganás.
+
+   Los tamaños van en `em` y no en píxeles: el botón ya se achica por
+   breakpoint —en el teléfono es `min(11px, 2.8vw)`— y así las tres partes se
+   achican con él sin tener que repetir la escala en cada media query.
+
+   El color se hereda, que es lo que mantiene el encendido: apagada la columna
+   es `--dim2`, con la racha llena es dorada, y el porcentaje se pone blanco
+   sólo cuando de verdad se puede jugar. */
+.col-pick .ck{font-size:.72em;font-family:var(--txt);font-weight:700;letter-spacing:1px;opacity:.72;line-height:1}
+/* El `1.25` no es al ojo: con el número a `1.25em`, esa interlínea deja la caja
+   del botón en los mismos 26px de 320 y 29 de 390 que tenía antes. Con
+   `line-height:1` quedaba 3px más bajo y la mesa se comía esos 3px, que es justo
+   lo que no se puede mover. */
+.col-pick .cs{font-size:1.25em;letter-spacing:0;line-height:1.25}
+.col-pick .cc{
+  font-size:.72em;font-family:var(--txt);font-weight:700;letter-spacing:.2px;
+  line-height:1;opacity:.9;padding-left:4px;
+  border-left:1px solid rgba(147,174,222,.22);
+}
+.col-picks.lista .col-pick .cs{color:var(--white)}
 .col-pick .ir{width:1.05em;height:1.4em;vertical-align:-.32em}
 /* Encendidas solo cuando la racha está llena */
 .col-picks.lista .col-pick{
@@ -3232,7 +3274,8 @@ body{padding-bottom:36px}
 
   /* La fila, angosta: el % en chico deja más ancho para las cartas. */
   .row-pick{padding:2px 0}
-  .row-pick .pk{font-size:12px;letter-spacing:0}
+  .row-pick .pk{font-size:8px;letter-spacing:1px}
+  .row-pick .pc{font-size:13px}
   .row-pick .pp{font-size:7.5px;letter-spacing:0}
   .col-picks{gap:var(--gap)}
   /* La columna se lee igual que la fila: mismo peso de texto y alto parecido.
@@ -7291,7 +7334,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 151;
+const VERSION = 152;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -8340,8 +8383,12 @@ function renderBoard(){
       b.disabled = !usable;
       /* innerHTML y no textContent: el rayo va como etiqueta y `textContent`
          la escaparía, mostrando el markup en pantalla. */
-      b.innerHTML = 'C' + (c+1) + (alive ? ' · ' + Math.round(100/alive) + '%' : '') +
-                    '  −' + COSTO_COLUMNA + '<i class="ir"></i>';
+      /* Tres partes y no una cadena suelta: el nombre, el porcentaje y el
+         costo se pintan distinto, así que cada uno necesita su envoltorio. */
+      b.innerHTML =
+        '<span class="ck">C' + (c+1) + '</span>' +
+        (alive ? '<span class="cs">' + Math.round(100/alive) + '%</span>' : '') +
+        '<span class="cc">−' + COSTO_COLUMNA + '<i class="ir"></i></span>';
       b.onmouseenter = () => { if(usable && !G.armed) markCol(c, true); };
       b.onmouseleave = () => { if(!isArmed('col', c)) markCol(c, false); };
       b.onclick = () => tapLine('col', c);
