@@ -6170,3 +6170,52 @@ Medido con el mismo tablero de doce arqueros, antes y después:
 
 En 320 ya recortaban las doce antes de tocar nada —es el apretón conocido de esa
 pantalla— y ahí el sobrante crece. En 360 y 390 no cambia nada.
+
+
+## El penal definitorio dice qué se juega
+
+Empatás en los 90 en una ronda de paso y el campeonato se define en **un solo
+penal**. Son dos pantallas —el aviso del empate y el tiro— y ninguna decía la
+única cosa que importa: **si el arquero la ataja, se terminó la corrida**.
+
+Lo que había era «TE QUEDA UNA SOLA PELOTA»: suena bien y no aclara nada.
+
+Ahora el aviso lleva **dos chapas**, una verde y una roja:
+
+| | ronda de paso | la final | partido único |
+|---|---|---|---|
+| verde | SI ENTRA → *SEMIFINAL* | SI LA GANÁS → CAMPEÓN | SI LA GANÁS → TE LO LLEVÁS |
+| roja | SI LA ATAJA → SE ACABÓ | SI LA PERDÉS → SE ACABÓ | SI LA PERDÉS → SE ACABÓ |
+
+La verde **nombra la ronda que ganás**, no dice «pasás de ronda». Y la pantalla
+distingue los tres casos porque la final y el partido único van a tanda de cinco,
+donde el penal no es uno solo.
+
+La misma información baja al tiro, fina, abajo del arco: `ENTRA → SEMIFINAL` y
+`LA ATAJA → SE ACABÓ`. Ahí es donde hay que poder mirarla mientras elegís.
+
+Y el desenlace **nombra** lo que ganaste o perdiste: antes decía «PASÁS DE RONDA»
+o «SE TERMINA ACÁ», ahora dice **SEMIFINAL** o **SE ACABÓ EL CAMPEONATO**.
+
+### De paso, dos cosas más
+
+El marcador pasa a ser **el mismo componente** que usan las pantallas de fin de
+partido —con los dos escudos— en vez de un número grande con los nombres sueltos
+abajo. Y se fue el **⚖**, que era de los últimos emoji del teclado que quedaban
+en una pantalla grande. La cabecera es ahora EMPATE con una cinta abajo que dice
+la ronda, el mismo molde que el remate del campeonato.
+
+**El mini juego no se tocó**: el arco, las tres zonas, la animación del tiro y la
+del arquero quedan exactamente como estaban.
+
+### La cinta que se salía mal
+
+`.pn-cinta` usa `margin: 0 calc(var(--apx) * -1)` para salirse del padding del
+cartel, como la foto de cabecera. No alcanzaba: el `*{max-width:100%}` de arriba
+de la hoja se lo anulaba y la cinta quedaba del ancho de su contenido y pegada a
+la izquierda, con el hueco del padding a la vista a la derecha. Es un caso ya
+conocido y ya tenía su lista —`.c-art, .a-foto, .mam-art, .dc-cinta`—; la cinta
+del penal se suma.
+
+Medido en 320×568, 390×844 y 1366×768, en los tres casos —ronda de paso, final y
+partido único—: ninguna pantalla rueda.

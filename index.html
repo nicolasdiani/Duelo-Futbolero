@@ -120,7 +120,7 @@ img{height:auto}
    ancho del contenido y pegadas a la izquierda, con el hueco del padding
    visible a la derecha—. Es el mismo caso que `.c-art`: no desbordan la
    pantalla, llenan su propia tarjeta. */
-.c-art,.a-foto,.mam-art,.dc-cinta{max-width:none}
+.c-art,.a-foto,.mam-art,.dc-cinta,.pn-cinta{max-width:none}
 
 /* ---------- EL FILO ----------
    Sobre el azul de antes, un borde de `--line` alcanzaba: el panel y el fondo
@@ -5745,6 +5745,47 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 @media (prefers-reduced-motion:reduce){
   .item.onda-viva > *:not(.item-ficha){transform:none}
 }
+
+/* ---- EL PENAL DEFINITORIO ----
+   La cinta se sale del cartel con `--apx`, el mismo padding que usa la foto de
+   cabecera del aviso, así queda a todo el ancho sin números a mano. */
+.aviso .pn-cinta{
+  display:flex;align-items:baseline;justify-content:center;gap:8px;flex-wrap:wrap;
+  margin:10px calc(var(--apx) * -1) 0;padding:5px 12px;
+  background:linear-gradient(90deg,rgba(245,200,66,.07),rgba(245,200,66,.19),rgba(245,200,66,.07));
+  border-top:1px solid rgba(245,200,66,.3);border-bottom:1px solid rgba(245,200,66,.18);
+}
+.aviso .pn-cinta b{font-size:13px;letter-spacing:2.4px;color:var(--gold)}
+.aviso .pn-cinta span{
+  font-family:var(--txt);font-weight:400;text-transform:none;
+  font-size:11px;letter-spacing:.4px;color:var(--dim);
+}
+
+/* Las dos puntas del penal, una verde y una roja. Es lo que la pantalla no
+   decía: que si la ataja se terminó la corrida. */
+.pn-chapas{display:flex;gap:9px;margin-top:13px}
+.pn-chapas .chapa{
+  flex:1;min-width:0;border:1px solid var(--line);border-radius:7px;
+  background:rgba(8,32,70,.55);padding:8px 9px;
+  display:flex;flex-direction:column;gap:2px;align-items:center;
+}
+.pn-chapas .chapa.ok{border-color:rgba(61,220,107,.5);background:rgba(20,70,44,.4)}
+.pn-chapas .chapa.no{border-color:rgba(255,59,82,.45);background:rgba(70,18,28,.4)}
+.pn-chapas .chapa span{
+  font-family:var(--txt);font-weight:400;font-size:9.2px;letter-spacing:1.8px;color:var(--dim2);
+}
+.pn-chapas .chapa b{font-size:16px;letter-spacing:1.4px;line-height:1.1}
+.pn-chapas .chapa.ok b{color:var(--green)}
+.pn-chapas .chapa.no b{color:var(--red)}
+
+/* La misma información, fina, abajo del arco. */
+.pn-tira{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:9px}
+.pn-tira b{
+  font-family:var(--tit);font-weight:800;font-size:11px;letter-spacing:1.6px;
+  padding:4px 9px;border-radius:5px;border:1px solid var(--line);background:rgba(8,32,70,.5);
+}
+.pn-tira b.ok{color:var(--green);border-color:rgba(61,220,107,.45)}
+.pn-tira b.no{color:var(--red);border-color:rgba(255,59,82,.4)}
 </style>
 </head>
 <body>
@@ -10406,37 +10447,65 @@ async function penalShootout(){
 }
 
 /* El empate necesita su propio momento. Si el penal apareciera de golpe, el
-   jugador tendría que deducir del marcador chiquito por qué está pateando. */
+   jugador tendría que deducir del marcador chiquito por qué está pateando.
+
+   **Y sobre todo tiene que decir qué se juega.** Decía «TE QUEDA UNA SOLA
+   PELOTA», que suena bien y no aclara nada: en una ronda de paso, si el
+   arquero la ataja **se terminó el campeonato**, y eso no estaba escrito en
+   ningún lado. Ahora son dos chapas, una verde y una roja, con el nombre de
+   la ronda que ganás y el «SE ACABÓ» que perdés.
+
+   El marcador pasa a ser el mismo componente que usan las pantallas de fin de
+   partido —con los dos escudos— en vez de un número grande con los nombres
+   sueltos abajo. Y se fue el ⚖, que era de los últimos emoji del teclado que
+   quedaban en una pantalla grande. */
 function avisoEmpate(){
   const R = RONDAS[G.ronda];
+  /* La final y el partido único van a tanda de cinco; una ronda de paso, a un
+     penal solo. Cambia qué prometen las chapas. */
+  const tanda = G.ronda === RONDAS.length - 1 || G.formato === 'unico';
+  const Sig = RONDAS[G.ronda + 1];
   return new Promise(resolve => {
     const wrap = document.createElement('div');
     wrap.className = 'sit-flash';
     wrap.innerHTML =
       '<div class="aviso empate">' +
-        '<div class="a-ico">⚖</div>' +
         '<div class="e-tit">EMPATE</div>' +
-        '<div class="e-marc">' + G.gU + ' <span>-</span> ' + G.gC + '</div>' +
-        '<div class="e-sub">' + G.club + ' &nbsp;vs&nbsp; ' + R.rival + '</div>' +
-        '<div class="a-s">NOVENTA MINUTOS Y NO SE SACARON DIFERENCIA</div>' +
-        '<div class="e-aviso">' + (G.ronda === RONDAS.length - 1 || G.formato === 'unico' ? 'SE DEFINE POR PENALES' : 'TE QUEDA UNA SOLA PELOTA') + '</div>' +
-        '<button class="cta" id="empBtn">' + (G.ronda === RONDAS.length - 1 || G.formato === 'unico' ? 'IR A LOS PENALES' : 'IR AL PENAL DEFINITORIO') + '</button>' +
+        '<div class="pn-cinta"><b>' + (G.formato === 'unico' ? 'PARTIDO ÚNICO' : R.name) + '</b>' +
+          '<span>90 minutos y nadie se sacó diferencia</span></div>' +
+        marcadorFinal(R.rival) +
+        '<div class="pn-chapas">' +
+          '<div class="chapa ok"><span>' + (tanda ? 'SI LA GANÁS' : 'SI ENTRA') + '</span>' +
+            '<b>' + (tanda ? (G.formato === 'unico' ? 'TE LO LLEVÁS' : 'CAMPEÓN') : Sig.name) + '</b></div>' +
+          '<div class="chapa no"><span>' + (tanda ? 'SI LA PERDÉS' : 'SI LA ATAJA') + '</span>' +
+            '<b>SE ACABÓ</b></div>' +
+        '</div>' +
+        '<div class="e-aviso">' + (tanda ? 'CINCO CADA UNO' : 'TE QUEDA UNA SOLA PELOTA') + '</div>' +
+        '<button class="cta" id="empBtn">' + (tanda ? 'IR A LOS PENALES' : 'PATEAR EL PENAL') + '</button>' +
       '</div>';
     document.body.appendChild(wrap);
     wrap.querySelector('#empBtn').onclick = () => { wrap.remove(); resolve(); };
   });
 }
 
+/* Sólo lo corre una ronda de paso: la final y el partido único van a tanda.
+   Así que acá siempre hay una ronda siguiente que prometer. */
 function tirarPenal(){
+  const R = RONDAS[G.ronda];
+  const Sig = RONDAS[G.ronda + 1];
   return new Promise(resolve => {
     const wrap = document.createElement('div');
     wrap.className = 'sit-flash';
     wrap.innerHTML =
       '<div class="sit penal">' +
-        '<div class="p-emp">EMPATE <b>' + G.gU + ' - ' + G.gC + '</b></div>' +
-        '<div class="t">PENAL<br>DEFINITORIO</div>' +
+        '<div class="sit-tag">' + R.name + ' &nbsp;·&nbsp; PENAL DEFINITORIO</div>' +
+        '<div class="t">UNA PELOTA</div>' +
         arcoPenalHTML(G.escudoRival) +
-        '<div class="s">¿A DÓNDE LA PONÉS?</div>' +
+        '<div class="s">¿A QUÉ PALO?</div>' +
+        /* Lo mismo que dicen las chapas del aviso, fino y abajo del arco: el
+           que llegó hasta acá tiene que poder mirarlo mientras elige. */
+        '<div class="pn-tira"><b class="ok">ENTRA → ' + Sig.name + '</b>' +
+          '<b class="no">LA ATAJA → SE ACABÓ</b></div>' +
         '<div class="pp-hint">tocá adentro del arco</div>' +
       '</div>';
     document.body.appendChild(wrap);
@@ -10462,7 +10531,9 @@ function tirarPenal(){
           '<div class="sit-tag">LA PONÉS ' + elegido.nm + ' · EL ARQUERO ' + arquero.arq.toUpperCase() + '</div>' +
           '<div class="sit-ico">' + icoDesenlace(esGol ? 'golazo' : 'atajada') + '</div>' +
           '<div class="t">' + (esGol ? '¡GOL!' : 'TE LO ATAJÓ') + '</div>' +
-          '<div class="s">' + (esGol ? 'PASÁS DE RONDA' : 'SE TERMINA ACÁ') + '</div>';
+          /* El desenlace **nombra** la ronda que ganaste o el campeonato que
+             perdiste, en vez de un «pasás de ronda» genérico. */
+          '<div class="s">' + (esGol ? Sig.name : 'SE ACABÓ EL CAMPEONATO') + '</div>';
 
         say(esGol ? '⚽ La ponés ' + elegido.nm.toLowerCase() + ', el arquero ' + arquero.arq + '. ¡GOL!'
                   : '🧤 La ponés ' + elegido.nm.toLowerCase() + ' y el arquero ' + arquero.arq + '. Te la saca.', 'big');
