@@ -6110,3 +6110,63 @@ nuevo esperando que los mueva a los tres.
 el único consumidor de `--fondo-pasto`. La variable se sigue calculando al
 arrancar. `cancha`, la foto del estadio completo, sí sigue en uso en la
 marquesina del menú.
+
+
+## Al arquero se la clavás
+
+La carta del ARQUERO RIVAL, cuando le ganás por stats, decía **GOL**. Cuenta el
+resultado, pero no dice quién lo hace — y las otras tres cartas de stat sí:
+
+```
+DEFENSOR RIVAL   LO PASÁS
+MEDIO RIVAL      LA ROBÁS
+DELANTERO RIVAL  LO CORTÁS
+ARQUERO RIVAL    LA CLAVÁS     ← la cuarta, misma forma
+```
+
+Pronombre y verbo en segunda persona, como las otras tres.
+
+**Y el gol baja a la línea del efecto**, con el mismo `.esgol` verde que usa el
+empate de esa misma carta. Los tres estados del arquero pasan a leerse como
+hermanos:
+
+| | arriba | abajo |
+|---|---|---|
+| ganás | LA CLAVÁS | ⚽ GOL · +1 ⚡ |
+| empate | MINI JUEGO · MANO A MANO | ⚽ GOL · +1 ⚡ o −2 ❤ |
+| perdés | ATAJADÓN | −1 ❤ |
+
+`duelo()` toma un parámetro nuevo, `golGana`, porque es la única de las cuatro
+donde ganar el duelo además es gol.
+
+### Por qué no «LE HACÉS EL GOL»
+
+Era lo pedido, y **no entra**: mide 72px contra los 54 de hueco que tiene la
+carta en un teléfono de 320, así que se parte en dos renglones. Medido con la
+tipografía real, a 11,5px:
+
+| | ancho | ¿entra? |
+|---|---|---|
+| LA CLAVÁS | 46px | sí |
+| LA METÉS | 43px | sí |
+| LO VENCÉS | 47px | sí |
+| GOLAZO | 35px | sí |
+| SE LA METÉS | 56px | no |
+| LE HACÉS GOL | 60px | no |
+| LE HACÉS EL GOL | 72px | no |
+
+### El renglón del gol va apretado
+
+Poner el gol en su propia línea le agrega un renglón a la carta, y en un teléfono
+de 360 eso la pasaba **por 2px**. El renglón del gol es una sola palabra, no
+necesita el interlineado de una frase: `line-height:1.05` en vez del 1,35 del
+resto del efecto, y sobra.
+
+Medido con el mismo tablero de doce arqueros, antes y después:
+
+| | 320×568 | 360×640 | 390×844 |
+|---|---|---|---|
+| la carta ganada recorta | 11px → 21px | 0 → **0** | 0 → **0** |
+
+En 320 ya recortaban las doce antes de tocar nada —es el apretón conocido de esa
+pantalla— y ahí el sobrante crece. En 360 y 390 no cambia nada.

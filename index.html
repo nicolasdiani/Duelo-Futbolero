@@ -891,7 +891,7 @@ img{height:auto}
 /* Cuando en el empate se juega un gol TUYO, va en verde: es lo único bueno que
    puede salir de esa carta. */
 .cell .c-out .efe .esgol{
-  display:block;
+  display:block;line-height:1.05;
   color:var(--green);font-weight:800;letter-spacing:.5px;
   text-shadow:0 0 10px rgba(61,220,107,.55);
 }
@@ -7681,9 +7681,15 @@ function premioDuelo(cell){
 /* El cartel de un duelo tiene tres estados, no dos: ganado, perdido, y el
    empate, que ahora es un uno contra uno al 50%. El empate se avisa antes de
    elegir la fila — es información que cambia la decisión. */
-function duelo(cell, mio, gana, pierde, empate, premio){
+/* `golGana` es para el ARQUERO: ganarle no es sólo cargar racha, **es gol**, y
+   eso tiene que estar escrito. Va abajo, en la línea del efecto, con el mismo
+   `.esgol` verde que usa el empate de esa misma carta — así los dos estados
+   del arquero se leen como hermanos. */
+function duelo(cell, mio, gana, pierde, empate, premio, golGana){
   if(mio > cell.val)
-    return { label: gana + '<span class="efe"><span class="ra">+' + (premio || premioDuelo(cell)) + ' <i class="ir"></i></span></span>', tone:'good' };
+    return { label: gana + '<span class="efe">' +
+      (golGana ? '<span class="esgol">⚽ GOL</span>' : '') +
+      '<span class="ra">+' + (premio || premioDuelo(cell)) + ' <i class="ir"></i></span></span>', tone:'good' };
   if(mio < cell.val)
     return { label: pierde, tone:'bad' };
   /* El empate dice **qué se juega**, no solo que es 50/50. En el arquero y el
@@ -7740,8 +7746,12 @@ function predict(cell){
      puntas del 50/50 y mezclados en una sola línea se leía «GOL +1 ⚡ o -2 ❤»,
      como si el gol fuera parte de la cuenta. `.esgol` es un bloque, así que
      alcanza con eso. */
-  if(t === 'arquero')   return duelo(cell, ATK(), 'GOL', pierdo('ATAJADÓN'),
-                                     '<span class="esgol">⚽ GOL</span><span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>-' + costoDuelo(cell) + ' <i class="ih"></i></b>');
+  /* Decía sólo `GOL`, que cuenta el resultado pero no quién lo hace. Las otras
+     tres cartas de stat dicen lo que **vos** hacés —LO PASÁS, LA ROBÁS, LO
+     CORTÁS—; ésta ahora también, y el gol baja a la línea del efecto. */
+  if(t === 'arquero')   return duelo(cell, ATK(), 'LA CLAVÁS', pierdo('ATAJADÓN'),
+                                     '<span class="esgol">⚽ GOL</span><span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>-' + costoDuelo(cell) + ' <i class="ih"></i></b>',
+                                     null, true);
   if(t === 'medio')     return duelo(cell, DEF(), 'LA ROBÁS', pierdo('TE PASA'),
                                      '<span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>-' + costoDuelo(cell) + ' <i class="ih"></i></b>');
   if(t === 'delantero') return duelo(cell, DEF(), 'LO CORTÁS', pierdo('GOL RIVAL'),
