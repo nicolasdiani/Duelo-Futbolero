@@ -6049,3 +6049,64 @@ background:
 El velo no estaba sólo por contraste: **bajaba el ruido** de la foto en los
 bordes y llevaba la vista al centro. Sin él el césped se ve entero, con su
 textura y sus líneas. Es el precio de que el verde sea el que la cancha tiene.
+
+
+## El fondo termina en negro, y el borde pasa a hacer el trabajo
+
+Se compararon seis fondos sin foto sobre la mesa real —negro, azul noche,
+papelitos, verde liso, gris pizarra y una luz de reflector— y quedó **el negro**.
+
+```css
+background:
+  radial-gradient(ellipse 120% 90% at 50% 35%, #14141a 0%, #0a0a0d 65%, #060608 100%);
+```
+
+No es negro plano: abre un punto en el centro y cierra en los bordes, así la
+mesa cae sobre la parte más clara sin que se note el degradé.
+
+### Lo que cambia al sacar la foto
+
+La carta es una caja casi negra —`rgb(4, 28, 74)`— con un borde fino. Contra el
+verde de la foto el relleno contrastaba **4,0:1** y la carta se leía **como
+bloque**. Contra negro ese número cae a **1,1:1**: la carta deja de ser un bloque
+y pasa a ser **un contorno con una foto adentro**.
+
+No es peor, es otra cosa —las cartas flotan en vez de recortarse— pero cambia
+quién hace el trabajo: lo hace el borde. Y el borde de hoy tampoco alcanzaba:
+
+| fondo | borde / fondo | relleno / fondo |
+|---|---|---|
+| la foto del césped | 2,9:1 | 4,0:1 |
+| negro, con el borde viejo | 1,6:1 | 1,1:1 |
+| **negro, con el borde claro** | **4,7:1** | 1,1:1 |
+
+Así que `--filo` sube de `#1c4a8f` a **`#3d7ed6`**. El contorno queda en 4,7:1,
+más de lo que llegó a tener sobre el césped.
+
+### La regla que nunca se aplicó
+
+Buscando esto apareció que **el borde de la carta no usaba `--filo`**. El bloque
+«EL FILO SOBRE EL CÉSPED» le ponía `border-color:var(--filo)`, y cien líneas más
+abajo otro `.cell` repetía el atajo completo:
+
+```css
+border:1px solid var(--line);
+```
+
+El atajo pisa el `border-color` anterior. Medido en el juego, el borde computaba
+`rgb(18, 51, 110)` —que es `--line`—, así que el ajuste hecho cuando se puso el
+césped **vino sin efecto desde entonces**. Ahora el color va en la misma
+declaración que el borde, que es el único lugar donde no se lo pueden pisar.
+
+Le pasa lo mismo a `.panel` y a `.marquesina`: declaran `border-color:var(--filo)`
+y un rulo posterior se los pisa con el atajo. Quedan como están —con el borde
+oscuro— y eso está bien: sobre negro el que tiene que gritar es el borde de la
+carta, no el de los paneles. Pero conviene saberlo antes de tocar `--filo` de
+nuevo esperando que los mueva a los tres.
+
+### Lo que quedó sin usar
+
+`pasto` —el recorte del césped, unos 15KB de base64— **ya no lo usa nadie**: era
+el único consumidor de `--fondo-pasto`. La variable se sigue calculando al
+arrancar. `cancha`, la foto del estadio completo, sí sigue en uso en la
+marquesina del menú.

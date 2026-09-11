@@ -34,10 +34,11 @@
   --danger:#c31026;
   --cesped:#1d5c33;
   --cesped2:#1a5230;
-  /* El filo de los paneles sobre el césped: un azul más claro que `--line`,
-     para que el borde de la tarjeta se vea contra el verde y no solo contra el
-     azul del interior. */
-  --filo:#1c4a8f;
+  /* El borde de las cartas y los paneles. Sobre el fondo negro es **lo único**
+     que las separa: el relleno de la carta mide 1,1:1 contra el fondo, o sea
+     que están a la misma luminancia. Por eso es claro a propósito — el borde
+     contra el negro da 4,7:1, más de lo que llegaba a tener sobre el césped. */
+  --filo:#3d7ed6;
 
   /* ---- LAS FICHAS ----
      La ficha del ítem y la de la posibilidad de gol son el mismo objeto: se
@@ -80,25 +81,21 @@
    esquinas, de verde no quedaba nada: **el tablero azul flotaba sobre un fondo
    azul**.
 
-   Ahora va el césped solo —`pasto`, el recorte de esa misma foto—, **sin velo**.
-   Las áreas dibujadas se fueron: la cancha de la foto ya trae las suyas.
+   Y al final se salió de la foto del todo: **el fondo es negro**.
 
-   Hubo un velo verde que cerraba hacia los bordes y **se sacó, midiendo**. La
-   idea era que el tablero se recortara mejor, y hacía justo lo contrario: el
-   promedio de la foto es rgb(73, 137, 104) y el relleno de la carta, que es
-   casi opaco, queda en rgb(4, 28, 74) —casi negro—. Con las cartas tan
-   oscuras, **cuanto más se oscurece el fondo menos se despegan**. Contraste
-   medido entre la carta y el fondo que la rodea:
+   El camino fue foto con velo azul, foto con velo verde, foto sola y negro, y
+   cada paso se midió. El dato que ordena todo es que la carta es una caja casi
+   negra —rgb(4, 28, 74)— con un borde fino. Contra el verde de la foto el
+   relleno contrastaba 4,0:1 y la carta se leía **como bloque**; contra negro
+   ese número cae a 1,1 y la carta deja de ser bloque: pasa a ser **un contorno
+   con una foto adentro**.
 
-       con velo    3,8:1 en el centro   1,9 en los costados   1,0 en la esquina
-       sin velo    4,0:1 parejo de punta a punta
+   No es peor, es otra cosa —las cartas flotan en vez de recortarse—, pero
+   cambia quién hace el trabajo: **lo hace el borde**. Por eso `--filo` es
+   claro y por eso la carta por fin lo usa; ver el bloque EL FILO más abajo.
 
-   1,0:1 quiere decir que la carta y el fondo tienen la misma luminancia: en
-   las esquinas —donde caen las filas 1 y 4— la carta se fundía con el pasto.
-
-   Lo que el velo sí hacía era **bajar el ruido** de la foto en los bordes y
-   llevar la vista al centro. Eso se pierde: ahora el césped se ve entero, con
-   su textura y sus líneas. */
+   El negro no es plano: abre un punto en el centro y cierra en los bordes, así
+   la mesa queda sobre la parte más clara sin que se note el degradé. */
 body{
   color:var(--white);
   font-family:var(--txt);
@@ -106,8 +103,7 @@ body{
   display:flex;justify-content:center;
   padding:14px;
   background:
-    var(--fondo-pasto, none) center/cover no-repeat,
-    #0a3a20;
+    radial-gradient(ellipse 120% 90% at 50% 35%, #14141a 0%, #0a0a0d 65%, #060608 100%);
   background-attachment:fixed;
 }
 
@@ -126,13 +122,18 @@ img{height:auto}
    pantalla, llenan su propia tarjeta. */
 .c-art,.a-foto,.mam-art,.dc-cinta{max-width:none}
 
-/* ---------- EL FILO SOBRE EL CÉSPED ----------
+/* ---------- EL FILO ----------
    Sobre el azul de antes, un borde de `--line` alcanzaba: el panel y el fondo
    eran del mismo color y el borde solo marcaba dónde terminaba uno. Sobre el
-   verde el trabajo es otro —separar dos colores opuestos— y ahí un filo oscuro
-   se pierde. Sube a `--filo`, y la sombra hace el resto. */
+   negro el trabajo es otro —la carta y el fondo están a la misma luminancia— y
+   ahí el borde es lo único que la dibuja.
+
+   El `border-color` de la carta se declaraba **acá** y nunca llegó a
+   aplicarse: el `.cell` de más abajo repite el atajo `border` completo y lo
+   pisaba, así que la carta venía usando `--line` sin que nadie lo notara. El
+   color se mudó allá, a la misma declaración que el borde. Acá quedan el
+   relleno y la sombra. */
 .cell{
-  border-color:var(--filo);
   background:linear-gradient(160deg,rgba(0,24,78,.985) 0%,rgba(0,8,31,.99) 100%);
   box-shadow:0 8px 26px rgba(0,6,18,.55), inset 0 1px 0 rgba(255,255,255,.06);
 }
@@ -821,7 +822,9 @@ img{height:auto}
   position:relative;
   background:linear-gradient(160deg,rgba(0,22,72,.95) 0%,rgba(0,8,31,.96) 100%);
   backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  border:1px solid var(--line);border-radius:7px;
+  /* El color va **acá**, en la misma declaración que el borde. Estaba más
+     arriba, en un `border-color:var(--filo)` suelto, y este atajo lo pisaba. */
+  border:1px solid var(--filo);border-radius:7px;
   min-height:126px;padding:9px 9px 8px;
   display:flex;flex-direction:column;gap:4px;
   transition:transform .15s,border-color .15s,background .15s;
