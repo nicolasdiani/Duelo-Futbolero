@@ -4292,19 +4292,34 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 
    La foto va contra `vh` como en los avisos, para que en una pantalla baja
    ceda ella antes que el resto de la ficha. */
+/* El recorte redondeado lo hace **la imagen**, no la caja. La caja tenía
+   `overflow:hidden` y la chapa del mini juego no entra en el ancho de la
+   foto: medido en un teléfono de 390px pide 53px y la foto tiene 41, así que
+   se comía las últimas letras. Dejándola salirse, la chapa usa el ancho de la
+   casilla entera —los 3px de padding de cada lado— y entra. */
 .fg-art{
-  position:relative;display:block;border-radius:4px;overflow:hidden;
+  position:relative;display:block;border-radius:4px;overflow:visible;
   border:1px solid rgba(255,255,255,.09);
 }
-.fg-art img{display:block;width:100%;height:clamp(30px, 5.2vh, 44px);object-fit:cover}
+.fg-art img{display:block;width:100%;height:clamp(30px, 5.2vh, 44px);object-fit:cover;border-radius:3px}
 .fg-art::after{
-  content:'';position:absolute;inset:auto 0 0;height:62%;
+  content:'';position:absolute;inset:auto 0 0;height:62%;border-radius:0 0 3px 3px;
   background:linear-gradient(180deg,transparent,rgba(0,8,31,.88));
 }
-/* La chapa del mini juego: la misma del tablero, apoyada sobre la foto. */
+/* La chapa del mini juego: la misma del tablero, apoyada sobre la foto.
+
+   **Y con el pill puesto acá.** Las reglas que lo pintan están scopeadas a
+   las cartas de la mesa (`.c-out .mj-lb, .p-out .mj-lb`), así que adentro de
+   la casilla no llegaba ninguna: quedaba texto blanco en bloque, partido en
+   tres renglones encima de la foto. Medido en un teléfono de 390px eran
+   **34px de ancho por 22 de alto** sobre una foto de 30, y sin fondo dorado. */
 .fg-art .mj-lb{
   position:absolute;left:50%;bottom:3px;transform:translateX(-50%);z-index:2;
-  margin:0;font-size:7.6px;letter-spacing:1.2px;padding:1px 5px;gap:3px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--txt);font-weight:700;text-transform:uppercase;
+  color:var(--black);background:var(--gold);border-radius:3px;
+  width:max-content;max-width:none;white-space:nowrap;line-height:1.4;   /* el `*{max-width:100%}` de arriba la ataba al ancho de la foto */
+  margin:0;font-size:7.6px;letter-spacing:1.2px;text-indent:0;padding:1px 5px;gap:3px;
 }
 .fg-art .mj-ico{font-size:8.6px}
 
@@ -4331,7 +4346,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 
 @media (min-width:1025px), (min-width:821px) and (orientation:landscape){
   .fg-art img{height:clamp(40px, 7vh, 62px)}
-  .fg-art .mj-lb{font-size:9px;letter-spacing:1.8px;padding:2px 7px;bottom:4px}
+  .fg-art .mj-lb{font-size:8.5px;letter-spacing:.8px;padding:2px 5px;gap:3px;bottom:4px}   /* 87px de los 91 de la casilla */
   .fg-art .mj-ico{font-size:10px}
   .fg-cnm{font-size:13px;letter-spacing:.5px;margin-top:5px}
   .fg-mini{padding:6px 5px 7px}
@@ -4341,8 +4356,10 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 @media (max-width:440px){
   .fg-art img{height:clamp(26px, 4.4vh, 34px)}
   .fg-cnm{font-size:8px;margin-top:3px}
-  .fg-art .mj-lb{font-size:6.4px;letter-spacing:.6px;padding:0 4px;gap:2px}
-  .fg-art .mj-ico{font-size:7.4px}
+  .fg-art .mj-lb{font-size:6px;letter-spacing:.3px;padding:0 3px;gap:2px}   /* 45px de los 51 que tiene la casilla */
+  /* El emoji se lleva 8 de los 47px que tiene la casilla y es lo primero
+     que sobra: la chapa dorada ya dice qué es. */
+  .fg-art .mj-ico{display:none}
   .fg-mini{padding:4px 3px 5px}
 }
 
@@ -4378,40 +4395,106 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   letter-spacing:.4px;text-transform:none;color:var(--dim2);margin-top:1px;
 }
 
-/* Las casillas, del lado del rival: rojo donde la tuya va celeste. */
-.sit.fundida .fg-minis{margin-top:0}
+/* Las casillas del sorteo. Lo que sigue es **de los dos carteles**: el de la
+   fundida y el de la posibilidad de gol a favor comparten `.sorteo` y se
+   separan sólo en el color. */
+.sit.sorteo .fg-minis{margin-top:0}
+.sit.sorteo .fg-cnm{color:#fff}
+.sit.sorteo .fg-mini.foco{border-color:rgba(255,255,255,.92);box-shadow:0 0 0 2px rgba(255,255,255,.5)}
+.sit.sorteo .cta{margin-top:15px}
+.sit.sorteo .cta:disabled{opacity:.4;cursor:default;letter-spacing:4px}
+
+/* Rojo del lado del rival. */
 .sit.fundida .fg-mini{border-color:rgba(255,59,82,.28)}
 .sit.fundida .fg-pct{color:var(--red)}
-.sit.fundida .fg-cnm{color:#fff}
-.sit.fundida .fg-mini.foco{border-color:rgba(255,255,255,.92);box-shadow:0 0 0 2px rgba(255,255,255,.5)}
 .sit.fundida .fg-mini.gana{
   border-color:var(--red) !important;
   box-shadow:0 0 0 3px var(--red), 0 0 28px rgba(255,59,82,.5) !important;
 }
 .sit.fundida .fg-mini.gana .fg-pct{color:var(--red) !important}
-
 .sit.fundida .cta{
-  margin-top:15px;
   background:linear-gradient(160deg, rgba(58,10,18,.9), rgba(0,12,40,.96));
   border-color:var(--red);color:var(--red);
 }
-.sit.fundida .cta:disabled{opacity:.4;cursor:default;letter-spacing:4px}
 
-/* El cartel es alto: cinco casillas con foto, más los corazones. Se le pone
-   tope y scroll propio también en mobile, igual que a los avisos. */
+/* ---- Y VERDE DEL LADO TUYO ----
+   **La misma jugada se anunciaba de dos maneras.** Cuando se te vacía el
+   aguante, la posibilidad de gol del rival frena la pantalla con este cartel;
+   cuando se te llena la racha, la tuya se abría en una fichita colgada del
+   cartel de la mesa, la mitad de tamaño y compitiendo con el tablero que le
+   quedaba atrás. Ahora es la misma pieza: cambian el color, el medidor de
+   arriba y de quién es la llegada. */
+.sit.llena{border-color:var(--green);box-shadow:0 0 60px rgba(61,220,107,.3)}
+.sit.llena .t{color:var(--green)}
+.sit.llena .sit-tag{color:rgba(61,220,107,.8)}
+.sit.llena .fu-linea{background:rgba(61,220,107,.3)}
+.sit.llena .fu-ahora{color:var(--dim)}
+.sit.llena .fu-ahora b{color:var(--green)}
+.sit.llena .fg-mini{border-color:rgba(61,220,107,.3)}
+.sit.llena .fg-pct{color:var(--green)}
+/* Las dos marcas que sólo existen del lado tuyo: la que entra siempre y la
+   que se juega a mano. */
+.sit.llena .fg-mini.seguro{border-color:#7de08f;background:rgba(61,220,107,.12)}
+.sit.llena .fg-mini.seguro .fg-cnm{color:#c9f5d6}
+.sit.llena .fg-mini.seguro .fg-pct{color:#7de08f}
+.sit.llena .fg-mini.mj{border-color:var(--gold)}
+.sit.llena .fg-mini.mj .fg-cnm{color:#fbe9b0}
+.sit.llena .fg-mini.mj .fg-pct{color:var(--gold)}
+.sit.llena .fg-mini.gana{
+  border-color:var(--green) !important;
+  box-shadow:0 0 0 3px var(--green), 0 0 28px rgba(61,220,107,.5) !important;
+}
+.sit.llena .fg-mini.gana .fg-pct{color:var(--green) !important}
+
+/* Los cuatro rayos van donde la fundida pone los corazones. `.a-rayos` estaba
+   scopeado a `.aviso`, así que acá había que darle su propia medida. */
+.sit.llena .a-rayos{display:flex;justify-content:center;align-items:flex-end;gap:9px;margin:12px 0 4px}
+.sit.llena .a-rayos img,.sit.llena .a-rayos .ir{
+  width:30px;height:38px;object-fit:contain;
+  filter:drop-shadow(0 0 9px rgba(61,220,107,.55));
+  animation:avisoRayo 1.5s ease-in-out infinite;
+}
+
+/* Dos botones en fila, porque éste **sí se puede cerrar**: la racha queda
+   cargada hasta que la gastes, así que mirarla no puede costarte nada. El de
+   la fundida sigue llevando uno solo. */
+.sit-botones{display:flex;gap:8px;margin-top:15px}
+.sit.sorteo .sit-botones .cta{margin-top:0;flex:1;font-size:15px;letter-spacing:1.8px;text-indent:1.8px;padding:11px 6px}
+.sit.llena .sit-botones .cta{
+  background:linear-gradient(165deg,#4ae87a,#25b955);
+  border-color:#8ff5ae;color:#04220f;
+  box-shadow:0 8px 24px rgba(61,220,107,.28), inset 0 1px 0 rgba(255,255,255,.4);
+}
+.sit.llena .sit-botones .cta:hover{box-shadow:0 10px 30px rgba(61,220,107,.4), inset 0 1px 0 rgba(255,255,255,.5)}
+.sit.llena .sit-botones .cta.alt{
+  background:transparent;border-color:rgba(147,174,222,.42);color:var(--dim);box-shadow:none;
+}
+.sit.llena .sit-botones .cta.alt:hover{border-color:var(--white);color:var(--white);box-shadow:none}
+@media (max-width:400px){
+  .sit.sorteo .sit-botones .cta{font-size:13px;letter-spacing:1px;text-indent:1px;padding:10px 4px}
+}
+
+/* El cartel es alto: cinco casillas con foto, más el medidor de arriba. Se le
+   pone tope y scroll propio también en mobile, igual que a los avisos. */
 @media (max-width:1024px) and (orientation:portrait), (max-width:820px){
-  .sit.fundida{max-height:calc(100dvh - 78px);overflow-y:auto}
+  .sit.sorteo{max-height:calc(100dvh - 78px);overflow-y:auto}
 }
 @media (max-width:820px) and (max-height:680px){
-  .sit.fundida{max-height:calc(100dvh - 54px);padding:16px 14px}
+  .sit.sorteo{max-height:calc(100dvh - 54px);padding:16px 14px}
   .fu-hearts{gap:6px;margin:8px 0 2px}
   .fu-hearts img,.fu-hearts .ih{width:24px;height:24px}
   .fu-linea{margin:10px -10px}
   .fu-ahora{font-size:10px;letter-spacing:1.6px;margin-bottom:8px}
   .fu-ahora em{font-size:8.6px}
-  .sit.fundida .cta{margin-top:10px;font-size:14px;padding:9px}
+  .sit.sorteo .cta{margin-top:10px;font-size:14px;padding:9px}
+  .sit.sorteo .sit-botones{margin-top:10px}
+  .sit.sorteo .sit-botones .cta{margin-top:0;font-size:12.5px;letter-spacing:1px;text-indent:1px;padding:9px 4px}
+  .sit.llena .a-rayos{gap:6px;margin:8px 0 2px}
+  .sit.llena .a-rayos img,.sit.llena .a-rayos .ir{width:22px;height:28px}
 }
 @media (min-width:1025px), (min-width:821px) and (orientation:landscape){
+  .sit.llena .a-rayos{gap:11px;margin:14px 0 6px}
+  .sit.llena .a-rayos img,.sit.llena .a-rayos .ir{width:38px;height:48px}
   .fu-hearts{gap:11px;margin:14px 0 6px}
   .fu-hearts img,.fu-hearts .ih{width:40px;height:40px}
   .fu-ahora{font-size:14px;letter-spacing:2.6px;margin-bottom:14px}
@@ -8254,85 +8337,100 @@ function itemInutil(k){
    de dónde salía ese número.
 
    Usa la misma franja anclada que los ítems, para que sea el mismo gesto. */
+/* El promedio de las cinco. Estaba escrito tres veces —el aviso de racha
+   llena, la ficha de la mesa y el cartel de la fundida— y ya había quedado
+   distinto una vez: los avisos prometían 38% cuando la ficha decía 51. */
+const esperadoDe = lista => Math.round(
+  lista.reduce((a, x) => a + x.peso * x.p, 0) /
+  lista.reduce((a, x) => a + x.peso, 0) * 100);
+
+/* Las cinco casillas del sorteo, para los dos carteles. El marcado estaba
+   escrito dos veces y ya había quedado distinto: `favor` es lo único que
+   cambia de verdad —del lado tuyo la jugada clara se marca como la segura y
+   el penal avisa que es un mini juego—.
+
+   Cada casilla muestra **la ilustración de su propia carta**, la misma que
+   se ve en la mesa, y el nombre debajo: antes iban cinco emoji y un
+   porcentaje suelto, sin decir de qué jugada era. */
+function minisGol(lista, favor){
+  return '<div class="fg-minis">' +
+    lista.map(x => {
+      const mj = favor && x.key === 'penal';   // el penal se patea, no se sortea
+      const art = artCarta(x.key);
+      const chapa = mj ? '<span class="mj-lb"><i class="mj-ico">🎮</i>MINI JUEGO</span>' : '';
+      return '<div class="fg-mini' + (favor && x.p === 1 ? ' seguro' : '') + (mj ? ' mj' : '') + '">' +
+        (art
+          ? '<span class="fg-art"><img src="' + art + '" alt="">' + chapa + '</span>'
+          : '<span class="fg-ico">' + x.ico + '</span>' + chapa) +
+        '<span class="fg-cnm">' + x.nm + '</span>' +
+        '<span class="fg-pct">' + (x.p === 1 ? 'GOL' : Math.round(x.p * 100) + '% GOL') + '</span>' +
+      '</div>';
+    }).join('') +
+  '</div>';
+}
+
 function abrirFichaGol(btn){
   if(G.busy) return;
   if(G.racha < G.rachaMax) return;          // sin la racha llena no hay nada que ver
 
-  const banner = document.getElementById('golBanner');
-  if(!banner || !banner.parentNode) return cobrarRacha();
-  const yaEstaba = btn.classList.contains('abierto');
+  /* **El mismo cartel que cuando se te funde el equipo, del otro lado.**
+     La posibilidad de gol es una sola jugada y se anunciaba de dos maneras:
+     la del rival frenaba la pantalla con un cartel grande y la tuya se abría
+     en una fichita colgada del cartel de la mesa, la mitad de tamaño y
+     compitiendo con el tablero que le quedaba atrás. Ahora las dos usan el
+     mismo molde y lo único que cambia es el color y de quién es la llegada.
+
+     Una diferencia se queda: la del rival no se puede cerrar —te fundiste y
+     el sorteo va igual—, y ésta sí. La racha queda cargada hasta que la
+     gastes, así que mirarla no puede costarte nada. */
+  if(cerrarCartelGol()) return;             // el segundo toque cierra
   cerrarFichaItem();
-  if(yaEstaba) return;                      // el segundo toque cierra
-
-  /* **Justo debajo del banner**, no al final de la columna.
-     Ser hermana del cartel no alcanzaba: como el cartel no es un ancestro
-     posicionado, el `top:100%` de la ficha se medía contra `.wrap` y la
-     desplegaba abajo de toda la página. Se envuelve el cartel en un ancla
-     posicionada y la ficha vive adentro, así el 100% es el alto del cartel.
-     El `position:relative` se lo pone el CSS de `.gol-ancla`; ponérselo a
-     mano al contenedor de afuera no servía de nada. */
-  let ancla = banner.parentNode;
-  if(!ancla.classList.contains('gol-ancla')){
-    const nueva = document.createElement('div');
-    nueva.className = 'gol-ancla';
-    ancla.insertBefore(nueva, banner);
-    nueva.appendChild(banner);
-    ancla = nueva;
-  }
-
-  const f = nuevaFicha('ficha-gol');
   btn.classList.add('abierto');
 
-  const total = SIT_FAVOR.reduce((a, x) => a + x.peso, 0);
-  const esperado = Math.round(SIT_FAVOR.reduce((a, x) => a + x.peso * x.p, 0) / total * 100);
-
-  /* Cada casilla muestra **la ilustración de su propia carta**, la misma que
-     se ve en la mesa. Antes iban cinco emoji: para saber cuál era cuál había
-     que acordarse de que 🚩 es el córner y 🚧 el tiro libre. Con la foto la
-     reconocés porque ya la viste salir, y de paso se usa el ancho que sobraba
-     —157px por casilla en desktop, con un emoji de 16 adentro—.
-
-     El nombre va debajo, que es lo que de verdad faltaba: hoy la ficha te
-     mostraba un porcentaje sin decirte de qué jugada era.
-
-     Y la chapa del mini juego pasa a ser **la misma del tablero**, no un 🎮 de
-     8px flotando en el borde. */
-  f.innerHTML =
-    '<div class="fg-top">' +
-      '<span class="fg-nm">' + icoPelota() + 'POSIBILIDAD DE GOL</span>' +
-      '<span class="fg-esp">' + esperado + '% de gol' +
-        '<em>una de las cinco, al azar</em></span>' +
-    '</div>' +
-    '<div class="fg-minis">' +
-      SIT_FAVOR.map(x => {
-        const mj = x.key === 'penal';        // el penal se patea, no se sortea
-        const art = artCarta(x.key);
-        const chapa = mj ? '<span class="mj-lb"><i class="mj-ico">🎮</i>MINI JUEGO</span>' : '';
-        return '<div class="fg-mini' + (x.p === 1 ? ' seguro' : '') + (mj ? ' mj' : '') + '">' +
-          (art
-            ? '<span class="fg-art"><img src="' + art + '" alt="">' + chapa + '</span>'
-            : '<span class="fg-ico">' + x.ico + '</span>' + chapa) +
-          '<span class="fg-cnm">' + x.nm + '</span>' +
-          '<span class="fg-pct">' + (x.p === 1 ? 'GOL' : Math.round(x.p * 100) + '% GOL') + '</span>' +
-        '</div>';
-      }).join('') +
-    '</div>' +
-    '<div class="if-btns">' +
-      '<button class="if-btn" id="fgUsar">USAR LA RACHA</button>' +
-      '<button class="if-btn alt" id="fgVolver">VOLVER</button>' +
+  const wrap = document.createElement('div');
+  wrap.className = 'sit-flash cartel-gol';
+  wrap.innerHTML =
+    '<div class="sit sorteo llena">' +
+      '<div class="sit-tag">SE TE LLENA LA RACHA</div>' +
+      rayosLlenos() +
+      '<div class="t">POSIBILIDAD DE GOL</div>' +
+      '<div class="s">LA RACHA SE GASTA ENTERA, Y TAMBIÉN UNA JUGADA</div>' +
+      '<div class="fu-linea"></div>' +
+      '<div class="fu-ahora">Y VOS TE GANÁS UNA LLEGADA ' +
+        '<b>' + esperadoDe(SIT_FAVOR) + '%</b> DE GOL <em>una de las cinco, al azar</em></div>' +
+      minisGol(SIT_FAVOR, true) +
+      '<div class="sit-botones">' +
+        '<button class="cta" id="fgUsar">USAR LA RACHA</button>' +
+        '<button class="cta alt" id="fgVolver">VOLVER</button>' +
+      '</div>' +
     '</div>';
+  document.body.appendChild(wrap);
 
-  ancla.appendChild(f);
-  mostrarFicha(f);
-
-  f.querySelector('#fgUsar').onclick = async (ev) => {
+  const caja = wrap.querySelector('.sit');
+  wrap.querySelector('#fgUsar').onclick = async (ev) => {
     ev.stopPropagation();
-    const elegida = await sorteoGol(f);   // el sorteo, a la vista
-    cerrarFichaItem();
-    cobrarRacha(elegida);                 // y se resuelve **esa** misma
+    const elegida = await sorteoGol(caja);  // el sorteo, a la vista
+    wrap.remove();
+    btn.classList.remove('abierto');
+    cobrarRacha(elegida);                   // y se resuelve **esa** misma
   };
-  f.querySelector('#fgVolver').onclick = (ev) => { ev.stopPropagation(); cerrarFichaItem(); };
-  f.onclick = (ev) => ev.stopPropagation();
+  wrap.querySelector('#fgVolver').onclick = (ev) => { ev.stopPropagation(); cerrarCartelGol(); };
+  /* Tocar el velo también cierra; tocar el cartel, no. */
+  caja.onclick = (ev) => ev.stopPropagation();
+  wrap.onclick = (ev) => { ev.stopPropagation(); cerrarCartelGol(); };
+}
+
+/* Devuelve si había uno abierto, que es lo que usa el segundo toque del
+   cartel de la mesa para cerrarlo en vez de volver a abrirlo. Mientras corre
+   el sorteo no se cierra: los botones ya están deshabilitados y el resultado
+   está decidido. */
+function cerrarCartelGol(){
+  const v = document.querySelector('.cartel-gol');
+  if(!v) return false;
+  if(v.querySelector('.cta:disabled')) return true;
+  v.remove();
+  document.querySelectorAll('.gol-banner.abierto').forEach(b => b.classList.remove('abierto'));
+  return true;
 }
 
 /* El sorteo de la posibilidad de gol: **el mismo cursor que la mesa**. Recorre
@@ -8348,7 +8446,9 @@ async function sorteoGol(ficha, lista){
   const minis = [...ficha.querySelectorAll('.fg-mini')];
   if(minis.length < 2) return null;
 
-  ficha.querySelectorAll('.if-btn').forEach(b => b.disabled = true);
+  /* Los dos carteles: la ficha de los ítems usa `.if-btn` y el cartel
+     grande de la posibilidad de gol usa `.cta`. */
+  ficha.querySelectorAll('.if-btn, .cta').forEach(b => b.disabled = true);
 
   /* Se sortea **acá** y se devuelve, para que el partido resuelva exactamente
      la carta que el jugador vio ganar. */
@@ -9169,9 +9269,7 @@ function dcCarta(id, tono, arte, nm, desc){
 
 function descuento(){
   // el mismo promedio que el aviso de racha llena, calculado y no escrito
-  const esperadoFavor = Math.round(
-    SIT_FAVOR.reduce((a, x) => a + x.peso * x.p, 0) /
-    SIT_FAVOR.reduce((a, x) => a + x.peso, 0) * 100);
+  const esperadoFavor = esperadoDe(SIT_FAVOR);
 
   const empata = G.gU === G.gC, pierde = G.gU < G.gC;
 
@@ -9821,9 +9919,7 @@ function avisoRacha(){
      era el número de cuando la jugada clara salía el 8% y el tiro libre el 25%.
      Desde que las cinco pesan igual son 51, y la ficha de la mesa ya lo decía
      bien — así que el aviso prometía una cosa y la ficha otra. */
-  const esperadoFavor = Math.round(
-    SIT_FAVOR.reduce((a, x) => a + x.peso * x.p, 0) /
-    SIT_FAVOR.reduce((a, x) => a + x.peso, 0) * 100);
+  const esperadoFavor = esperadoDe(SIT_FAVOR);
 
   return new Promise(resolve => {
     const wrap = document.createElement('div');
@@ -9925,11 +10021,10 @@ function fundidaRival(cayoMax){
     if(cayoMax) hearts += '<span class="fu-ida">' + corazon() + '</span>';
     hearts += '</div>';
 
-    const total = SIT_RIVAL.reduce((a, x) => a + x.peso, 0);
-    const esperado = Math.round(SIT_RIVAL.reduce((a, x) => a + x.peso * x.p, 0) / total * 100);
+    const esperado = esperadoDe(SIT_RIVAL);
 
     wrap.innerHTML =
-      '<div class="sit fundida">' +
+      '<div class="sit sorteo fundida">' +
         '<div class="sit-tag">SE TE FUNDE EL EQUIPO</div>' +
         hearts +
         '<div class="t">SE ACABÓ EL AGUANTE</div>' +
@@ -9939,18 +10034,7 @@ function fundidaRival(cayoMax){
         '<div class="fu-linea"></div>' +
         '<div class="fu-ahora">Y EL RIVAL SE GANA UNA LLEGADA ' +
           '<b>' + esperado + '%</b> DE GOL <em>una de las cinco, al azar</em></div>' +
-        '<div class="fg-minis">' +
-          SIT_RIVAL.map(x => {
-            const art = artCarta(x.key);
-            return '<div class="fg-mini">' +
-              (art
-                ? '<span class="fg-art"><img src="' + art + '" alt=""></span>'
-                : '<span class="fg-ico">' + x.ico + '</span>') +
-              '<span class="fg-cnm">' + x.nm + '</span>' +
-              '<span class="fg-pct">' + (x.p === 1 ? 'GOL' : Math.round(x.p * 100) + '% GOL') + '</span>' +
-            '</div>';
-          }).join('') +
-        '</div>' +
+        minisGol(SIT_RIVAL, false) +
         '<button class="cta" id="fuBtn">A VER QUÉ PASA</button>' +
       '</div>';
     document.body.appendChild(wrap);

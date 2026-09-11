@@ -6272,3 +6272,75 @@ los cuerpos de letra y el reloj.
 `tutoRegla` se reemplazó por `tutoFicha`. Las reglas `.regla`, `.rg-txt`,
 `.rg-vis` y `.rg-tit` quedan sin uso —están repartidas en media docena de media
 queries— y conviene limpiarlas en una pasada aparte.
+
+
+## La posibilidad de gol, de los dos lados
+
+Es **una sola jugada** y se anunciaba de dos maneras. Cuando se te vacía el
+aguante, la posibilidad de gol del rival frena la pantalla con un cartel grande
+al centro: tag, medidor, título, la línea, el 51% y las cinco jugadas. Cuando se
+te llena la racha, la tuya se abría en una fichita colgada del cartel de la mesa
+—la mitad de tamaño, con el tablero todavía a la vista debajo—.
+
+Medido en un teléfono de 390px: el cartel del rival mide **463px de alto** y la
+fichita medía **178**. La misma información, y la que menos pesaba era la que te
+convenía.
+
+Ahora son la misma pieza. `.sit.sorteo` es lo que comparten —las casillas, el
+cursor blanco del sorteo, el tope de alto y el scroll propio— y encima va el
+color: `.sit.fundida` en rojo, `.sit.llena` en verde. Lo único que cambia entre
+una y otra es de quién es la llegada y qué medidor va arriba: los cuatro
+corazones o los cuatro rayos.
+
+| | hueco | cartel | sobra |
+|---|---|---|---|
+| 320×568 | 492 | **382** | 110px |
+| 360×640 | 564 | **345** | 219px |
+| 390×844 | 768 | **437** | 331px |
+| 1280×720 | 644 | **521** | 123px |
+
+### Lo que no se copió
+
+El cartel del rival **no se puede cerrar**: te fundiste y el sorteo va igual. El
+tuyo sí, con un VOLVER al lado del USAR LA RACHA —la racha queda cargada hasta
+que la gastes, así que mirarla no puede costarte nada—. También cierra tocando
+el velo, o volviendo a tocar el cartel de la mesa. Mientras corre el sorteo no
+cierra por ningún lado: los botones ya están deshabilitados y el resultado ya
+está decidido.
+
+Y se quedan las dos marcas que sólo existen de tu lado: la jugada clara en verde
+—la que entra siempre— y el penal en dorado, que se patea en vez de sortearse.
+
+### La chapa del mini juego
+
+Aprovechando, un bug que estaba en vivo. La chapa **MINI JUEGO** de la casilla
+del penal salía sin el pill dorado: las reglas que lo pintan están scopeadas a
+las cartas de la mesa (`.c-out .mj-lb, .p-out .mj-lb`), así que adentro de
+`.fg-art` no llegaba ninguna. Quedaba texto blanco en bloque y sin fondo dorado:
+**34px de ancho por 22 de alto**, partido en tres renglones encima de una foto
+de 30.
+
+Puesto el pill, apareció el segundo problema: no entra en el ancho de la foto
+—pide 53px y la foto tiene 41—. Dos cosas lo resuelven:
+
+- el recorte redondeado pasa de la caja a la imagen, así `.fg-art` puede dejar
+  que la chapa se salga y use el ancho de la casilla entera;
+- el `*{max-width:100%}` de arriba de todo la seguía atando al ancho de la foto,
+  aunque el `width:max-content` dijera otra cosa. Ya hay cinco elementos con
+  la excepción puesta a mano (`.c-art`, `.a-foto`, `.mam-art`, `.dc-cinta`,
+  `.pn-cinta`); éste la lleva en su propia regla.
+
+Medida por tramo, para que entre en la casilla y no pise a la vecina: **45 de 51**
+en el teléfono (sin el 🎮, que se lleva 8 de esos píxeles) y **87 de 91** en
+escritorio, ahí sí con el emoji.
+
+### Duplicación que se fue
+
+`esperadoDe(lista)` y `minisGol(lista, favor)`: el promedio de las cinco estaba
+escrito **tres veces** y el marcado de las casillas **dos**. Ya habían quedado
+distintos una vez —los avisos prometían 38% cuando la ficha decía 51—.
+
+Queda sin uso el CSS de la fichita vieja: `.item-ficha.ficha-gol`, `.fg-top`,
+`.fg-nm`, `.fg-esp` y `.gol-ancla`, repartidos en seis media queries, más los
+`:not(.ficha-gol)` que ahora sobran. Conviene limpiarlo en una pasada aparte,
+junto con `.regla` / `.rg-*` del tutorial.
