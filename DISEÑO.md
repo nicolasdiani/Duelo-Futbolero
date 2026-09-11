@@ -6390,3 +6390,73 @@ estructura abajo— el color tiene que ir en el shorthand.
 la imagen de fondo, quedaron los **20 KB de base64** y el arranque que los cargaba
 en `--fondo-pasto` en cada partida. Ninguna regla leía esa variable. El archivo
 pasa de 1259 a 1238 KB.
+
+
+## Las cartas tienen canto
+
+La carta era un rectángulo plano con un borde de 1px. Ahora es una ficha
+apoyada sobre la mesa, y al elegir la fila se levanta. Todo con CSS: no entra
+ni una imagen ni una línea de JavaScript.
+
+### El canto
+
+Cuatro sombras de 1px apiladas hacia abajo dibujan el espesor; la quinta,
+difusa, es la sombra que la carta tira sobre la mesa. Dos sombras internas
+hacen la luz del borde de arriba y el filo oscuro del de abajo, y un degradado
+blanco en el relleno es el brillo del plástico.
+
+Son sombras: se pintan una vez con la carta y **no cuestan nada por cuadro**.
+
+El canto vive en `--canto` y no en un `box-shadow` suelto. El resaltado por
+tono —`.row.hl .cell.tono-good` y sus cinco hermanos— es más específico y su
+`box-shadow` de color habría borrado el canto apenas se resaltaba la fila. Con
+la variable, cada tono **compone**: `box-shadow:var(--canto), 0 3px 14px <tono>`.
+
+### Levantarse
+
+Al elegir la fila la carta sube 7px, se acerca 30 en el eje Z y se inclina 6
+grados. La perspectiva vive en `.cells`, es decir **en cada fila**: así las
+cuatro cartas comparten punto de fuga y la mesa en reposo no se inclina.
+
+Se descartó inclinar el tablero entero, que era la opción más espectacular:
+rasterizar en ángulo ablanda los nombres y los porcentajes, que es justamente
+lo que hay que leer para elegir.
+
+El levantado usa `translate` y `rotate`, **no** `transform`. Son propiedades
+aparte, así que se componen con el `transform` en vez de pisarlo: la animación
+de la carta jugada (`.hit`, que la agranda de golpe) y el `scale` del VAR
+siguen corriendo encima del levantado, sin el salto que había al arrancar la
+animación con la carta ya inclinada.
+
+Y un brillo diagonal cruza la ilustración de la carta elegida, en una sola capa.
+
+### Las tres cosas que hubo que atender
+
+**El hueco vacío no es una ficha.** `.cell.empty` lleva `--canto:none` y
+`box-shadow:none`: un agujero en la mesa no puede tener espesor.
+
+**En el teléfono el canto es otro.** En escritorio la carta mide 185px de ancho
+y el canto de 4px es el 2% de eso; en un teléfono de 390 la carta mide 80 y ese
+mismo canto pasa a ser el 5%, con la sombra difusa comiéndose los 5px que
+separan las filas. Debajo de 440px el canto baja a 2px y la carta se levanta 4
+en vez de 7.
+
+**Movimiento reducido.** La carta no se inclina ni se acerca: sube los mismos
+2px de antes. El canto se queda, que es color y no movimiento.
+
+### Medido
+
+Nada de esto toca el layout —sombras, `translate`, `rotate` y un `::after`
+absoluto no mueven una caja—, y se verificó con el partido andando:
+
+| | carta | levantada | scroll horizontal |
+|---|---|---|---|
+| 320×568 | 62×67 | 64×68 | no |
+| 390×844 | 80×140 | — | no |
+| 1050×720 | 127×217 | 136×216 | no |
+| 1280×800 | 185×221 | — | no |
+
+El recorte de texto es el mismo que antes del cambio: 2 a 3px en `.c-nm` por
+redondeo de interlineado, en las 16 cartas, con y sin el canto. Se comparó
+guardando el cambio en un `stash` y midiendo las dos versiones sobre el mismo
+tablero.

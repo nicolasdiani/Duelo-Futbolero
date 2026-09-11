@@ -133,9 +133,31 @@ img{height:auto}
    pisaba, así que la carta venía usando `--line` sin que nadie lo notara. El
    color se mudó allá, a la misma declaración que el borde. Acá quedan el
    relleno y la sombra. */
+/* **El canto.** Cuatro sombras de 1px apiladas hacia abajo dibujan el espesor
+   de la ficha; la quinta, difusa, es la sombra que tira sobre la mesa. Las dos
+   internas son la luz que pega en el borde de arriba y el filo oscuro del de
+   abajo, y el degradado blanco del relleno es el brillo del plástico.
+
+   No hay transformación ni filtro: son sombras. Se pintan una sola vez con la
+   carta y no cuestan nada por cuadro.
+
+   Va en una variable porque el resaltado por tono, más abajo, tiene que
+   **componer** su halo de color encima del canto en vez de pisarlo: esas
+   reglas son más específicas y un `box-shadow` suelto acá desaparecía apenas
+   se resaltaba la fila. */
 .cell{
-  background:linear-gradient(160deg,rgba(0,24,78,.985) 0%,rgba(0,8,31,.99) 100%);
-  box-shadow:0 8px 26px rgba(0,6,18,.55), inset 0 1px 0 rgba(255,255,255,.06);
+  --canto:
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -1px 0 rgba(0,0,0,.5),
+    0 1px 0 rgba(116,166,232,.34),
+    0 2px 0 rgba(66,110,178,.32),
+    0 3px 0 rgba(34,62,116,.3),
+    0 4px 0 rgba(14,30,62,.3),
+    0 10px 16px -4px rgba(0,0,0,.62);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.07) 0%,rgba(255,255,255,0) 34%),
+    linear-gradient(160deg,rgba(0,24,78,.985) 0%,rgba(0,8,31,.99) 100%);
+  box-shadow:var(--canto);
 }
 /* Los paneles y la marquesina también llevan el filo, pero **no se lo puede
    poner acá**: más abajo en la hoja los dos traen un `border` shorthand que
@@ -702,7 +724,15 @@ img{height:auto}
 }
 .row-pick:disabled .pk{color:var(--dim2)}
 .row-pick:disabled .pc{color:var(--dim2);opacity:.6}
-.cells{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;flex:1}
+/* La perspectiva vive **en cada fila**, no en la mesa entera: así el punto de
+   fuga de las cuatro cartas que se levantan es el mismo, y la mesa en reposo
+   no se inclina. Inclinar el tablero entero era la otra opción y se descartó:
+   rasterizar en ángulo ablanda los nombres y los porcentajes, que es
+   justamente lo que hay que leer para elegir. */
+.cells{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:6px;flex:1;
+  perspective:820px;perspective-origin:50% 120%;
+}
 
 /* Las columnas van pegadas arriba de la mesa, alineadas con sus cartas: el
    botón tiene que estar donde está la columna que va a atacar, no en otra
@@ -831,7 +861,18 @@ img{height:auto}
   border:1px solid var(--filo);border-radius:7px;
   min-height:126px;padding:9px 9px 8px;
   display:flex;flex-direction:column;gap:4px;
-  transition:transform .15s,border-color .15s,background .15s;
+  /* El `transform-origin` abajo: la carta se levanta apoyada en su borde
+     inferior, como una ficha que se inclina hacia vos.
+
+     **Y se levanta con `translate` y `rotate`, no con `transform`.** Son
+     propiedades aparte, así que se componen con el `transform` en vez de
+     pisarlo: la animación de la carta jugada (`.hit`, que la agranda de golpe)
+     y el `scale` del VAR siguen corriendo encima del levantado, sin el salto
+     que había al empezar la animación con la carta ya inclinada. */
+  transform-origin:50% 100%;
+  transition:
+    translate .2s cubic-bezier(.2,.9,.25,1),rotate .2s cubic-bezier(.2,.9,.25,1),
+    transform .15s,box-shadow .2s,border-color .15s,background .15s;
   overflow:hidden;
 }
 
@@ -916,7 +957,11 @@ img{height:auto}
 .c-out.coin{color:var(--coin)}
 .c-out.neutral{color:var(--dim2)}
 
-.cell.empty{background:rgba(5,10,20,.35);border-style:dashed;border-color:#16294a;opacity:.45}
+/* El hueco vacío no es una ficha: sin canto y sin sombra. */
+.cell.empty{
+  background:rgba(5,10,20,.35);border-style:dashed;border-color:#16294a;opacity:.45;
+  --canto:none;box-shadow:none;
+}
 
 /* Carta trabada: sigue leyéndose, pero esta jugada no puede salir sorteada. */
 .cell.lock{
@@ -960,42 +1005,95 @@ img{height:auto}
 .cell.colhl:not(.empty):not(.lock){
   /* Borde de 2px y halo tenue: alcanza para saber qué te hace cada carta sin
      que la mesa se vuelva un semáforo. Antes eran 3px con sombra saturada y
-     cuatro colores fuertes juntos tapaban el contenido de las cartas. */
-  transform:translateY(-2px);
+     cuatro colores fuertes juntos tapaban el contenido de las cartas.
+
+     **Y la carta se levanta.** Antes subía 2px y nada más. Ahora sube siete,
+     se acerca 30 en el eje Z y se inclina 6 grados: la fila que estás por
+     jugar se despega de la mesa. El canto crece de 4 a 6px y la sombra que
+     tira se agranda, que es lo que dice cuánto se levantó.
+
+     Es la única parte que se anima, y sólo mientras la fila está elegida. */
+  translate:0 -7px 30px;
+  rotate:x 6deg;
   border-width:2px;
+  --canto:
+    inset 0 1px 0 rgba(255,255,255,.24),
+    inset 0 -1px 0 rgba(0,0,0,.5),
+    0 1px 0 rgba(150,195,250,.42),
+    0 2px 0 rgba(96,145,215,.4),
+    0 3px 0 rgba(56,92,155,.38),
+    0 4px 0 rgba(30,54,102,.36),
+    0 5px 0 rgba(16,34,68,.34),
+    0 20px 26px -8px rgba(0,0,0,.72);
 }
 .row.hl .cell.tono-good:not(.empty):not(.lock),
 .cell.colhl.tono-good:not(.empty):not(.lock){
   border-color:rgba(61,220,107,.75);
-  box-shadow:0 3px 14px rgba(61,220,107,.16);
+  box-shadow:var(--canto), 0 3px 14px rgba(61,220,107,.16);
 }
 .row.hl .cell.tono-bad:not(.empty):not(.lock),
 .cell.colhl.tono-bad:not(.empty):not(.lock){
   border-color:rgba(255,59,82,.75);
-  box-shadow:0 3px 14px rgba(255,59,82,.16);
+  box-shadow:var(--canto), 0 3px 14px rgba(255,59,82,.16);
 }
 /* Celeste: hay un porcentaje de gol en juego. */
 .row.hl .cell.tono-gol:not(.empty):not(.lock),
 .cell.colhl.tono-gol:not(.empty):not(.lock){
   border-color:rgba(94,205,242,.85);
-  box-shadow:0 3px 14px rgba(94,205,242,.2);
+  box-shadow:var(--canto), 0 3px 14px rgba(94,205,242,.2);
 }
 /* Amarillo: se juega la racha en un empate. */
 .row.hl .cell.tono-risk:not(.empty):not(.lock),
 .cell.colhl.tono-risk:not(.empty):not(.lock){
   border-color:rgba(245,200,66,.75);
-  box-shadow:0 3px 14px rgba(245,200,66,.16);
+  box-shadow:var(--canto), 0 3px 14px rgba(245,200,66,.16);
 }
 .row.hl .cell.tono-hot:not(.empty):not(.lock),
 .cell.colhl.tono-hot:not(.empty):not(.lock){
   border-color:rgba(232,116,20,.75);
-  box-shadow:0 3px 14px rgba(232,116,20,.16);
+  box-shadow:var(--canto), 0 3px 14px rgba(232,116,20,.16);
 }
 .row.hl .cell.tono-neutral:not(.empty):not(.lock),
 .cell.colhl.tono-neutral:not(.empty):not(.lock){
   border-color:rgba(147,174,222,.6);
-  box-shadow:0 3px 12px rgba(147,174,222,.12);
+  box-shadow:var(--canto), 0 3px 12px rgba(147,174,222,.12);
 }
+/* **El canto, por tamaño de carta.** En escritorio la carta mide 185px de ancho
+   y el canto de 4px es el 2% de eso. En un teléfono de 390 la carta mide 80 y
+   ese mismo canto pasa a ser el 5%: la mesa se empasta, porque la sombra
+   difusa se come los 5px de separación entre filas. Acá el canto baja a 2px y
+   la carta se levanta menos. */
+@media (max-width:440px){
+  .cell{
+    --canto:
+      inset 0 1px 0 rgba(255,255,255,.14),
+      inset 0 -1px 0 rgba(0,0,0,.45),
+      0 1px 0 rgba(116,166,232,.32),
+      0 2px 0 rgba(52,92,158,.3),
+      0 6px 10px -3px rgba(0,0,0,.6);
+  }
+  .row.hl .cell:not(.empty):not(.lock),
+  .cell.colhl:not(.empty):not(.lock){
+    translate:0 -4px 18px;
+    rotate:x 5deg;
+    --canto:
+      inset 0 1px 0 rgba(255,255,255,.2),
+      inset 0 -1px 0 rgba(0,0,0,.45),
+      0 1px 0 rgba(150,195,250,.4),
+      0 2px 0 rgba(96,145,215,.36),
+      0 3px 0 rgba(30,54,102,.32),
+      0 12px 16px -6px rgba(0,0,0,.7);
+  }
+}
+
+/* Con movimiento reducido la carta no se inclina ni se acerca: sube los mismos
+   2px de antes. El canto se queda, que es color y no movimiento. */
+@media (prefers-reduced-motion:reduce){
+  .row.hl .cell:not(.empty):not(.lock),
+  .cell.colhl:not(.empty):not(.lock){translate:0 -2px;rotate:none}
+  .cell .c-ico::after{transition:none}
+}
+
 .cell.hit{animation:hit .5s}
 @keyframes hit{
   0%{transform:scale(1)}
@@ -2323,6 +2421,17 @@ img{height:auto}
   border-radius:3px;opacity:.92;
 }
 .cell:hover .c-art,.row.hl .cell .c-art,.cell.colhl .c-art{opacity:1}
+
+/* Un brillo diagonal cruza la ilustración de la carta elegida: es el reflejo
+   de la luz sobre el plástico cuando la ficha se inclina. Una sola capa, sin
+   JavaScript y sin imagen. */
+.cell .c-ico::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(118deg,rgba(255,255,255,0) 38%,rgba(255,255,255,.16) 50%,rgba(255,255,255,0) 62%);
+  opacity:0;transition:opacity .22s;
+}
+.row.hl .cell:not(.empty):not(.lock) .c-ico::after,
+.cell.colhl:not(.empty):not(.lock) .c-ico::after{opacity:1}
 .cell.lock .c-art{opacity:.3;filter:grayscale(.7)}
 
 /* Los medidores: el medallón en chico. Apagado = gris y translúcido. */
@@ -7102,7 +7211,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 148;
+const VERSION = 149;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
