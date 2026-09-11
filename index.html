@@ -5786,6 +5786,53 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 }
 .pn-tira b.ok{color:var(--green);border-color:rgba(61,220,107,.45)}
 .pn-tira b.no{color:var(--red);border-color:rgba(255,59,82,.4)}
+
+/* ---- EL TUTORIAL, EN FICHAS ----
+   `.reglas` pasa a ser una grilla de dos columnas. En escritorio ya lo era
+   —una regla vieja lo hacía a partir de 1025px—, así que esto sólo extiende
+   lo mismo al teléfono. */
+.reglas{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left}
+/* Va con el prefijo `tu-`: `.fi` a secas ya es el ícono del cartel de gol y
+   los dos del pie de página, y una regla sin scope les caía encima. */
+.tu-fi{
+  border:1px solid var(--line);border-radius:8px;background:rgba(8,32,70,.45);
+  padding:10px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;
+  text-align:center;min-width:0;
+}
+/* La fila de cartas necesita el ancho entero. */
+.tu-fi.ancha{grid-column:1 / -1}
+.tu-fi-vis{display:flex;align-items:center;justify-content:center;width:100%;min-height:36px}
+.tu-fi > b{
+  font-family:var(--tit);font-weight:800;
+  font-size:clamp(11px, 3.3vw, 13px);letter-spacing:1.8px;color:var(--gold);
+}
+.tu-fi > span{
+  font-family:var(--txt);font-size:clamp(10.5px, 3vw, 12px);line-height:1.4;color:var(--dim);
+}
+.tu-fi > span b{color:var(--white);font-weight:600}
+.tu-fi em{
+  font-style:normal;font-family:var(--txt);
+  font-size:clamp(9.6px, 2.7vw, 11px);color:var(--gold);
+}
+.tu-fi .tu-reloj{width:38px;height:38px}
+/* En el teléfono la caja mide media pantalla y el texto se parte en tres o
+   cuatro renglones, así que las fichas se aprietan por tramo. Sin esto la
+   pantalla pedía 609px de los 590 que hay en un 360, y 633 de 530 en un 320. */
+@media (max-width:440px){
+  .reglas{gap:7px}
+  .tu-fi{padding:8px 7px;gap:5px}
+  .tu-fi-vis{min-height:30px}
+  .tu-fi > span{line-height:1.32}
+}
+@media (max-width:360px){
+  .reglas{gap:5px}
+  .tu-fi{padding:6px 5px;gap:3px}
+  .tu-fi-vis{min-height:24px}
+  .tu-fi > b{font-size:10.4px;letter-spacing:1.2px}
+  .tu-fi > span{font-size:10px;line-height:1.28}
+  .tu-fi em{font-size:9.2px;line-height:1.25}
+  .tu-fi .tu-reloj{width:32px;height:32px}
+}
 </style>
 </head>
 <body>
@@ -6534,13 +6581,23 @@ const tutoReloj = '<span class="tu-reloj"><svg viewBox="0 0 44 44" aria-hidden="
    —que se ajustan en cinco escalones por alto— dejarían de encontrarla a la
    primera. Metiéndola adentro, el orden visual cambia y ninguna de esas reglas
    se entera. */
-const tutoRegla = (vis, tit, txt, pie, cls) =>
-  '<div class="regla' + (cls ? ' ' + cls : '') + '">' +
-    '<div class="rg-txt"><b class="rg-tit">' + tit + '</b>' +
-      '<div class="rg-vis">' + vis + '</div>' +
-      '<span>' + txt + '</span>' +
-      (pie ? '<em>' + pie + '</em>' : '') +
-    '</div>' +
+/* **Cada regla es una ficha, y van de a dos.** Apiladas a lo largo, las seis
+   ocupaban 735px de los 768 que tiene un teléfono parado: entre el texto de
+   una y el título de la siguiente quedaban **7px**, y como iban centradas se
+   leían como una sola columna de texto dorado y blanco alternado.
+
+   En una grilla de dos columnas la separación no la da el aire sino **el
+   borde de cada caja**, y de paso se ve de un golpe que las reglas son seis.
+   La de las cuatro cartas ocupa las dos columnas: necesita el ancho.
+
+   El precio es que los textos tienen que entrar en media pantalla, así que
+   son más cortos que antes. */
+const tutoFicha = (vis, tit, txt, pie, cls) =>
+  '<div class="tu-fi' + (cls ? ' ' + cls : '') + '">' +
+    '<div class="tu-fi-vis">' + vis + '</div>' +
+    '<b>' + tit + '</b>' +
+    '<span>' + txt + '</span>' +
+    (pie ? '<em>' + pie + '</em>' : '') +
   '</div>';
 
 function comoSeJuega(alEmpezar){
@@ -6549,29 +6606,30 @@ function comoSeJuega(alEmpezar){
     '<h1>DUELO<br><em>FUTBOLERO</em></h1>' +
     '<div class="reglas">' +
 
-      tutoRegla(tutoFila(), 'ELEGÍS UNA FILA',
-        'Cuál de las cuatro cartas te toca lo decide el azar. Pero las ves antes.',
-        '', 'fila') +
+      tutoFicha(tutoFila(), 'ELEGÍS UNA FILA',
+        'Cuál te toca lo decide el azar. Pero <b>las ves antes</b>.',
+        '', 'fila ancha') +
 
-      /* **La misma frase, dada vuelta.** Los dos medidores terminan en lo
-         mismo —una situación de gol— y el texto no lo decía: el aguante
-         hablaba de «situación de gol» y la racha de «posibilidad de gol al
-         51%», como si fueran dos premios distintos. Son el mismo, para el
-         rival o para vos. */
-      tutoRegla(tutoMed('ico_aguante', 3, 4, 'cor'), 'EL AGUANTE',
-        'Es el físico. Si se <b>vacía</b>, es una <b>situación de gol para el rival</b>.') +
+      /* **La misma frase, dada vuelta, y con el nombre que usa el juego.**
+         Los dos medidores terminan en lo mismo y el texto no lo decía: el
+         aguante hablaba de «situación de gol» y la racha de «posibilidad de
+         gol al 51%», como si fueran dos premios distintos. Son el mismo,
+         para el rival o para vos — y se llama **POSIBILIDAD DE GOL**, que es
+         lo que dice el cartel de la mesa cuando aparece. */
+      tutoFicha(tutoMed('ico_aguante', 3, 4, 'cor'), 'EL AGUANTE',
+        'El físico. Si se <b>vacía</b>, es <b>posibilidad de gol</b> para el rival.') +
 
-      tutoRegla(tutoMed('ico_racha', 4, 4, 'ray'), 'LA RACHA',
-        'Es el envión. Si se <b>llena</b>, es una <b>situación de gol para vos</b>.',
-        'Con 3 <i class="ir"></i> ya podés atacar por columna.') +
+      tutoFicha(tutoMed('ico_racha', 4, 4, 'ray'), 'LA RACHA',
+        'El envión. Si se <b>llena</b>, es <b>posibilidad de gol</b> para vos.',
+        'Con 3 <i class="ir"></i> atacás por columna.') +
 
-      tutoRegla(tutoDuelo, 'LOS DUELOS',
-        'Tu número contra el de la carta. Si empatan, <b>mini juego al 50%</b>.') +
+      tutoFicha(tutoDuelo, 'LOS DUELOS',
+        'Tu número contra el suyo. Si empatan, <b>mini juego</b>.') +
 
-      tutoRegla(tutoItems(), 'LOS ÍTEMS',
-        'Reponen aguante, cargan racha o destraban cartas.') +
+      tutoFicha(tutoItems(), 'LOS ÍTEMS',
+        'Reponen aguante, cargan racha, destraban cartas.') +
 
-      tutoRegla(tutoReloj, 'NUEVE JUGADAS',
+      tutoFicha(tutoReloj, 'NUEVE JUGADAS',
         'Son los 90 minutos. Cinco rondas hasta la copa.') +
 
     '</div>' +

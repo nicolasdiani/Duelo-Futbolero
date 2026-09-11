@@ -6219,3 +6219,56 @@ del penal se suma.
 
 Medido en 320×568, 390×844 y 1366×768, en los tres casos —ronda de paso, final y
 partido único—: ninguna pantalla rueda.
+
+
+## El tutorial pasa a fichas
+
+Las seis reglas iban apiladas, centradas y pegadas. Medido en un teléfono de
+390×844: la pantalla ocupaba **735 de los 768px** disponibles y entre el texto de
+una regla y el título de la siguiente quedaban **7px**. Sin lugar para separar
+nada, las seis se leían como una sola columna de texto dorado y blanco alternado.
+
+Ahora cada regla es **una ficha**, y van de a dos. La separación no la da el aire
+sino **el borde de cada caja**, y de paso se ve de un golpe que las reglas son
+seis. La de las cuatro cartas ocupa las dos columnas: necesita el ancho.
+
+El resultado es más corto que antes en todos lados:
+
+| | hueco | antes | ahora | sobra |
+|---|---|---|---|---|
+| 320×568 | 530 | 521 | **496** | 34px |
+| 360×640 | 590 | 581 | **522** | 68px |
+| 390×844 | 768 | 718 | **667** | 101px |
+| 414×896 | 820 | — | **658** | 162px |
+
+En escritorio ya eran dos columnas desde una regla vieja; esto sólo extiende lo
+mismo al teléfono.
+
+### Posibilidad de gol
+
+El aguante y la racha terminan en lo mismo y el texto no lo decía con el nombre
+que usa el juego. El cartel de la mesa dice **POSIBILIDAD DE GOL**; las dos
+fichas ahora también:
+
+- **el aguante** — «El físico. Si se **vacía**, es **posibilidad de gol** para el rival.»
+- **la racha** — «El envión. Si se **llena**, es **posibilidad de gol** para vos.»
+
+El resto de los textos se acortaron: es lo que pide una caja de media pantalla.
+
+### Dos cosas que costaron
+
+**`.fi` ya existía.** La primera versión llamó a las fichas `.fi`, y esa clase
+es el ícono del cartel de gol (`.gf .fi`) **y los dos íconos del pie de página**
+(`.ft .fi`): una regla `.fi{}` sin scope les puso borde, fondo y padding a los
+dos del pie. Se ven en la captura antes de renombrar a `.tu-fi`, que es el
+prefijo que ya usan las piezas del tutorial.
+
+**Y en el teléfono no entraba.** Con los mismos valores que en 390, la pantalla
+pedía 609px de los 590 que hay en un 360 y 633 de 530 en un 320 — el texto en una
+caja de media pantalla se parte en tres o cuatro renglones. Se aprieta por tramo:
+debajo de 440px bajan el padding, el gap y el interlineado; debajo de 360, además,
+los cuerpos de letra y el reloj.
+
+`tutoRegla` se reemplazó por `tutoFicha`. Las reglas `.regla`, `.rg-txt`,
+`.rg-vis` y `.rg-tit` quedan sin uso —están repartidas en media docena de media
+queries— y conviene limpiarlas en una pasada aparte.
