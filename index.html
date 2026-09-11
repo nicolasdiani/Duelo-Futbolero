@@ -7211,7 +7211,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 149;
+const VERSION = 150;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -8189,7 +8189,10 @@ function renderBoard(){
     const libres = row.filter(x => x && !x.lock).length;
     const rowEl = document.createElement('div');
     rowEl.className = 'row';
-    const usable = libres > 0 && !G.busy && !G.targeting;
+    /* `G.phase` también acá, y no sólo en `tapLine`: si la fila se sigue
+       viendo encendida —con el cursor de mano y el resaltado al pasar— el
+       jugador la toca, y lo correcto es que ni se vea disponible. */
+    const usable = libres > 0 && !G.busy && !G.targeting && G.phase === 'match';
 
     const pickBtn = document.createElement('button');
     pickBtn.className = 'row-pick';
@@ -8223,7 +8226,7 @@ function renderBoard(){
   const colBar = $('colPicks');
   const rachaReady = G.racha >= G.rachaMax;          // habilita la situación de gol
   const colReady   = G.racha >= COSTO_COLUMNA;      // habilita las columnas
-  const libre = !G.busy && !G.targeting;
+  const libre = !G.busy && !G.targeting && G.phase === 'match';
 
   /* Las dos salidas de la racha se muestran SIEMPRE, apagadas mientras no las
      tengas. Escondiéndolas, un jugador nuevo no se enteraba de que existían
@@ -8292,7 +8295,15 @@ function isArmed(kind, idx){
 }
 
 function tapLine(kind, idx){
-  if(G.busy || G.targeting) return;
+  /* **Con el partido terminado no se juega más.** `G.busy` no alcanzaba:
+     `finDeJugada` lo apaga *antes* de llamar a `endMatch`, así que entre el
+     pitazo final y el cartel del resultado quedaba casi un segundo con la
+     mesa viva. Dos toques ahí adentro y salía una jugada más — con el reloj
+     en cero y el «Pitazo final» ya escrito en el relato.
+
+     Los ítems ya se apagaban así (`G.phase !== 'match'`); las filas y las
+     columnas eran las que faltaban. */
+  if(G.busy || G.targeting || G.phase !== 'match') return;
   /* Siempre en dos pasos, con dedo o con mouse: el primer toque **resalta** la
      línea —los colores dicen qué te hace cada carta— y el segundo largo el
      sorteo. Antes con mouse iba directo, así que el resaltado no se llegaba a
@@ -8857,8 +8868,12 @@ async function finDeJugada(){
     // Se acabaron los 90, pero si llegaste con la racha llena te queda el
     // descuento: la última pelota del partido.
     if(G.racha >= G.rachaMax) await descuento();
+    /* `endMatch` lo primero que hace es poner `G.phase = 'result'`, y de ahí
+       en más la mesa está apagada. Se llama **antes** de soltar `G.busy`
+       para que no quede ni un tick con las dos cosas abiertas. */
+    const fin = endMatch();
     G.busy = false;
-    return endMatch();
+    return fin;
   }
 
   // red de seguridad: si por lo que sea no queda ninguna carta jugable,
@@ -8866,8 +8881,9 @@ async function finDeJugada(){
   const hayJugada = [0,1,2,3].some(r => jugables('row', r).length > 0);
   if(!hayJugada){
     say('📣 Ya no queda nada para jugar. El árbitro termina el partido.', 'big');
+    const fin = endMatch();
     G.busy = false;
-    return endMatch();
+    return fin;
   }
 
   G.busy = false;
@@ -8988,6 +9004,12 @@ function duelRedibujarTienda(){ duelPintarTienda(G._tiendaQuien || 0, false); }
 /* Fin del partido: se compara el marcador, se anota en la serie y se sigue o se
    corta. Los empates en el 1v1 se definen por penales, como en el campeonato. */
 async function duelFinDePartido(){
+  /* **La fase, que acá faltaba.** El fin de partido del campeonato marcaba
+     `result` y el del 1v1 no marcaba nada, así que la mesa se quedaba en
+     `match` durante toda la tanda de penales: se podía seguir jugando cartas
+     mientras se pateaba. `duelResultado` la devuelve a `match` para el
+     partido siguiente de la serie. */
+  G.phase = 'result';
   guardarTurno();
   const [a, b] = G.J;
   let ganador;
@@ -9336,8 +9358,11 @@ async function finDeJugadaDuelo(){
 
   const quedan = G.grid.flat().some(c => c && !c.lock);
   if(G.turnosJugados >= DUELO.TURNOS || !quedan){
+    /* Igual que en el campeonato: primero se apaga la mesa, después se
+       suelta el `busy`. */
+    const fin = duelFinDePartido();
     G.busy = false;
-    return duelFinDePartido();
+    return fin;
   }
 
   if(G.turnosJugados === DUELO.ENTRETIEMPO){

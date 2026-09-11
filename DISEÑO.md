@@ -6460,3 +6460,65 @@ El recorte de texto es el mismo que antes del cambio: 2 a 3px en `.c-nm` por
 redondeo de interlineado, en las 16 cartas, con y sin el canto. Se comparó
 guardando el cambio en un `stash` y midiendo las dos versiones sobre el mismo
 tablero.
+
+
+## Después del pitazo final no se juega más
+
+Se podía. Entre el pitazo y el cartel del resultado quedaba **casi un segundo**
+con la mesa viva: dos toques ahí adentro y salía una jugada más, con el reloj
+en cero y el «📣 Pitazo final» ya escrito en el relato.
+
+Reproducido espiando `chooseLine` en un partido llevado a mano hasta el final:
+
+```
+chooseLine(row,0) con phase=match  busy=false reloj=1   ← la última, legítima
+chooseLine(row,1) con phase=result busy=false reloj=0   ← una más, después del final
+```
+
+### Por qué
+
+Tres cosas, y ninguna sola alcanzaba para abrir el agujero:
+
+1. `finDeJugada` apagaba `G.busy` **antes** de llamar a `endMatch`. Como
+   `endMatch` es asíncrono —`await wait(500)`, y después los penales o el cartel
+   de resultado—, entre una cosa y la otra la mesa quedaba destrabada.
+2. `tapLine` sólo miraba `G.busy` y `G.targeting`. La fase no.
+3. Y el `render` seguía dando las filas por jugables: `const usable = libres > 0
+   && !G.busy && !G.targeting`. Sin la fase, la fila se mostraba encendida,
+   con cursor de mano y resaltado al pasar — invitando al toque.
+
+Los **ítems ya lo hacían bien** desde antes: `b.disabled = G.busy || G.phase !==
+'match' || …`. Las filas y las columnas eran las que faltaban.
+
+### Lo que se hizo
+
+- `tapLine` se cierra con `G.phase !== 'match'`.
+- `usable` de las filas y `libre` de las columnas —que también apaga el cartel
+  de la posibilidad de gol— suman la fase, así la mesa **se ve** apagada y no
+  sólo no responde.
+- `endMatch` se llama antes de soltar `G.busy`, para que no quede ni un tick con
+  las dos puertas abiertas.
+
+### Y el 1v1 lo tenía peor
+
+`duelFinDePartido` no marcaba fase ninguna: se iba directo a los penales con
+`G.phase` todavía en `'match'`, así que ahí la mesa quedaba viva **durante toda
+la tanda**, no un segundo. Ahora marca `'result'` en la primera línea;
+`duelResultado` la devuelve a `'match'` para el partido siguiente de la serie.
+
+### Medido
+
+Con el arreglo puesto, martillando `tapLine` dos veces por tick durante los 19
+ticks que van del pitazo al cartel de GANASTE:
+
+| | antes | ahora |
+|---|---|---|
+| llamadas a `chooseLine` tras el pitazo | 1 | **0** |
+| filas con `onclick` | 4 | **0** |
+| botones de fila habilitados | 4 | **0** |
+| botones de columna habilitados | — | **0** |
+| ítems habilitados | 1 | **0** |
+| cartel de posibilidad de gol | activo | **apagado** |
+
+Verificado en los dos modos —partido único y 1v1— y comprobado que un partido
+nuevo vuelve a habilitar todo: `phase=match`, 4 filas jugables, ítems activos.
