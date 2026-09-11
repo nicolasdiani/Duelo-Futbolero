@@ -6522,3 +6522,68 @@ ticks que van del pitazo al cartel de GANASTE:
 
 Verificado en los dos modos —partido único y 1v1— y comprobado que un partido
 nuevo vuelve a habilitar todo: `phase=match`, 4 filas jugables, ítems activos.
+
+
+## La franja del teléfono es una consola
+
+Arriba de la mesa había **cinco cajas sueltas** flotando sobre el fondo: el
+aguante, la racha, la plata, el plantel y los ítems, con los ocho medallones al
+aire y sin nada que los contuviera. Ahora son **dos cajas** con el mismo marco y
+el mismo radio —el tablero de mandos y el plantel— y adentro de la primera los
+tres medidores separados por hilos en vez de por aire.
+
+**La grilla no se toca.** Las áreas, las filas y los gaps son los de antes, así
+que el responsive se sigue comportando igual; lo único que cambia es qué pasa
+adentro de cada celda.
+
+### El medidor, en barra
+
+Cuatro dibujos del mismo corazón ocupaban 104px para decir un número del 0 al 4.
+Ahora el dibujo va **una sola vez**, a la izquierda, y el nivel lo dicen cuatro
+tramos de 19px: se lee de un golpe, sin contar medallones.
+
+El medallón **sigue siendo un `<img>`**: en vez de cambiar el marcado, el mapa
+de bits se empuja fuera de la caja con `object-position:-999px`. La imagen no se
+dibuja, el fondo del elemento sí, y queda el tramo. Un `content-visibility:hidden`
+hacía lo mismo en una línea, pero es mucho más nuevo y en un iPhone viejo habría
+mostrado el corazón aplastado en 7px de alto.
+
+### Los huecos de ítem que te quedan libres
+
+La fila ya tenía cuatro columnas fijas, pero las vacías no se veían: con dos
+ítems parecía que la fila se había quedado corta en vez de que te sobraban dos
+lugares. Ahora se dibujan punteadas. Sólo en el teléfono — en escritorio la
+lista es una columna y serían renglones muertos.
+
+### Dos cosas que costaron
+
+**El `#panelEquipo` adelante, y no las clases a secas.** Los mismos `.hearts` y
+`.racha-track` aparecen en el vestuario (`.e-item`), donde tienen que seguir
+siendo los medallones. Y con dos clases tampoco alcanzaba: más abajo en la hoja
+hay un `.med-art{width:22px;height:22px}` para pantallas de 440 que ganaba por
+orden y dejaba los corazones como bolas rojas de 19×22 en vez de barras.
+Medido: con `.hearts .med-art` la racha salía bien y el aguante no, porque la
+racha tenía una segunda regla que la salvaba de casualidad.
+
+**La amarilla acumulada** se dibujaba como un anillo alrededor de los cuatro
+corazones. Sin corazones, el anillo pasa al ícono.
+
+### El pop-up del ítem
+
+Se revisó lo que pediste —que el de la derecha no se salga del margen— y **no se
+sale en ningún lado**, porque en el teléfono la ficha no está anclada al botón:
+va `position:fixed` con `left:10px;right:10px`, ocupando la pantalla menos el
+margen, y lo único que apunta al ítem es el pico. Medido abriendo los cuatro:
+
+| | ficha | ¿se sale? | pico |
+|---|---|---|---|
+| 320×568 | 10 → 310 | no | 23 · 81 · 139 · 198 |
+| 390×844 | 10 → 380 | no | 31 · 107 · 183 · 259 |
+| 740×400 (apaisado) | 10 → 730 | no | — |
+| 1050×760 (escritorio) | 214 → 396 | no | — |
+
+En escritorio sí está anclada, pero se abre **hacia la derecha** del panel de
+ítems, que es la columna de la izquierda: le sobran 650px.
+
+Lo que sí cambió es el radio: la ficha pasa de 9 a 12px y sus botones a 8, para
+que hable el mismo idioma que la consola.

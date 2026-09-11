@@ -1190,6 +1190,11 @@ img{height:auto}
 
 /* ---------- ÍTEMS (columna izquierda) ---------- */
 .item-list{display:flex;flex-direction:column;gap:6px}
+/* Los huecos de ítem que todavía no usaste. En escritorio la lista es una
+   columna y un hueco vacío sería un renglón muerto, así que sólo existen en
+   el teléfono, donde la fila tiene cuatro columnas fijas y el hueco dice
+   **cuántos podés llevar**. Antes la fila con dos ítems parecía corta. */
+.item-hueco{display:none}
 .item{
   display:flex;align-items:flex-start;gap:8px;width:100%;text-align:left;
   background:var(--panel2);border:1px solid var(--line);color:var(--white);
@@ -3057,10 +3062,79 @@ body{padding-bottom:36px}
     filter:drop-shadow(0 0 5px rgba(245,200,66,.65));
   }
   .rec-lb{display:none}
-  .hearts,.racha-track{display:grid;grid-template-columns:repeat(4,26px);
-                       justify-items:center;align-items:center;gap:0}
-  .med-art{width:24px;height:24px}
-  .racha-track .med-art{width:20px;height:24px}
+
+  /* ---- LA CONSOLA ----
+     Los medidores, la plata y el plantel eran cinco cajas sueltas flotando
+     sobre el fondo, con los ocho medallones al aire. Ahora son **dos cajas**:
+     el tablero de mandos y el plantel, con el mismo marco y el mismo radio,
+     y adentro del primero los tres medidores separados por hilos en vez de
+     por aire.
+
+     La grilla no se toca: las áreas, las filas y los gaps son los de antes,
+     así que el responsive se sigue comportando igual. Lo único que cambia es
+     qué pasa adentro de cada celda. */
+  #panelEquipo{
+    background:linear-gradient(180deg,rgba(0,20,64,.92),rgba(0,8,31,.95));
+    border:1px solid var(--filo);border-radius:12px;
+    padding:5px 8px;gap:0;
+    display:grid;grid-template-columns:1fr 1fr auto;align-items:center;
+    column-gap:8px;
+  }
+  #panelPlantel{
+    background:linear-gradient(180deg,rgba(0,20,64,.92),rgba(0,8,31,.95));
+    border:1px solid var(--filo);border-radius:12px;
+    padding:4px 5px;gap:4px;justify-content:center;
+  }
+  #panelPlantel .stat{background:none;border:none;padding:1px 3px;border-radius:8px}
+
+  /* ---- EL MEDIDOR, EN BARRA ----
+     Cuatro dibujos del mismo corazón ocupaban 104px para decir un número del
+     0 al 4. Ahora el dibujo va **una sola vez**, y el nivel lo dicen cuatro
+     tramos: se lee de un golpe, sin contar medallones, y sobra ancho.
+
+     El ícono se pinta con `::before` desde las variables que ya carga el
+     arranque, así el marcado no cambia. */
+  #m-aguante,#m-racha{
+    display:grid;grid-template-columns:auto 1fr;align-items:center;gap:6px;
+  }
+  #m-aguante{padding-right:8px;border-right:1px solid rgba(147,174,222,.18)}
+  #m-racha{padding-left:2px}
+  #m-aguante::before,#m-racha::before{
+    content:'';width:17px;height:17px;flex:0 0 auto;
+    background-size:contain;background-repeat:no-repeat;background-position:center;
+  }
+  #m-aguante::before{background-image:var(--ico-aguante)}
+  #m-racha::before{background-image:var(--ico-racha)}
+  /* Con el `#panelEquipo` adelante y no a secas: los mismos medidores aparecen
+     en el vestuario (`.e-item`) y ahí tienen que seguir siendo los medallones.
+     Y con dos clases no alcanzaba: más abajo hay un `.med-art{width:22px}` para
+     pantallas de 440 que ganaba por orden y dejaba los corazones redondos.  */
+  #panelEquipo .hearts,#panelEquipo .racha-track{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:3px;
+    width:100%;align-items:center;
+  }
+  /* **El medallón sigue siendo un `<img>`.** En vez de cambiar el marcado se
+     empuja el mapa de bits fuera de la caja con `object-position`: la imagen
+     no se dibuja, el fondo del elemento sí, y queda el tramo. Un
+     `content-visibility:hidden` hacía lo mismo pero es mucho más nuevo, y en
+     un iPhone viejo habría mostrado el corazón aplastado en 7px de alto. */
+  #panelEquipo .med-art{
+    width:100%;height:7px;border-radius:999px;
+    object-fit:none;object-position:-999px -999px;
+    background:rgba(147,174,222,.16);
+  }
+  #panelEquipo .racha-track .med-art{width:100%;height:7px}
+  #panelEquipo .med-art.off{filter:none;opacity:1}
+  #panelEquipo .hearts .med-art.on{filter:none;background:var(--red);box-shadow:0 0 7px rgba(255,59,82,.55)}
+  #panelEquipo .racha-track .med-art.on{filter:none;background:var(--gold);box-shadow:0 0 7px rgba(245,200,66,.55)}
+  #m-dinero{padding-left:8px;border-left:1px solid rgba(147,174,222,.18)}
+
+  /* La amarilla se dibujaba como un anillo alrededor de los cuatro corazones.
+     Con la barra, el anillo va sobre el ícono. */
+  #m-aguante.con-amarilla .hearts{outline:none;background:none}
+  #m-aguante.con-amarilla::before{
+    outline:1px solid var(--gold);outline-offset:2px;border-radius:50%;
+  }
 
   #panelItems .panel-tit{display:none}
   /* ---- LOS ÍTEMS, UNA SOLA LÍNEA ----
@@ -3083,8 +3157,11 @@ body{padding-bottom:36px}
     grid-auto-rows:auto;gap:3px;
   }
   .item{
-    display:flex;align-items:center;gap:4px;padding:3px 5px;border-radius:5px;
+    display:flex;align-items:center;gap:4px;padding:3px 5px;border-radius:9px;
     min-width:0;                      /* deja que el nombre se recorte, no que empuje */
+  }
+  .item-hueco{
+    display:block;border:1px dashed rgba(147,174,222,.22);border-radius:9px;
   }
   .item .ii{font-size:13px;flex:0 0 auto}
   /* El nombre arriba y el efecto abajo, en columna: en una sola línea el
@@ -3134,6 +3211,9 @@ body{padding-bottom:36px}
     border:1px solid var(--line);
   }
   #panelPlantel .stat .n{font-size:15px;line-height:1}
+  .gol-banner{border-radius:11px}
+  .item-ficha{border-radius:12px}
+  .item-ficha .if-btn{border-radius:8px}
   #panelPlantel .stat-txt{font-size:0;line-height:1}
   #panelPlantel .stat-txt b{font-size:7px;letter-spacing:.3px;display:block;color:var(--dim)}
   #panelPlantel .stat.atk .n{color:var(--red)}
@@ -7211,7 +7291,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 150;
+const VERSION = 151;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -8419,6 +8499,20 @@ function renderItems(){
     b.onclick = (ev) => { ev.stopPropagation(); abrirItem(k, b); };
     bar.appendChild(b);
   });
+  huecosItem(bar, owned.length);
+}
+
+/* Los huecos que te quedan libres. La fila ya tenía cuatro columnas fijas,
+   pero las vacías no se veían y con dos ítems parecía que la fila se había
+   quedado corta. Dibujadas, dicen **cuántos podés llevar**. Sólo se ven en el
+   teléfono: en escritorio la lista es una columna y serían renglones muertos. */
+function huecosItem(bar, usados){
+  for(let i = usados; i < 4; i++){
+    const h = document.createElement('span');
+    h.className = 'item-hueco';
+    h.setAttribute('aria-hidden', 'true');
+    bar.appendChild(h);
+  }
 }
 
 /* ---------------- ítems en partido ---------------- */
