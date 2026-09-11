@@ -6344,3 +6344,49 @@ Queda sin uso el CSS de la fichita vieja: `.item-ficha.ficha-gol`, `.fg-top`,
 `.fg-nm`, `.fg-esp` y `.gol-ancla`, repartidos en seis media queries, más los
 `:not(.ficha-gol)` que ahora sobran. Conviene limpiarlo en una pasada aparte,
 junto con `.regla` / `.rg-*` del tutorial.
+
+
+## El filo subido no había llegado a los paneles
+
+Cuando se cambió el fondo a negro, `--filo` pasó de `#1c4a8f` a `#3d7ed6` para
+que el borde de las cartas se despegara. Medido ahora en el navegador, el filo
+nuevo estaba **sólo en las cartas**: la marquesina y los cuatro paneles seguían
+en `--line` (`#12336e`).
+
+Es el mismo error que ya se había arreglado en `.cell`, en otros dos lugares. El
+color estaba escrito:
+
+```css
+.panel{border-color:var(--filo);box-shadow:0 10px 30px rgba(0,6,18,.6)}
+.marquesina{border-color:var(--filo);border-top-color:var(--gold); …}
+```
+
+…pero **más abajo en la hoja** los dos vuelven a declarar `border:1px solid
+var(--line)`, y el shorthand repinta el color. Las sombras de ese bloque también
+las pisaba un `box-shadow` posterior, así que las dos líneas enteras no hacían
+nada. Se borraron, y el filo va en la misma declaración que el borde:
+
+| | antes | ahora |
+|---|---|---|
+| `.cell` | `#3d7ed6` | `#3d7ed6` |
+| `.marquesina` | `#12336e` | **`#3d7ed6`** |
+| `#panelItems` | `#12336e` | **`#3d7ed6`** |
+| `#panelEquipo` | `#12336e` | **`#3d7ed6`** |
+| `#panelPlantel` | `#12336e` | **`#3d7ed6`** |
+| `#panelLog` | `#12336e` | **`#3d7ed6`** |
+
+El relato tenía además **su propio** `border` en la media query de escritorio, así
+que hicieron falta tres declaraciones, no dos. El filo de arriba de la marquesina
+sigue dorado.
+
+**La regla que sale de acá:** en esta hoja, un `border-color` suelto sólo es
+seguro si no hay ningún `border` shorthand para ese selector más abajo. Cuando lo
+hay —y acá suele haberlo, porque los bloques de color están arriba y los de
+estructura abajo— el color tiene que ir en el shorthand.
+
+### Y se fue el césped
+
+`pasto` era el recorte de la cancha que usaba el fondo de la mesa. Cuando se sacó
+la imagen de fondo, quedaron los **20 KB de base64** y el arranque que los cargaba
+en `--fondo-pasto` en cada partida. Ninguna regla leía esa variable. El archivo
+pasa de 1259 a 1238 KB.
