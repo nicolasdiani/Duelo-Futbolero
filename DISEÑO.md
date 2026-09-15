@@ -6697,3 +6697,51 @@ cuenta lo que llevás elegido, que es justo lo que el jugador está armando.
 
 La chapita `.f-x` se fue. Compartía regla con el `máx 1` de los ítems que no se
 acumulan (`.f-max`), así que esa regla se separó en vez de borrarse entera.
+
+
+## El arquero del penal se describe desde tu lado
+
+Reporte: «me dijo que el arquero se tiró a la izquierda, yo pateé a mi izquierda
+de la pantalla, e hice el gol». No era ambigüedad — **el texto contradecía la
+animación**.
+
+El cartel decía «se tira a su derecha» y «a su izquierda», que es correcto
+**desde el arco** y al revés de todo lo demás que ve el jugador: los botones, las
+flechas ⬅ ➡ y el arquero moviéndose están en el lado de la pantalla. Como el
+arquero está de frente, su izquierda es tu derecha.
+
+```
+zona 0 → x 48  → izquierda de la pantalla → decía «se tira a su derecha»
+zona 1 → x 100 → el medio                 → decía «se queda parado en el medio»
+zona 2 → x 152 → derecha de la pantalla   → decía «se tira a su izquierda»
+```
+
+Así que al patear a la izquierda y ver al arquero volar a la derecha, el cartel
+decía «se tira a su izquierda». Y encima era gol, que es lo que lo volvía
+incomprensible.
+
+`animarPenal` lo manda a la zona `suyo`, que es la misma coordenada de pantalla
+que los botones, así que ahora el texto nombra esa zona: **vuela a tu izquierda**
+/ **se queda parado en el medio** / **vuela a tu derecha**.
+
+Se descartó «se tiró para el otro lado», que era la otra salida: no sirve cuando
+el arquero se queda en el medio y pateaste a un palo, ni cuando los dos van al
+mismo lado.
+
+### Verificado
+
+Reproducido el caso del reporte pateando siempre a la izquierda de la pantalla y
+midiendo **al arquero en plena animación**, antes de que el cartel tape el arco:
+
+| | |
+|---|---|
+| pateo | izquierda de la pantalla |
+| el arquero se mueve a | `+52px` → derecha de la pantalla |
+| resultado | ¡GOL! |
+| cartel | «LA PONÉS IZQUIERDA · EL ARQUERO VUELA A TU DERECHA» |
+
+Y las nueve combinaciones de palo contra palo dan un texto que nombra la zona a
+la que el arquero efectivamente fue, con el resultado que corresponde.
+
+`PALOS` la usa sólo `tirarPenal` —el penal definitorio—; la tanda de cinco tiene
+sus propios textos y no se tocó.

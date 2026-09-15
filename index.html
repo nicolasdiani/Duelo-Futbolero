@@ -7356,7 +7356,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 153;
+const VERSION = 154;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -10849,10 +10849,20 @@ async function endMatch(){
    que te lo adivine, dos tercios de que entre. No entran acá ni el ataque ni
    la racha a propósito — el penal es la moneda al aire con la que termina
    cualquier partido de fútbol. */
+/* **El arquero se describe desde tu lado, no desde el suyo.** Decía «se tira a
+   su derecha» y «a su izquierda», que es correcto desde el arco y al revés de
+   todo lo demás que ve el jugador: los botones, las flechas ⬅ ➡ y la animación
+   están en el lado de la pantalla. Como el arquero está de frente, su
+   izquierda es tu derecha, así que al tirar a la izquierda y verlo volar a la
+   derecha el cartel decía «se tira a su izquierda» — y encima era gol.
+
+   `animarPenal` lo manda a la zona `suyo`, que es la misma coordenada de
+   pantalla que los botones, así que el texto ahora nombra esa zona y coincide
+   con lo que se acaba de ver. */
 const PALOS = [
-  { key:'izq',   ico:'⬅', nm:'IZQUIERDA', arq:'se tira a su derecha' },
+  { key:'izq',   ico:'⬅', nm:'IZQUIERDA', arq:'vuela a tu izquierda' },
   { key:'medio', ico:'⬆', nm:'AL MEDIO',  arq:'se queda parado en el medio' },
-  { key:'der',   ico:'➡', nm:'DERECHA',   arq:'se tira a su izquierda' }
+  { key:'der',   ico:'➡', nm:'DERECHA',   arq:'vuela a tu derecha' }
 ];
 
 async function penalShootout(){
