@@ -6645,3 +6645,55 @@ diseño, así que no mueve nada.
 
 El texto de la columna entra en todos lados: pide 61px de los 63 que hay en un
 320, 79 de 81 en un 390 y 120 de 122 apaisado.
+
+
+## Cuántos ítems tenés, en su propia columna
+
+Lo único que decía qué llevabas era una chapita pegada al nombre: **24×17px con
+el número en 10**. Y sólo aparecía si tenías al menos uno, así que la lista no
+distinguía «no tengo» de «no hay nada que decir» — para saber con qué contabas
+había que leer los cuatro renglones.
+
+Ahora es **una columna**, alineada en los cuatro: el número pasa de 10 a 19px y
+el que no tenés muestra un cero apagado en vez de no mostrar nada.
+
+```
+antes:  [icono]  SUPLENTES x1          €10M
+        [icono]  SEGUNDO AIRE          €30M     ← no dice nada
+
+ahora:  [icono]  SUPLENTES      ┌───┐  €10M
+                                │ 1 │
+                                │Tenés│
+        [icono]  SEGUNDO AIRE   ┌───┐  €30M     ← dice cero
+                                │ 0 │
+                                │Tenés│
+```
+
+El `min-width:40px` es lo que la mantiene alineada: sin él, el 0 y el 2 dan
+anchos distintos y la lista deja de barrerse de un vistazo.
+
+### Lo que cuesta
+
+La columna le roba 40px de ancho al texto, y eso puede partir un efecto largo en
+dos renglones. Medido, con un suplente y dos gritos en la mochila:
+
+| | 320×568 | 390×844 |
+|---|---|---|
+| SUPLENTES | 62 → **62** | 62 → **62** |
+| GRITO DEL DT | 64 → **64** | 64 → **64** |
+| SEGUNDO AIRE | 62 → **74** | 62 → **62** |
+| VAR | 62 → **62** | 62 → **62** |
+| la tarjeta entera | 469 → **481** | 515 → **515** |
+
+O sea: **en 390 no cuesta nada**, y en 320 cuesta 12px, todos del efecto largo de
+SEGUNDO AIRE —«+2 ❤ y recuperás un ❤ de máximo»— que ahí sí se parte en dos.
+La tarjeta sigue sin scroll propio en las dos medidas.
+
+### Y también en el vestuario
+
+`filaItem` la comparten el mercado del campeonato y la pantalla de elegir ítems
+del partido único, así que el contador aparece en las dos. En el vestuario
+cuenta lo que llevás elegido, que es justo lo que el jugador está armando.
+
+La chapita `.f-x` se fue. Compartía regla con el `máx 1` de los ítems que no se
+acumulan (`.f-max`), así que esa regla se separó en vez de borrarse entera.
