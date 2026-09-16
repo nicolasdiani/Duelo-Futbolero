@@ -6745,3 +6745,127 @@ la que el arquero efectivamente fue, con el resultado que corresponde.
 
 `PALOS` la usa sólo `tirarPenal` —el penal definitorio—; la tanda de cinco tiene
 sus propios textos y no se tocó.
+
+
+## Un solo velo y una sola caja
+
+Cada pop-up era un overlay suelto: se creaba su `div`, se colgaba del `body` y
+al cerrarse se sacaba entero. Encadenar dos —que es lo que pasa todo el tiempo:
+la jugada y el gol, el empate y el penal, el sorteo y la llegada— daba tres
+cortes seguidos.
+
+```
+del empate al arco   wrap.remove() saca el overlay y recién después se monta
+                     el siguiente → un fotograma con la mesa a la vista, y el
+                     cartel nuevo arrancando de scale(.72)
+
+del arco al result.  no es un pop-up nuevo: es un innerHTML sobre el mismo.
+                     Corte seco, y la caja salta de 370 a 196px de alto
+
+al cerrar            .saliendo le bajaba la opacidad **al velo entero**, no al
+                     cartel: la mesa aparecía por detrás mientras el cartel
+                     todavía se estaba yendo
+```
+
+Ahora los **catorce** pop-ups del juego comparten un velo y una caja. Cuando uno
+sigue a otro no se saca nada: la caja se estira o se encoge hasta el tamaño del
+cartel nuevo, el filo se funde del color viejo al nuevo, y el contenido que se
+va queda un instante encima —quieto, en su lugar— y se apaga.
+
+### Las tres piezas
+
+`montarPop(wrap)` reemplaza al `document.body.appendChild(wrap)` de cada
+pop-up. Si no hay nada arriba monta el velo tal cual venía, con su animación de
+entrada de siempre; si ya hay uno, transforma el que está y **devuelve ese**,
+que es el que el pop-up tiene que seguir usando para enganchar sus botones. Por
+eso cada llamador pasó de `const wrap` a `let wrap`.
+
+`morfarPop(caja, clase, contenido)` es el cambio en sí. Lo usan tanto el pop-up
+que reemplaza a otro como los cinco que se resuelven en el lugar —la moneda, el
+penal de la tanda, el mano a mano, la situación de gol y el penal definitorio—,
+que antes hacían `box.className = …; box.innerHTML = …` de un fotograma al otro.
+
+`cerrarPop()` reemplaza a los `wrap.remove()`. **No levanta el velo en el
+acto**: le da 90ms de gracia por si atrás viene otro cartel. Si viene, el velo
+no se levanta nunca; si no, se va. Es lo único que hace falta para que las
+cadenas se encadenen solas, sin que ningún pop-up tenga que saber cuál es el
+siguiente.
+
+Y `esperarOClick` ahora resuelve en el acto en vez de esperar a que el velo
+termine de desvanecerse: si esperara, el pop-up de atrás no llegaría a tiempo
+para agarrar el tiempo de gracia y la cadena volvería a cortarse.
+
+### El que se va
+
+El truco para que el contenido se disuelva sin tocar el marco es un **fantasma**:
+los hijos del cartel viejo se mudan a un `div` absoluto adentro de la caja, con
+las clases del cartel viejo —para que se siga viendo igual— pero sin su borde ni
+su fondo, que son los de la caja y no se van a ningún lado. El `padding` se le
+copia antes de cambiar las clases, porque el aviso y la situación no tienen el
+mismo.
+
+Así el contenido nuevo está en su lugar **sincrónicamente**, que es lo que
+permitió no tocar ni una línea de los catorce pop-ups: todos siguen haciendo su
+`wrap.querySelector('#unBoton').onclick = …` en el renglón de abajo.
+
+### Los tamaños se sueltan
+
+El píxel es lo que rompe el responsive, así que dura poco: la caja lleva un
+`width`/`height` explícito **solo mientras corre la transición**, y a los 360ms
+se sueltan. En reposo cada cartel mide exactamente lo que dicen sus reglas, con
+sus mismos breakpoints — rotar el teléfono o cambiar de ancho lo reacomoda igual
+que antes.
+
+Medido, abriendo los doce pop-ups uno por uno contra la versión anterior:
+
+| | 320×568 | 390×844 | 1280×800 |
+|---|---|---|---|
+| aviso de empate | 296×434 | 350×421 | 538×474 |
+| el arco del penal | 294×370 | 350×370 | 538×512 |
+| el penal resuelto | 294×207 | 350×196 | 538×273 |
+| mano a mano | 294×455 | 350×487 | 538×684 |
+| mano a mano resuelto | 294×225 | 350×225 | 538×299 |
+| situación de gol | 294×298 | 350×301 | 538×401 |
+| cartel de gol | 280×231 | 350×301 | 538×379 |
+| aviso de racha llena | 296×431 | 350×553 | 538×612 |
+| se te funde el equipo | 296×395 | 350×461 | 563×529 |
+| tiempo de descuento | 296×486 | 350×613 | 538×679 |
+
+**Los treinta valores son idénticos a los de v154**, incluidos los cinco que
+pasan por una transformación. Tenía que ser así: al soltarse los píxeles la caja
+queda con la misma clase y el mismo contenido que le ponía el código viejo.
+
+### Lo que sí se mueve
+
+La cadena del penal definitorio, medida en vivo:
+
+| | alto | filo |
+|---|---|---|
+| empate | 421px | blanco |
+| a mitad de camino | 414px | blanco → dorado |
+| el arco | 370px | dorado |
+| ¡GOL! | 196px | verde |
+
+Un solo cartel que cambia tres veces, en vez de tres carteles que se pisan.
+
+### Detalles
+
+`.pop-caja` lleva `animation:none`: `poppin` se dispara cada vez que se le
+aplica la clase al elemento, así que sin eso la caja rebotaba en el medio de la
+transformación. El cierre sí la necesita, y por eso `.saliendo .pop-caja` la
+vuelve a pedir con `!important`.
+
+La clase de la caja se pone **un recálculo antes** que el resto, para que el filo
+ya tenga su transición puesta cuando le cambia el color. Y el arranque de la
+transformación no usa `requestAnimationFrame` sino un `void offsetHeight`: así
+también termina bien cuando el navegador tiene los frames congelados —una
+pestaña en segundo plano, una ventana tapada—, donde `rAF` no corre nunca.
+
+`.saliendo` ahora desvanece también el aviso y el pop-up de la jugada, que no
+estaban en la lista y se iban de golpe. Y el velo espera 60ms antes de empezar a
+irse, para que el cartel salga primero; el velo se saca a los 300, que es lo que
+suman esa espera y sus 220 de desvanecido.
+
+Las **pantallas** —el mercado, el resultado del partido, el menú— no entran acá:
+esas son `openCard`, tienen su propio overlay y su propia apertura, y no se
+encadenan entre sí.

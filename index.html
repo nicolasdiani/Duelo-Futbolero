@@ -420,9 +420,56 @@ img{height:auto}
    nunca y la pantalla quedaba gris y trabada. */
 .gol-flash{background:rgba(3,7,16,.72);z-index:200;pointer-events:none}
 .gol-flash.clickeable{pointer-events:auto}
-/* El desvanecido de salida: lo dispara el JS justo antes de sacar el cartel. */
-.saliendo .gf, .saliendo .sit{animation:golsale .22s ease-in both}
-.saliendo{transition:opacity .22s;opacity:0}
+/* El desvanecido de salida: lo dispara el JS justo antes de sacar el cartel.
+   **El cartel se va primero y el velo después.** Antes el velo se apagaba al
+   mismo tiempo, así que la mesa aparecía por detrás mientras el cartel todavía
+   se estaba yendo: 60ms de retraso alcanzan para que se lean en orden. Y el
+   aviso —que no estaba en la lista— se iba de golpe, sin desvanecerse. */
+.saliendo .gf, .saliendo .sit, .saliendo .aviso, .saliendo .play{
+  animation:golsale .22s ease-in both;
+}
+.saliendo .pop-caja{animation:golsale .22s ease-in both !important}
+.saliendo{transition:opacity .22s ease .06s;opacity:0}
+
+/* ---------- EL ESCENARIO ----------
+   Todos los carteles del juego comparten **un solo velo y una sola caja**.
+   Cuando uno sigue a otro no se saca nada: la caja se estira o se encoge
+   hasta el tamaño del cartel nuevo mientras el contenido se disuelve por
+   encima. El velo solo se levanta cuando detrás del que se cierra no viene
+   otro — lo decide el tiempo de gracia de `cerrarPop`.
+
+   Los tamaños en píxeles duran lo que dura la transición y después se
+   sueltan: **en reposo cada cartel mide exactamente lo que medía antes**, con
+   sus mismas reglas y sus mismos breakpoints. Rotar el teléfono o cambiar de
+   ancho lo reacomoda igual que siempre. */
+.pop-velo{transition:background-color .26s ease, backdrop-filter .26s ease}
+/* La caja que ya se transformó una vez no vuelve a hacer su animación de
+   entrada: `poppin` se dispara cada vez que se le aplica la clase, y eso
+   metía un rebote en el medio de la transformación. */
+.pop-caja{
+  animation:none !important;
+  transition:border-color .28s ease, box-shadow .28s ease;
+}
+.pop-caja.pop-morfando{
+  overflow:hidden;
+  transition:width .3s cubic-bezier(.4,0,.2,1), height .3s cubic-bezier(.4,0,.2,1),
+             border-color .28s ease, box-shadow .28s ease;
+}
+/* Lo que se va queda un instante encima, quieto y en su lugar, y se apaga.
+   Lleva las clases del cartel viejo para que se siga viendo igual, pero sin
+   su marco ni su fondo: el marco es el de la caja, que no se va a ningún
+   lado. El `padding` se lo pone el JS, copiado del cartel que se va. */
+.pop-fantasma{
+  position:absolute;inset:0;pointer-events:none;opacity:1;
+  transition:opacity .19s ease;
+  width:auto !important;height:auto !important;max-width:none !important;
+  border:0 !important;background:none !important;box-shadow:none !important;
+  backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+  animation:none !important;border-radius:0 !important;
+}
+@media (prefers-reduced-motion:reduce){
+  .pop-velo,.pop-caja.pop-morfando,.pop-fantasma{transition:none}
+}
 .play-flash{background:rgba(3,7,16,.72);backdrop-filter:blur(3px);z-index:190}
 .sit-flash{background:rgba(3,7,16,.9);backdrop-filter:blur(6px);z-index:210}
 
@@ -6779,7 +6826,7 @@ function rivalJ(){ return G.modo === 'duelo' ? G.J[1 - G.turno] : null; }
    Devuelve el índice del que ganó el sorteo. */
 function moneda(eqs, canta, titulo, bajada){
   return new Promise(resolve => {
-    const wrap = document.createElement('div');
+    let wrap = document.createElement('div');
     wrap.className = 'sit-flash';
     wrap.innerHTML =
       '<div class="sit moneda">' +
@@ -6792,7 +6839,7 @@ function moneda(eqs, canta, titulo, bajada){
           '<button class="palo" data-cara="0"><span class="pi">🌑</span><span class="pn">SECA</span></button>' +
         '</div>' +
       '</div>';
-    document.body.appendChild(wrap);
+    wrap = montarPop(wrap);
 
     wrap.querySelectorAll('.palo').forEach(btn => {
       btn.onclick = async () => {
@@ -6810,12 +6857,12 @@ function moneda(eqs, canta, titulo, bajada){
         await wait(1100);
 
         const box = wrap.querySelector('.sit.moneda');
-        box.className = 'sit moneda resuelta';
-        box.innerHTML =
+        /* La caja no se corta: se transforma. Lo mismo en los otros cuatro. */
+        morfarPop(box, 'sit moneda resuelta',
           '<div class="sit-tag">SALIÓ ' + (salio ? 'CARA' : 'SECA') + '</div>' +
           '<div class="sit-ico">' + icoDesenlace(salio ? 'cara' : 'seca') + '</div>' +
           '<div class="t">' + eqs[gana].club + '</div>' +
-          '<div class="s">' + (acerto ? 'ACERTÓ EL SORTEO' : 'SE LO LLEVA IGUAL') + '</div>';
+          '<div class="s">' + (acerto ? 'ACERTÓ EL SORTEO' : 'SE LO LLEVA IGUAL') + '</div>');
         await esperarOClick(wrap, ESPERA_FIN);
         resolve(gana);
       };
@@ -7183,6 +7230,134 @@ const POOLS = {
 };
 
 
+/* ---------------- el escenario de los pop-ups ----------------
+   Todos los carteles del juego —la jugada, el gol, la situación, el penal, el
+   mano a mano, los avisos, el sorteo— viven en **el mismo velo y la misma
+   caja**. Cuando uno sigue a otro no se saca nada: la caja se estira o se
+   encoge hasta el tamaño del cartel nuevo mientras el contenido se disuelve
+   por encima.
+
+   Antes cada pop-up era un overlay suelto: el que se iba se sacaba de un
+   saque y el siguiente se montaba de cero, así que entre uno y otro la mesa
+   aparecía un fotograma y el cartel nuevo arrancaba de `scale(.72)`. En la
+   cadena del penal definitorio —empate, arco, resultado— eso pasaba tres
+   veces seguidas.
+
+   El tamaño en píxeles dura **lo que dura la transición** y después se suelta:
+   en reposo cada cartel mide exactamente lo que medía antes, con sus mismas
+   reglas y sus mismos breakpoints. */
+const POP_GRACIA = 90;    // lo que el velo espera al cartel que pueda venir atrás
+const POP_MORF   = 300;   // lo que tarda la caja en cambiar de tamaño
+
+let POP_VELO = null;      // el velo, mientras haya un cartel arriba
+let POP_SALE = null;      // el tiempo de gracia antes de levantarlo
+let POP_LIMPIA = null;    // el que suelta los tamaños al terminar
+
+/* Reemplaza al `document.body.appendChild(wrap)` de cada pop-up. Si no hay
+   nada arriba monta el velo tal cual venía —con su animación de entrada de
+   siempre—; si ya hay uno, transforma el que está y devuelve **ese**, que es
+   el que el pop-up tiene que seguir usando para enganchar sus botones. */
+function montarPop(wrap){
+  clearTimeout(POP_SALE); POP_SALE = null;
+
+  const vivo = POP_VELO && POP_VELO.isConnected &&
+               !POP_VELO.classList.contains('saliendo') ? POP_VELO : null;
+  const caja = vivo && vivo.firstElementChild;
+  const nueva = wrap.firstElementChild;
+
+  if(!caja || !nueva){
+    if(POP_VELO) POP_VELO.remove();
+    wrap.classList.add('pop-velo');
+    document.body.appendChild(wrap);
+    POP_VELO = wrap;
+    return wrap;
+  }
+
+  /* El velo se queda puesto; lo que cambia es de qué tipo es —el del gol no
+     tiene el mismo fondo ni el mismo desenfoque que el de la situación— y lo
+     que hay adentro de la caja. */
+  vivo.className = 'pop-velo ' + wrap.className;
+  vivo.onclick = null;
+  vivo.style.cursor = '';
+  vivo.style.pointerEvents = '';
+  morfarPop(caja, nueva.className, [...nueva.childNodes]);
+  return vivo;
+}
+
+/* Cambia lo que hay adentro de la caja sin que la caja desaparezca. Lo usan
+   los pop-ups que reemplazan a otro **y** los que se resuelven en el lugar
+   —el penal, el mano a mano, la situación de gol—, que antes cambiaban de un
+   fotograma al otro con un `innerHTML` y saltaban de alto de golpe. */
+function morfarPop(caja, clase, contenido){
+  clearTimeout(POP_LIMPIA);
+
+  const hijos = typeof contenido === 'string'
+    ? (() => { const d = document.createElement('div'); d.innerHTML = contenido;
+               return [...d.childNodes]; })()
+    : contenido;
+
+  /* El `padding` se copia antes de cambiar las clases: el aviso y la situación
+     no tienen el mismo, y el que se va tiene que quedar donde estaba. */
+  const pad = getComputedStyle(caja).padding;
+  const w0 = caja.offsetWidth, h0 = caja.offsetHeight;
+
+  const fantasma = document.createElement('div');
+  fantasma.className = 'pop-fantasma ' + caja.className.replace(/\bpop-[a-z]+\b/g, ' ').trim();
+  fantasma.style.padding = pad;
+  fantasma.append(...caja.childNodes);
+
+  /* La clase de la caja se pone un recálculo antes que el resto: así el filo
+     —que es lo que dice de qué se trata el cartel— ya tiene su transición
+     puesta cuando le cambia el color, y se funde en vez de saltar. */
+  caja.classList.add('pop-caja');
+  void caja.offsetHeight;
+  caja.className = 'pop-caja ' + clase;
+  caja.style.position = 'relative';   // para que el que se va se apoye acá
+  caja.style.width = ''; caja.style.height = '';
+  caja.append(...hijos);
+
+  const w1 = caja.offsetWidth, h1 = caja.offsetHeight;
+  caja.appendChild(fantasma);
+  void fantasma.offsetHeight;           // que arranque en 1 y de ahí se apague
+  fantasma.style.opacity = '0';
+
+  if(w0 !== w1 || h0 !== h1){
+    caja.style.width = w0 + 'px'; caja.style.height = h0 + 'px';
+    caja.classList.add('pop-morfando');
+    void caja.offsetHeight;             // que el navegador tome la medida vieja
+    caja.style.width = w1 + 'px'; caja.style.height = h1 + 'px';
+  }
+
+  POP_LIMPIA = setTimeout(() => {
+    POP_LIMPIA = null;
+    fantasma.remove();
+    caja.classList.remove('pop-morfando');
+    caja.style.width = ''; caja.style.height = ''; caja.style.position = '';
+  }, POP_MORF + 60);
+}
+
+/* Cierra el cartel que está arriba. **No levanta el velo en el acto**: le da
+   un respiro por si atrás viene otro —la cadena del penal definitorio, la
+   situación que termina en gol, el sorteo que abre la llegada— y en ese caso
+   el velo no se levanta nunca. */
+function cerrarPop(){
+  const velo = POP_VELO;
+  if(!velo) return;
+  clearTimeout(POP_SALE);
+  POP_SALE = setTimeout(() => {
+    POP_SALE = null;
+    if(POP_VELO !== velo) return;
+    velo.classList.add('saliendo');
+    /* 300 = los 60ms que el velo le da de ventaja al cartel más sus 220 de
+       desvanecido. Con los 240 de antes se sacaba sin haber terminado y el
+       último fotograma era un salto. */
+    setTimeout(() => {
+      if(POP_VELO === velo) POP_VELO = null;
+      velo.remove();
+    }, 300);
+  }, POP_GRACIA);
+}
+
 /* Espera `ms` **o** un toque, lo que pase primero. El tiempo asegura que el
    cartel se llegue a leer; el toque deja adelantarlo al que ya lo leyó.
 
@@ -7196,9 +7371,11 @@ function esperarOClick(wrap, ms){
       listo = true;
       clearTimeout(t);
       wrap.removeEventListener('click', cerrar);
-      /* Se desvanece y recién ahí se saca: sin esto desaparecía de golpe. */
-      wrap.classList.add('saliendo');
-      setTimeout(() => { wrap.remove(); res(); }, 220);
+      /* Resuelve en el acto y el velo se va solo. Si esperara a que termine de
+         desvanecerse, el pop-up que viene atrás no podría montarse a tiempo
+         para agarrar el tiempo de gracia, y la cadena volvería a cortarse. */
+      cerrarPop();
+      setTimeout(res, 0);
     };
     const t = setTimeout(cerrar, ms);
     wrap.style.cursor = 'pointer';
@@ -7356,7 +7533,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 154;
+const VERSION = 155;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -8663,7 +8840,7 @@ function abrirFichaGol(btn){
   cerrarFichaItem();
   btn.classList.add('abierto');
 
-  const wrap = document.createElement('div');
+  let wrap = document.createElement('div');
   wrap.className = 'sit-flash cartel-gol';
   wrap.innerHTML =
     '<div class="sit sorteo llena">' +
@@ -8680,13 +8857,13 @@ function abrirFichaGol(btn){
         '<button class="cta alt" id="fgVolver">VOLVER</button>' +
       '</div>' +
     '</div>';
-  document.body.appendChild(wrap);
+  wrap = montarPop(wrap);
 
   const caja = wrap.querySelector('.sit');
   wrap.querySelector('#fgUsar').onclick = async (ev) => {
     ev.stopPropagation();
     const elegida = await sorteoGol(caja);  // el sorteo, a la vista
-    wrap.remove();
+    cerrarPop();
     btn.classList.remove('abierto');
     cobrarRacha(elegida);                   // y se resuelve **esa** misma
   };
@@ -8704,7 +8881,7 @@ function cerrarCartelGol(){
   const v = document.querySelector('.cartel-gol');
   if(!v) return false;
   if(v.querySelector('.cta:disabled')) return true;
-  v.remove();
+  cerrarPop();
   document.querySelectorAll('.gol-banner.abierto').forEach(b => b.classList.remove('abierto'));
   return true;
 }
@@ -9381,7 +9558,7 @@ function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo){
        partido—, no uno de la tanda. Ahí no va ni el «1 DE 5» ni el tablero de
        la serie: no hay serie. */
     const suelto = !ronda;
-    const wrap = document.createElement('div');
+    let wrap = document.createElement('div');
     wrap.className = 'sit-flash';
     wrap.innerHTML =
       '<div class="sit penal">' +
@@ -9397,7 +9574,7 @@ function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo){
         '<div class="s">' + (yoPateo ? '¿A QUÉ PALO LA MANDÁS?' : '¿A QUÉ PALO VOLÁS?') + '</div>' +
         '<div class="pp-hint">tocá adentro del arco</div>' +
       '</div>';
-    document.body.appendChild(wrap);
+    wrap = montarPop(wrap);
 
     let tirado = false;
     wrap.querySelectorAll('.pp-zona').forEach(btn => {
@@ -9417,8 +9594,7 @@ function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo){
            rojo lo que no. Pateando, gol es verde; atajando, gol es rojo. */
         const bueno = yoPateo ? conv : atajado;
         const box = wrap.querySelector('.sit.penal');
-        box.className = 'sit penal resuelta ' + (bueno ? 'salvado' : 'gol');
-        box.innerHTML =
+        morfarPop(box, 'sit penal resuelta ' + (bueno ? 'salvado' : 'gol'),
           '<div class="sit-tag">' +
             (suelto ? 'EL PENAL' : yoPateo ? 'PATEÓ ' + eqs[quien].club : 'ATAJA ' + eqs[1 - quien].club) +
           '</div>' +
@@ -9430,7 +9606,7 @@ function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo){
           '<div class="s">' +
             (yoPateo ? (conv ? 'Adentro' : 'Voló y la sacó')
                      : (atajado ? 'La adivinaste' : 'Fue del otro lado')) +
-          '</div>';
+          '</div>');
         await esperarOClick(wrap, ESPERA_FIN);
         resolve(conv);
       };
@@ -9495,7 +9671,7 @@ function tandaHTML(eqs, tiros, primero, turnoDe, muerte){
 /* El resumen final de la tanda, antes de volver al resultado del partido. */
 function mostrarPenales(eqs, tiros, ganador, primero){
   return new Promise(resolve => {
-    const wrap = document.createElement('div');
+    let wrap = document.createElement('div');
     wrap.className = 'sit-flash';
     wrap.innerHTML =
       '<div class="sit penal resuelta salvado">' +
@@ -9506,7 +9682,7 @@ function mostrarPenales(eqs, tiros, ganador, primero){
         '<div class="t">' + eqs[ganador].club + '</div>' +
         tandaHTML(eqs, tiros, primero, -1, tiros[0].length > TANDA_TIROS) +
       '</div>';
-    document.body.appendChild(wrap);
+    wrap = montarPop(wrap);
     esperarOClick(wrap, ESPERA_FIN).then(resolve);
   });
 }
@@ -9578,7 +9754,7 @@ function descuento(){
       : { txt:'Vas ganando. Guardarla te la deja entera para el próximo partido.', cls:'' };
 
   return new Promise(resolve => {
-    const wrap = document.createElement('div');
+    let wrap = document.createElement('div');
     wrap.className = 'sit-flash';
     wrap.innerHTML =
       /* **La racha llena, por fin nombrada.** El cartel lo decía en una línea
@@ -9606,10 +9782,10 @@ function descuento(){
         '</div>' +
         '<div class="a-s ' + nota.cls + '">' + nota.txt + '</div>' +
       '</div>';
-    document.body.appendChild(wrap);
+    wrap = montarPop(wrap);
 
     wrap.querySelector('#dJugar').onclick = async () => {
-      wrap.remove();
+      cerrarPop();
       G.racha = 0;
       say('⏱ Última pelota del partido.', 'big');
       render();
@@ -9619,7 +9795,7 @@ function descuento(){
     /* Yendo abajo esta tarjeta no se dibuja, así que el enganche es opcional. */
     const guardar = wrap.querySelector('#dGuardar');
     if(guardar) guardar.onclick = () => {
-      wrap.remove();
+      cerrarPop();
       say('<i class="ir"></i> Te guardás la racha para el próximo partido.', 'good');
       resolve();
     };
@@ -9791,7 +9967,7 @@ function manoAMano(tipo, mio, val){
   const M = MANOAMANO[tipo];
 
   return new Promise(resolve => {
-    const wrap = document.createElement('div');
+    let wrap = document.createElement('div');
     wrap.className = 'sit-flash';
     wrap.innerHTML =
       /* El pop-up toma **el mismo tono que la carta**: verde el mano a mano del
@@ -9809,7 +9985,7 @@ function manoAMano(tipo, mio, val){
         '<div class="s">' + M.pregunta + '</div>' +
         '<div class="dl-hint">tocá un lado</div>' +
       '</div>';
-    document.body.appendChild(wrap);
+    wrap = montarPop(wrap);
 
     let elegido = false;
     wrap.querySelectorAll('.dl-z').forEach(btn => {
@@ -9885,12 +10061,11 @@ function manoAMano(tipo, mio, val){
         await wait(460);
 
         const box = wrap.querySelector('.sit.mam');
-        box.className = 'sit mam resuelta ' + (gana ? 'salvado' : 'gol');
-        box.innerHTML =
+        morfarPop(box, 'sit mam resuelta ' + (gana ? 'salvado' : 'gol'),
           '<div class="sit-tag">' + M.rival(suyo).toUpperCase() + '</div>' +
           '<div class="sit-ico">' + icoDesenlace(gana ? M.gGana : M.gPierde) + '</div>' +
           '<div class="t">' + (gana ? M.gana : M.pierde) + '</div>' +
-          '<div class="ef-fin">' + efectoDuelo(tipo, val, gana) + '</div>';
+          '<div class="ef-fin">' + efectoDuelo(tipo, val, gana) + '</div>');
 
         await esperarOClick(wrap, ESPERA_FIN);
         resolve(gana);
@@ -9909,7 +10084,7 @@ function mostrarJugada(cell){
   const p = predict(cell);
 
   return new Promise(resolve => {
-    const wrap = document.createElement('div');
+    let wrap = document.createElement('div');
     wrap.className = 'play-flash';
     wrap.innerHTML =
       '<div class="play ' + p.tone + '">' +
@@ -9925,8 +10100,8 @@ function mostrarJugada(cell){
         (p.label ? '<div class="p-out">' + p.label + '</div>' : '') +
         '<div class="p-go">TOCÁ PARA JUGARLA</div>' +
       '</div>';
-    document.body.appendChild(wrap);
-    wrap.onclick = () => { wrap.remove(); resolve(); };
+    wrap = montarPop(wrap);
+    wrap.onclick = () => { cerrarPop(); resolve(); };
   });
 }
 
@@ -10212,7 +10387,7 @@ function avisoRacha(){
   const esperadoFavor = esperadoDe(SIT_FAVOR);
 
   return new Promise(resolve => {
-    const wrap = document.createElement('div');
+    let wrap = document.createElement('div');
     wrap.className = 'sit-flash';
     wrap.innerHTML =
       /* Solo se anuncia la SITUACIÓN DE GOL: es lo único que aparece recién
@@ -10231,8 +10406,8 @@ function avisoRacha(){
         '<div class="a-s">No hace falta usarla ahora: queda disponible hasta que la gastes.</div>' +
         '<button class="cta" id="avisoBtn">CONTINUAR PARTIDO</button>' +
       '</div>';
-    document.body.appendChild(wrap);
-    wrap.querySelector('#avisoBtn').onclick = () => { wrap.remove(); resolve(); };
+    wrap = montarPop(wrap);
+    wrap.querySelector('#avisoBtn').onclick = () => { cerrarPop(); resolve(); };
   });
 }
 
@@ -10301,7 +10476,7 @@ async function hurt(msg, amount, maxYaBajo){
    casillas: es el mismo gesto de los dos lados, en rojo. */
 function fundidaRival(cayoMax){
   return new Promise(resolve => {
-    const wrap = document.createElement('div');
+    let wrap = document.createElement('div');
     wrap.className = 'sit-flash';
 
     const artH = ARTSRC('ico_aguante');
@@ -10327,7 +10502,7 @@ function fundidaRival(cayoMax){
         minisGol(SIT_RIVAL, false) +
         '<button class="cta" id="fuBtn">A VER QUÉ PASA</button>' +
       '</div>';
-    document.body.appendChild(wrap);
+    wrap = montarPop(wrap);
 
     /* **El sorteo arranca con el botón, no con el cartel.** Antes corría solo
        apenas aparecía: para cuando terminabas de leer que te habías fundido, el
@@ -10344,7 +10519,7 @@ function fundidaRival(cayoMax){
       b.textContent = 'SORTEANDO…';
       const elegida = await sorteoGol(wrap, SIT_RIVAL);
       await wait(620);              // un respiro para ver cuál salió
-      wrap.remove();
+      cerrarPop();
       resolve(elegida);
     };
   });
@@ -10363,7 +10538,7 @@ function situacionGol(lado, yaElegida){
   const art = artSituacion(S.key, favor);
 
   return new Promise(resolve => {
-    const wrap = document.createElement('div');
+    let wrap = document.createElement('div');
     wrap.className = 'sit-flash';
     wrap.innerHTML =
       /* **La foto de la carta arriba, no un emoji de 66px.** Tres segundos
@@ -10384,7 +10559,7 @@ function situacionGol(lado, yaElegida){
         '<button class="cta" id="sitBtn">' +
           (favor && S.key === 'penal' ? 'IR AL PENAL' : 'EJECUTAR') + '</button>' +
       '</div>';
-    document.body.appendChild(wrap);
+    wrap = montarPop(wrap);
 
     wrap.querySelector('#sitBtn').onclick = async () => {
       const box = wrap.querySelector('.sit');
@@ -10394,7 +10569,7 @@ function situacionGol(lado, yaElegida){
          que tenía la tirada (2 de 3), así que no cambia el balance: cambia que
          ahora lo jugás. */
       if(favor && S.key === 'penal'){
-        wrap.remove();
+        cerrarPop();
         const eqs = [ { club:G.club, escudo:G.escudo },
                       { club:(RONDAS[G.ronda] || {}).rival || 'EL RIVAL', escudo:G.escudoRival } ];
         const conv = await penalUno(eqs, 0, [[],[]], 0, false, 0, true);
@@ -10434,7 +10609,7 @@ function situacionGol(lado, yaElegida){
       if(esGol){
         if(favor) G.gU++; else G.gC++;
         say(S.gol + (favor ? ' ¡GOL! ' : ' Gol del rival. ') + G.gU + '-' + G.gC, 'big');
-        wrap.remove();
+        cerrarPop();
         render();
         await flashGol(favor ? 'favor' : 'contra');
         resolve();
@@ -10443,13 +10618,12 @@ function situacionGol(lado, yaElegida){
 
       say(S.no + (favor ? '' : ' Te salvaste. +1 racha.'), favor ? 'bad' : 'good');
 
-      box.className = 'sit resuelta salvado' + (favor ? ' lado-favor' : '');
-      box.innerHTML =
+      morfarPop(box, 'sit resuelta salvado' + (favor ? ' lado-favor' : ''),
         '<div class="sit-tag">' + S.nm + ' &nbsp;·&nbsp; ' + Math.round(S.p * 100) + '%</div>' +
         '<div class="sit-ico">' + icoDesenlace(favor ? 'afuera' : 'atajada') + '</div>' +
         '<div class="t">' + (favor ? 'LA ERRASTE' : '¡TE SALVASTE!') + '</div>' +
         '<div class="s">' + G.gU + ' - ' + G.gC +
-          (levanta ? '<span class="sit-extra">+1 <i class="ir"></i> RACHA</span>' : '') + '</div>';
+          (levanta ? '<span class="sit-extra">+1 <i class="ir"></i> RACHA</span>' : '') + '</div>');
 
       render();
       await esperarOClick(wrap, ESPERA_FIN);
@@ -10685,7 +10859,7 @@ async function flashFallo(tipo, favor){
   const F = FALLOS[tipo];
   /* Se sortea la frase y el dibujo viene con ella, no del tipo de carta. */
   const D = F[rnd(F.length)];
-  const wrap = document.createElement('div');
+  let wrap = document.createElement('div');
   wrap.className = 'gol-flash';
   wrap.innerHTML =
     '<div class="gf fallo ' + (favor ? 'favor' : 'contra') + '">' +
@@ -10695,7 +10869,7 @@ async function flashFallo(tipo, favor){
       '<div class="ef-fin">' + (favor ? '-1 <i class="ih"></i> AGUANTE'
                                        : '+1 <i class="ir"></i> RACHA') + '</div>' +
     '</div>';
-  document.body.appendChild(wrap);
+  wrap = montarPop(wrap);
   /* Se va solo cuando el dibujo dio sus tres vueltas, o antes si tocás. */
   await esperarOClick(wrap, ESPERA_FIN);
 }
@@ -10703,7 +10877,7 @@ async function flashFallo(tipo, favor){
 function flashGol(tipo){
   // la animación toma su duración de la constante, no de un número suelto en CSS
   document.documentElement.style.setProperty('--dura-gol', DURA_GOL + 'ms');
-  const wrap = document.createElement('div');
+  let wrap = document.createElement('div');
   wrap.className = 'gol-flash';
   /* **La foto vuelve, pero no se come el marcador.** El primer intento la
      ponía de fondo con todo encima y el resultado —que es el dato que uno
@@ -10741,7 +10915,7 @@ function flashGol(tipo){
           '<div class="gfb">' + marc + '</div>'
         : titulo + marc) +
     '</div>';
-  document.body.appendChild(wrap);
+  wrap = montarPop(wrap);
   /* El gol dura más que el resto —es el momento del partido— y también se puede
      adelantar con un toque. */
   return esperarOClick(wrap, ESPERA_GOL_POP);
@@ -10908,7 +11082,7 @@ function avisoEmpate(){
   const tanda = G.ronda === RONDAS.length - 1 || G.formato === 'unico';
   const Sig = RONDAS[G.ronda + 1];
   return new Promise(resolve => {
-    const wrap = document.createElement('div');
+    let wrap = document.createElement('div');
     wrap.className = 'sit-flash';
     wrap.innerHTML =
       '<div class="aviso empate">' +
@@ -10925,8 +11099,8 @@ function avisoEmpate(){
         '<div class="e-aviso">' + (tanda ? 'CINCO CADA UNO' : 'TE QUEDA UNA SOLA PELOTA') + '</div>' +
         '<button class="cta" id="empBtn">' + (tanda ? 'IR A LOS PENALES' : 'PATEAR EL PENAL') + '</button>' +
       '</div>';
-    document.body.appendChild(wrap);
-    wrap.querySelector('#empBtn').onclick = () => { wrap.remove(); resolve(); };
+    wrap = montarPop(wrap);
+    wrap.querySelector('#empBtn').onclick = () => { cerrarPop(); resolve(); };
   });
 }
 
@@ -10936,7 +11110,7 @@ function tirarPenal(){
   const R = RONDAS[G.ronda];
   const Sig = RONDAS[G.ronda + 1];
   return new Promise(resolve => {
-    const wrap = document.createElement('div');
+    let wrap = document.createElement('div');
     wrap.className = 'sit-flash';
     wrap.innerHTML =
       '<div class="sit penal">' +
@@ -10950,7 +11124,7 @@ function tirarPenal(){
           '<b class="no">LA ATAJA → SE ACABÓ</b></div>' +
         '<div class="pp-hint">tocá adentro del arco</div>' +
       '</div>';
-    document.body.appendChild(wrap);
+    wrap = montarPop(wrap);
 
     let tirado = false;
     wrap.querySelectorAll('.pp-zona').forEach(btn => {
@@ -10968,14 +11142,13 @@ function tirarPenal(){
            gol es **tuyo** y te clasifica, así que va en verde; la atajada te
            elimina y va en rojo. El nombre de la clase viene del penal en
            contra, donde «gol» significaba lo contrario. */
-        box.classList.add('resuelta', esGol ? 'salvado' : 'gol');
-        box.innerHTML =
+        morfarPop(box, 'sit penal resuelta ' + (esGol ? 'salvado' : 'gol'),
           '<div class="sit-tag">LA PONÉS ' + elegido.nm + ' · EL ARQUERO ' + arquero.arq.toUpperCase() + '</div>' +
           '<div class="sit-ico">' + icoDesenlace(esGol ? 'golazo' : 'atajada') + '</div>' +
           '<div class="t">' + (esGol ? '¡GOL!' : 'TE LO ATAJÓ') + '</div>' +
           /* El desenlace **nombra** la ronda que ganaste o el campeonato que
              perdiste, en vez de un «pasás de ronda» genérico. */
-          '<div class="s">' + (esGol ? Sig.name : 'SE ACABÓ EL CAMPEONATO') + '</div>';
+          '<div class="s">' + (esGol ? Sig.name : 'SE ACABÓ EL CAMPEONATO') + '</div>');
 
         say(esGol ? '⚽ La ponés ' + elegido.nm.toLowerCase() + ', el arquero ' + arquero.arq + '. ¡GOL!'
                   : '🧤 La ponés ' + elegido.nm.toLowerCase() + ' y el arquero ' + arquero.arq + '. Te la saca.', 'big');
