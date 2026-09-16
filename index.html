@@ -6980,29 +6980,20 @@ function icono(clave, emoji, cls){
 function artCarta(tipo){ return ARTSRC(tipo); }
 
 /* ---------------- el escudo ----------------
-   Cuatro formas, cada una con su propio patrón para que se distingan de lejos,
-   y seis paletas de dos colores. El escudo lleva la inicial del club y aparece
-   en la marquesina y en todos los marcadores. */
-/* Cinco siluetas tomadas de escudos reales, no formas genéricas:
-
-     ESPAÑOL   el escudo de La Liga: hombros rectos y punta redondeada
-     INGLÉS    más ancho arriba, curva suave hacia la base
-     ITALIANO  hombros altos, cintura marcada y punta larga
-     REDONDO   el círculo de los clubes alemanes y sudamericanos
-     BANDERÍN  vertical, con la base en pico, tipo pennant
-
-   Todas sobre el mismo viewBox de 100x120, así el patrón interior calza igual
-   en las cinco. */
-/* Cinco siluetas tomadas de escudos reales:
+   Cuatro siluetas tomadas de escudos reales:
 
      CLÁSICO    hombros rectos y punta redondeada — el más común
      INGLÉS     esquinas suaves arriba, base ancha
      ITALIANO   cintura marcada y punta larga
      BANDERÍN   vertical angosto con punta en V, típico argentino
-     OVALADO    la elipse de los clubes europeos
 
-   Todas sobre el mismo viewBox de 100x120, así el patrón interior calza igual
-   en las cinco. */
+   Todas sobre el mismo viewBox de 100x120, así el patrón interior calza
+   igual en las cuatro.
+
+   **Eran cinco.** La quinta era un OVALADO, y el círculo no es un escudo:
+   es una chapa. Al lado de las otras cuatro no se leía como una variante
+   sino como otra cosa, y encima era la única sin punta abajo, que es
+   justamente lo que hace que un escudo parezca un escudo. */
 const ESCUDOS = [
   { id:'clasico', nm:'CLÁSICO',
     d:'M50 4 L94 17 V57 C94 84 76 104 50 116 C24 104 6 84 6 57 V17 Z' },
@@ -7011,9 +7002,7 @@ const ESCUDOS = [
   { id:'italiano', nm:'ITALIANO',
     d:'M50 3 L93 15 C93 38 91 54 86 68 C79 90 66 106 50 117 C34 106 21 90 14 68 C9 54 7 38 7 15 Z' },
   { id:'banderin', nm:'BANDERÍN',
-    d:'M16 4 H84 C86 4 88 6 88 8 V82 L50 117 L12 82 V8 C12 6 14 4 16 4 Z' },
-  { id:'ovalado', nm:'OVALADO',
-    d:'M50 3 C74 3 92 25 92 60 C92 95 74 117 50 117 C26 117 8 95 8 60 C8 25 26 3 50 3 Z' }
+    d:'M16 4 H84 C86 4 88 6 88 8 V82 L50 117 L12 82 V8 C12 6 14 4 16 4 Z' }
 ];
 
 /* Nueve colores sueltos: se combinan los dos que uno quiera, en vez de elegir
@@ -7045,9 +7034,12 @@ function escudoSVG(size, forma, c1, c2){
 
   /* Cada forma trae su propio patrón: a 26px en el selector la silueta sola no
      alcanza para distinguir cinco opciones. */
+  /* El `if` que abría esta cadena preguntaba por una forma llamada `espanol`
+     que no existe: quedó de un nombrado anterior y no matcheaba nunca. Se
+     fue con el ovalado. El CLÁSICO sigue cayendo al `else`, igual que
+     siempre, así que no cambia de dibujo. */
   let dentro = '';
-  if(F.id === 'espanol')       dentro = '<rect x="50" y="0" width="50" height="120" fill="' + B + '"/>';
-  else if(F.id === 'ingles')   dentro = '<path d="M0 44 H100 V74 H0 Z" fill="' + B + '"/>';
+  if(F.id === 'ingles')        dentro = '<path d="M0 44 H100 V74 H0 Z" fill="' + B + '"/>';
   else if(F.id === 'italiano') dentro = '<path d="M0 120 L120 0 L120 40 L38 120 Z" fill="' + B + '"/>';
   else if(F.id === 'banderin') dentro = '<path d="M0 0 H34 V120 H0 Z M66 0 H100 V120 H66 Z" fill="' + B + '"/>';
   else                         dentro = '<rect x="0" y="44" width="100" height="32" fill="' + B + '"/>';
@@ -7961,7 +7953,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 166;
+const VERSION = 167;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

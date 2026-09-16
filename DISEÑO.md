@@ -7646,3 +7646,53 @@ carta:
 Idéntico hasta el píxel en las siete, y sin scroll en ninguna. En el juego real
 se comprobó además que el tamaño tampoco cambia al deshabilitar una fila ni al
 activarla: 62×251 en los tres estados.
+
+
+## Se va el escudo redondo
+
+De las cinco siluetas, el OVALADO no era un escudo: era una **chapa**. Al lado
+de las otras cuatro no se leía como una variante sino como otra cosa, y era la
+única sin punta abajo — que es justamente lo que hace que un escudo parezca un
+escudo. Quedan cuatro: clásico, inglés, italiano y banderín.
+
+### Lo que se llevó puesto
+
+Nada. El juego **no guarda nada en disco**, así que el índice de la forma no
+sobrevive a un reload: el escudo se elige de nuevo en cada partida. Bajar el
+arreglo de cinco a cuatro no corrompe ninguna partida vieja porque no hay
+partidas viejas.
+
+Medido en el juego andando, con 400 sorteos de `escudoRivalNuevo()`:
+
+| | |
+|---|---|
+| siluetas | 4 |
+| reparto | 106 / 107 / 98 / 89 |
+| escudos inválidos | **0** |
+| choques en PASASTE | **0** |
+
+El reparto es parejo y la regla de PASASTE sigue en pie: los dos escudos que
+van juntos —el que ganaste y el que viene— nunca coinciden ni en silueta ni en
+color de fondo.
+
+### Dos limpiezas que venían de arrastre
+
+**Tres bloques de comentario apilados** arriba de `ESCUDOS`, dos de ellos
+obsoletos: uno hablaba de «cuatro formas y seis paletas» —cuando hay cinco
+formas y nueve colores sueltos— y otro listaba siluetas con nombres que ya no
+existían: ESPAÑOL y REDONDO. Quedó uno solo y al día.
+
+Y **una rama muerta** en `escudoSVG`. La cadena de patrones abría con:
+
+```js
+if(F.id === 'espanol') dentro = mitades verticales
+```
+
+Ninguna silueta se llama `espanol` —quedó del nombrado viejo— así que ese
+`if` no matcheaba nunca y **el patrón de mitades verticales no se dibujaba en
+ninguna parte del juego**. De los cinco patrones que el código parecía tener,
+se usaban tres. La rama se fue con el ovalado; el CLÁSICO sigue cayendo al
+`else`, igual que siempre, así que no cambia de dibujo.
+
+Las mitades vuelven cuando se separe el patrón de la silueta, que es lo que hoy
+impide que un club sea celeste a bastones y otro azul con franja.
