@@ -7696,3 +7696,117 @@ se usaban tres. La rama se fue con el ovalado; el CLÁSICO sigue cayendo al
 
 Las mitades vuelven cuando se separe el patrón de la silueta, que es lo que hoy
 impide que un club sea celeste a bastones y otro azul con franja.
+
+
+## Elegís un equipo de verdad, y el rival también
+
+Hasta acá la pantalla de inicio era un **formulario**: escribías un nombre,
+elegías una silueta y dos colores de una fila de doce. Salía un club que no
+existía y que no significaba nada. Y el rival tampoco: los cinco nombres
+estaban fijos en `RONDAS` —DEPORTIVO BARRIAL, ATLÉTICO DEL SUR…— y el escudo se
+sorteaba **aparte**, así que el mismo rival podía ser rosa y verde una partida
+y negro y naranja la siguiente.
+
+Ahora hay una tabla con los **treinta de la Primera 2026**, cada uno con su
+nombre corto y su escudo pegado.
+
+### Lo que impedía todo esto
+
+El dibujo de la camiseta lo decidía la **silueta**: si elegías banderín te
+tocaban rayas, si elegías inglés te tocaba franja. Con eso no había forma de
+que un club fuera celeste a bastones y otro azul con franja, porque para
+cambiar el dibujo había que cambiar la forma.
+
+El dibujo pasa a ser su propio eje —cinco: sólido, bastones, franja, banda y
+mitades— y con cuatro siluetas y doce colores alcanza para los treinta y sobra.
+Vuelve además el de **mitades**, que el código tenía escrito desde siempre pero
+no dibujaba en ninguna parte.
+
+Los escudos **no son los reales**: son obra gráfica con derechos. Se toma lo
+que no se registra —los colores y el dibujo de la camiseta— que es además lo
+único que se distingue a 26px, el tamaño en que el jugador los ve casi siempre.
+
+### La pantalla: la vitrina se queda, la lista se abre
+
+De tres formas probadas —una cinta horizontal, una grilla de treinta y esto—
+quedó la que **no le saca el escudo grande al jugador**. Elegir club es el
+único momento del juego en que arma algo suyo, y ese escudo sigue ocupando
+media pantalla. Los treinta viven en un panel que se abre encima, con buscador.
+
+El panel se abre **sobre** la tarjeta y no la empuja: empujando, el botón de
+empezar se iría abajo del corte justo cuando el jugador está por tocarlo.
+
+La lista va ordenada **por nivel, de la Final para abajo** —el que abre el
+panel se encuentra primero con los que conoce— pero **sin títulos de ronda**:
+el nivel ordena, no se anuncia.
+
+Y el encabezado pasa a dos renglones: el modo arriba y del mismo tamaño, TU
+CLUB abajo. El modo no es una etiqueta del título, es la otra mitad: estás por
+empezar un campeonato, o un partido único, y eso cambia todo lo que sigue.
+
+### Más corta que la que reemplaza
+
+| alto de la tarjeta | v167 | v168 |
+|---|---|---|
+| 320 × 568 | 530 | **411** |
+| 390 × 844 | 660 | **478** |
+
+**119px menos en el teléfono más chico y 182 en uno normal**, sin scroll en
+ninguno de los dos y con el botón de empezar a la vista. Es una pantalla que
+siempre sufrió en pantallas bajas y ahora sobra lugar.
+
+### El sorteo, con sus dos reglas
+
+```js
+function armarCopa(){
+  const previos = G.rivalesPrevios || [];
+  G.copa = RONDAS.map(r => {
+    const delNivel = EQUIPOS.filter(e => e.lvl === r.lvl && e.nm !== G.club);
+    const bombo = delNivel.filter(e => previos.indexOf(e.nm) < 0);
+    const pool = bombo.length ? bombo : delNivel;
+    return Object.assign({}, r, { rival: pool[rnd(pool.length)].nm, eq: ... });
+  });
+  G.rivalesPrevios = G.copa.map(c => c.rival);
+}
+```
+
+Tu club nunca te toca de rival, y el campeonato siguiente no repite los cinco
+del anterior. La memoria es de **una copa para atrás**: si mirara la historia
+entera, al cuarto campeonato no quedarían equipos.
+
+Medido con **mil sorteos** en el juego andando, eligiendo BOCA:
+
+| | |
+|---|---|
+| veces que te tocó tu propio club | **0** |
+| veces que repitió uno de la copa anterior | **0** |
+| rivales de nivel equivocado | **0** |
+| copas con un rival repetido adentro | **0** |
+| equipos distintos que aparecieron | **29** de 30 |
+
+Y la tercera copa sí puede repetir la primera, que es lo que se pidió: en la
+prueba volvió HURACÁN.
+
+### Dos cosas que había que tocar con cuidado
+
+`escudoSVG` recibe ahora el dibujo, **pero es opcional**: sin él cae al que da
+la silueta, que es lo que hacía antes. Así las pantallas donde el escudo se
+arma a mano —el visitante del 1v1, los penales sueltos— siguen dando
+exactamente lo mismo sin tocarles una línea.
+
+Y el buscador salía **centrado y en mayúscula**, como un cartel. `.cp-bs input`
+y `.card-club input{text-align:center}` tienen la misma especificidad, así que
+ganaba el que viene después en el archivo —y el de `.card-club` está dos mil
+líneas más abajo—. Se le sumó la clase de la tarjeta para que gane por
+especificidad y no por dónde cayó.
+
+### Los escudos, como archivos
+
+En `assets/escudos/` quedan los treinta en SVG, un sprite con todos y el JSON
+de datos. **No hay copias por tamaño**: los SVG no llevan `width` ni `height`,
+solo el `viewBox`, así que el mismo archivo se dibuja a 26 y a 150. Una copia
+por tamaño sería el mismo archivo pesando el doble.
+
+Los SVG son una **salida**, no la fuente: el escudo es una función de cinco
+campos y eso vive en `equipos.json`. Si cambia un color de un club se cambia
+ahí y se regeneran los treinta.

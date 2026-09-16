@@ -1,0 +1,395 @@
+{
+  "siluetas": [
+    {
+      "id": "clasico",
+      "nm": "CLÁSICO",
+      "d": "M50 4 L94 17 V57 C94 84 76 104 50 116 C24 104 6 84 6 57 V17 Z"
+    },
+    {
+      "id": "ingles",
+      "nm": "INGLÉS",
+      "d": "M8 6 C8 4 10 3 12 3 H88 C90 3 92 4 92 6 V54 C92 84 74 104 50 117 C26 104 8 84 8 54 Z"
+    },
+    {
+      "id": "italiano",
+      "nm": "ITALIANO",
+      "d": "M50 3 L93 15 C93 38 91 54 86 68 C79 90 66 106 50 117 C34 106 21 90 14 68 C9 54 7 38 7 15 Z"
+    },
+    {
+      "id": "banderin",
+      "nm": "BANDERÍN",
+      "d": "M16 4 H84 C86 4 88 6 88 8 V82 L50 117 L12 82 V8 C12 6 14 4 16 4 Z"
+    }
+  ],
+  "patrones": [
+    "solido",
+    "rayas",
+    "franja",
+    "banda",
+    "mitades"
+  ],
+  "colores": [
+    {
+      "id": "blanco",
+      "nm": "BLANCO",
+      "hex": "#f2f4f8"
+    },
+    {
+      "id": "negro",
+      "nm": "NEGRO",
+      "hex": "#16181d"
+    },
+    {
+      "id": "rojo",
+      "nm": "ROJO",
+      "hex": "#d61f34"
+    },
+    {
+      "id": "amarillo",
+      "nm": "AMARILLO",
+      "hex": "#f5c842"
+    },
+    {
+      "id": "azul",
+      "nm": "AZUL",
+      "hex": "#1b4fa8"
+    },
+    {
+      "id": "verde",
+      "nm": "VERDE",
+      "hex": "#1f9b4d"
+    },
+    {
+      "id": "violeta",
+      "nm": "VIOLETA",
+      "hex": "#7b3fb5"
+    },
+    {
+      "id": "naranja",
+      "nm": "NARANJA",
+      "hex": "#ef7215"
+    },
+    {
+      "id": "rosa",
+      "nm": "ROSA",
+      "hex": "#e8559b"
+    },
+    {
+      "id": "celeste",
+      "nm": "CELESTE",
+      "hex": "#5aa9e6"
+    },
+    {
+      "id": "bordo",
+      "nm": "BORDÓ",
+      "hex": "#7d1f2e"
+    },
+    {
+      "id": "marron",
+      "nm": "MARRÓN",
+      "hex": "#6b4429"
+    }
+  ],
+  "equipos": [
+    {
+      "slug": "riestra",
+      "nm": "RIESTRA",
+      "c1": "negro",
+      "c2": "blanco",
+      "pat": "rayas",
+      "forma": "ingles",
+      "lvl": 1,
+      "real": "Deportivo Riestra"
+    },
+    {
+      "slug": "sarmiento",
+      "nm": "SARMIENTO",
+      "c1": "verde",
+      "c2": "blanco",
+      "pat": "rayas",
+      "forma": "clasico",
+      "lvl": 1,
+      "real": "Sarmiento (Junín)"
+    },
+    {
+      "slug": "aldosivi",
+      "nm": "ALDOSIVI",
+      "c1": "amarillo",
+      "c2": "verde",
+      "pat": "rayas",
+      "forma": "banderin",
+      "lvl": 1,
+      "real": "Aldosivi"
+    },
+    {
+      "slug": "rivadavia",
+      "nm": "RIVADAVIA",
+      "c1": "azul",
+      "c2": "blanco",
+      "pat": "solido",
+      "forma": "italiano",
+      "lvl": 1,
+      "real": "Independiente Rivadavia"
+    },
+    {
+      "slug": "gimnasia-mza",
+      "nm": "GIMNASIA MZA",
+      "c1": "blanco",
+      "c2": "negro",
+      "pat": "rayas",
+      "forma": "ingles",
+      "lvl": 1,
+      "real": "Gimnasia y Esgrima (Mendoza)"
+    },
+    {
+      "slug": "est-rio-iv",
+      "nm": "EST. RÍO IV",
+      "c1": "celeste",
+      "c2": "blanco",
+      "pat": "rayas",
+      "forma": "clasico",
+      "lvl": 1,
+      "real": "Estudiantes (Río Cuarto)"
+    },
+    {
+      "slug": "defensa",
+      "nm": "DEFENSA",
+      "c1": "amarillo",
+      "c2": "verde",
+      "pat": "franja",
+      "forma": "italiano",
+      "lvl": 2,
+      "real": "Defensa y Justicia"
+    },
+    {
+      "slug": "banfield",
+      "nm": "BANFIELD",
+      "c1": "verde",
+      "c2": "blanco",
+      "pat": "rayas",
+      "forma": "ingles",
+      "lvl": 2,
+      "real": "Banfield"
+    },
+    {
+      "slug": "platense",
+      "nm": "PLATENSE",
+      "c1": "marron",
+      "c2": "blanco",
+      "pat": "rayas",
+      "forma": "clasico",
+      "lvl": 2,
+      "real": "Platense"
+    },
+    {
+      "slug": "tucuman",
+      "nm": "TUCUMÁN",
+      "c1": "celeste",
+      "c2": "blanco",
+      "pat": "rayas",
+      "forma": "banderin",
+      "lvl": 2,
+      "real": "Atlético Tucumán"
+    },
+    {
+      "slug": "c-cordoba",
+      "nm": "C. CÓRDOBA",
+      "c1": "negro",
+      "c2": "blanco",
+      "pat": "rayas",
+      "forma": "banderin",
+      "lvl": 2,
+      "real": "Central Córdoba (SdE)"
+    },
+    {
+      "slug": "barracas",
+      "nm": "BARRACAS",
+      "c1": "blanco",
+      "c2": "rojo",
+      "pat": "rayas",
+      "forma": "italiano",
+      "lvl": 2,
+      "real": "Barracas Central"
+    },
+    {
+      "slug": "gimnasia-lp",
+      "nm": "GIMNASIA LP",
+      "c1": "azul",
+      "c2": "blanco",
+      "pat": "rayas",
+      "forma": "clasico",
+      "lvl": 3,
+      "real": "Gimnasia y Esgrima (La Plata)"
+    },
+    {
+      "slug": "argentinos",
+      "nm": "ARGENTINOS",
+      "c1": "rojo",
+      "c2": "blanco",
+      "pat": "solido",
+      "forma": "banderin",
+      "lvl": 3,
+      "real": "Argentinos Juniors"
+    },
+    {
+      "slug": "belgrano",
+      "nm": "BELGRANO",
+      "c1": "celeste",
+      "c2": "celeste",
+      "pat": "solido",
+      "forma": "ingles",
+      "lvl": 3,
+      "real": "Belgrano"
+    },
+    {
+      "slug": "tigre",
+      "nm": "TIGRE",
+      "c1": "azul",
+      "c2": "rojo",
+      "pat": "rayas",
+      "forma": "italiano",
+      "lvl": 3,
+      "real": "Tigre"
+    },
+    {
+      "slug": "union",
+      "nm": "UNIÓN",
+      "c1": "rojo",
+      "c2": "blanco",
+      "pat": "rayas",
+      "forma": "ingles",
+      "lvl": 3,
+      "real": "Unión (Santa Fe)"
+    },
+    {
+      "slug": "instituto",
+      "nm": "INSTITUTO",
+      "c1": "rojo",
+      "c2": "blanco",
+      "pat": "rayas",
+      "forma": "clasico",
+      "lvl": 3,
+      "real": "Instituto"
+    },
+    {
+      "slug": "estudiantes",
+      "nm": "ESTUDIANTES",
+      "c1": "rojo",
+      "c2": "blanco",
+      "pat": "rayas",
+      "forma": "ingles",
+      "lvl": 4,
+      "real": "Estudiantes (La Plata)"
+    },
+    {
+      "slug": "newell-s",
+      "nm": "NEWELL'S",
+      "c1": "rojo",
+      "c2": "negro",
+      "pat": "mitades",
+      "forma": "clasico",
+      "lvl": 4,
+      "real": "Newell's Old Boys"
+    },
+    {
+      "slug": "central",
+      "nm": "CENTRAL",
+      "c1": "azul",
+      "c2": "amarillo",
+      "pat": "rayas",
+      "forma": "clasico",
+      "lvl": 4,
+      "real": "Rosario Central"
+    },
+    {
+      "slug": "lanus",
+      "nm": "LANÚS",
+      "c1": "bordo",
+      "c2": "blanco",
+      "pat": "solido",
+      "forma": "italiano",
+      "lvl": 4,
+      "real": "Lanús"
+    },
+    {
+      "slug": "huracan",
+      "nm": "HURACÁN",
+      "c1": "blanco",
+      "c2": "rojo",
+      "pat": "solido",
+      "forma": "banderin",
+      "lvl": 4,
+      "real": "Huracán"
+    },
+    {
+      "slug": "talleres",
+      "nm": "TALLERES",
+      "c1": "azul",
+      "c2": "blanco",
+      "pat": "rayas",
+      "forma": "italiano",
+      "lvl": 4,
+      "real": "Talleres"
+    },
+    {
+      "slug": "boca",
+      "nm": "BOCA",
+      "c1": "azul",
+      "c2": "amarillo",
+      "pat": "franja",
+      "forma": "clasico",
+      "lvl": 5,
+      "real": "Boca Juniors"
+    },
+    {
+      "slug": "river",
+      "nm": "RIVER",
+      "c1": "blanco",
+      "c2": "rojo",
+      "pat": "banda",
+      "forma": "ingles",
+      "lvl": 5,
+      "real": "River Plate"
+    },
+    {
+      "slug": "racing",
+      "nm": "RACING",
+      "c1": "celeste",
+      "c2": "blanco",
+      "pat": "rayas",
+      "forma": "italiano",
+      "lvl": 5,
+      "real": "Racing Club"
+    },
+    {
+      "slug": "independiente",
+      "nm": "INDEPENDIENTE",
+      "c1": "rojo",
+      "c2": "blanco",
+      "pat": "banda",
+      "forma": "italiano",
+      "lvl": 5,
+      "real": "Independiente"
+    },
+    {
+      "slug": "san-lorenzo",
+      "nm": "SAN LORENZO",
+      "c1": "azul",
+      "c2": "rojo",
+      "pat": "rayas",
+      "forma": "banderin",
+      "lvl": 5,
+      "real": "San Lorenzo"
+    },
+    {
+      "slug": "velez",
+      "nm": "VÉLEZ",
+      "c1": "blanco",
+      "c2": "azul",
+      "pat": "banda",
+      "forma": "clasico",
+      "lvl": 5,
+      "real": "Vélez Sarsfield"
+    }
+  ]
+}

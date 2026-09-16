@@ -3082,11 +3082,102 @@ body{padding-bottom:36px}
   max-height:100%;
   display:flex;flex-direction:column;gap:12px;
 }
-.club-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+/* Los dos renglones del encabezado: el modo arriba y TU CLUB abajo. Iban en
+   la misma línea, con el modo de chapita chica al costado; pero el modo no
+   es una etiqueta del título, es **la otra mitad del título** —estás por
+   empezar un campeonato, o un partido único, y eso cambia todo lo que sigue.
+   Así que va arriba y del mismo tamaño. */
+.club-top{display:flex;flex-direction:column;align-items:center;gap:1px}
+.club-modo{
+  font-family:var(--tit);font-weight:800;color:var(--gold);
+  font-size:clamp(23px,4.6vw,32px);line-height:1;
+  letter-spacing:3px;text-indent:3px;text-transform:uppercase;
+}
 .club-h1{
   font-size:clamp(22px,4.4vw,30px);margin:0;line-height:1;
   letter-spacing:3px;text-indent:3px;
 }
+
+/* El nombre del club elegido, debajo del escudo. */
+.club-eleg{text-align:center;margin-top:2px}
+.club-eleg b{
+  font-family:var(--tit);font-weight:800;font-size:clamp(24px,5.4vw,34px);
+  letter-spacing:1.4px;line-height:1;text-transform:uppercase;display:block;
+}
+
+/* El botón que abre los treinta. Dice cuántos son a propósito: si dijera
+   solo «cambiar de equipo» habría que tocarlo para descubrir que hay una
+   lista, y la mitad del sentido de la pantalla se perdería. */
+.club-abrir{
+  width:100%;cursor:pointer;
+  background:linear-gradient(180deg,rgba(0,20,64,.92),rgba(0,8,31,.95));
+  border:1px solid var(--filo);border-radius:11px;padding:11px 14px;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  color:var(--white);font-family:var(--tit);font-weight:800;
+  font-size:13px;letter-spacing:2px;text-transform:uppercase;
+  transition:border-color .15s,background .15s;
+}
+.club-abrir i{font-style:normal;font-size:11px;color:var(--dim);transition:transform .18s}
+.club-abrir.abierto i{transform:rotate(180deg)}
+
+/* ---- EL PANEL DE LOS TREINTA ----
+   Se abre **encima** de la tarjeta y no la empuja: empujando, el botón de
+   empezar se iría abajo del corte justo cuando el jugador está por tocarlo.
+   Por eso la tarjeta es el contexto de posicionamiento y este panel la
+   cubre entera menos el marco. */
+.card-club{position:relative}
+.club-panel{
+  position:absolute;inset:10px;z-index:6;
+  background:rgba(2,8,24,.97);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border:1px solid var(--filo);border-radius:13px;padding:12px;
+  display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;transform:translateY(10px);
+  transition:opacity .16s,transform .16s;
+}
+.club-panel.abierto{opacity:1;pointer-events:auto;transform:none}
+.cp-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.cp-top b{font-family:var(--tit);font-weight:800;font-size:14px;letter-spacing:2px}
+.cp-x{
+  background:none;border:0;color:var(--dim);font-size:20px;line-height:1;
+  cursor:pointer;padding:0 4px;font-family:inherit;
+}
+.cp-x:hover{color:var(--white)}
+
+/* El buscador tiene que anular casi todo lo que le pone `.card input`, que
+   está pensado para un campo de título: viene centrado, en mayúscula, con la
+   tipografía de titular a 20px y margen arriba. Un buscador con esa pinta
+   parece un cartel, no un lugar donde escribir. */
+.cp-bs{position:relative;margin-top:10px}
+.card-club .cp-bs input{
+  width:100%;margin:0;padding:9px 11px 9px 32px;
+  background:rgba(0,8,31,.72);border:1px solid var(--line);border-radius:9px;
+  color:var(--white);font-family:var(--txt);font-weight:400;
+  font-size:13.5px;letter-spacing:.6px;text-transform:none;text-align:left;
+}
+.card-club .cp-bs input::placeholder{color:var(--dim2)}
+.card-club .cp-bs input:focus{outline:none;border-color:var(--filo)}
+.cp-bs::before{content:'⌕';position:absolute;left:11px;top:50%;transform:translateY(-50%);
+  font-size:17px;color:var(--dim2);pointer-events:none;line-height:1}
+
+/* La lista va ordenada por nivel, de la Final para abajo, pero **sin los
+   títulos de ronda**: el nivel ordena, no se anuncia. Un jugador que busca
+   su equipo no quiere leer en qué instancia va a aparecer. */
+.cp-lista{flex:1;min-height:0;overflow-y:auto;margin-top:10px;padding-right:2px}
+.cp-lista::-webkit-scrollbar{width:6px}
+.cp-lista::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+.cp-eq{
+  width:100%;display:flex;align-items:center;gap:10px;cursor:pointer;
+  background:none;border:1px solid transparent;border-radius:9px;
+  padding:6px 8px;text-align:left;font-family:inherit;
+  transition:background .12s,border-color .12s;
+}
+.cp-nm{
+  font-family:var(--tit);font-weight:800;font-size:15px;letter-spacing:.7px;
+  text-transform:uppercase;color:var(--white);line-height:1.05;
+}
+.cp-eq.sel{border-color:var(--white);background:rgba(255,255,255,.1)}
+.cp-nada{text-align:center;color:var(--dim2);font-size:12.5px;padding:20px 0}
 .club-h1 em{font-style:normal;color:var(--gold)}
 .club-grid{
   display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;
@@ -7016,21 +7107,74 @@ const COLORES = [
   { nm:'VERDE',    hex:'#1f9b4d' },
   { nm:'VIOLETA',  hex:'#7b3fb5' },
   { nm:'NARANJA',  hex:'#ef7215' },
-  { nm:'ROSA',     hex:'#e8559b' }
+  { nm:'ROSA',     hex:'#e8559b' },
+  /* Los tres que hacían falta para los clubes de verdad. Violeta, naranja y
+     rosa no los usa ninguno de los treinta: quedan libres para que un club
+     inventado no se confunda con uno de la tabla. */
+  { nm:'CELESTE',  hex:'#5aa9e6' },
+  { nm:'BORDÓ',    hex:'#7d1f2e' },
+  { nm:'MARRÓN',   hex:'#6b4429' }
 ];
 
 
-/* El patrón interno depende de la forma: mitades, franja, sólido o diagonal.
-   Se dibuja recortado contra la silueta con un clipPath. */
+/* ---- EL DIBUJO DE LA CAMISETA ----
+   Hasta acá el dibujo de adentro lo decidía la **silueta**: si elegías
+   banderín te tocaban rayas, si elegías inglés te tocaba franja. Con eso no
+   había forma de que un club fuera celeste a bastones y otro azul con
+   franja, porque para cambiar el dibujo había que cambiar la forma.
+
+   Ahora es su propio eje. Cinco dibujos por cuatro siluetas por 12 colores
+   al cuadrado: alcanza para los treinta clubes de la Primera y sobra.
+
+   Se dibujan recortados contra la silueta con un clipPath, así que las
+   coordenadas pueden salirse del viewBox sin ensuciar nada. */
+const PATRONES = {
+  solido:  () => '',
+  rayas:   B => '<path d="M0 0 H20 V120 H0 Z M40 0 H60 V120 H40 Z M80 0 H100 V120 H80 Z" fill="' + B + '"/>',
+  franja:  B => '<rect x="0" y="42" width="100" height="36" fill="' + B + '"/>',
+  banda:   B => '<path d="M0 84 L84 0 H100 V22 L22 120 H0 Z" fill="' + B + '"/>',
+  mitades: B => '<rect x="50" y="0" width="50" height="120" fill="' + B + '"/>'
+};
+
+/* El patrón viejo, el que salía de la silueta. Lo siguen usando las
+   pantallas donde el escudo se arma a mano —el rival del 1v1— que eligen
+   forma y colores pero no dibujo. */
 /* Sin letra en el medio: el escudo se lee por su forma y sus dos colores, y
    la inicial competía justo con las formas que traen franja —el banderín y el
    inglés la partían al medio—. El nombre del club ya está al lado en todos los
    lugares donde aparece el escudo. */
-function escudoSVG(size, forma, c1, c2){
+/* ---- DE NOMBRE A ÍNDICE ----
+   La tabla de los treinta habla por nombre —`c1:'negro'`, `forma:'ingles'`—
+   porque así se lee y se corrige a ojo. El dibujante habla por índice, que
+   es lo que usan las pantallas donde el escudo se arma a mano con flechitas.
+   Acá se traduce, y los dos siguen hablando como les queda cómodo.
+
+   Los colores se buscan por su nombre sin tilde y en minúscula, así BORDÓ
+   entra como `bordo` y no hay que repetir la lista en dos lados. */
+const sinTilde = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const IDX_COL = {}; COLORES.forEach((c, i) => IDX_COL[sinTilde(c.nm)] = i);
+const IDX_ESC = {}; ESCUDOS.forEach((e, i) => IDX_ESC[e.id] = i);
+const aIndice = (v, mapa) => typeof v === 'number' ? v : (mapa[v] != null ? mapa[v] : 0);
+
+/* `pat` es opcional: sin él se cae al dibujo que da la silueta, que es lo
+   que hacía el juego antes de que el dibujo fuera su propio eje. Así las
+   seis llamadas viejas siguen dando exactamente lo mismo. */
+function escudoSVG(size, forma, c1, c2, pat){
+  forma = aIndice(forma, IDX_ESC); c1 = aIndice(c1, IDX_COL); c2 = aIndice(c2, IDX_COL);
   const F = ESCUDOS[forma % ESCUDOS.length];
   const A = COLORES[c1 % COLORES.length].hex;
   const B = COLORES[c2 % COLORES.length].hex;
-  const cid = 'esc' + forma + c1 + c2 + Math.random().toString(36).slice(2, 7);
+  const cid = 'esc' + forma + c1 + c2 + (pat || '') + Math.random().toString(36).slice(2, 7);
+  if(pat && PATRONES[pat]){
+    return '<svg class="escudo" viewBox="0 0 100 120" width="' + size + '" height="' + Math.round(size * 1.2) + '">' +
+      '<defs><clipPath id="' + cid + '"><path d="' + F.d + '"/></clipPath></defs>' +
+      '<g clip-path="url(#' + cid + ')">' +
+        '<rect width="100" height="120" fill="' + A + '"/>' + PATRONES[pat](B) +
+      '</g>' +
+      '<path d="' + F.d + '" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="4"/>' +
+      '<path d="' + F.d + '" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/>' +
+    '</svg>';
+  }
 
   /* Cada forma trae su propio patrón: a 26px en el selector la silueta sola no
      alcanza para distinguir cinco opciones. */
@@ -7077,8 +7221,10 @@ function escudoRivalNuevo(evitar){
 }
 
 
+/* El escudo de un club es un objeto de cuatro campos, y `pat` puede no
+   estar: los escudos armados a mano no lo traen. */
 function escudoDe(e, size){
-  return escudoSVG(size, e.forma, e.c1, e.c2);
+  return escudoSVG(size, e.forma, e.c1, e.c2, e.pat);
 }
 
 /* Una fila de colores. `sel` es el elegido y `pre` el prefijo del data-attr,
@@ -7548,13 +7694,110 @@ function showDuelSetup(){
 }
 
 /* ---------------- el campeonato ---------------- */
-const RONDAS = [
-  { name:'CLASIFICATORIA',  rival:'DEPORTIVO BARRIAL', reloj:9, lvl:1 },
-  { name:'OCTAVOS',         rival:'ATLÉTICO DEL SUR',  reloj:9, lvl:2 },
-  { name:'CUARTOS',         rival:'RACING DEL PUERTO', reloj:9, lvl:3 },
-  { name:'SEMIFINAL',       rival:'UNIÓN FERROVIARIA', reloj:9, lvl:4 },
-  { name:'LA FINAL',        rival:'CLUB IMPERIAL',     reloj:9, lvl:5 }
+/* ---- LOS TREINTA DE LA PRIMERA ----
+   Los clubes de la Primera División 2026. Cada uno trae su nombre corto —el
+   que entra en la marquesina, trece caracteres como techo— y su escudo
+   pegado: colores, dibujo de camiseta y silueta. Antes el nombre y el escudo
+   estaban sueltos, así que un mismo rival podía ser rosa y verde una partida
+   y negro y naranja la siguiente.
+
+   Los escudos **no son los reales**: son obra gráfica con derechos. Lo que se
+   toma es lo que no se registra —los colores y el dibujo de la camiseta—,
+   que es además lo único que se distingue a 26px, el tamaño en que el
+   jugador los va a ver casi siempre.
+
+   El `lvl` es en qué ronda puede tocarte: 1 en la Clasificatoria, 5 en la
+   Final. Seis por nivel, ordenados por peso. */
+const EQUIPOS = [
+  /* nivel 1 */
+  { nm:'RIESTRA',        c1:'negro',    c2:'blanco',   pat:'rayas',   forma:'ingles',    lvl:1 },
+  { nm:'SARMIENTO',      c1:'verde',    c2:'blanco',   pat:'rayas',   forma:'clasico',   lvl:1 },
+  { nm:'ALDOSIVI',       c1:'amarillo', c2:'verde',    pat:'rayas',   forma:'banderin',  lvl:1 },
+  { nm:'RIVADAVIA',      c1:'azul',     c2:'blanco',   pat:'solido',  forma:'italiano',  lvl:1 },
+  { nm:'GIMNASIA MZA',   c1:'blanco',   c2:'negro',    pat:'rayas',   forma:'ingles',    lvl:1 },
+  { nm:'EST. RÍO IV',    c1:'celeste',  c2:'blanco',   pat:'rayas',   forma:'clasico',   lvl:1 },
+
+  /* nivel 2 */
+  { nm:'DEFENSA',        c1:'amarillo', c2:'verde',    pat:'franja',  forma:'italiano',  lvl:2 },
+  { nm:'BANFIELD',       c1:'verde',    c2:'blanco',   pat:'rayas',   forma:'ingles',    lvl:2 },
+  { nm:'PLATENSE',       c1:'marron',   c2:'blanco',   pat:'rayas',   forma:'clasico',   lvl:2 },
+  { nm:'TUCUMÁN',        c1:'celeste',  c2:'blanco',   pat:'rayas',   forma:'banderin',  lvl:2 },
+  { nm:'C. CÓRDOBA',     c1:'negro',    c2:'blanco',   pat:'rayas',   forma:'banderin',  lvl:2 },
+  { nm:'BARRACAS',       c1:'blanco',   c2:'rojo',     pat:'rayas',   forma:'italiano',  lvl:2 },
+
+  /* nivel 3 */
+  { nm:'GIMNASIA LP',    c1:'azul',     c2:'blanco',   pat:'rayas',   forma:'clasico',   lvl:3 },
+  { nm:'ARGENTINOS',     c1:'rojo',     c2:'blanco',   pat:'solido',  forma:'banderin',  lvl:3 },
+  { nm:'BELGRANO',       c1:'celeste',  c2:'celeste',  pat:'solido',  forma:'ingles',    lvl:3 },
+  { nm:'TIGRE',          c1:'azul',     c2:'rojo',     pat:'rayas',   forma:'italiano',  lvl:3 },
+  { nm:'UNIÓN',          c1:'rojo',     c2:'blanco',   pat:'rayas',   forma:'ingles',    lvl:3 },
+  { nm:'INSTITUTO',      c1:'rojo',     c2:'blanco',   pat:'rayas',   forma:'clasico',   lvl:3 },
+
+  /* nivel 4 */
+  { nm:'ESTUDIANTES',    c1:'rojo',     c2:'blanco',   pat:'rayas',   forma:'ingles',    lvl:4 },
+  { nm:'NEWELL\'S',      c1:'rojo',     c2:'negro',    pat:'mitades', forma:'clasico',   lvl:4 },
+  { nm:'CENTRAL',        c1:'azul',     c2:'amarillo', pat:'rayas',   forma:'clasico',   lvl:4 },
+  { nm:'LANÚS',          c1:'bordo',    c2:'blanco',   pat:'solido',  forma:'italiano',  lvl:4 },
+  { nm:'HURACÁN',        c1:'blanco',   c2:'rojo',     pat:'solido',  forma:'banderin',  lvl:4 },
+  { nm:'TALLERES',       c1:'azul',     c2:'blanco',   pat:'rayas',   forma:'italiano',  lvl:4 },
+
+  /* nivel 5 */
+  { nm:'BOCA',           c1:'azul',     c2:'amarillo', pat:'franja',  forma:'clasico',   lvl:5 },
+  { nm:'RIVER',          c1:'blanco',   c2:'rojo',     pat:'banda',   forma:'ingles',    lvl:5 },
+  { nm:'RACING',         c1:'celeste',  c2:'blanco',   pat:'rayas',   forma:'italiano',  lvl:5 },
+  { nm:'INDEPENDIENTE',  c1:'rojo',     c2:'blanco',   pat:'banda',   forma:'italiano',  lvl:5 },
+  { nm:'SAN LORENZO',    c1:'azul',     c2:'rojo',     pat:'rayas',   forma:'banderin',  lvl:5 },
+  { nm:'VÉLEZ',          c1:'blanco',   c2:'azul',     pat:'banda',   forma:'clasico',   lvl:5 }
 ];
+
+/* Las rondas ya no traen rival: lo sortea `armarCopa()` de la tabla de
+   arriba, uno por nivel. */
+const RONDAS = [
+  { name:'CLASIFICATORIA',  reloj:9, lvl:1 },
+  { name:'OCTAVOS',         reloj:9, lvl:2 },
+  { name:'CUARTOS',         reloj:9, lvl:3 },
+  { name:'SEMIFINAL',       reloj:9, lvl:4 },
+  { name:'LA FINAL',        reloj:9, lvl:5 }
+];
+
+/* El escudo de un club de la tabla, en el formato que usa el resto del
+   juego. Se copia y no se referencia: el escudo de la cancha es del partido,
+   no de la tabla. */
+const escudoDeEquipo = e => ({ forma:e.forma, c1:e.c1, c2:e.c2, pat:e.pat });
+
+/* ---- EL SORTEO DE LA COPA ----
+   Cinco rivales, uno por ronda, sacados del bombo de su nivel. Dos reglas:
+
+     1. **Tu club nunca te toca de rival.** Sale del bombo apenas lo elegís.
+     2. **El campeonato siguiente no repite los del anterior.** Los cinco que
+        te tocaron esta copa quedan afuera de la próxima, así la segunda
+        vuelta se siente distinta.
+
+   La memoria es de **una copa para atrás**, no de la historia entera: si
+   mirara todo, al cuarto campeonato no quedarían equipos. Al tercero ya
+   pueden volver los de la primera.
+
+   La cuenta cierra siempre: seis por nivel, menos el tuyo, menos el de la
+   copa pasada, quedan cuatro en el peor caso. El `bombo.length ? ... :` es
+   una red por si algún día la tabla se achica y un nivel queda sin nadie:
+   ahí se afloja la regla de la copa anterior antes que quedarse sin rival. */
+function armarCopa(){
+  const previos = G.rivalesPrevios || [];
+  G.copa = RONDAS.map(r => {
+    const delNivel = EQUIPOS.filter(e => e.lvl === r.lvl && e.nm !== G.club);
+    const bombo = delNivel.filter(e => previos.indexOf(e.nm) < 0);
+    const pool = bombo.length ? bombo : delNivel;
+    const eq = pool[rnd(pool.length)];
+    return Object.assign({}, r, { rival:eq.nm, eq });
+  });
+  /* Se anota acá y no al terminar la copa: lo que tiene que quedar excluido
+     del próximo sorteo son estos cinco, se llegue o no a jugarlos todos. */
+  G.rivalesPrevios = G.copa.map(c => c.rival);
+}
+
+/* La ronda que se está jugando, con su rival ya sorteado. Si todavía no se
+   armó la copa —el 1v1, los penales sueltos— cae en la tabla pelada. */
+const RONDA = i => (G.copa && G.copa[i]) || RONDAS[i];
 
 // pools por nivel: [tipo, peso, valorMin, valorMax]
 /* Los duelos suben de exigencia en las tres últimas rondas. Los valores van
@@ -7953,7 +8196,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 167;
+const VERSION = 168;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -8815,7 +9058,7 @@ function predict(cell){
 
 /* ---------------- render ---------------- */
 function render(){
-  const R = RONDAS[G.ronda];
+  const R = RONDA(G.ronda);
   /* En el 1v1 los paneles laterales muestran a los dos jugadores enteros; en el
      campeonato, los del modo de siempre. */
   const duelo = G.modo === 'duelo' && G.J.length === 2;
@@ -10278,7 +10521,7 @@ async function cobrarRacha(yaElegida){
 /* Minuto en el que se juega la carta. G.reloj todavía no se descontó cuando
    sale el cartel, así que la jugada en curso es la que cierra ese bloque. */
 function minutoActual(){
-  const total = RONDAS[G.ronda].reloj;
+  const total = RONDA(G.ronda).reloj;
   return (total - G.reloj + 1) * MIN_POR_TURNO;
 }
 
@@ -10295,7 +10538,7 @@ function renderCronometro(){
      entre los dos**: 8 cada uno, 16 porciones. Los 90 minutos se reparten entre
      esas 16, así que cada turno vale 5,6 minutos en vez de 10. */
   const duelo   = G.modo === 'duelo';
-  const total   = duelo ? DUELO.TURNOS : RONDAS[G.ronda].reloj;
+  const total   = duelo ? DUELO.TURNOS : RONDA(G.ronda).reloj;
   const jugadas = duelo ? G.turnosJugados : total - G.reloj;
   const minuto  = duelo ? Math.round(jugadas * 90 / DUELO.TURNOS) : jugadas * MIN_POR_TURNO;
   const quedan  = total - jugadas;
@@ -11029,7 +11272,7 @@ function situacionGol(lado, yaElegida){
       if(favor && S.key === 'penal'){
         cerrarPop();
         const eqs = [ { club:G.club, escudo:G.escudo },
-                      { club:(RONDAS[G.ronda] || {}).rival || 'EL RIVAL', escudo:G.escudoRival } ];
+                      { club:(RONDA(G.ronda) || {}).rival || 'EL RIVAL', escudo:G.escudoRival } ];
         const conv = await penalUno(eqs, 0, [[],[]], 0, false, 0, true);
         if(conv){
           G.gU++;
@@ -11352,7 +11595,7 @@ function flashGol(tipo){
      nombres, como la marquesina, y el lado que acaba de marcar se enciende. */
   const rival = G.modo === 'duelo'
     ? (G.J[1] || {}).club || 'RIVAL'
-    : (RONDAS[G.ronda] || {}).rival || 'RIVAL';
+    : (RONDA(G.ronda) || {}).rival || 'RIVAL';
   const nomA = G.modo === 'duelo' ? (G.J[0] || {}).club || G.club : G.club;
 
   const marc =
@@ -11498,7 +11741,7 @@ const PALOS = [
 ];
 
 async function penalShootout(){
-  const R = RONDAS[G.ronda];
+  const R = RONDA(G.ronda);
   const esFinal = G.ronda === RONDAS.length - 1;
 
   await wait(300);
@@ -11549,11 +11792,11 @@ async function penalShootout(){
    Las tres cambian también del lado de la tanda —la final y el partido
    único—, donde lo que viene no es un penal sino cinco. */
 function avisoEmpate(){
-  const R = RONDAS[G.ronda];
+  const R = RONDA(G.ronda);
   /* La final y el partido único van a tanda de cinco; una ronda de paso, a un
      penal solo. Cambia qué prometen las chapas. */
   const tanda = G.ronda === RONDAS.length - 1 || G.formato === 'unico';
-  const Sig = RONDAS[G.ronda + 1];
+  const Sig = RONDA(G.ronda + 1);
   return new Promise(resolve => {
     let wrap = document.createElement('div');
     wrap.className = 'sit-flash';
@@ -11580,8 +11823,8 @@ function avisoEmpate(){
 /* Sólo lo corre una ronda de paso: la final y el partido único van a tanda.
    Así que acá siempre hay una ronda siguiente que prometer. */
 function tirarPenal(){
-  const R = RONDAS[G.ronda];
-  const Sig = RONDAS[G.ronda + 1];
+  const R = RONDA(G.ronda);
+  const Sig = RONDA(G.ronda + 1);
   return new Promise(resolve => {
     let wrap = document.createElement('div');
     wrap.className = 'sit-flash';
@@ -11634,7 +11877,7 @@ function tirarPenal(){
 }
 
 function matchWon(byPens){
-  const R = RONDAS[G.ronda];
+  const R = RONDA(G.ronda);
   G.phase = 'won';
   G.historial.push({ ronda:R.name, rival:R.rival, gU:G.gU, gC:G.gC, pens:!!byPens, gano:true });
   const last = G.ronda === RONDAS.length - 1;
@@ -11701,8 +11944,11 @@ function matchWon(byPens){
 
      El escudo del que viene se sortea acá y se guarda: es el que va a estar
      en la cancha. */
-  const Sig = RONDAS[G.ronda + 1];
-  G.escudoProx = escudoRivalNuevo(G.escudoRival);
+  const Sig = RONDA(G.ronda + 1);
+  /* El que viene ya está sorteado desde el arranque de la copa: no se
+     inventa uno, se muestra el que va a estar en la cancha. */
+  const eqProx = RONDA(G.ronda + 1) && RONDA(G.ronda + 1).eq;
+  G.escudoProx = eqProx ? escudoDeEquipo(eqProx) : escudoRivalNuevo(G.escudoRival);
 
   openCard(
     '<div class="rm-banner"><div class="final-tit pasa">PASASTE</div>' +
@@ -11794,7 +12040,7 @@ const barraStat = (cls, nm, n, contra) => {
 
 function showRefuerzo(){
   G.phase = 'refuerzo';
-  const R = RONDAS[G.ronda + 1];
+  const R = RONDA(G.ronda + 1);
 
   /* **El refuerzo se ve antes de tocarlo.** Antes eran dos botones iguales con
      un emoji del teclado y un «3 → 4» suelto: decían cuánto sumabas pero no
@@ -11828,7 +12074,7 @@ function showRefuerzo(){
 }
 
 function matchLost(byPens){
-  const R = RONDAS[G.ronda];
+  const R = RONDA(G.ronda);
   G.phase = 'lost';
   G.historial.push({ ronda:R.name, rival:R.rival, gU:G.gU, gC:G.gC, pens:!!byPens, gano:false });
 
@@ -12113,7 +12359,7 @@ function showMarket(primeraVez){
     (Object.keys(G.compras).length
       ? '<div class="mk-nota">Lo que compraste ahora se puede devolver con la ✕. Al pasar de ronda queda firme.</div>'
       : '') +
-    '<button class="cta" id="nextBtn">JUGAR ' + RONDAS[G.ronda + 1].name + '</button>';
+    '<button class="cta" id="nextBtn">JUGAR ' + RONDA(G.ronda + 1).name + '</button>';
   openCard(html);
   engancharTienda();
   $('nextBtn').onclick = () => { closeCard(); G.ronda++; startMatch(); };
@@ -12397,102 +12643,118 @@ function showMenu(){
 }
 
 function showStart(irAlDuelo){
-  /* Todo entra sin scroll: el escudo grande a la izquierda y los controles a la
-     derecha, en dos columnas que se apilan en el celular. Antes era una lista
-     vertical larga y en pantallas bajas había que scrollear para ver el botón. */
+  /* ---- ELEGIR CLUB, NO INVENTARLO ----
+     Antes esto era un formulario: escribías un nombre, elegías una de las
+     siluetas y dos colores de una fila de doce. Salía un club que no existía
+     y que no significaba nada, y el rival tampoco: los cinco nombres estaban
+     fijos y el escudo se sorteaba aparte, así que DEPORTIVO BARRIAL podía ser
+     rosa una partida y negro la siguiente.
+
+     Ahora se elige uno de los treinta de la Primera, y el escudo viene con
+     él. La pantalla se queda casi igual —el escudo grande arriba, que es lo
+     que el jugador va a mirar todo el campeonato— y los treinta viven en un
+     panel que se abre encima. Eso la deja **más corta que antes**, que es lo
+     que esta pantalla siempre necesitó en teléfonos bajos.
+
+     El panel se abre sobre la tarjeta y no la empuja: si empujara, el botón
+     de empezar se iría abajo del corte justo cuando el jugador está por
+     tocarlo. */
   openCard(
     '<div class="club-top">' +
-      '<span class="tag">' + (irAlDuelo ? '1 vs 1' : G.formato === 'unico' ? 'PARTIDO ÚNICO' : 'CAMPEONATO') + '</span>' +
+      '<span class="club-modo">' + (irAlDuelo ? '1 VS 1' : G.formato === 'unico' ? 'PARTIDO ÚNICO' : 'CAMPEONATO') + '</span>' +
       '<h1 class="club-h1">TU <em>CLUB</em></h1>' +
     '</div>' +
 
-    /* El escudo pasa al centro, sobre una peana con luz: es lo único que el
-       jugador crea en todo el juego y estaba tratado como un campo más de un
-       formulario. Debajo, la tira de formas —cada una dibujada con **los
-       colores elegidos**, para verse a sí mismo en cinco siluetas— y una sola
-       fila de colores con un interruptor de cuál se está pintando. Antes eran
-       dos filas de nueve, dieciocho botones a la vez. */
     '<div class="club-vitrina">' +
       '<div class="crear-prev" id="escPrev"></div>' +
       '<div class="club-peana"></div>' +
     '</div>' +
+    '<div class="club-eleg" id="eleg"></div>' +
 
-    '<input id="clubInput" maxlength="18" placeholder="NOMBRE DE TU CLUB">' +
-
-    '<div class="crear-lb">FORMA DEL ESCUDO</div>' +
-    '<div class="club-tira" id="opsForma"></div>' +
-
-    '<div class="crear-lb">COLORES</div>' +
-    '<div class="club-sw" id="opsSw"></div>' +
-    '<div class="col-fila" id="opsCol"></div>' +
-
+    '<button class="club-abrir" id="abrir">ELEGIR ENTRE LOS 30<i>▾</i></button>' +
     '<button class="op-azar" id="azarBtn">🎲 SORPRENDEME</button>' +
 
     '<div class="club-pie">' +
       '<button class="cta" id="startBtn">' +
         (irAlDuelo ? 'SEGUIR' : G.formato === 'unico' ? 'JUGAR EL PARTIDO' : 'EMPEZAR LA COPA') + '</button>' +
       '<button class="cta alt" id="volverMenu">VOLVER</button>' +
+    '</div>' +
+
+    '<div class="club-panel" id="clubPanel">' +
+      '<div class="cp-top"><b>LOS 30 EQUIPOS</b>' +
+        '<button class="cp-x" id="cpCerrar" aria-label="cerrar">✕</button></div>' +
+      '<div class="cp-bs"><input id="cpQ" placeholder="Buscar equipo…" autocomplete="off"></div>' +
+      '<div class="cp-lista" id="cpLista"></div>' +
     '</div>',
     'card-club'
   );
 
-  /* Los colores arrancan **al azar** cada vez que se abre la pantalla: así el
-     jugador ve algo armado en vez de un molde vacío, y si le gusta lo deja.
+  /* Los treinta ordenados **por nivel, de la Final para abajo**: el que abre
+     el panel se encuentra primero con los que conoce. Adentro de cada nivel
+     queda el orden de la tabla. Sin títulos de ronda en el medio: el nivel
+     ordena, no se anuncia. */
+  const LISTA = EQUIPOS.slice().sort((a, b) => b.lvl - a.lvl);
 
-     La **forma** no: arranca siempre en la primera. Sorteándola también, la
-     tira de abajo abría con la selección en cualquier lado —a veces en la
-     última, fuera de la vista en una pantalla angosta— y no se entendía que
-     esos cinco botones eran para elegir. Empezando por la primera, la tira se
-     lee de izquierda a derecha como lo que es: una lista. El dado sigue
-     sorteando las tres cosas. */
-  G.escudo = { forma: 0, c1: rnd(COLORES.length), c2: rnd(COLORES.length) };
-  if(G.escudo.c2 === G.escudo.c1) G.escudo.c2 = (G.escudo.c2 + 1) % COLORES.length;
+  /* Arranca en uno al azar. Un molde vacío no invita a nada, y además así el
+     que no tiene equipo favorito ya tiene uno puesto. */
+  let eq = LISTA[rnd(LISTA.length)];
 
-  /* Cuál de los dos colores está pintando la fila de abajo. */
-  let cualColor = 'c1';
+  /* El buscador pela tildes y busca en las dos formas del nombre: quien
+     escribe "gimnasia" tiene que encontrar las dos, y quien escribe "velez"
+     sin tilde también. */
+  const pelar = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-  const pintar = () => {
-    $('escPrev').innerHTML = escudoSVG(150, G.escudo.forma, G.escudo.c1, G.escudo.c2);
-    $('opsForma').innerHTML = ESCUDOS.map((e, i) =>
-      '<button class="op-esc' + (i === G.escudo.forma ? ' sel' : '') + '" data-forma="' + i + '" title="' + e.nm + '">' +
-        escudoSVG(34, i, G.escudo.c1, G.escudo.c2) + '</button>').join('');
-    $('opsSw').innerHTML = ['c1', 'c2'].map((k, i) =>
-      '<button class="sw-b' + (cualColor === k ? ' on' : '') + '" data-sw="' + k + '">' +
-        '<i style="background:' + COLORES[G.escudo[k]].hex + '"></i>COLOR ' + (i + 1) + '</button>').join('');
-    $('opsCol').innerHTML = filaColores(G.escudo[cualColor], 'col');
-
-    document.querySelectorAll('[data-forma]').forEach(b =>
-      b.onclick = () => { G.escudo.forma = +b.dataset.forma; pintar(); });
-    document.querySelectorAll('[data-sw]').forEach(b =>
-      b.onclick = () => { cualColor = b.dataset.sw; pintar(); });
-    /* El interruptor no se mueve solo. Se probó que al elegir el primer color
-       saltara al segundo, para ahorrar el toque del medio, pero el salto te
-       cambia de contexto justo cuando estás mirando el resultado del color que
-       acabás de poner: elegís, mirás el escudo, y la fila de abajo ya está
-       pintando otra cosa. Cambiar de color es una decisión del jugador. */
-    document.querySelectorAll('[data-col]').forEach(b =>
-      b.onclick = () => { G.escudo[cualColor] = +b.dataset.col; pintar(); });
+  const pintarElegido = () => {
+    $('escPrev').innerHTML = escudoDe(eq, 120);
+    $('eleg').innerHTML = '<b>' + eq.nm + '</b>';
   };
-  pintar();
-  $('clubInput').addEventListener('input', pintar);
+
+  const pintarLista = () => {
+    const t = pelar($('cpQ').value.trim());
+    const hay = t ? LISTA.filter(e => pelar(e.nm).indexOf(t) >= 0) : LISTA;
+    $('cpLista').innerHTML = hay.length
+      ? hay.map(e => '<button class="cp-eq' + (e.nm === eq.nm ? ' sel' : '') + '" data-eq="' + e.nm + '">' +
+          escudoDe(e, 30) + '<span class="cp-nm">' + e.nm + '</span></button>').join('')
+      : '<div class="cp-nada">no hay ningún equipo con ese nombre</div>';
+    document.querySelectorAll('[data-eq]').forEach(b => b.onclick = () => {
+      eq = EQUIPOS.find(x => x.nm === b.dataset.eq);
+      pintarElegido(); cerrarPanel();
+    });
+  };
+
+  const abrirPanel = () => {
+    $('clubPanel').classList.add('abierto');
+    $('abrir').classList.add('abierto');
+    $('cpQ').value = '';
+    pintarLista();
+  };
+  const cerrarPanel = () => {
+    $('clubPanel').classList.remove('abierto');
+    $('abrir').classList.remove('abierto');
+  };
+
+  $('abrir').onclick = abrirPanel;
+  $('cpCerrar').onclick = cerrarPanel;
+  $('cpQ').addEventListener('input', pintarLista);
+
+  /* El dado saca otro, nunca el mismo: un botón que a veces no hace nada se
+     siente roto. */
   $('azarBtn').onclick = () => {
-    const antes = G.escudo.forma + ':' + G.escudo.c1 + ':' + G.escudo.c2;
-    for(let i = 0; i < 12; i++){
-      G.escudo = { forma: rnd(ESCUDOS.length), c1: rnd(COLORES.length), c2: rnd(COLORES.length) };
-      if(G.escudo.c2 === G.escudo.c1) G.escudo.c2 = (G.escudo.c2 + 1) % COLORES.length;
-      if(G.escudo.forma + ':' + G.escudo.c1 + ':' + G.escudo.c2 !== antes) break;
-    }
-    pintar();
+    let otro = eq;
+    while(LISTA.length > 1 && otro.nm === eq.nm) otro = LISTA[rnd(LISTA.length)];
+    eq = otro; pintarElegido();
   };
 
-  const tomarClub = () => ($('clubInput').value.trim().toUpperCase() || 'TU CLUB');
   $('volverMenu').onclick = () => showMenu();
   $('startBtn').onclick = () => {
-    G.club = tomarClub();
+    G.club = eq.nm;
+    G.escudo = escudoDeEquipo(eq);
     if(irAlDuelo) avisoBeta();
     else comoSeJuega(true);   // el tutorial decide a dónde sigue
   };
-  $('clubInput').addEventListener('keydown', e => { if(e.key === 'Enter') $('startBtn').click(); });
+
+  pintarElegido();
+  pintarLista();
 }
 
 /* En pantallas donde todo tiene que entrar sin scroll, el relato va plegado:
@@ -12680,6 +12942,9 @@ function newRun(encadenar, sinArrancar){
     }
   }
   G.ronda = 0;
+  /* Antes que nada: los cinco rivales de esta copa. Todo lo que sigue —el
+     reloj, los escudos, los carteles— los lee de acá. */
+  armarCopa();
   G.atk = 2; G.def = 1;
   /* Un corazón menos de techo por cada copa ganada, hasta el piso. La segunda
      corrida arranca en 3, la tercera en 2, y de ahí no baja más. */
@@ -12693,7 +12958,7 @@ function newRun(encadenar, sinArrancar){
 }
 
 function startMatch(){
-  const R = RONDAS[G.ronda];
+  const R = RONDA(G.ronda);
   G.grid = buildGrid(R.lvl);
   // El AGUANTE y la RACHA no se resetean: son el estado del equipo y viajan de
   // un partido al otro. Terminás fundido, arrancás fundido; terminás con la
@@ -12703,10 +12968,10 @@ function startMatch(){
   G.reloj = R.reloj;
   G.amarillas = 0;
   G.fundidas = 0;
-  /* Cada rival estrena escudo. Si la pantalla de PASASTE ya se lo mostró al
-     jugador, se usa **ése**: prometer un escudo y sacar otro en la cancha
-     sería un cambio de camiseta sin explicación. */
-  G.escudoRival = G.escudoProx || escudoRivalNuevo();
+  /* El escudo ya no se sortea: viene con el club que salió en el bombo. Si
+     la pantalla de PASASTE ya se lo mostró al jugador se usa **ése**, que es
+     el mismo, pero así queda explícito que no puede cambiar en el camino. */
+  G.escudoRival = G.escudoProx || (RONDA(G.ronda).eq && escudoDeEquipo(RONDA(G.ronda).eq)) || escudoRivalNuevo();
   G.escudoProx = null;
   // El máximo vuelve al techo de la corrida en cada partido —el equipo
   // descansa— pero el aguante con el que llegás es el que traés del anterior.
