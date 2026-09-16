@@ -7913,7 +7913,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 164;
+const VERSION = 165;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -11492,7 +11492,22 @@ async function penalShootout(){
    El marcador pasa a ser el mismo componente que usan las pantallas de fin de
    partido —con los dos escudos— en vez de un número grande con los nombres
    sueltos abajo. Y se fue el ⚖, que era de los últimos emoji del teclado que
-   quedaban en una pantalla grande. */
+   quedaban en una pantalla grande.
+
+   **Y tiene que decir a dónde se fue el partido.** El cartel no nombraba en
+   ningún renglón ni a los penales ni al penal definitorio: lo más cerca que
+   llegaba era «TE QUEDA UNA SOLA PELOTA» y un botón que decía «PATEAR EL
+   PENAL», y de ahí el jugador tenía que deducir solo que el empate se define
+   desde los doce pasos y que le tocó el que termina la historia.
+
+   Encima la cinta gastaba su renglón contando que empataron y que nadie se
+   sacó diferencia, que es exactamente lo que se acaba de ver en la cancha.
+   Ahora ese renglón cuenta **lo que sigue**, el rojo nombra el penal
+   definitorio y el botón lo repite: las dos palabras que faltaban aparecen
+   tres veces, a tres alturas distintas del cartel.
+
+   Las tres cambian también del lado de la tanda —la final y el partido
+   único—, donde lo que viene no es un penal sino cinco. */
 function avisoEmpate(){
   const R = RONDAS[G.ronda];
   /* La final y el partido único van a tanda de cinco; una ronda de paso, a un
@@ -11506,7 +11521,7 @@ function avisoEmpate(){
       '<div class="aviso empate">' +
         '<div class="e-tit">EMPATE</div>' +
         '<div class="pn-cinta"><b>' + (G.formato === 'unico' ? 'PARTIDO ÚNICO' : R.name) + '</b>' +
-          '<span>90 minutos y nadie se sacó diferencia</span></div>' +
+          '<span>nadie se sacó diferencia: va a penales</span></div>' +
         marcadorFinal(R.rival) +
         '<div class="pn-chapas">' +
           '<div class="chapa ok"><span>' + (tanda ? 'SI LA GANÁS' : 'SI ENTRA') + '</span>' +
@@ -11514,8 +11529,8 @@ function avisoEmpate(){
           '<div class="chapa no"><span>' + (tanda ? 'SI LA PERDÉS' : 'SI LA ATAJA') + '</span>' +
             '<b>SE ACABÓ</b></div>' +
         '</div>' +
-        '<div class="e-aviso">' + (tanda ? 'CINCO CADA UNO' : 'TE QUEDA UNA SOLA PELOTA') + '</div>' +
-        '<button class="cta" id="empBtn">' + (tanda ? 'IR A LOS PENALES' : 'PATEAR EL PENAL') + '</button>' +
+        '<div class="e-aviso">' + (tanda ? 'TANDA DE CINCO' : 'UN SOLO PENAL Y SE DEFINE') + '</div>' +
+        '<button class="cta" id="empBtn">' + (tanda ? 'IR A LA TANDA' : 'PATEAR PENAL DEFINITORIO') + '</button>' +
       '</div>';
     wrap = montarPop(wrap);
     wrap.querySelector('#empBtn').onclick = () => { cerrarPop(); resolve(); };

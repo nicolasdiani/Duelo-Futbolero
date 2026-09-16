@@ -7528,3 +7528,58 @@ mobile— el plantel pasa de 57 a 66 pero ahí hay aire de sobra: el tablero que
 en 574 × 253 igual que antes, y sin scroll. En 844 y 932 acostados manda el
 layout de escritorio, donde el dinero es una fila apilada con su rótulo y no lo
 toca nada de esto.
+
+
+## El empate dice a dónde se fue el partido
+
+El cartel que aparece cuando termina 2-2 **no nombraba en ningún renglón ni a
+los penales ni al penal definitorio**. Lo más cerca que llegaba era «TE QUEDA
+UNA SOLA PELOTA» y un botón que decía «PATEAR EL PENAL»: de ahí el jugador
+tenía que deducir solo que el empate se define desde los doce pasos y que le
+tocó el que termina la historia.
+
+Y encima tenía un renglón desperdiciado. La cinta contaba que empataron y que
+nadie se sacó diferencia, que es exactamente lo que se acababa de ver en la
+cancha.
+
+### Tres textos, cero CSS
+
+| | antes | ahora |
+|---|---|---|
+| la cinta | 90 minutos y nadie se sacó diferencia | nadie se sacó diferencia: **va a penales** |
+| el renglón rojo | TE QUEDA UNA SOLA PELOTA | **UN SOLO PENAL** Y SE DEFINE |
+| el botón | PATEAR EL PENAL | **PATEAR PENAL DEFINITORIO** |
+
+Las tres cambian también del lado de la tanda —la final y el partido único—,
+donde lo que viene no es un penal sino cinco: ahí el renglón rojo dice **TANDA
+DE CINCO** y el botón **IR A LA TANDA**.
+
+No se tocó ni una línea de CSS ni la estructura del cartel. Las dos palabras
+que faltaban aparecen ahora tres veces, a tres alturas distintas.
+
+### Lo que costó de alto, que es casi nada
+
+La primera redacción era más larga —la cinta decía «90 minutos, nadie se sacó
+diferencia · se define en penales» y el rojo «TANDA DE CINCO CADA UNO»— y
+**engordaba el cartel entre 23 y 64px** según el ancho: la cinta se partía en
+tres renglones y el rojo en dos. Medido en cuatro anchos y en los cuatro casos
+que el cartel puede mostrar, se acortaron los textos hasta que la cuenta diera
+cero.
+
+| alto del cartel | 320 | 360 | 390 | 430 |
+|---|---|---|---|---|
+| ronda de paso | +19 | **=** | **=** | **=** |
+| nombres largos | +19 | **=** | **=** | **=** |
+| la final | **=** | **=** | **=** | **=** |
+| partido único | **=** | **=** | **=** | **=** |
+
+**Catorce de dieciséis dan exactamente el mismo alto que antes.** Los dos que
+crecen son los de ronda de paso en un teléfono de 320, donde «PATEAR PENAL
+DEFINITORIO» no entra en un renglón y el botón pasa a dos. Ahí el cartel mide
+482 contra un hueco de 506, así que entra igual —y de todas formas el aviso ya
+tenía su `max-height` con scroll, que es la red que se puso justo para esto.
+
+### Lo que quedó anotado
+
+En 320 el nombre del rival se parte feo en el marcador —«DEPORT / IVO /
+BARRIA / L»—, pero eso ya venía de antes y no lo toca este cambio.
