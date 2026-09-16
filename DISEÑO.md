@@ -7366,3 +7366,80 @@ terminó siempre adelante.
 
 En `prefers-reduced-motion` la mesa no se mueve: queda sólo el apagado a `.78`,
 que es lo que separa los planos.
+
+
+## Los pop-ups acostados, sin tocar el vertical
+
+Del testeo de los once pop-ups en nueve medidas salieron dos cosas: **las siete
+verticales pasan limpias** y las dos apaisadas estaban rotas. Lo apaisado no es
+prioridad, así que el arreglo tenía una condición: **no puede influir en
+vertical**.
+
+Entra entero en el bloque que ya existía de
+`@media (max-height:560px) and (orientation:landscape)`. Una consulta con
+`orientation:landscape` **no puede matchear en vertical**: el vertical queda
+igual por construcción, no por cuidado.
+
+### Qué estaba roto
+
+En 780 × 360 el cartel del mano a mano medía **539px de alto en una pantalla de
+360**. Sin `max-height` y sin scroll ni en el cartel ni en el velo, se salía
+105px por arriba y 75 por abajo, y lo de arriba era **inalcanzable**. El penal
+de la tanda hacía lo mismo con 464. Son los dos pop-ups donde hay que elegir
+algo, así que la jugada no se podía terminar sin volver a poner el teléfono
+vertical.
+
+Los que sí se clavaban lo hacían por el `max-height:88vh` del bloque de 821+ de
+ancho, que en un iPhone acostado —844 de ancho— es el que gana. Los de 780 no
+entraban en esa puerta y quedaban sueltos.
+
+### Qué hace ahora
+
+```css
+@media (max-height:560px) and (orientation:landscape){
+  .gol-flash,.play-flash,.sit-flash{padding:8px 12px 34px}
+  .gf,.sit,.aviso,.play,.pop-caja{max-height:calc(100dvh - 50px);overflow-y:auto}
+}
+```
+
+Dos cosas. El tope, atado al alto real de la pantalla, para que los carteles se
+rueden adentro en vez de perderse afuera. Y el velo, que dejaba **56px
+reservados abajo para una franja que mide 29**: acostado, donde el hueco útil
+bajaba a 284, esos 27px son la diferencia entre rodar y no rodar.
+
+| apaisado | antes | ahora |
+|---|---|---|
+| 780 × 360 | 7 de 11 rotos | **8 de 8 ok** |
+| 844 × 390 | 9 de 11 rotos | **8 de 8 ok** |
+
+El mano a mano pasa de 420 × **539** —fuera de la pantalla por los dos lados— a
+420 × **310**, rodable y entero adentro del hueco.
+
+### Y el vertical, idéntico
+
+Los once pop-ups, medidos en las siete medidas verticales, antes y después:
+
+| | |
+|---|---|
+| 320 × 568 | idéntico |
+| 375 × 667 | idéntico |
+| 360 × 780 | idéntico |
+| 390 × 844 | idéntico |
+| 412 × 915 | idéntico |
+| 430 × 932 | idéntico |
+| 744 × 1133 | idéntico |
+
+**77 medidas, 77 iguales.** Y la cadena del penal definitorio sigue andando
+igual en apaisado: un solo velo, la mesa atrás los tres carteles y adelante al
+cerrar.
+
+### Lo que se dejó como está
+
+El **breakpoint** —que un iPhone acostado se lleve el layout de escritorio
+porque mide 844 de ancho y la puerta de mobile pide 820— no se tocó. Arreglarlo
+es una línea, pero cambia qué layout gana en esa medida: es un cambio grande
+para algo que no es prioridad, y con los carteles clavados ya no molesta.
+
+Y el **descuento en 320 × 568**, que entra con margen cero —492 en un hueco de
+492—, tampoco: achicarlo sería tocar vertical, que es justo lo que no había que
+hacer. Queda anotado: un renglón más de texto ahí se corta.

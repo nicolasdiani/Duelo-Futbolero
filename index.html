@@ -3642,6 +3642,29 @@ body{padding-bottom:36px}
   .marquesina{padding:5px 9px}
   .cell .c-nm{font-size:10.4px}
   .cell .c-out{font-size:10.8px}
+
+  /* ---- LOS POP-UPS, ACOSTADOS ----
+     Acostado no hay alto y los carteles altos se iban de la pantalla. Medido
+     en 780x360, el mano a mano medía **539px en una pantalla de 360**: se
+     salía 105 por arriba y 75 por abajo, y como ni el cartel ni el velo
+     tenían scroll, lo de arriba era **inalcanzable**. El penal de la tanda
+     hacía lo mismo con 464. Son justo los dos donde hay que elegir algo, así
+     que la jugada no se podía terminar sin volver a poner el teléfono
+     vertical.
+
+     Los que sí se clavaban —el aviso, la fundida, el empate— lo hacían por el
+     `max-height:88vh` del bloque de 821+ de ancho. Acá se les da el tope a
+     todos, atado al alto real de la pantalla: se ruedan adentro en vez de
+     perderse afuera.
+
+     Y el velo deja de reservar 56px abajo para una franja que mide 29. En
+     vertical sobran; acostado, donde el hueco útil baja a 284, son 27px que
+     hacen la diferencia entre rodar y no rodar. */
+  .gol-flash,.play-flash,.sit-flash{padding:8px 12px 34px}
+  .gf,.sit,.aviso,.play,.pop-caja{
+    max-height:calc(100dvh - 50px);
+    overflow-y:auto;
+  }
 }
 
 /* ══════════ DESKTOP ══════════
@@ -7850,7 +7873,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 162;
+const VERSION = 163;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
