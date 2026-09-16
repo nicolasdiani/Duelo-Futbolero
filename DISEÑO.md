@@ -7102,3 +7102,42 @@ a inusable —62px de columna de texto y 364 de alto—, así que salió a la lu
 Un `max-width:none` en la regla base. Y la columna de texto necesitaba su
 `flex`: sin él se quedaba en su ancho mínimo —121 de los 250 libres— y la
 descripción se desbordaba de la fila.
+
+
+## La columna latía con el texto adentro
+
+Reporte: «el % y el número de las columnas cambian de tamaño cuando están
+activas; solo deberían resaltarse y parpadear».
+
+El parpadeo de la columna habilitada es `titilarBorde`, y en el medio del ciclo
+tenía un `transform`:
+
+```css
+0%,100%{ box-shadow: …1px…;   transform:scale(1, 1) }
+50%    { box-shadow: …2.5px…; transform:scale(1.012, 1.055) }
+```
+
+La escala es **del botón entero**, así que se la comen también el porcentaje y
+el costo — y no es pareja: 1.2% de ancho contra 5.5% de alto, o sea que el texto
+además se estira.
+
+Medido en 390, con el botón en su estado de reposo y en el del 50%:
+
+| | 0% y 100% | 50% |
+|---|---|---|
+| el botón | 80.5 × 29.1 | 81.5 × 30.7 |
+| el «25%» | 22.8 × 17.1 | **23.1 × 18.0** |
+
+Casi un píxel de alto, dos veces por ciclo. Y al pasarle el dedo o el mouse
+—que corta la animación con `animation:none`— volvía de golpe a 17.1: por eso
+se leía como que el texto cambiaba de tamaño **al activarse** la columna, cuando
+en realidad dejaba de latir.
+
+El parpadeo no necesitaba la escala: lo hace el anillo, que es `box-shadow` y no
+toca el layout. Sacándola, la columna se sigue resaltando y latiendo igual —de
+1px a 2.5px de anillo y de .25 a .75 de resplandor— con el texto quieto en
+22.8 × 17.1 en todo el ciclo y también con la columna activa.
+
+`titilarBorde` lo usa **sólo** la barra de columnas, así que no arrastra nada
+más. Las filas nunca tuvieron el problema: no laten, y su estado activo es un
+`translateX(2px)`, que mueve pero no escala.

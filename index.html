@@ -279,9 +279,18 @@ img{height:auto}
   0%,100%{opacity:1;filter:none}
   50%    {opacity:.45;filter:brightness(1.35)}
 }
+/* **Late el filo, no el botón.** Tenía un `scale(1.012, 1.055)` en el medio del
+   ciclo, y como la escala es del botón entero se la comían también el
+   porcentaje y el costo: el «25%» pasaba de 17.1 a 18.0px de alto dos veces por
+   ciclo, y al pasarle el dedo —que corta la animación— volvía de golpe a 17.1.
+   Parecía que el texto cambiaba de tamaño al activarse la columna.
+
+   El parpadeo no lo necesita: lo hace el anillo, que es `box-shadow` y no toca
+   el layout. La columna se sigue resaltando y latiendo igual, con el texto
+   quieto. */
 @keyframes titilarBorde{
-  0%,100%{box-shadow:0 0 0 1px currentColor, 0 0 16px rgba(245,200,66,.25);transform:scale(1,1)}
-  50%    {box-shadow:0 0 0 2.5px currentColor, 0 0 30px rgba(245,200,66,.75);transform:scale(1.012,1.055)}
+  0%,100%{box-shadow:0 0 0 1px currentColor, 0 0 16px rgba(245,200,66,.25)}
+  50%    {box-shadow:0 0 0 2.5px currentColor, 0 0 30px rgba(245,200,66,.75)}
 }
 
 /* Los dos golpes y la pausa. El pico dura poco —de 0 a 14%— y después
@@ -7703,7 +7712,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 158;
+const VERSION = 159;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
