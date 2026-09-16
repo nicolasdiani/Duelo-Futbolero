@@ -2759,6 +2759,49 @@ img{height:auto}
 /* La ilustración de la carta: ocupa todo el espacio del ícono, recortada.
    Va con opacidad para que el cartel de abajo siga legible. */
 .cell .c-ico{padding:0;overflow:hidden;position:relative}
+
+/* ---- EL ESCUDO DEL CLUB, EN LA CARTA ----
+   Arriba a la izquierda de la ilustración, como el logo del canal en una
+   transmisión. Durante el turno el jugador mira la mesa, no la marquesina,
+   y ahí no había nada que dijera contra quién está jugando.
+
+   Va **encima de la foto y en absoluto**, no en el flujo. El primer intento
+   lo puso al lado del nombre, que parecía el lugar obvio: le comía 16 de los
+   80px del título y DEFENSOR RIVAL se partía en «DEFE / NSO / R / RIV / AL».
+   En una carta de 90px de ancho no sobra nada en el renglón del nombre. Así
+   **no cuesta un píxel**: la carta mide exactamente lo mismo que antes.
+
+   El tamaño cuelga de `--carta`, que es la variable que ya maneja todo el
+   responsive de la mesa: el escudo se achica con la carta, como el resto.
+   El `max-height` es la red — en un teléfono de 320 la ilustración baja a
+   22px de alto y el escudo no puede ser más alto que lo que lo contiene. */
+.cell .c-esc{
+  position:absolute;left:3px;top:3px;z-index:2;
+  display:flex;pointer-events:none;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.9));
+}
+.cell .c-esc svg{
+  height:clamp(11px, calc(var(--carta) * .135), 18px);
+  width:auto;max-height:calc(100% - 4px);
+}
+/* Con la carta trabada el escudo se apaga como el resto: si quedara
+   brillando sería lo único vivo de una carta que no se puede jugar. */
+.cell.lock .c-esc{opacity:.3}
+.cell.destrabable .c-esc{opacity:.9}
+
+/* ---- DONDE NO ENTRA, NO VA ----
+   En pantallas bajas la ilustración se achica hasta ser una franja y después
+   desaparece: medido en el juego andando, a 360x780 la foto tiene 63px de
+   alto y el escudo entra cómodo, pero a 360x640 baja a **11** y a 320x568 a
+   **cero**. Ahí el escudo queda recortado a una astilla, que no se lee como
+   un escudo sino como un error de dibujo.
+
+   Así que se va con la foto. No es una renuncia: en esas medidas la carta ya
+   quedó reducida a nombre y resultado, y meterle un escudo encima sería
+   taparle una de las dos cosas que le quedan. */
+@media (max-height:700px){
+  .cell .c-esc{display:none}
+}
 .c-art{
   width:100%;height:100%;object-fit:cover;display:block;
   border-radius:3px;opacity:.92;
@@ -8196,7 +8239,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 168;
+const VERSION = 169;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -9313,6 +9356,31 @@ function tapLine(kind, idx){
   render();
 }
 
+/* ---- DE QUIÉN ES LA ESCENA ----
+   Se deriva del **nombre** y no de una lista aparte. Podría llevar un
+   `riv:true` en cada tipo, pero entonces habría dos fuentes de verdad que se
+   pueden desincronizar: una carta nueva con RIVAL en el nombre y sin la
+   marca mostraría tu escudo sobre una jugada del rival.
+
+   El nombre es lo que el jugador lee, así que atando el escudo al nombre los
+   dos **no pueden contradecirse nunca**, y una carta del rival que se agregue
+   mañana trae su escudo sola.
+
+   Ojo con lo que significa: es de quién es la **escena**, no a quién le
+   conviene. DEFENSOR RIVAL es una oportunidad tuya y AUTOGOL RIVAL te da un
+   gol, pero los dos pasan del lado de ellos. Lo que te conviene ya lo dice
+   el color del tono, que es otra cosa y va por otro lado. */
+const esDelRival = tipo => /RIVAL/.test((TYPES[tipo] || {}).nm || '');
+
+/* El escudo del club al que pertenece la escena. Sin escudos en juego —el
+   tutorial, una pantalla suelta— no dibuja nada. El 17 es un piso: el CSS lo
+   escala con la carta. */
+function escudoDeCarta(tipo){
+  const e = esDelRival(tipo) ? G.escudoRival : G.escudo;
+  if(!e) return '';
+  return '<span class="c-esc">' + escudoDe(e, 17) + '</span>';
+}
+
 function makeCellEl(cell, r, c){
   const el = document.createElement('div');
   el.className = 'cell';
@@ -9342,7 +9410,7 @@ function makeCellEl(cell, r, c){
     '</div>' +
     '<div class="c-ico">' + (artCarta(cell.type)
         ? '<img class="c-art" src="' + artCarta(cell.type) + '" alt="">'
-        : T.ico) + '</div>' +
+        : T.ico) + escudoDeCarta(cell.type) + '</div>' +
     '<div class="c-out ' + p.tone + '">' + p.label + '</div>';
 
   if(G.targeting === 'revision' && cell.lock){

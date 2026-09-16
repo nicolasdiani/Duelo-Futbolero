@@ -7810,3 +7810,87 @@ por tamaño sería el mismo archivo pesando el doble.
 Los SVG son una **salida**, no la fuente: el escudo es una función de cinco
 campos y eso vive en `equipos.json`. Si cambia un color de un club se cambia
 ahí y se regeneran los treinta.
+
+
+## El escudo del club, en las cartas
+
+Durante el turno el jugador mira **la mesa**, no la marquesina. Y en la mesa no
+había nada que dijera contra quién está jugando: que DELANTERO RIVAL fuera del
+rival se sabía por la palabra RIVAL en el nombre, y que PASE GOL fuera tuya,
+porque no la tenía.
+
+Ahora cada carta lleva el escudo del club **al que pertenece la escena**,
+arriba a la izquierda de la ilustración, como el logo del canal en una
+transmisión.
+
+### Dónde hay lugar de verdad
+
+El primer intento lo puso **al lado del nombre**, que parecía el lugar obvio.
+Le comía 16 de los 80px del título y DEFENSOR RIVAL se partía en
+«DEFE / NSO / R / RIV / AL». En una carta de 90px de ancho no sobra nada en el
+renglón del nombre.
+
+El lugar que sí sobra es **encima de la foto**: ahí el escudo va en absoluto,
+no está en el flujo y no le saca ancho a nada.
+
+### Los tamaños, que era la condición
+
+```css
+.cell .c-esc svg{
+  height:clamp(11px, calc(var(--carta) * .135), 18px);
+  width:auto;max-height:calc(100% - 4px);
+}
+```
+
+El tamaño cuelga de `--carta`, que es la variable que ya maneja todo el
+responsive de la mesa: el escudo se achica con la carta, como el resto.
+
+Medido antes y después en siete medidas, tomando la carta, el hueco de la
+ilustración, el ancho del nombre, el alto del resultado y las dos tipografías:
+
+| | 320×568 | 360×640 | 375×667 | 390×844 | 412×915 | 430×932 | 780×360 |
+|---|---|---|---|---|---|---|---|
+| todo | **=** | **=** | **=** | **=** | **=** | **=** | **=** |
+
+**Idéntico hasta el píxel en las siete.** Es lo que se esperaba —`position:
+absolute` no ocupa lugar— pero era justo lo que había que no romper.
+
+### De quién es la escena
+
+```js
+const esDelRival = tipo => /RIVAL/.test((TYPES[tipo] || {}).nm || '');
+```
+
+Se deriva del **nombre** y no de una lista aparte. Podría llevar un `riv:true`
+en cada tipo, pero entonces habría dos fuentes de verdad que se pueden
+desincronizar: una carta nueva con RIVAL en el nombre y sin la marca mostraría
+tu escudo sobre una jugada del rival. El nombre es lo que el jugador lee, así
+que atándolo al nombre **no pueden contradecirse nunca**, y una carta del rival
+que se agregue mañana trae su escudo sola.
+
+Ojo con lo que significa: es de quién es la **escena**, no a quién le conviene.
+DEFENSOR RIVAL es una oportunidad tuya y AUTOGOL RIVAL te da un gol, pero los
+dos pasan del lado de ellos. Lo que te conviene ya lo dice el color del tono.
+
+### Donde no entra, no va
+
+En pantallas bajas la ilustración se achica hasta ser una franja y después
+desaparece. Medido en el juego andando:
+
+| | alto de la foto | el escudo |
+|---|---|---|
+| 390 × 844 | 78 | 13 × 15, cómodo |
+| 360 × 780 | 63 | 12 × 14, cómodo |
+| 360 × 640 | **11** | quedaba una astilla |
+| 320 × 568 | **0** | no quedaba nada |
+
+Una astilla de 10px de alto no se lee como un escudo sino como un error de
+dibujo, así que abajo de 700px de alto se va con la foto:
+
+```css
+@media (max-height:700px){ .cell .c-esc{display:none} }
+```
+
+No es una renuncia: en esas medidas la carta ya quedó reducida a nombre y
+resultado, y meterle un escudo encima sería taparle una de las dos cosas que le
+quedan.
