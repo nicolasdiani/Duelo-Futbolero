@@ -7141,3 +7141,74 @@ toca el layout. Sacándola, la columna se sigue resaltando y latiendo igual —d
 `titilarBorde` lo usa **sólo** la barra de columnas, así que no arrastra nada
 más. Las filas nunca tuvieron el problema: no laten, y su estado activo es un
 `translateX(2px)`, que mueve pero no escala.
+
+
+## El cartel de posibilidad de gol: una luz que pasa
+
+Misma historia que las columnas en v159, un cartel más arriba. El cartel corría
+`golvivo` —que además de la luz lo escalaba a **1.03**— y la chapa USAR corría
+`latido`, que la escalaba a **1.22**. Las dos escalas son del elemento entero,
+así que se llevaban puesto el texto de adentro.
+
+Medido en 390, comparando el reposo con el pico del ciclo:
+
+| | en reposo | en el pico |
+|---|---|---|
+| el cartel | 380.0 × 39.0 | **391.4 × 40.2** |
+| POSIBILIDAD DE GOL | 74.0 × 10.4 | **76.2 × 10.8** |
+| la chapa USAR | 44.4 × 23.0 | **55.8 × 28.9** |
+
+La chapa crecía **un cuarto de su tamaño**, dos veces por ciclo. Y había algo
+peor que lo estético: en el pico el cartel medía **391.4px en una pantalla de
+390**. Se salía del margen.
+
+### Lo que hace ahora
+
+El resplandor verde pasa a ser **fijo** y lo que se mueve es **una luz que cruza
+el cartel** de punta a punta, en un pseudo-elemento que recorta el
+`overflow:hidden` del cartel. La chapa tiene su propia luz, que le pasa por
+adentro: es un `background-position` que se corre, no una escala.
+
+```
+el cartel   barrido    1.8s   el brillo ocupa el último 56% del ciclo:
+                              cruza en 1s y descansa 0.8s
+la chapa    chapaluz   2.2s   continuo, sin pausa
+```
+
+Los dos ritmos son distintos a propósito: sincronizados, el cartel entero
+pulsaría de una sola vez, que es de lo que veníamos.
+
+**No hay un solo `transform` en juego.** El cartel se queda en 380.0 × 39.0, el
+título en 74.0 × 10.4 y la chapa en 44.4 × 23.0 — siempre, en todo el ciclo.
+
+El `barrido` arrancó en 2.6s y quedó en **1.8**: a 2.6 la luz pasaba una vez
+cada dos segundos y medio y se hacía esperar demasiado.
+
+### Contraste
+
+La chapa cambió de fondo plano a degradado, así que hay dos extremos que
+verificar. El texto pasó de `--black` a `#04220f`:
+
+| | |
+|---|---|
+| USAR sobre el verde | 9.39 |
+| USAR sobre el claro del degradado | 15.14 |
+| POSIBILIDAD DE GOL sobre el cartel | 7.03 |
+
+### Lo que se fue
+
+`golvivo` no lo usaba nadie más que este cartel, así que se borró. `latido`
+queda para el último corazón, que es lo único que sí tiene que interrumpir lo
+que estés mirando — ahí el pulso irregular es lo que corresponde, y como es un
+ícono sin texto adentro, la escala no rompe nada.
+
+El bloque de `prefers-reduced-motion` ya apagaba las dos animaciones viejas;
+ahora además esconde el pseudo-elemento del brillo, así que ahí el cartel queda
+con su resplandor fijo y nada más.
+
+### La familia de animaciones, actualizada
+
+Al comentario de arriba de todo le quedaba una categoría sola. Ahora son dos:
+`latido` para lo que tiene que interrumpir, y `barrido` / `chapaluz` —una luz
+que pasa, sin pulso— para lo que puede quedar encendido varias jugadas al lado
+de la mesa.

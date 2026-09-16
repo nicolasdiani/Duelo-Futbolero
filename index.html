@@ -270,11 +270,16 @@ img{height:auto}
        crecimiento chico. Es la racha llena y las columnas habilitadas: son
        cinco cosas que aparecen juntas y no pueden competir entre ellas.
 
-     · `latido` / `golvivo` — **dos golpes seguidos y una pausa**, como un
-       pulso de verdad: el primero fuerte, el segundo más chico. Es el último
-       corazón y el cartel de posibilidad de gol, las dos que sí tienen que
-       interrumpir lo que estés mirando. El ritmo irregular es lo que las hace
-       imposibles de ignorar sin subirles el brillo hasta molestar. */
+     · `latido` — **dos golpes seguidos y una pausa**, como un pulso de verdad:
+       el primero fuerte, el segundo más chico. Queda para el último corazón,
+       que es lo único que tiene que interrumpir lo que estés mirando. El ritmo
+       irregular es lo que lo hace imposible de ignorar sin subirle el brillo
+       hasta molestar.
+
+     · `barrido` / `chapaluz` — **una luz que pasa**, sin pulso. Es el cartel de
+       posibilidad de gol, que puede quedar encendido varias jugadas: un latido
+       ahí termina cansando, y el movimiento en una sola dirección llama igual
+       sin quedar vibrando al lado de la mesa. */
 @keyframes titilar{
   0%,100%{opacity:1;filter:none}
   50%    {opacity:.45;filter:brightness(1.35)}
@@ -323,6 +328,7 @@ img{height:auto}
   .col-picks.lista .col-pick{animation:none}
   #m-racha.lista{box-shadow:0 0 14px 2px rgba(245,200,66,.35)}
   .gol-banner.lista{box-shadow:0 0 20px 3px rgba(61,220,107,.35)}
+  .gol-banner.lista::after{display:none}
   .col-picks.lista .col-pick{box-shadow:0 0 0 2px currentColor}
 }
 
@@ -856,27 +862,63 @@ img{height:auto}
 }
 
 /* Encendido */
+/* **El cartel no late: lo cruza un brillo.** Latía con `golvivo`, que además
+   de la luz lo escalaba a 1.03, y la chapa USAR con `latido`, que la escalaba
+   a 1.22. Las dos escalas se llevaban puesto el texto de adentro: medido en
+   390, POSIBILIDAD DE GOL pasaba de 74.0 a 76.2px de ancho y la chapa de 44.4
+   a 55.8 —un cuarto más grande— dos veces por ciclo. Y en el pico el cartel
+   medía 391.4px en una pantalla de 390: se salía del margen.
+
+   Ahora el resplandor verde es fijo y lo que se mueve es una luz que cruza el
+   cartel de punta a punta. No hay `transform` en ninguna parte, así que el
+   texto no se mueve ni un píxel, y el movimiento en una sola dirección llama
+   sin quedar vibrando al lado de la mesa. */
 .gol-banner.lista{
   background:linear-gradient(180deg,rgba(20,58,34,.96),rgba(9,32,18,.96));
   border-color:var(--green);cursor:pointer;
-  animation:golvivo 1.5s ease-in-out infinite;
+  position:relative;overflow:hidden;
+  box-shadow:0 0 18px 1px rgba(61,220,107,.28);
+}
+/* El brillo. Va en un pseudo-elemento para no tocar el fondo del cartel, y
+   el `overflow:hidden` de arriba es lo que lo recorta en los bordes.
+
+   El ciclo es de 1.8s y el barrido ocupa el último 56%: pasa cada poco más de
+   un segundo y descansa ocho décimas. Con los 2.6s del primer intento pasaba
+   una vez cada dos segundos y medio y se hacía esperar demasiado. */
+.gol-banner.lista::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,
+    transparent 38%, rgba(190,255,214,.06) 45%,
+    rgba(190,255,214,.26) 50%, rgba(190,255,214,.06) 55%, transparent 62%);
+  transform:translateX(-100%);
+  animation:barrido 1.8s cubic-bezier(.4,0,.3,1) infinite;
+}
+@keyframes barrido{
+  0%,44%{transform:translateX(-100%)}
+  100%  {transform:translateX(100%)}
 }
 .gol-banner.lista .gb-ico{filter:none;opacity:1}
 .gol-banner.lista .gb-t{color:var(--green)}
 .gol-banner.lista .gb-s{color:var(--dim)}
+/* La chapa tiene su propia luz, que le pasa por adentro. Es un fondo que se
+   corre, no una escala: el «USAR» queda quieto en sus 44.4 × 23.0px.
+
+   Va a otro ritmo que el barrido —2.2s contra 1.8— a propósito: sincronizados
+   el cartel entero pulsaría de una sola vez, que es de lo que veníamos. */
 .gol-banner.lista .gb-go{
-  color:var(--black);background:var(--green);border-color:var(--green);
-  animation:latido 1.5s ease-in-out infinite;
+  color:#04220f;border-color:var(--green);
+  background:linear-gradient(100deg,
+    var(--green) 0%, var(--green) 30%, #c8ffdb 46%, var(--green) 62%, var(--green) 100%);
+  background-size:260% 100%;
+  animation:chapaluz 2.2s linear infinite;
+}
+@keyframes chapaluz{
+  0%  {background-position:130% 0}
+  100%{background-position:-70% 0}
 }
 .gol-banner.lista:hover:not(:disabled){translate:0 -2px;background:linear-gradient(180deg,rgba(27,76,44,.98),rgba(13,44,24,.98))}
 .gol-banner.lista:disabled{opacity:.45;animation:none}
-@keyframes golvivo{
-  0%      {box-shadow:0 0 0 0 rgba(61,220,107,0);transform:scale(1)}
-  14%     {box-shadow:0 0 34px 5px rgba(61,220,107,.75);transform:scale(1.03)}
-  30%     {box-shadow:0 0 14px 2px rgba(61,220,107,.3);transform:scale(1.006)}
-  44%     {box-shadow:0 0 26px 4px rgba(61,220,107,.55);transform:scale(1.02)}
-  62%,100%{box-shadow:0 0 0 0 rgba(61,220,107,0);transform:scale(1)}
-}
+/* `golvivo` se fue con el latido del cartel: no lo usaba nadie más. */
 @media (max-width:520px){
   .gb-s{display:none}
   .gb-t{font-size:16px}
@@ -7712,7 +7754,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 159;
+const VERSION = 160;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
