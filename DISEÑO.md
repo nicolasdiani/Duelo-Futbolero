@@ -7017,3 +7017,88 @@ le sobra pantalla: su botón termina a 618 de 844.
 resumen del duelo—, así que todo el material va bajo `.card-remate`. Verificado
 en el aviso de empate: sigue con su `padding` de 13, sin radio y con el escudo
 en 24.
+
+
+## La ficha del ítem: una foto y el antes → después
+
+La tira que se abre al tocar un ítem decía el nombre, el efecto y media línea
+—«El DT levanta al equipo»— con un ícono de 18px. No contestaba la única
+pregunta que uno se hace con el ítem en la mano: **qué me va a pasar si lo uso
+ahora**.
+
+Ahora son dos cosas nuevas: una **miniatura de 78px** y un renglón con el
+medidor **antes y después**.
+
+### La foto: no hay arte de ítems, hay arte prestado
+
+El juego tiene 44 imágenes y **ninguna se hizo para un ítem**: son las cartas de
+la mesa, las situaciones, los carteles de gol y los remates. Pero cuatro de las
+que hay dicen exactamente lo que el ítem hace:
+
+| | foto | qué se ve |
+|---|---|---|
+| SUPLENTES | `medio` | un jugador entero, entrando |
+| GRITO DEL DT | `cooling` | **el DT gritándoles en el cooling break** |
+| SEGUNDO AIRE | `hinchada` | la tribuna empujando |
+| VAR | `offside` | la jugada que quedó anulada |
+
+Van en `ITEMS[k].art`, así que el día que haya arte propio se cambia la clave y
+nada más. Peso agregado: **cero** — las cuatro ya estaban en el juego.
+
+### El antes → después, con los números de la partida
+
+```
+antes:   GRITO DEL DT  +1 ⚡
+ahora:   GRITO DEL DT  +1 ⚡
+         2 ⚡  →  3 ⚡
+```
+
+«+1 ⚡» obliga a mirar el medidor, acordarse de en cuánto estaba y sumar.
+`pasoItem(k)` lo dice hecho, con los topes que cobra `useItem`, así que lo que
+promete la ficha es exactamente lo que va a pasar — incluido el máximo que
+recupera el SEGUNDO AIRE, que cambia el techo del aguante en la misma jugada:
+`2 ❤ → 4 ❤ de 4 máx`.
+
+Con el medidor al tope **no se muestra el paso**: ahí el ítem no hace nada, y
+prometer «3 ❤ → 3 ❤» sería peor que no decir nada. En su lugar va el motivo,
+que es lo que ya hacía `itemInutil`.
+
+### El filo, dorado
+
+El celeste (`#5ecdf2`) no aparecía en ningún otro lado del juego. La ficha **es
+una decisión** —tiene un USAR y un VOLVER—, así que va en el color con el que el
+juego pregunta: el dorado del CTA y de las chapas.
+
+Se redefine **en la ficha, no en `:root`**: `--fi-luz` es además el tono «gol»
+de las cartas de la mesa —`.play.gol`, `.c-out.gol`— y pisarlo arriba les
+cambiaba el color a ellas.
+
+### Dónde se despliega
+
+No cambió, y conviene dejarlo escrito porque las maquetas de comparación la
+mostraban al pie y daban a entender otra cosa: en el teléfono la ficha es
+`position:fixed` con `z-index:300`, pegada **8px debajo de la barra de ítems** y
+**por encima del tablero**. Nunca hay que rodar nada.
+
+| | ficha | arriba de todo | libre abajo |
+|---|---|---|---|
+| 320×568 | 300×156 | 145 (barra a 142) | 267 |
+| 390×844 | 370×156 | 145 (barra a 142) | 543 |
+| 740×360 apaisado | 720×162 | 144 (barra a 141) | 54 |
+
+### Y de paso, el escritorio
+
+En escritorio la ficha **nunca llegó a medir los 250px que pide**: el
+`*{max-width:100%}` global la ataba al ancho del botón del ítem, 184. Se armaba
+angosta y altísima y nadie lo había mirado. Con la miniatura adentro pasó de feo
+a inusable —62px de columna de texto y 364 de alto—, así que salió a la luz:
+
+| | antes | ahora |
+|---|---|---|
+| SUPLENTES | 182×251 | **250×158** |
+| GRITO DEL DT | 182×261 | **250×148** |
+| SEGUNDO AIRE | 182×364 | **250×238** |
+
+Un `max-width:none` en la regla base. Y la columna de texto necesitaba su
+`flex`: sin él se quedaba en su ancho mínimo —121 de los 250 libres— y la
+descripción se desbordaba de la fila.

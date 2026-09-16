@@ -2260,10 +2260,24 @@ img{height:auto}
 #panelItems,.item-list,.fila-accion,.lado{overflow:visible}
 .item{position:relative}
 
+/* **El filo, dorado.** El celeste no aparecía en ningún otro lado del juego,
+   y la ficha **es una decisión** —tiene un USAR y un VOLVER—: el dorado es el
+   color con el que el juego pregunta, el del CTA y el de las chapas.
+
+   Se redefine acá y no en `:root` a propósito: `--fi-luz` también es el tono
+   «gol» de las cartas de la mesa (`.play.gol`, `.c-out.gol`), y pisarlo arriba
+   les cambiaba el color a ellas. */
+.item-ficha,.item.abierto{
+  --fi-luz:var(--gold);
+  --fi-borde:rgba(245,200,66,.5);
+  --fi-borde-suave:rgba(245,200,66,.28);
+  --fi-halo:rgba(245,200,66,.26);
+}
+
 .item-ficha{
   position:absolute;top:50%;left:calc(100% + 10px);
   transform:translateY(-50%) translateX(-6px);
-  z-index:200;width:250px;
+  z-index:200;width:250px;max-width:none;
   display:grid;grid-template-columns:minmax(0,1fr);
   gap:9px;padding:11px 13px;
   background:linear-gradient(160deg, var(--fi-fondo-a), var(--fi-fondo-b));
@@ -2283,6 +2297,53 @@ img{height:auto}
 .item-ficha::before{
   content:'';position:absolute;right:100%;top:50%;margin-top:-7px;
   border:7px solid transparent;border-right-color:var(--fi-luz);
+}
+
+/* ---- LA MINIATURA Y EL ANTES → DESPUÉS ----
+   La ficha decía el nombre, el efecto y media línea —«El DT levanta al
+   equipo»—, y el ícono medía 18px. No había nada que contestara la única
+   pregunta que uno se hace con el ítem en la mano: **qué me va a pasar si lo
+   uso ahora**.
+
+   Ahora son dos cosas. Una foto de 78px que dice de qué se trata —el DT
+   gritando, la tribuna empujando, el árbitro revisando— y un renglón con el
+   medidor **antes y después**, con los números de verdad de la partida: si
+   tenés 2 de racha dice 2 ⚡ → 3 ⚡, no «+1». */
+.if-fila{display:flex;gap:12px;align-items:flex-start;min-width:0}
+.if-fila .if-txt{flex:1 1 auto}
+.if-art{
+  position:relative;flex:0 0 auto;width:78px;height:78px;
+  border-radius:12px;overflow:hidden;
+  border:1px solid rgba(0,0,0,.5);
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.5);
+  background:var(--fi-mini);
+}
+.if-art img{display:block;width:100%;height:100%;object-fit:cover}
+/* El ícono queda igual: apoyado en la esquina de la foto, es lo que ata la
+   ficha con el botón de la barra, que muestra ese mismo símbolo. */
+.if-ico{
+  position:absolute;right:4px;bottom:4px;width:24px;height:24px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;background:rgba(0,6,24,.85);
+}
+.if-ico .ii-svg{width:15px;height:15px;color:var(--fi-luz)}
+/* Sin foto la miniatura no se dibuja vacía: queda el ícono solo, centrado. */
+.if-art.sin-foto .if-ico{position:static;width:100%;height:100%;border-radius:0;background:none}
+.if-art.sin-foto .if-ico .ii-svg{width:34px;height:34px}
+
+.if-paso{
+  display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:5px;
+  font-family:var(--tit);font-weight:800;font-size:15px;letter-spacing:.6px;
+}
+.if-paso b{color:var(--fi-suave);opacity:.6;font-weight:800}
+.if-paso .fl{font-style:normal;color:var(--fi-suave);opacity:.45;font-size:13px}
+.if-paso b.hay{opacity:1}
+.if-paso.tono-ag b.hay{color:var(--red)}
+.if-paso.tono-ra b.hay{color:var(--gold)}
+.if-paso.tono-var b.hay{color:var(--blue)}
+.if-paso .ih,.if-paso .ir{vertical-align:-.22em}
+.if-paso em{
+  font-family:var(--txt);font-style:normal;font-weight:400;font-size:9.6px;
+  letter-spacing:0;color:var(--dim2);
 }
 
 .if-txt{min-width:0}
@@ -2342,6 +2403,7 @@ img{height:auto}
      una línea, la descripción en una o dos, y los botones se pueden tocar. */
   .item-ficha:not(.ficha-gol){padding:13px 15px;gap:10px}
   .item-ficha:not(.ficha-gol) .if-nm{font-size:13.5px;gap:8px}
+  .item-ficha:not(.ficha-gol) .if-paso{font-size:16px}
   .item-ficha:not(.ficha-gol) .if-desc{font-size:12.5px;margin-top:4px}
   .item-ficha:not(.ficha-gol) .if-btns{gap:8px}
   .item-ficha:not(.ficha-gol) .if-btn{
@@ -7599,19 +7661,30 @@ const MANOAMANO = {
 /* `ico` es el emoji y `svg` el ícono dibujado. Conviven a propósito: el dibujo
    va donde se ve —la caja del ítem y su ficha— y el emoji queda para el relato
    y los `title`, que son texto plano y no admiten markup. */
+/* `art` y `tono` son para la ficha: la foto que la encabeza y el color del
+   medidor que mueve. **Ninguna de las cuatro se dibujó para el ítem** —el
+   juego no tiene arte propio de ítems—, son piezas que ya estaban y que dicen
+   lo mismo: `cooling` es un DT gritándoles a los jugadores en el descanso,
+   `hinchada` es la tribuna empujando, `medio` un jugador entero y `offside`
+   la jugada que quedó anulada. Si algún día hay arte propio, se cambia la
+   clave y nada más. */
 const ITEMS = {
   suplentes:   { ico:'🪑', svg:'i-sup', nm:'SUPLENTES',     corto:'SUPLENTES',
                  efecto:'<b class="ef-ag">+1 <i class="ih"></i></b>',
-                 desc:'Entra sangre nueva del banco.', price:10 },
+                 desc:'Entra sangre nueva del banco.', price:10,
+                 art:'medio', tono:'ag' },
   grito:       { ico:'📢', svg:'i-gri', nm:'GRITO DEL DT',  corto:'GRITO DT',
                  efecto:'<b class="ef-ra">+1 <i class="ir"></i></b>',
-                 desc:'El DT levanta al equipo.', price:15 },
+                 desc:'El DT levanta al equipo.', price:15,
+                 art:'cooling', tono:'ra' },
   refuerzo:    { ico:'💪', svg:'i-ref', nm:'SEGUNDO AIRE',  corto:'2.º AIRE',
                  efecto:'<b class="ef-ag">+2 <i class="ih"></i></b> <span class="ef-mas">y recuperás un <i class="ih"></i> de máximo</span>',
-                 desc:'El equipo saca fuerzas de donde no hay.', price:30 },
+                 desc:'El equipo saca fuerzas de donde no hay.', price:30,
+                 art:'hinchada', tono:'ag' },
   revision:    { ico:'📺', svg:'i-var', nm:'VAR',           corto:'VAR',
                  efecto:'<b class="ef-var">DESTRABA 🔒</b>',
-                 desc:'Revisan la jugada anulada y vuelve a jugarse.', price:40 }
+                 desc:'Revisan la jugada anulada y vuelve a jugarse.', price:40,
+                 art:'offside', tono:'var' }
 };
 
 /* El ícono dibujado del ítem. Si alguno no lo tuviera, cae en su emoji: así se
@@ -7630,7 +7703,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 157;
+const VERSION = 158;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -8859,6 +8932,27 @@ function huecosItem(bar, usados){
 }
 
 /* ---------------- ítems en partido ---------------- */
+/* **El antes y el después, con los números de verdad.** «+1 ⚡» obliga a mirar
+   el medidor, acordarse de en cuánto estaba y sumar. Esto lo dice hecho: si
+   tenés 2 de racha, dice 2 ⚡ → 3 ⚡.
+
+   Los topes son los mismos que cobra `useItem`, así que lo que promete la
+   ficha es exactamente lo que va a pasar — incluido el máximo que recupera el
+   SEGUNDO AIRE, que cambia el techo del aguante en la misma jugada. */
+function pasoItem(k){
+  const cor = n => n + ' <i class="ih"></i>';
+  const ray = n => n + ' <i class="ir"></i>';
+  if(k === 'suplentes') return [cor(G.aguante), cor(Math.min(G.aguante + 1, G.aguanteMax))];
+  if(k === 'grito')     return [ray(G.racha),   ray(Math.min(G.racha + 1, G.rachaMax))];
+  if(k === 'refuerzo'){
+    const maxNuevo = Math.min(G.aguanteMax + 1, AGUANTE_BASE);
+    return [cor(G.aguante),
+            cor(Math.min(G.aguante + 2, maxNuevo)) +
+              (maxNuevo > G.aguanteMax ? '<em>de ' + maxNuevo + ' máx</em>' : '')];
+  }
+  return ['🔒 TRABADA', 'JUGABLE'];
+}
+
 /* ¿Este ítem hace algo ahora mismo? Devuelve null si sirve, o el motivo por el
    que no. Antes solo el VAR se fijaba, y los otros tres se gastaban igual con
    el medidor lleno — perdías el ítem a cambio de nada. */
@@ -9072,12 +9166,26 @@ function abrirFicha(k, btn){
   /* Si el ítem no sirve ahora, la ficha lo dice y no ofrece usarlo. */
   const porQueNo = itemInutil(k);
 
+  /* Con el medidor al tope el ítem no hace nada, así que en vez del paso va el
+     motivo: prometer «3 ❤ → 3 ❤» sería peor que no decir nada. */
+  const paso = porQueNo ? null : pasoItem(k);
+  const foto = ARTSRC(I.art);
+
   const f = nuevaFicha();
   f.innerHTML =
-    '<div class="if-txt">' +
-      '<div class="if-nm">' + icoItem(k) + ' ' + I.nm +
-        '<span class="if-ef">' + I.efecto + '</span></div>' +
-      '<div class="if-desc">' + (porQueNo || I.desc) + '</div>' +
+    '<div class="if-fila">' +
+      '<span class="if-art' + (foto ? '' : ' sin-foto') + '">' +
+        (foto ? '<img src="' + foto + '" alt="">' : '') +
+        '<span class="if-ico">' + icoItem(k) + '</span>' +
+      '</span>' +
+      '<div class="if-txt">' +
+        '<div class="if-nm">' + I.nm +
+          '<span class="if-ef">' + I.efecto + '</span></div>' +
+        (paso ? '<div class="if-paso tono-' + I.tono + '">' +
+          '<b>' + paso[0] + '</b><span class="fl">→</span>' +
+          '<b class="hay">' + paso[1] + '</b></div>' : '') +
+        '<div class="if-desc">' + (porQueNo || I.desc) + '</div>' +
+      '</div>' +
     '</div>' +
     '<div class="if-btns">' +
       (porQueNo ? '' : '<button class="if-btn" id="ifUsar">USAR</button>') +
