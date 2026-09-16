@@ -6869,3 +6869,68 @@ suman esa espera y sus 220 de desvanecido.
 Las **pantallas** —el mercado, el resultado del partido, el menú— no entran acá:
 esas son `openCard`, tienen su propio overlay y su propia apertura, y no se
 encadenan entre sí.
+
+
+## El botón verde se volvía ilegible al tocarlo
+
+Reporte: «el texto del hover en los botones verdes queda mal contrastado y en
+algunos casos no se ve».
+
+Pasaba **sólo en el teléfono**, y no era el color del texto: era el fondo. En
+touch el `:hover` se queda pegado al último elemento que tocaste hasta que
+tocás otra cosa —por eso existe el bloque de `@media (hover:none)` que los
+apaga uno por uno—, y ahí había una regla de más:
+
+```css
+/* el hover del CTA dorado, que se pintaba siempre */
+.cta:hover{ …; background:linear-gradient(160deg, rgba(58,48,6,.95), …) }
+
+/* y el deshacer, en (hover:none) */
+.cta:hover:not(.alt):not(.ghost){ background:<el marrón de base del dorado> }
+```
+
+El deshacer pesa **(0,4,0)** —los dos `:not()` cuentan como clase—, y
+`.cta.jugar` pesa (0,2,0) y `.cta.jugar:hover` (0,3,0). Así que el marrón del
+dorado le ganaba al verde, y el verde tiene su texto en `#04220f`, que es casi
+negro porque va sobre verde claro.
+
+Medido, en un teléfono emulado:
+
+| | en reposo | con el hover pegado |
+|---|---|---|
+| JUGAR OTRO CAMPEONATO | 6.57 | **1.04** |
+| IR AL VESTUARIO | 6.57 | **1.04** |
+| EMPEZAR DE NUEVO | 6.57 | **1.04** |
+
+1.04 es texto invisible: el mínimo legible es 4.5.
+
+### El arreglo
+
+El fondo del hover se mudó adentro de `@media (hover:hover)`, que es donde va:
+si no hay mouse no se pinta, y entonces **no hay nada que deshacer**. El
+deshacer de `(hover:none)` se borró.
+
+El peso de la regla no cambia —una media query no suma especificidad— así que
+sigue perdiendo contra `.cta.alt` y contra `.cta.jugar`, que van después. Y el
+mismo tratamiento se le dio a `.cta.jugar:hover`, que en touch dejaba el verde
+encendido como si el botón siguiera elegido.
+
+De paso se arregló otro que venía en el mismo paquete: el **A VER QUÉ PASA** de
+la fundida, que es rojo, también perdía su tinte y se pintaba de marrón al
+tocarlo.
+
+### Verificado
+
+Con la hoja del juego entera espejada —`:hover` → `[data-hov]`, en su mismo
+lugar del cascade, para no cambiar ningún desempate—, en las dos condiciones:
+
+| | teléfono (reposo → hover) | escritorio (reposo → hover) |
+|---|---|---|
+| `.cta.jugar` verde | 6.57 → **6.57** | 6.57 → **7.92** |
+| `USAR LA RACHA` verde | 6.57 → 6.57 | 6.57 → 6.57 |
+| `.cta` dorado | 10.24 → **10.24** | 10.24 → **8.24** |
+| `A VER QUÉ PASA` rojo | 4.87 → **4.87** | 4.87 → 4.87 |
+
+En el teléfono ya **no cambia nada** al tocar, que es justo lo que el bloque de
+`(hover:none)` quería lograr. En escritorio el hover sigue haciendo lo de
+siempre.

@@ -1240,7 +1240,21 @@ img{height:auto}
 .cta:hover{
   transform:translateY(-2px);
   box-shadow:0 0 0 1px var(--gold), 0 8px 26px rgba(245,200,66,.28);
-  background:linear-gradient(160deg, rgba(58,48,6,.95), rgba(0,16,52,.96));
+}
+/* **El fondo más claro es del dorado, y sólo donde hay mouse.** Estaba suelto
+   en la regla de arriba y lo tenía que deshacer el bloque de `(hover:none)`
+   más abajo, con un `.cta:hover:not(.alt):not(.ghost)` que pesaba más que los
+   CTA de color. Y en touch el `:hover` se queda pegado al último botón que
+   tocaste, así que los verdes —JUGAR OTRO CAMPEONATO, IR AL VESTUARIO,
+   EMPEZAR DE NUEVO— se pintaban de marrón con su texto casi negro encima:
+   contraste 1.04, no se leía nada. Preguntando por el mouse no hay nada que
+   deshacer, y cada CTA de color se queda con el suyo.
+
+   El peso de la regla no cambia —la media query no suma especificidad— así
+   que sigue perdiendo contra `.cta.alt` y contra `.cta.jugar`, que van
+   después. */
+@media (hover:hover){
+  .cta:hover{background:linear-gradient(160deg, rgba(58,48,6,.95), rgba(0,16,52,.96))}
 }
 /* El secundario: mismo molde, sin el dorado. */
 .cta.alt{
@@ -3881,11 +3895,8 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .aviso .a-op.btn.gol:hover,
   .aviso .a-op.btn.col:hover{background:var(--panel2)}
   .if-btn.alt:hover{border-color:var(--fi-borde-suave);color:var(--fi-suave)}
-  /* El fondo del CTA solo para el dorado: el `.alt` y el `.ghost` tienen
-     el suyo y pisárselo los dejaría del color equivocado. */
-  .cta:hover:not(.alt):not(.ghost){
-    background:linear-gradient(160deg, rgba(38,32,4,.92), rgba(0,12,40,.96));
-  }
+  /* El fondo del CTA ya no hace falta deshacerlo: ahora sólo se pinta donde
+     hay mouse. */
   .cta.alt:hover{border-color:var(--line);color:var(--dim)}
   .cta.ghost:hover{color:var(--dim);border-color:var(--line)}
   .cta.chica.alt:hover{background:transparent}
@@ -5970,9 +5981,13 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   font-size:19px;letter-spacing:3.2px;padding:14px;margin-top:15px;
   box-shadow:0 10px 30px rgba(61,220,107,.3), inset 0 1px 0 rgba(255,255,255,.45);
 }
-.cta.jugar:hover{
-  background:linear-gradient(165deg,#5cf089,#2ecb60);
-  box-shadow:0 14px 36px rgba(61,220,107,.42), inset 0 1px 0 rgba(255,255,255,.5);
+/* El encendido, sólo donde hay mouse: en touch el `:hover` se queda pegado al
+   último botón tocado y el verde quedaba prendido como si siguiera elegido. */
+@media (hover:hover){
+  .cta.jugar:hover{
+    background:linear-gradient(165deg,#5cf089,#2ecb60);
+    box-shadow:0 14px 36px rgba(61,220,107,.42), inset 0 1px 0 rgba(255,255,255,.5);
+  }
 }
 .rm-cuerpo .cta-fila{margin-top:9px}
 .rm-cuerpo .cta.chica{font-size:14px;letter-spacing:2.2px;padding:9px;margin-top:0}
@@ -7533,7 +7548,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 155;
+const VERSION = 156;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
