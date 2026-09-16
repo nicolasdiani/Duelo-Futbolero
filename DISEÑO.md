@@ -7583,3 +7583,66 @@ tenía su `max-height` con scroll, que es la red que se puso justo para esto.
 
 En 320 el nombre del rival se parte feo en el marcador —«DEPORT / IVO /
 BARRIA / L»—, pero eso ya venía de antes y no lo toca este cambio.
+
+
+## Las filas dicen que se tocan
+
+Las columnas laten cuando se habilitan, y son la **jugada especial**. Las filas,
+que son la jugada de todos los turnos, no decían nada hasta que las tocabas: al
+que llegaba nuevo nada le avisaba que esos cuatro botones de la izquierda eran
+la forma de jugar.
+
+### El latido ensaya el gesto
+
+De tres formas probadas —un anillo que respira, una luz que cruza y esto— quedó
+la que no adorna: **la fila asoma 2px hacia la mesa y vuelve**, que es
+exactamente lo que hace al tocarla. No dice «mirame», dice «apretame».
+
+```css
+@keyframes filaEmpuja{
+  0%,100%{transform:translateX(0);   box-shadow:0 0 0 0 rgba(255,255,255,0)}
+  12%    {transform:translateX(2px); box-shadow:0 0 0 1.5px rgba(255,255,255,.55), 0 3px 14px rgba(255,255,255,.2)}
+  26%    {transform:translateX(0);   box-shadow:0 0 0 1px rgba(255,255,255,.3)}
+  38%    {transform:translateX(1.5px);box-shadow:0 0 0 1.5px rgba(255,255,255,.45)}
+  55%    {transform:translateX(0);   box-shadow:0 0 0 0 rgba(255,255,255,0)}
+}
+```
+
+Dos golpes y una pausa larga: del 0 al 55% pasa todo y el resto del ciclo
+descansa. Con cuatro filas latiendo durante diez minutos de partido, la pausa
+es lo que separa invitar de molestar. Los 2px son **los mismos del hover**, no
+un número nuevo.
+
+### Cuatro interruptores, y ninguno es adorno
+
+| se apaga cuando | por qué |
+|---|---|
+| la fila está agotada | `:not(:disabled)` — invitar a tocar algo que no se puede tocar es peor que no invitar nada |
+| la fila ya está elegida | ya la estás mirando |
+| hay un pop-up arriba | la mesa está atrás: no hay nada que invitar |
+| le pasás el dedo, **con mouse** | ver abajo |
+
+El del dedo tiene truco. En un teléfono el `:hover` **se queda pegado** en lo
+último que tocaste —por eso el bloque de `hover:none` ya le anulaba el
+`transform` al hover de las filas—, así que un `:hover{animation:none}` a secas
+habría dejado la última fila tocada sin latir por el resto del partido. Va
+adentro de `@media (hover:hover)`: sólo se apaga donde el dedo se puede pasar
+de verdad.
+
+Y con `prefers-reduced-motion` se apaga el latido pero queda **el anillo
+quieto** —el fotograma del pico—, para que la fila siga diciendo que se toca sin
+moverse.
+
+### El tamaño, que era la condición
+
+`transform` y `box-shadow` **pintan pero no miden**. Medido antes y después en
+siete medidas, tomando el ancho y alto de las cuatro filas, del tablero y de una
+carta:
+
+| | 320×568 | 360×640 | 375×667 | 390×844 | 412×915 | 430×932 | 780×360 |
+|---|---|---|---|---|---|---|---|
+| filas, tablero y carta | **=** | **=** | **=** | **=** | **=** | **=** | **=** |
+
+Idéntico hasta el píxel en las siete, y sin scroll en ninguna. En el juego real
+se comprobó además que el tamaño tampoco cambia al deshabilitar una fila ni al
+activarla: 62×251 en los tres estados.

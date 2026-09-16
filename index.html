@@ -320,6 +320,25 @@ img{height:auto}
   50%    {box-shadow:0 0 0 2.5px currentColor, 0 0 30px rgba(245,200,66,.75)}
 }
 
+/* La fila **ensaya el gesto**: asoma hacia la mesa y vuelve, que es
+   exactamente lo que hace al tocarla. No es un adorno que dice «mirame»
+   sino el propio botón haciendo chiquito lo que va a hacer en grande.
+
+   Dos golpes y una pausa larga: del 0 al 55% pasa todo y el resto del ciclo
+   descansa. Con tres o cuatro filas latiendo durante diez minutos de partido,
+   la pausa es lo que separa invitar de molestar.
+
+   Los 2px son los mismos del hover, no un número nuevo. Y como `transform` y
+   `box-shadow` **pintan pero no miden**, la fila ocupa el mismo lugar esté
+   donde esté del ciclo: el responsive no se entera. */
+@keyframes filaEmpuja{
+  0%,100%{transform:translateX(0);box-shadow:0 0 0 0 rgba(255,255,255,0)}
+  12%    {transform:translateX(2px);box-shadow:0 0 0 1.5px rgba(255,255,255,.55), 0 3px 14px rgba(255,255,255,.2)}
+  26%    {transform:translateX(0);box-shadow:0 0 0 1px rgba(255,255,255,.3)}
+  38%    {transform:translateX(1.5px);box-shadow:0 0 0 1.5px rgba(255,255,255,.45)}
+  55%    {transform:translateX(0);box-shadow:0 0 0 0 rgba(255,255,255,0)}
+}
+
 /* Los dos golpes y la pausa. El pico dura poco —de 0 a 14%— y después
    descansa más de medio ciclo: llama sin quedar vibrando todo el tiempo. */
 @keyframes latido{
@@ -347,11 +366,15 @@ img{height:auto}
   #m-reloj.urgente .cro-min, #m-reloj.ultima .cro-min, #m-reloj.ultima .cronos,
   #m-racha.lista,
   .gol-banner.lista, .gol-banner.lista .gb-go,
-  .col-picks.lista .col-pick{animation:none}
+  .col-picks.lista .col-pick,
+  .row-pick:not(:disabled){animation:none}
   #m-racha.lista{box-shadow:0 0 14px 2px rgba(245,200,66,.35)}
   .gol-banner.lista{box-shadow:0 0 20px 3px rgba(61,220,107,.35)}
   .gol-banner.lista::after{display:none}
   .col-picks.lista .col-pick{box-shadow:0 0 0 2px currentColor}
+  /* Sin latido, pero la fila tiene que seguir diciendo que se toca: queda el
+     anillo quieto, que es el fotograma del pico. */
+  .row-pick:not(:disabled){box-shadow:0 0 0 1px rgba(255,255,255,.32)}
 }
 
 /* ---------- LAS TRES COLUMNAS ---------- */
@@ -853,6 +876,31 @@ img{height:auto}
 }
 .row-pick:disabled .pk{color:var(--dim2)}
 .row-pick:disabled .pc{color:var(--dim2);opacity:.6}
+
+/* ---- LAS FILAS DICEN QUE SE TOCAN ----
+   Las columnas laten cuando se habilitan, y son la jugada especial. Las
+   filas, que son la jugada de **todos los turnos**, no decían nada hasta que
+   las tocabas: al que llegaba nuevo nada le avisaba que esos cuatro botones
+   de la izquierda eran la forma de jugar.
+
+   El `:not(:disabled)` no es decoración: una fila agotada —0%, sin cartas—
+   no se resalta nunca. Invitar a tocar algo que no se puede tocar es peor
+   que no invitar nada. */
+.row-pick:not(:disabled){animation:filaEmpuja 3.2s ease-in-out infinite}
+/* Ya elegida, deja de llamar. */
+.row-pick.activo:not(:disabled){animation:none}
+/* Y al pasarle el dedo **sólo donde el dedo se puede pasar**. En un teléfono
+   el `:hover` se queda pegado en lo último que tocaste —por eso el bloque de
+   `hover:none` de más abajo ya le anula el `transform`—, así que si el pulso
+   se apagara con `:hover` a secas, la última fila tocada no volvería a latir
+   en todo el partido. */
+@media (hover:hover){
+  .row-pick:hover:not(:disabled){animation:none}
+}
+/* Con un pop-up arriba la mesa se va para atrás: ahí no hay nada que
+   invitar, y el pulso vuelve a empezar cuando el cartel se cierra —que es
+   justo cuando el jugador vuelve a mirar el tablero—. */
+.wrap.atras .row-pick{animation:none}
 /* La perspectiva vive **en cada fila**, no en la mesa entera: así el punto de
    fuga de las cuatro cartas que se levantan es el mismo, y la mesa en reposo
    no se inclina. Inclinar el tablero entero era la otra opción y se descartó:
@@ -7913,7 +7961,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 165;
+const VERSION = 166;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
