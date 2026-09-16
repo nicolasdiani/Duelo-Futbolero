@@ -6934,3 +6934,86 @@ lugar del cascade, para no cambiar ningún desempate—, en las dos condiciones:
 En el teléfono ya **no cambia nada** al tocar, que es justo lo que el bloque de
 `(hover:none)` quería lograr. En escritorio el hover sigue haciendo lo de
 siempre.
+
+
+## El remate, sobre una chapa
+
+PASASTE, CAMPEÓN y ELIMINADO comparten molde: banda con la palabra, cinta con
+el dato, cuerpo. Eran la **única pantalla plana que quedaba** — desde el
+relieve 3D el tablero tiene las cartas levantadas y los paneles hundidos, y acá
+todo seguía siendo una caja igual a la otra, seis una abajo de la otra, con el
+marcador pesando lo mismo que el camino y que la plata.
+
+Ahora la tarjeta es una **placa**: filo claro arriba, canto abajo, 16 de radio.
+Y todo lo que va adentro —las dos cajas del partido, el marcador, el camino, la
+plata, la franja— está **hundido** en ella: filo negro, fondo más oscuro que la
+placa y una sombra interior arriba. Es el mismo par que el tablero: la carta se
+levanta, el panel se hunde. El botón es lo único que sobresale, y lleva su
+propio canto.
+
+### El color se muda de filo
+
+La banda dejó de ser un lavado del color del resultado —un dorado, un verde o
+un rojo al 15% detrás de la palabra— y pasó al azul de la placa. El color vive
+ahora en el **filo de abajo de la banda**: 2px a todo el ancho, pegado a la
+palabra.
+
+```
+antes:  borde de arriba de la tarjeta, 3px del color
+        + banda con un lavado del mismo color detrás del título
+
+ahora:  borde de arriba, 2px de --filo    ← el filo levantado de la placa
+        + banda azul
+        + filo de abajo, 2px del color    ← dorado, verde o rojo
+```
+
+El filo de arriba lo necesita la placa: es lo que la hace parecer levantada. Y
+el color se lee mejor pegado a la palabra que en un borde arriba de todo.
+
+La tarjeta **no lleva `overflow:hidden`**: el radio recorta solo, porque
+`.card` ya tiene `overflow-y:auto` para poder rodarse. Ponérselo dejaba a
+CAMPEÓN sin scroll, con el botón abajo del borde.
+
+### Los escudos, grandes
+
+Son lo que el jugador reconoce —el suyo y el del que viene— y medían 40px en
+PASASTE y 34 en el marcador, menos que el número que tienen al lado. El tamaño
+se lo daba un atributo del SVG, así que crecen desde el CSS sin tocar una línea
+de JS:
+
+| | antes | ahora | en pantalla corta |
+|---|---|---|---|
+| PASASTE, las dos cajas | 40 | **58** | 46 (antes 32) |
+| el marcador | 34 | **42** | 38 |
+
+### El camino, un riel
+
+Eran cinco cajas con filo y fondo propios, y contra la placa competían con las
+dos del partido, que son las que importan. Ahora es el nombre, el estado y un
+tramo del color que corresponde: **40 → 35px**, y deja de pedir atención.
+
+### Lo que cuesta, medido
+
+Los escudos cuestan alto y CAMPEÓN no tiene de dónde sacarlo: en un teléfono de
+844 mide 761 contra un hueco de 768. Así que lo que crece de un lado se
+devuelve del otro —el marcador achica su `padding` de 13 a 9 y el escudo se
+despega 3px menos— y en pantallas cortas los escudos crecen menos.
+
+Alto de la tarjeta, contra v156:
+
+| | 320×568 | 390×700 | 390×844 | 1280×800 |
+|---|---|---|---|---|
+| PASASTE | 402 → **414** | 403 → **415** | 442 → **461** | 456 → **475** |
+| ELIMINADO | 494 → **488** | 480 → **474** | 621 → **619** | 622 → **620** |
+| CAMPEÓN | 525 → **519** | 527 → **521** | 761 → **759** | 764 → **762** |
+
+CAMPEÓN y ELIMINADO quedaron **más cortos** que antes, y ninguna de las tres
+necesita rodarse en ninguna de las cuatro medidas. PASASTE crece de 12 a 19px y
+le sobra pantalla: su botón termina a 618 de 844.
+
+### Scopeado
+
+`.marcador` y `.hist` los comparten otros carteles —el aviso de empate, el
+resumen del duelo—, así que todo el material va bajo `.card-remate`. Verificado
+en el aviso de empate: sigue con su `padding` de 13, sin radio y con el escudo
+en 24.

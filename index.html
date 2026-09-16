@@ -5913,36 +5913,58 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
    ancho, una **cinta** con el dato de la corrida, y el cuerpo con márgenes
    propios. Los números sueltos —la plata, el máximo del próximo campeonato—
    pasan a **chapas**, el mismo molde que el resto del juego. */
-.card-remate{padding:0;max-width:520px}
+/* **La chapa.** El remate era la única pantalla plana que quedaba: desde el
+   relieve 3D el tablero tiene las cartas levantadas y los paneles hundidos, y
+   acá todo seguía siendo una caja igual a la otra —seis, una abajo de la
+   otra—. Ahora la tarjeta es una placa, con su filo claro arriba y su canto
+   abajo, y todo lo de adentro está hundido en ella.
+
+   El color del resultado se muda del filo de arriba al **filo de abajo de la
+   banda**: 2px a todo el ancho, pegado a la palabra. Ahí se lee mejor que en
+   un borde arriba de todo, y deja el borde de arriba libre para el filo
+   levantado, que es lo que hace que la tarjeta parezca una placa.
+
+   No lleva `overflow:hidden`: el radio ya recorta solo —la tarjeta tiene
+   `overflow-y:auto` para poder rodarse— y ponérselo dejaría a CAMPEÓN sin
+   scroll, con el botón abajo del borde. */
+.card-remate{
+  padding:0;max-width:520px;border-radius:16px;
+  border:1px solid rgba(18,51,110,.95);
+  border-top:2px solid var(--filo);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.14),
+    0 2px 0 rgba(66,110,178,.3), 0 4px 0 rgba(14,30,62,.36),
+    0 24px 44px -12px rgba(0,0,0,.85);
+}
 
 /* La banda: la palabra sola, sin foto. La ilustración de campeón se probó y
    se descartó — trae su propio «¡¡CAMPEON!!» pintado adentro y la palabra
    terminaba dos veces en la misma pantalla. */
 .rm-banner{
   padding:14px 14px 12px;
-  border-bottom:1px solid rgba(245,200,66,.38);
-  background:linear-gradient(180deg, rgba(245,200,66,.17), rgba(245,200,66,.03));
+  /* el azul de la placa, no un lavado del color del resultado: ese color
+     ahora vive en el filo de abajo, que es lo único que cambia entre las
+     tres pantallas */
+  background:linear-gradient(180deg, rgba(0,26,84,.92), rgba(0,10,38,.72));
+  border-bottom:2px solid var(--gold);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
 }
 .rm-banner .final-tit{font-size:clamp(37px,10.2vw,58px)}
-.card-remate.cae .rm-banner{
-  border-bottom-color:rgba(255,59,82,.38);
-  background:linear-gradient(180deg, rgba(255,59,82,.16), rgba(255,59,82,.03));
-}
+.card-remate.cae .rm-banner{border-bottom-color:var(--red)}
 
 /* La cinta: una línea, dos pesos. A la izquierda el dato duro —la copa, la
    ronda— y al lado la frase. */
 .rm-cinta{
   display:flex;align-items:baseline;justify-content:center;gap:9px;flex-wrap:wrap;
   padding:6px 12px;
-  background:linear-gradient(90deg,rgba(245,200,66,.07),rgba(245,200,66,.19),rgba(245,200,66,.07));
-  border-bottom:1px solid rgba(245,200,66,.22);
+  /* hundida en la placa, como todo lo que va adentro */
+  background:rgba(0,6,24,.6);
+  border-bottom:1px solid rgba(0,0,0,.5);
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.45);
 }
 .rm-cinta b{font-family:var(--tit);font-weight:800;font-size:13.5px;letter-spacing:2.4px;color:var(--gold)}
 .rm-cinta span{font-family:var(--txt);font-size:11px;letter-spacing:.5px;color:var(--dim)}
-.card-remate.cae .rm-cinta{
-  background:linear-gradient(90deg,rgba(255,59,82,.06),rgba(255,59,82,.16),rgba(255,59,82,.06));
-  border-bottom-color:rgba(255,59,82,.2);
-}
+/* La cinta es igual en las tres: lo que cambia es el color del dato. */
 .card-remate.cae .rm-cinta b{color:var(--red)}
 
 .rm-cuerpo{padding:0 16px 16px}
@@ -6050,16 +6072,66 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 /* ---- PASASTE DE RONDA ----
    Mismo molde que el remate del campeonato, en verde: es la tercera pantalla
    de fin de partido y no había razón para que se leyera distinto. */
-.card-remate.pasa{border-top-color:var(--green)}
-.card-remate.pasa .rm-banner{
-  border-bottom-color:rgba(61,220,107,.4);
-  background:linear-gradient(180deg, rgba(61,220,107,.15), rgba(61,220,107,.03));
-}
+.card-remate.pasa .rm-banner{border-bottom-color:var(--green)}
 .card-remate.pasa .rm-banner .final-tit{font-size:clamp(34px,9vw,50px)}
 .final-tit.pasa{color:var(--green);text-shadow:0 0 30px rgba(61,220,107,.5)}
 .rm-sub{
   font-family:var(--txt);font-size:11.5px;letter-spacing:1.4px;
   color:var(--dim);margin-top:5px;text-transform:uppercase;
+}
+
+/* ---- EL MATERIAL DE LA PLACA ----
+   Todo lo que va adentro del remate está **hundido**: filo negro, fondo más
+   oscuro que la placa y una sombra interior arriba. Es el mismo par que el
+   tablero —la carta se levanta, el panel se hunde— y es lo que hace que las
+   seis cajas dejen de ser seis objetos apoyados encima.
+
+   Va scopeado a `.card-remate` porque `.marcador` y `.hist` los comparten
+   otros carteles —el aviso de empate, el resumen del duelo—, y ahí siguen
+   como estaban. */
+.card-remate .pd-caja,
+.card-remate .rm-chapas .chapa,
+.card-remate .hist,
+.card-remate .pr-franja,
+.card-remate .marcador{
+  border-radius:12px;
+  border:1px solid rgba(0,0,0,.5);
+  background:rgba(0,6,24,.62);
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.6), inset 0 -1px 0 rgba(147,174,222,.09);
+}
+/* La del rival que viene sigue siendo la única dorada: es la que decide el
+   refuerzo que vas a elegir dos toques después. */
+.card-remate .pd-caja.viene{border-color:rgba(245,200,66,.55);background:rgba(245,200,66,.08)}
+
+/* **Los escudos, grandes.** Son lo que el jugador reconoce —el suyo y el del
+   que viene— y median 40 y 34px, menos que el marcador que tienen al lado. El
+   tamaño se lo daba un atributo del SVG; acá lo pisa el CSS, así que crecen
+   sin tocar una línea de JS. */
+.card-remate .pd-esc .escudo{width:58px;height:70px}
+.card-remate .marcador .m-esc .escudo{width:42px;height:50px}
+/* Y el marcador devuelve los 12px que el escudo se lleva: en CAMPEÓN no hay
+   de dónde sacarlos. En un teléfono de 844 la tarjeta mide 761 contra un
+   hueco de 768, así que cualquier cosa que crezca tiene que compensarse o
+   el botón se va abajo del borde y hay que rodar la tarjeta. */
+.card-remate .marcador{padding:9px 10px}
+.card-remate .marcador .m-esc{margin-bottom:3px}
+
+/* El botón es lo único que sobresale de la placa, así que lleva su propio
+   canto en vez de una sombra suelta. */
+.card-remate .cta.jugar{
+  border-radius:12px;
+  box-shadow:0 2px 0 #1d8f42, 0 4px 0 #115c2a,
+             0 14px 30px rgba(61,220,107,.34), inset 0 1px 0 rgba(255,255,255,.5);
+}
+.card-remate .cta.chica{border-radius:10px}
+/* Y al pasarle el mouse el canto crece en vez de desaparecer. Va adentro de
+   `(hover:hover)` como todos los encendidos: en touch el `:hover` se queda
+   pegado al último botón tocado. */
+@media (hover:hover){
+  .card-remate .cta.jugar:hover{
+    box-shadow:0 3px 0 #1d8f42, 0 6px 0 #115c2a,
+               0 18px 38px rgba(61,220,107,.42), inset 0 1px 0 rgba(255,255,255,.55);
+  }
 }
 
 /* Las dos cajas. La de la derecha va en dorado porque es la que importa para
@@ -6080,14 +6152,19 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 
 /* El cuadro en cinco tramos, en vez de cinco chips que se partían en dos
    renglones. Es el mismo lenguaje que el camino del remate. */
-.pr-esc{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:14px}
+.pr-esc{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-top:16px}
+/* **El camino, un riel.** Eran cinco cajas con filo y fondo propios, y contra
+   la placa competían con las dos del partido, que son las que importan. Ahora
+   es el nombre, el estado y el tramo del color que corresponde: se lee igual
+   y pide menos. De paso baja de 40 a 35px de alto, que en un teléfono corto
+   son cinco píxeles que no empujan al botón. */
 .pe-t{
-  border:1px solid var(--line);border-bottom:2px solid var(--line);border-radius:5px;
-  background:rgba(8,32,70,.5);padding:6px 2px 5px;min-width:0;
+  border:0;border-bottom:3px solid rgba(147,174,222,.18);border-radius:0;
+  background:none;padding:0 0 6px;min-width:0;
   display:flex;flex-direction:column;align-items:center;gap:2px;
 }
 .pe-t.ok{border-bottom-color:var(--green)}
-.pe-t.va{border-color:var(--gold);border-bottom-color:var(--gold);background:rgba(245,200,66,.1)}
+.pe-t.va{border-bottom-color:var(--gold)}
 .pe-r{
   font-family:var(--txt);font-size:7.4px;letter-spacing:.4px;color:var(--dim2);
   text-transform:uppercase;text-align:center;line-height:1.1;
@@ -6117,6 +6194,11 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .pr-dos{margin-top:10px}
   .pr-esc,.pr-franja{margin-top:10px}
   .pd-esc svg{width:32px;height:38px}
+  /* Los escudos grandes también se achican acá: en una pantalla corta el
+     botón es lo que tiene que entrar, no el escudo. Siguen siendo más
+     grandes que antes —46 y 38 contra 32 y 34— pero no a costa del resto. */
+  .card-remate .pd-esc .escudo{width:46px;height:55px}
+  .card-remate .marcador .m-esc .escudo{width:38px;height:46px}
 }
 
 /* ---- EL HUNDIDO NO PUEDE IR EN EL BOTÓN DEL ÍTEM ----
@@ -7548,7 +7630,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 156;
+const VERSION = 157;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
