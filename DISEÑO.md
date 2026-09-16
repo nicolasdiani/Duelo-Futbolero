@@ -7212,3 +7212,84 @@ Al comentario de arriba de todo le quedaba una categoría sola. Ahora son dos:
 `latido` para lo que tiene que interrumpir, y `barrido` / `chapaluz` —una luz
 que pasa, sin pulso— para lo que puede quedar encendido varias jugadas al lado
 de la mesa.
+
+
+## La marquesina, hundida en la pantalla
+
+Era **lo único cuadrado que quedaba**: `border-radius: 0` mientras las cartas,
+los paneles, los botones de fila y columna y la ficha del ítem están todos en 12
+y la placa del remate en 16.
+
+Ahora tiene radio 14 y, en vez de levantarse como el remate, **se hunde**: es el
+marco del partido, no algo que se toca. El relieve queda para lo que sí se toca
+—las cartas, los botones— y la marquesina se lee como parte de la pantalla.
+
+El dorado no se va: pasa de borde a **hilo interior**, del mismo grosor que
+tenía.
+
+### Sin tocar el modelo de caja
+
+Los breakpoints ya le cambian el `padding` a la marquesina —`11px 18px`,
+`4px 8px`, `5px 9px` según la medida— así que el cambio no podía meterse ahí.
+Cambian **sólo color, radio y sombras**; los anchos de borde y el `padding`
+quedan exactamente como estaban.
+
+Medido contra v160, con y sin la chapa de campeonatos:
+
+| | v160 | v161 |
+|---|---|---|
+| 320×568 | 310.0 × 62.0 | **310.0 × 62.0** |
+| 390×844 | 380.0 × 62.0 | **380.0 × 62.0** |
+| 740×360 apaisado | 730.0 × 58.0 | **730.0 × 58.0** |
+| 1280×800 | 1237.0 × 104.0 | **1237.0 × 104.0** |
+
+### La chapa de campeonatos ocupaba el doble de lo que se veía
+
+Tenía un `transform:scale(.75)` en el teléfono. Eso **pinta más chico pero no
+achica la caja**: con tres copas se veía a 90px y seguía ocupando **120**. Esos
+30px de aire, más los 120 en sí, empujaban el marcador hasta dejar al rival en
+«DEPO…».
+
+Y lo que más medía era la palabra: «CAMPEONATOS» son 63 de los 120. Así que en
+el teléfono la chapa se achica con **tamaños de verdad** y se queda con la copa
+y el número; la palabra sigue en escritorio, donde sobra lugar.
+
+De paso, el trofeo dejó de repetirse: era uno por campeonato hasta cuatro. Ahora
+es **una copa y un ×N**.
+
+| con 3 campeonatos | antes | ahora |
+|---|---|---|
+| la chapa | 119.7px | **40.7px** |
+| la columna izquierda | 159.6px | **65.3px** — la del nombre de la ronda |
+
+Con una sola copa la chapa mide 27.7 y el `×N` no aparece: una copa sola ya
+dice que ganaste uno.
+
+### El escudo, siempre arriba del nombre
+
+En el teléfono ya era así, pero en escritorio no había ninguna regla para
+`.mq-eq` y el escudo y el nombre caían uno al lado del otro: el escudo terminaba
+**96.7px a la izquierda** del centro del nombre. Es la misma pieza en las dos
+medidas, así que la columna va en la regla de base y ahora el desplazamiento es
+**0.0** en todos lados.
+
+### Y los nombres entran hasta INDEPENDIENTE
+
+El tope estaba en 9ch en la caja y 8ch en el nombre —39px, que cortaba en
+«DEPORTIV…»—. Ahora son **18ch, 79px**:
+
+| | antes | ahora |
+|---|---|---|
+| INDEPENDIENTE (74.4px) | cortado a 39.5 | **entero** |
+| DEPORTIVO BARRIAL (95.4px) | cortado | cortado a 89.0 |
+
+Lo que no entra se sigue cortando con puntos suspensivos, como pedía el reporte.
+Y entra entero **aunque estén las tres copas**, porque la chapa dejó de robarle
+ancho al centro.
+
+### Al pasar
+
+`.mq-lado` quedó sin dueño: el marcado usa `.mq-eq` y esa clase no existe en el
+DOM, así que las reglas de `.mq-lado` —incluidas las de `turno-0` / `turno-1`,
+que apagan al equipo que no tiene la pelota— no se aplican a nada. No se tocó
+acá para no mezclar, pero está anotado.

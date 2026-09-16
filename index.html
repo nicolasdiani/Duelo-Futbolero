@@ -168,17 +168,32 @@ img{height:auto}
    igual que en `.cell`. */
 
 /* ---------- LA MARQUESINA: el partido, arriba y al medio ---------- */
+/* **La marquesina se hunde.** Era lo único cuadrado que quedaba en pantalla
+   —radio 0— mientras las cartas, los paneles, los botones de fila y columna y
+   la ficha del ítem están todos en 12, y la placa del remate en 16.
+
+   Y en vez de levantarse como el remate, se hunde: es el **marco del**
+   **partido**, no algo que se toca. El relieve queda para lo que sí se toca
+   —las cartas, los botones—, y la marquesina se lee como parte de la pantalla.
+
+   El dorado no se va: pasa de borde a **hilo interior**, del mismo grosor que
+   tenía. Así el modelo de caja no se toca —los anchos de borde y el `padding`
+   quedan iguales— y el alto sigue siendo exactamente el mismo en todos los
+   breakpoints, que además ya le cambian el `padding` más abajo. */
 .marquesina{
-  background:linear-gradient(180deg,rgba(0,20,66,.95),rgba(0,8,31,.96));
+  background:linear-gradient(180deg,rgba(0,10,38,.97),rgba(0,6,24,.98));
   backdrop-filter:blur(8px);
-  /* El filo de arriba sigue dorado: es lo que separa la marquesina del resto. */
-  border:1px solid var(--filo);border-top:3px solid var(--gold);
+  border:1px solid rgba(0,0,0,.55);border-top:3px solid rgba(0,0,0,.6);
+  border-radius:14px;
   /* El marcador es lo que hay que leer, así que se queda con el ancho libre.
      Antes la ronda y el reloj tomaban 1fr cada uno y le comían el lugar a los
      nombres de los equipos. */
   display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;
   gap:16px;padding:11px 18px;
-  box-shadow:0 10px 40px rgba(0,0,0,.55);
+  box-shadow:
+    inset 0 3px 0 var(--gold),
+    inset 0 7px 11px -2px rgba(0,0,0,.62),
+    inset 0 -1px 0 rgba(147,174,222,.1);
 }
 .mq-izq{display:flex;flex-direction:column;gap:5px;align-items:flex-start;min-width:0}
 /* Las copas ganadas en la racha, arriba de la instancia. */
@@ -187,7 +202,9 @@ img{height:auto}
   border:1px solid var(--gold);background:rgba(245,200,66,.1);
   padding:2px 7px;border-radius:3px;
 }
-.mqc-ico{font-size:13px;line-height:1.2;letter-spacing:1px}
+/* Una copa y el número, no una copa por campeonato: con cuatro trofeos la
+   chapa medía 120px y le comía el centro al marcador. */
+.mqc-ico{font-size:13px;line-height:1.2}
 .mqc-x{font-family:var(--tit);font-weight:800;font-size:12px;color:var(--gold)}
 .mqc-lb{
   font-family:var(--txt);font-size:8px;letter-spacing:1.8px;
@@ -198,6 +215,11 @@ img{height:auto}
   letter-spacing:4px;color:var(--gold);text-transform:uppercase;
 }
 .mq-partido{text-align:center}
+/* **El escudo va arriba del nombre y centrado con él.** En el teléfono ya era
+   así, pero en escritorio no había regla y los dos caían uno al lado del otro:
+   el escudo terminaba 96px a la izquierda del centro del nombre. Es la misma
+   pieza en las dos medidas, así que la columna va en la regla de base. */
+.mq-eq{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
 /* El marcador: tu equipo a la izquierda, el rival a la derecha, con el nombre
    pegado a su propio número. Sacamos la línea de "vs" de arriba — con los
    nombres al lado de cada gol, decir quién juega contra quién era repetirlo. */
@@ -3179,10 +3201,22 @@ body{padding-bottom:36px}
   }
   .mq-izq{justify-self:start;gap:4px}
   .mq-ronda{font-size:9px;letter-spacing:1px}
-  .mq-copas{transform:scale(.75);transform-origin:left center}
+  /* **La chapa se achica de verdad.** Tenía un `transform:scale(.75)`, que
+     pinta más chico pero **no achica la caja**: seguía ocupando sus 120px de
+     ancho y empujaba el marcador hasta dejar el nombre del rival en «DEPO…».
+     Acá se achica con tamaños de verdad y se le esconde la palabra, que es lo
+     que más medía —«CAMPEONATOS» son 63 de los 120—. Quedan la copa y el
+     número, que en una chapa dorada arriba de la instancia se entienden. */
+  .mq-copas{padding:1px 6px;gap:4px;border-radius:5px}
+  .mqc-ico{font-size:10px}
+  .mqc-x{font-size:10px}
+  .mqc-lb{display:none}
 
   .mq-score{justify-self:center;display:flex;align-items:center;gap:9px;min-width:0}
-  .mq-eq{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;max-width:9ch}
+  /* 18ch son 79px con esta tipografía: entra «INDEPENDIENTE» entero, que era
+     el caso que pedía el reporte. Con 9ch entraban 39 y se cortaba en
+     «DEPORTIV…». Lo que no entra se sigue cortando con puntos suspensivos. */
+  .mq-eq{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;max-width:18ch}
   .mq-esc{width:17px;height:17px;flex:0 0 auto}
   .mq-esc svg{width:100%;height:100%}
   .mq-nom{
@@ -3539,7 +3573,7 @@ body{padding-bottom:36px}
 @media (max-width:440px){
   :root{--gap:5px; --carta:clamp(80px, 13vh, 128px); --cro:50px; --fpick:38px}
   body{padding:5px;gap:5px}
-  .mq-nom{max-width:8ch;font-size:8.6px}
+  .mq-nom{max-width:18ch;font-size:8.6px}
   .mq-n{font-size:21px}
   .med-art{width:22px;height:22px}
   .cell{padding:5px 4px 4px}
@@ -7754,7 +7788,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 160;
+const VERSION = 161;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -8638,8 +8672,11 @@ function render(){
     const n = G.modo === 'duelo' ? 0 : G.copas;
     copasBox.style.display = n ? 'flex' : 'none';
     if(n) copasBox.innerHTML =
-      '<span class="mqc-ico">' + '🏆'.repeat(Math.min(n, 4)) + '</span>' +
-      (n > 4 ? '<span class="mqc-x">x' + n + '</span>' : '') +
+      /* Una sola copa y el número al lado. Antes se repetía el trofeo hasta
+         cuatro veces y con tres ya medía 120px: le comía el centro al marcador
+         y el nombre del rival quedaba en «DEPO…». */
+      '<span class="mqc-ico">🏆</span>' +
+      (n > 1 ? '<span class="mqc-x">×' + n + '</span>' : '') +
       '<span class="mqc-lb">' + (n === 1 ? 'CAMPEONATO' : 'CAMPEONATOS') + '</span>';
   }
 
