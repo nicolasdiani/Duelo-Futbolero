@@ -7293,3 +7293,76 @@ ancho al centro.
 DOM, así que las reglas de `.mq-lado` —incluidas las de `turno-0` / `turno-1`,
 que apagan al equipo que no tiene la pelota— no se aplican a nada. No se tocó
 acá para no mezclar, pero está anotado.
+
+
+## Las puntas del pop-up: la mesa se va atrás
+
+Lo del medio se resolvió en v155 —un velo y una caja que se transforma— pero las
+dos puntas habían quedado sin hacer. Y eran desparejas: **la salida sí estaba
+pensada** —el cartel se va en 220ms y el velo lo sigue 60 después— y la entrada
+no tenía nada. El velo se colgaba del `body` **ya con su fondo y su desenfoque
+puestos**, así que la mesa pasaba de nítida a tapada en un fotograma y el cartel
+arrancaba su `poppin` sobre una pantalla que ya había cambiado del todo.
+
+Ahora pasan dos cosas juntas: el velo **se enciende** en 200ms, y la mesa **se va
+atrás** — se aleja a `scale(.955)` y se apaga a `brightness(.72)`. No es que se
+tapó la mesa: es que el cartel está delante de ella. Al cerrarse, la mesa vuelve
+sola, y esa vuelta es lo que le faltaba a la salida.
+
+```
+entra   el velo      opacidad y desenfoque, 200ms
+        la mesa      scale(.955) + brightness(.72), 240ms, origen 50% 42%
+sale    el cartel    golsale, 220ms
+        la mesa      vuelve, 240ms — arranca junto con el cartel
+        el velo      220ms con 60 de retraso, y se saca a los 300
+```
+
+El origen está arriba del centro geométrico —42%— porque abajo hay menos mesa
+que arriba: con 50% el alejado se comía la franja de ítems más que la marquesina.
+
+### En la cadena, la mesa se queda atrás
+
+La mesa va atrás cuando se monta el velo y vuelve cuando se le pone `.saliendo`,
+no cuando se lo saca. Como el velo es uno solo y sobrevive a toda la cadena, la
+mesa no parpadea entre cartel y cartel. Medido en la del penal definitorio:
+
+| | mesa |
+|---|---|
+| empate | atrás |
+| en el cambio | atrás |
+| el arco | atrás |
+| ¡GOL! | atrás |
+| cerrando | **adelante** |
+
+### El pozo del bloque contenedor
+
+Un `transform` —y un `filter`— convierten al elemento en el **bloque contenedor
+de todo lo que tenga `position:fixed` adentro**. Y adentro de `.wrap` hay dos
+cosas fijas en mobile: la ficha del ítem y el panel del relato.
+
+Es el mismo pozo que ya está documentado dos veces en la hoja —el hover del ítem
+y el hundido del toque—, así que acá se cierran las dos antes de mover la mesa.
+Medido, abriendo la ficha con la mesa en cada posición:
+
+| | la ficha del ítem |
+|---|---|
+| mesa adelante | 370 × 156 en (10, 145) — contra la pantalla |
+| mesa atrás | 344 × 149 en (23, 168) — contra la mesa |
+
+No es sólo defensivo: con un cartel ocupando la pantalla, dejar la ficha o el
+relato abiertos abajo no tiene sentido igual.
+
+**Y la vuelta dura 240 y no 280 por la misma razón.** Mientras la transición
+corre, el `transform` sigue vivo y con él el bloque contenedor. El velo —que es
+lo que impide tocar un ítem— se saca 300ms después del cierre, así que con 280
+quedaban 20ms de margen y con 240 quedan 60. La vuelta más corta además se
+siente mejor.
+
+### Verificado
+
+Un partido entero jugado solo, con los trece tipos de cartel que salieron:
+**nunca hubo más de un velo** a la vez, no quedó ninguno colgado y la mesa
+terminó siempre adelante.
+
+En `prefers-reduced-motion` la mesa no se mueve: queda sólo el apagado a `.78`,
+que es lo que separa los planos.

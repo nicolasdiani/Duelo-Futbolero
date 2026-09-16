@@ -479,7 +479,37 @@ img{height:auto}
    sueltan: **en reposo cada cartel mide exactamente lo que medía antes**, con
    sus mismas reglas y sus mismos breakpoints. Rotar el teléfono o cambiar de
    ancho lo reacomoda igual que siempre. */
-.pop-velo{transition:background-color .26s ease, backdrop-filter .26s ease}
+/* **Las dos puntas.** Lo del medio —de un cartel al siguiente— se resolvió
+   con la caja que se transforma. Las puntas quedaron sin hacer: el velo se
+   colgaba del `body` ya con su fondo y su desenfoque puestos, así que la mesa
+   pasaba de nítida a tapada **en un fotograma**, y el cartel arrancaba su
+   `poppin` sobre una pantalla que ya había cambiado del todo.
+
+   Ahora el velo se enciende, y además **la mesa se va atrás**: se aleja un
+   punto y se apaga mientras el cartel llega adelante. No es que se tapó la
+   mesa — es que el cartel está delante de ella. Al cerrarse, la mesa vuelve
+   sola, y esa vuelta es la que le faltaba a la salida. */
+.pop-velo{transition:background-color .26s ease, backdrop-filter .26s ease,
+          opacity .2s ease}
+.pop-velo.entrando{opacity:0;backdrop-filter:blur(0px);-webkit-backdrop-filter:blur(0px)}
+
+/* La mesa atrás. El origen está arriba del centro geométrico —42%— porque
+   abajo hay menos mesa que arriba: con 50% el alejado se comía la franja de
+   ítems más que la marquesina. */
+.wrap{
+  /* 240 y no 280: la vuelta tiene que terminar antes de que se saque el velo
+     —300ms después del cierre—, porque mientras la transición corre el
+     `transform` sigue vivo y con él el bloque contenedor de los `fixed`. */
+  transition:transform .24s cubic-bezier(.3,0,.2,1), filter .24s ease;
+  transform-origin:50% 42%;
+}
+.wrap.atras{transform:scale(.955);filter:brightness(.72)}
+@media (prefers-reduced-motion:reduce){
+  .wrap{transition:none}
+  /* Sin movimiento queda sólo el apagado, que es lo que separa los planos. */
+  .wrap.atras{transform:none;filter:brightness(.78)}
+  .pop-velo{transition:none}
+}
 /* La caja que ya se transformó una vez no vuelve a hacer su animación de
    entrada: `poppin` se dispara cada vez que se le aplica la clase, y eso
    metía un rebote en el medio de la transformación. */
@@ -7511,9 +7541,15 @@ function montarPop(wrap){
 
   if(!caja || !nueva){
     if(POP_VELO) POP_VELO.remove();
-    wrap.classList.add('pop-velo');
+    /* La primera punta: el velo se cuelga apagado y se enciende en el mismo
+       tick. El `void offsetWidth` es lo que hace que la transición arranque —
+       sin él el navegador ve un solo estado y no anima nada. */
+    wrap.classList.add('pop-velo', 'entrando');
     document.body.appendChild(wrap);
+    void wrap.offsetWidth;
+    wrap.classList.remove('entrando');
     POP_VELO = wrap;
+    mesaAtras(true);
     return wrap;
   }
 
@@ -7580,6 +7616,29 @@ function morfarPop(caja, clase, contenido){
   }, POP_MORF + 60);
 }
 
+/* La mesa atrás mientras hay un cartel adelante.
+
+   **Ojo con el `transform`.** Un `transform` —y un `filter`— convierten al
+   elemento en el bloque contenedor de todo lo que tenga `position:fixed`
+   adentro. Y adentro de `.wrap` hay dos: la ficha del ítem y el panel del
+   relato, que en mobile son fijos. Si alguno quedara abierto al llegar un
+   cartel, dejaría de medirse contra la pantalla y se mediría contra la mesa.
+   Es el mismo pozo que ya está documentado dos veces más arriba —el hover del
+   ítem y el hundido del toque—, así que acá los dos se cierran antes.
+
+   No es sólo defensivo: con un cartel ocupando la pantalla, dejar la ficha o
+   el relato abiertos abajo no tiene sentido igual. */
+function mesaAtras(si){
+  const w = document.querySelector('.wrap');
+  if(!w) return;
+  if(si){
+    cerrarFichaItem();
+    const pl = document.getElementById('panelLog');
+    if(pl) pl.classList.remove('abierto');
+  }
+  w.classList.toggle('atras', si);
+}
+
 /* Cierra el cartel que está arriba. **No levanta el velo en el acto**: le da
    un respiro por si atrás viene otro —la cadena del penal definitorio, la
    situación que termina en gol, el sorteo que abre la llegada— y en ese caso
@@ -7592,6 +7651,9 @@ function cerrarPop(){
     POP_SALE = null;
     if(POP_VELO !== velo) return;
     velo.classList.add('saliendo');
+    /* La mesa arranca la vuelta junto con el cartel, no cuando el velo ya se
+       fue: así el regreso es un solo movimiento y no dos pegados. */
+    mesaAtras(false);
     /* 300 = los 60ms que el velo le da de ventaja al cartel más sus 220 de
        desvanecido. Con los 240 de antes se sacaba sin haber terminado y el
        último fotograma era un salto. */
@@ -7788,7 +7850,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 161;
+const VERSION = 162;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
