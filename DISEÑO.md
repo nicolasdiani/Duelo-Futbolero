@@ -7443,3 +7443,88 @@ para algo que no es prioridad, y con los carteles clavados ya no molesta.
 Y el **descuento en 320 × 568**, que entra con margen cero —492 en un hueco de
 492—, tampoco: achicarlo sería tocar vertical, que es justo lo que no había que
 hacer. Queda anotado: un renglón más de texto ahí se corta.
+
+
+## La franja de la derecha
+
+Dos cosas que pasaban en el mismo renglón: el **plantel** no cerraba con los
+dos renglones que tiene al lado, y el **dinero** quedaba pegado a la racha.
+
+### El plantel, corto por tres píxeles de cada lado
+
+La franja es una grilla de dos filas —medidores arriba, ítems abajo— y el
+plantel ocupa las dos. Pero la grilla tiene `align-items:center`, así que en
+vez de estirarse se **centraba**: medía 57 donde las dos filas abarcan 63.
+Arrancaba 3px más abajo que los medidores y terminaba 3px más arriba que los
+ítems, y las tres cajas no cerraban por ningún lado.
+
+```css
+#panelPlantel{grid-area:stats;justify-self:end;align-self:stretch}
+#panelPlantel{... gap:5px ...}
+#panelPlantel .stat{flex:1;justify-content:center; ...}
+```
+
+Las tres líneas van juntas. `align-self:stretch` estira el panel; `flex:1`
+hace que los dos stats se repartan el alto —sin eso el panel se estira pero
+las cajas siguen midiendo su contenido y el aire sobrante se junta en el
+medio—; y el hueco pasa de 3 a **5**, que es el de la grilla. Ese último es el
+que hace que cierren también los bordes de adentro: con 3 cada stat se estira
+a 30 contra los 29 del renglón de al lado y quedan corridos 1px.
+
+| a 390 | v163 | v164 |
+|---|---|---|
+| alto del plantel | 57 | **63** |
+| desfasaje arriba / abajo | 3 / 3 | **0 / 0** |
+| ATAQUE contra los medidores | 3 / 1 | **0 / 0** |
+| DEFENSA contra los ítems | −1 / −3 | **0 / 0** |
+
+### El dinero, en chapa
+
+Más arriba el diseño le daba al dinero un hilo y 8px de aire para despegarlo
+de la racha. Pero cien líneas después venía
+`#m-dinero{padding:0;border:none;background:none}` y lo apagaba entero —no en
+un breakpoint más chico, como parecía: **en el mismo bloque, por orden de
+aparición**—. El €24M terminaba contra la última barra de la racha sin nada en
+el medio: dos números pegados que no tienen nada que ver entre sí.
+
+En vez de devolver el hilo va la chapa, con el mismo dorado de la moneda en
+filo y en fondo, para que el dinero se lea como una cosa aparte y no como el
+final de la racha.
+
+### Lo que costaba la chapa, y cómo se pagó
+
+**De alto.** La franja mide lo que mide su hijo más alto. Con el dinero en 17,
+como los otros dos medidores, `5 + 17 + 5 + 2` daban los 29 de siempre. La
+chapa lo lleva a 23 y la franja se iba a 35, o sea **6px que salen de la
+mesa**: el tablero bajaba de 245 a 239. Se arregla bajando el relleno del panel
+de 5 a 2: `2 + 23 + 2 + 2` vuelve a dar 29. Y el aguante y la racha no se
+mueven ni un píxel, porque van centrados: quedan a los mismos 6 del borde por
+más que el relleno cambie.
+
+**De ancho.** La chapa lleva el dinero de 49 a 65, y esos 16px salen de las dos
+columnas `1fr` —ocho por barra—. Seis se recuperan bajando el relleno
+horizontal del panel de 8 a 6 y el de la chapa de 7 a 6. Los otros cinco se
+pagan: la barra de racha pasa de 45 a 40 en un teléfono de 320, y cada tramo
+de 9 a 7.8. En 390 la pérdida es de 17.8 a 16.5. **Es lo único que esta versión
+empeora**, y quedó anotado.
+
+### Medido en seis anchos
+
+| | 320 | 360 | 375 | 390 | 412 | 430 |
+|---|---|---|---|---|---|---|
+| alto de la franja | 29 | 29 | 29 | 29 | 29 | 29 |
+| los dos renglones | 63 | 63 | 63 | 63 | 63 | 63 |
+| alto del plantel | 63 | 63 | 63 | 63 | 63 | 63 |
+| desfasaje | 0/0 | 0/0 | 0/0 | 0/0 | 0/0 | 0/0 |
+| lo que le queda a la mesa | = | = | = | = | = | = |
+| tramo de la racha | 7.8 | 12.8 | 14.5 | 16.5 | 19.3 | 21.5 |
+
+La fila de la mesa es lo que importa: **el tablero mide exactamente lo mismo
+que en v163 en los seis anchos**, y el cartel de gol también. No hay scroll
+horizontal en ninguno.
+
+Acostado, en 780 × 360 —la única medida apaisada que comparte el bloque de
+mobile— el plantel pasa de 57 a 66 pero ahí hay aire de sobra: el tablero queda
+en 574 × 253 igual que antes, y sin scroll. En 844 y 932 acostados manda el
+layout de escritorio, donde el dinero es una fila apilada con su rótulo y no lo
+toca nada de esto.

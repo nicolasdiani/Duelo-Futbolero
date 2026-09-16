@@ -3309,7 +3309,12 @@ body{padding-bottom:36px}
     backdrop-filter:none;-webkit-backdrop-filter:none;
     position:relative;z-index:20;
   }
-  #panelPlantel{grid-area:stats;justify-self:end}
+  /* `align-self:stretch` y no el `center` que hereda la grilla: el plantel
+     ocupa **dos filas** —medidores e ítems— y centrado medía 57 donde las
+     dos abarcan 63. Arrancaba 3px más abajo que los medidores y terminaba
+     3px más arriba que los ítems: las tres cajas no cerraban por ningún
+     lado. Estirado cierra por los cuatro. */
+  #panelPlantel{grid-area:stats;justify-self:end;align-self:stretch}
   /* El ancla envuelve al cartel, así que el hijo del grid pasa a ser ella.
      Se nombran las dos: antes de que el jugador abra la ficha por primera vez
      el cartel todavía está suelto, sin envolver. */
@@ -3378,7 +3383,19 @@ body{padding-bottom:36px}
   #panelEquipo{
     background:linear-gradient(180deg,rgba(0,20,64,.92),rgba(0,8,31,.95));
     border:1px solid var(--filo);border-radius:12px;
-    padding:5px 8px;gap:0;
+    /* 2px arriba y abajo, no 5, y va atado a la chapa del dinero de más
+       abajo. La franja mide **lo que mide su hijo más alto**: con el dinero
+       en 17 como los otros dos medidores, 5+17+5+2 daban los 29 de siempre.
+       La chapa lo lleva a 23, así que el relleno baja a 2 y la cuenta
+       vuelve a dar 29: **la franja no crece ni un píxel**, que es lo que
+       importa porque lo que crece acá se lo saca a la mesa. Y el aguante y
+       la racha no se mueven: van centrados, así que quedan a los mismos 5px
+       del borde por más que el relleno cambie.
+
+       De ancho el relleno baja de 8 a 6 por lo mismo: la chapa del dinero
+       cuesta 16px de ancho y esos 16 salen de las dos columnas `1fr`, o sea
+       ocho por barra. Seis se recuperan acá y en el relleno de la chapa. */
+    padding:2px 6px;gap:0;
     display:grid;grid-template-columns:1fr 1fr auto;align-items:center;
     column-gap:8px;
   }
@@ -3429,7 +3446,6 @@ body{padding-bottom:36px}
   #panelEquipo .med-art.off{filter:none;opacity:1}
   #panelEquipo .hearts .med-art.on{filter:none;background:var(--red);box-shadow:0 0 7px rgba(255,59,82,.55)}
   #panelEquipo .racha-track .med-art.on{filter:none;background:var(--gold);box-shadow:0 0 7px rgba(245,200,66,.55)}
-  #m-dinero{padding-left:8px;border-left:1px solid rgba(147,174,222,.18)}
 
   /* La amarilla se dibujaba como un anillo alrededor de los cuatro corazones.
      Con la barra, el anillo va sobre el ícono. */
@@ -3504,10 +3520,19 @@ body{padding-bottom:36px}
   .gol-banner .gb-t{font-size:9.4px;letter-spacing:.3px;line-height:1.1}
   .gol-banner .gb-go{padding:3px 8px;font-size:9.4px;flex:0 0 auto}
 
-  #panelPlantel{display:flex;flex-direction:column;gap:3px;padding:0;background:none;border:none}
+  /* El hueco entre los dos stats es el mismo de la grilla —5px— y no 3. Los
+     dos renglones de la izquierda miden 29 cada uno con 5 en el medio; si
+     acá el hueco es 3, cada stat se estira a 30 y los bordes de adentro
+     quedan corridos 1px contra el renglón de al lado. Con 5 dan 29 clavados
+     y cierran las cuatro cajas. */
+  #panelPlantel{display:flex;flex-direction:column;gap:5px;padding:0;background:none;border:none}
   #panelPlantel .panel-tit{display:none}
   #panelPlantel .stat{
     display:flex;flex-direction:row;align-items:center;gap:4px;
+    /* `flex:1` para que los dos se repartan el alto en partes iguales: sin
+       esto el panel se estira pero las cajas siguen midiendo lo que mide su
+       contenido y el aire sobrante se junta en el medio. */
+    flex:1;justify-content:center;
     padding:2px 6px;border-radius:5px;
     background:linear-gradient(160deg,rgba(0,22,72,.95),rgba(0,8,31,.96));
     border:1px solid var(--line);
@@ -3521,7 +3546,22 @@ body{padding-bottom:36px}
   #panelPlantel .stat.atk .n{color:var(--red)}
   #panelPlantel .stat.def .n{color:var(--blue)}
 
-  #m-dinero{padding:0;border:none;background:none;display:flex;align-items:center}
+  /* ---- EL DINERO, EN CHAPA ----
+     Acá había un `padding:0;border:none` que apagaba el hilo que el diseño
+     le daba al dinero más arriba, y el €24M terminaba contra la última barra
+     de la racha **sin nada en el medio**: dos números pegados que no tienen
+     nada que ver entre sí.
+
+     En vez de devolver el hilo va la chapa: el mismo dorado de la moneda, en
+     filo y en fondo, para que el dinero se lea como una cosa aparte y no
+     como el final de la racha. El relleno de 2px es lo que la lleva a 23, y
+     por eso el tablero de mandos de arriba baja el suyo a 2. */
+  #m-dinero{
+    display:flex;align-items:center;
+    padding:2px 6px;border-radius:8px;
+    border:1px solid rgba(245,200,66,.34);
+    background:rgba(245,200,66,.08);
+  }
   #m-dinero .rec-val{font-family:var(--tit);font-weight:800;font-size:17px;letter-spacing:.3px;color:var(--coin)}
 
   /* ---- LA MESA ----
@@ -7873,7 +7913,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 163;
+const VERSION = 164;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
