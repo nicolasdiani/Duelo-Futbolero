@@ -594,6 +594,40 @@ img{height:auto}
   animation:poppin .42s cubic-bezier(.2,.9,.25,1) both;
 }
 .play .p-tag{font-family:var(--txt);font-size:11px;letter-spacing:3px;color:var(--dim);margin-bottom:12px}
+
+/* ---- LA CINTA DEL CLUB ----
+   El renglón de arriba decía «MINUTO 3' · TE TOCÓ» y ahora dice **de quién
+   es la jugada**: escudo, nombre del club, y el minuto corrido a la derecha.
+
+   No se agrega, **reemplaza**: la carta que abrió este cartel ya trae el
+   escudo desde v169, y si el pop-up no lo tuviera la cadena se cortaría justo
+   en el momento en que el jugador mira más grande. Poniéndolo en el renglón
+   que ya existía, el cartel gana un dato y no pierde ninguno.
+
+   Va a todo el ancho —los márgenes negativos son el mismo truco de la foto—
+   para que se lea como una cabecera y no como una etiqueta suelta. */
+.play .p-cinta{
+  display:flex;align-items:center;gap:9px;
+  margin:-14px -18px 14px;padding:8px 18px;
+  border-bottom:1px solid var(--line);
+  background:rgba(0,0,0,.28);
+}
+.play .pc-esc{flex:0 0 auto;display:flex}
+.play .p-cinta b{
+  font-family:var(--tit);font-weight:800;font-size:16px;letter-spacing:1.4px;
+  color:var(--white);line-height:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+/* El minuto se va a la derecha y se achica: sigue estando, pero deja de ser
+   lo primero que se lee. */
+.play .p-cinta i{
+  margin-left:auto;font-style:normal;font-family:var(--txt);font-weight:400;
+  font-size:11px;letter-spacing:2px;color:var(--dim2);white-space:nowrap;
+}
+/* Del lado del rival la cinta se tiñe, como la franja del pie de las cartas
+   de fin de partido: es la única parte del cartel que cambia de color según
+   de quién sea la jugada. */
+.play .p-cinta.riv{background:rgba(74,10,22,.34);border-bottom-color:rgba(255,59,82,.26)}
 .play .p-ico{font-size:56px;line-height:1;margin-bottom:6px}
 .play .p-nm{font-size:clamp(26px,6.5vw,40px);letter-spacing:2px;text-indent:2px;line-height:.95}
 .play .p-val{font-family:var(--txt);font-size:12.5px;letter-spacing:2px;margin-top:8px;color:var(--dim)}
@@ -8239,7 +8273,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 169;
+const VERSION = 170;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -10857,7 +10891,7 @@ function mostrarJugada(cell){
     wrap.className = 'play-flash';
     wrap.innerHTML =
       '<div class="play ' + p.tone + '">' +
-        '<div class="p-tag">MINUTO ' + minutoActual() + '\' &nbsp;·&nbsp; TE TOCÓ</div>' +
+        cintaDelClub(cell.type) +
         (artCarta(cell.type)
           ? '<div class="p-art"><img src="' + artCarta(cell.type) + '" alt=""></div>'
           : '<div class="p-ico">' + T.ico + '</div>') +
@@ -10872,6 +10906,28 @@ function mostrarJugada(cell){
     wrap = montarPop(wrap);
     wrap.onclick = () => { cerrarPop(); resolve(); };
   });
+}
+
+/* La cabecera del pop-up: de quién es la jugada y en qué minuto pasa.
+
+   El nombre del rival sale de donde ya salía para el relato —la ronda en el
+   campeonato, el jugador 2 en el 1v1— así que los dos modos lo dicen bien sin
+   una rama aparte. Si todavía no hay escudos en juego cae en el renglón de
+   antes, que es el que usan el tutorial y las pantallas sueltas. */
+function cintaDelClub(tipo){
+  const delRival = esDelRival(tipo);
+  const e = delRival ? G.escudoRival : G.escudo;
+  const min = 'MINUTO ' + minutoActual() + '\'';
+  if(!e) return '<div class="p-tag">' + min + ' &nbsp;·&nbsp; TE TOCÓ</div>';
+  const nm = delRival
+    ? (G.modo === 'duelo' ? (G.J[1] || {}).club || 'EL RIVAL'
+                          : (RONDA(G.ronda) || {}).rival || 'EL RIVAL')
+    : (G.modo === 'duelo' ? (G.J[0] || {}).club || G.club : G.club);
+  return '<div class="p-cinta' + (delRival ? ' riv' : '') + '">' +
+    '<span class="pc-esc">' + escudoDe(e, 26) + '</span>' +
+    '<b>' + nm + '</b>' +
+    '<i>' + min + '</i>' +
+  '</div>';
 }
 
 /* Foto de los recursos, para saber después qué se movió. */

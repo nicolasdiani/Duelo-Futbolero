@@ -7894,3 +7894,62 @@ dibujo, así que abajo de 700px de alto se va con la foto:
 No es una renuncia: en esas medidas la carta ya quedó reducida a nombre y
 resultado, y meterle un escudo encima sería taparle una de las dos cosas que le
 quedan.
+
+
+## La cinta del club en el pop-up de la jugada
+
+La carta de la mesa ya trae el escudo desde v169. Pero al tocarla se abría un
+cartel de 400px —cuatro veces la carta— que **no decía de quién era la jugada**,
+así que la cadena se cortaba justo en el momento en que el jugador mira más
+grande.
+
+### Reemplaza, no se agrega
+
+El renglón de arriba decía «MINUTO 3' · TE TOCÓ». Ahora dice de quién es la
+jugada: escudo, nombre del club, y el minuto corrido a la derecha y más chico.
+
+De tres formas probadas —el mismo rincón de la foto que en la carta, el escudo
+al lado del título, y esto— quedó la única que **no le saca lugar a nada**: en
+vez de sumarse, ocupa un renglón que ya estaba.
+
+| | alto del cartel |
+|---|---|
+| como estaba | 409 / 449 |
+| el escudo en el rincón de la foto | 409 / 449 |
+| el escudo al lado del título | 427 / 467, y **59px menos de título** |
+| **la cinta** | 428 / 468 |
+
+La cinta cuesta 19px de alto. El del título costaba 18 **y** le sacaba 59px al
+nombre —de 346 a 287—, y DELANTERO RIVAL, que es el nombre más largo que
+existe, ya entraba justo: no quedaba margen para uno nuevo.
+
+Su costo real no son los 19px sino la decisión de fondo: ese renglón **decía
+cuándo** pasa la jugada y ahora **dice de quién** es. El minuto no se fue, se
+corrió a la derecha y bajó a 11px.
+
+### El nombre del club sale de donde ya salía
+
+```js
+const nm = delRival
+  ? (G.modo === 'duelo' ? (G.J[1] || {}).club : (RONDA(G.ronda) || {}).rival)
+  : (G.modo === 'duelo' ? (G.J[0] || {}).club : G.club);
+```
+
+Las mismas dos fuentes que usa el relato: la ronda en el campeonato, el jugador
+2 en el 1v1. Así los dos modos lo dicen bien sin una rama aparte. Y si todavía
+no hay escudos en juego —el tutorial, una pantalla suelta— cae en el renglón de
+antes.
+
+De quién es la jugada lo decide `esDelRival`, el mismo de v169: se deriva del
+nombre de la carta, así que el escudo de la carta y el del pop-up **no pueden
+decir cosas distintas**.
+
+### Probado en el juego andando
+
+| jugada | la cinta dice | tinte |
+|---|---|---|
+| PASE GOL | RIVER · MINUTO 10' | neutro |
+| DELANTERO RIVAL | EST. RÍO IV · MINUTO 10' | rojo |
+
+El rojo de la cinta es lo único del cartel que cambia de color según de quién
+sea la jugada.
