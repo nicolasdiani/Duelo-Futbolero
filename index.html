@@ -3050,7 +3050,7 @@ img{height:auto}
 .cell .c-ico{padding:0;overflow:hidden;position:relative}
 
 /* ---- EL ESCUDO DEL CLUB, EN LA CARTA ----
-   Arriba a la izquierda de la ilustración, como el logo del canal en una
+   En un rincón de la ilustración, como el logo del canal en una
    transmisión. Durante el turno el jugador mira la mesa, no la marquesina,
    y ahí no había nada que dijera contra quién está jugando.
 
@@ -3064,13 +3064,44 @@ img{height:auto}
    responsive de la mesa: el escudo se achica con la carta, como el resto.
    El `max-height` es la red — en un teléfono de 320 la ilustración baja a
    22px de alto y el escudo no puede ser más alto que lo que lo contiene. */
+/* ---- LA ESQUINA ----
+   Estaba arriba a la izquierda. Recortadas **las 21 fotos** de la mesa como
+   las recorta la carta y medido el detalle de cada esquina en un cuadrado
+   del tamaño de la chapita, esa es la peor de las cuatro:
+
+     arriba izq   detalle 44   8 de 21 fotos cargadas   peor caso 72
+     arriba der   detalle 41   7 de 21
+     abajo izq    detalle 34   4 de 21
+     abajo der    detalle 32   3 de 21               peor caso 50
+
+   El motivo se ve apenas se mira: en las cartas de jugador **el cuerpo del
+   futbolista está justo ahí** —DELANTERO 72, DEFENSOR 70, CAÑO 69—.
+
+   Abajo a la derecha el escudo queda sobre el pasto o el fuera de foco en
+   dieciocho de las veintiuna. Se pierde la diagonal con el número de la
+   carta, que vive arriba a la derecha, y eso es lo que cuesta.
+
+   ---- LA CHAPITA ----
+   Antes era el escudo suelto con una sombra difuminada, y sobre una foto
+   clara se perdía. Ahora se apoya en una chapita con el fondo desenfocado:
+   la foto se sigue viendo detrás pero deja de competir, y el escudo pasa a
+   apoyarse en una superficie propia en vez de en la imagen.
+
+   El fondo va **más claro que la foto, no más oscuro**. Con un negro al 50%
+   los escudos oscuros —Riestra, C. Córdoba, Newell's— se fundían con la
+   chapa y sólo se veía la silueta. Un azul levantado los despega a los doce. */
 .cell .c-esc{
-  position:absolute;left:3px;top:3px;z-index:2;
+  position:absolute;right:4px;bottom:4px;z-index:2;
   display:flex;pointer-events:none;
-  filter:drop-shadow(0 1px 3px rgba(0,0,0,.9));
+  padding:2.5px 3.5px;border-radius:7px;
+  background:rgba(22,44,86,.5);
+  backdrop-filter:blur(5px) saturate(1.3);
+  -webkit-backdrop-filter:blur(5px) saturate(1.3);
+  border:1px solid rgba(255,255,255,.34);
+  box-shadow:0 2px 7px rgba(0,0,0,.65);
 }
 .cell .c-esc svg{
-  height:clamp(11px, calc(var(--carta) * .135), 18px);
+  height:clamp(13px, calc(var(--carta) * .17), 22px);
   width:auto;max-height:calc(100% - 4px);
 }
 /* Con la carta trabada el escudo se apaga como el resto: si quedara
@@ -3088,7 +3119,20 @@ img{height:auto}
    Así que se va con la foto. No es una renuncia: en esas medidas la carta ya
    quedó reducida a nombre y resultado, y meterle un escudo encima sería
    taparle una de las dos cosas que le quedan. */
-@media (max-height:700px){
+/* El corte sube de 700 a 760 porque **la chapita es más grande que el escudo
+   suelto que había antes**. Medido a 390 de ancho, qué proporción de la franja
+   de ilustración se come:
+
+     alto 710   franja 27px   chapita 23   85%   <- la tapa entera
+     alto 730   franja 32px   chapita 23   72%
+     alto 750   franja 37px   chapita 24   65%
+     alto 770   franja 42px   chapita 24   57%
+     alto 844   franja 60px   chapita 26   43%   <- lo normal
+
+   Con el corte en 700 la chapita aparecía justo donde no entra. En 760 se va
+   antes de eso: el que pierde el escudo es el mismo teléfono al que la carta
+   ya le quedó reducida a nombre y resultado. */
+@media (max-height:760px){
   .cell .c-esc{display:none}
 }
 .c-art{
@@ -8705,7 +8749,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 183;
+const VERSION = 184;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

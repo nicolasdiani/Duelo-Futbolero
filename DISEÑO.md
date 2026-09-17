@@ -8847,3 +8847,75 @@ Que se puede elegir de la tira, que llega entero a la vitrina sin puntos
 suspensivos, que arranca la copa con ese nombre y su escudo, que puede salir de
 rival, y que **el buscador lo encuentra escribiendo «rivadavia»** —que era lo
 que había que cuidar al ponerle una inicial adelante—.
+
+
+## El escudo de la carta: chapita y esquina nueva
+
+Dos cambios sobre lo mismo: **d&oacute;nde va** y **c&oacute;mo se ve**.
+
+### La esquina, medida y no a ojo
+
+Estaba arriba a la izquierda. Recort&eacute; **las 21 fotos** que usan las cartas
+igual que las recorta la carta y med&iacute; el detalle de cada esquina en un
+cuadrado del tama&ntilde;o de la chapita. El detalle es cu&aacute;nto var&iacute;a la imagen ah&iacute;:
+mucho detalle significa que hay algo que mirar y taparlo cuesta.
+
+| esquina | detalle | fotos cargadas | peor caso |
+|---|---|---|---|
+| arriba izquierda **(donde estaba)** | 44 | 8 de 21 | 72 |
+| arriba derecha | 41 | 7 de 21 | — |
+| abajo izquierda | 34 | 4 de 21 | — |
+| **abajo derecha** | **32** | **3 de 21** | **50** |
+
+La esquina de antes era **la peor de las cuatro**, y no por poco: casi tres
+veces más fotos cargadas que la nueva y un peor caso muchísimo más duro. El
+motivo se ve apenas se mira: en las cartas de jugador **el cuerpo del futbolista
+está justo ahí** —DELANTERO 72, DEFENSOR 70, CAÑO 69—.
+
+Lo que se pierde es la diagonal con el número de la carta, que vive arriba a la
+derecha: ahora los dos pesos quedan sobre el mismo borde. Se eligió sabiéndolo.
+
+### La chapita
+
+Antes era el escudo suelto con una sombra difuminada, y sobre una foto clara se
+perdía. Ahora se apoya en una chapita con el fondo desenfocado: la foto se sigue
+viendo detrás pero deja de competir, y el escudo pasa a apoyarse en **una
+superficie propia en vez de en la imagen**.
+
+El escudo crece de **13 x 15 a 16 x 19**, y la carta no cambia ni un píxel: la
+chapita es absoluta sobre la ilustración, como antes.
+
+**El fondo va más claro que la foto, no más oscuro.** El primer intento tenía un
+negro al 50% y los escudos oscuros —Riestra, C. Córdoba, Newell's— se fundían
+con la chapa: sólo se veía la silueta. Un azul levantado los despega a los doce.
+
+### El corte por alto hubo que subirlo
+
+Había un `max-height:700px` que esconde el escudo cuando la ilustración se
+achica hasta ser una franja. Ese número estaba calculado para un escudo de 15px
+y **con la chapita quedó corto**. Medido a 390 de ancho, qué proporción de la
+franja se come:
+
+| alto | franja | chapita | |
+|---|---|---|---|
+| 710 | 27px | 23 | **85%** — la tapa entera |
+| 730 | 32px | 23 | 72% |
+| 750 | 37px | 24 | 65% |
+| 770 | 42px | 24 | 57% |
+| 844 | 60px | 26 | 43% — lo normal |
+
+Con el corte en 700, la chapita aparecía justo donde no entra. Se subió a
+**760**: el que pierde el escudo es el mismo teléfono al que la carta ya le
+quedó reducida a nombre y resultado.
+
+Hay un `max-height:calc(100% - 4px)` en el SVG que estaba pensado como red para
+esto y **nunca funcionó**: el porcentaje se mide contra la altura del padre, que
+es `auto`, así que no resuelve y el navegador lo trata como `none`. Queda,
+porque no molesta, pero la red de verdad es la consulta por alto.
+
+### Verificado
+
+A 390x844: los 16 escudos en la mesa, chapita de 25 x 26 a 4px de los dos
+bordes, enteramente adentro de la ilustración, y la carta en 80 x 139 como
+antes. A 1280x800: 27 x 28 sobre una ilustración de 169 x 116, el 25%. A 750 el
+escudo no está; a 780 sí. Sin errores de consola en pestaña nueva.
