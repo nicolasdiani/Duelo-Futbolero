@@ -8256,3 +8256,100 @@ antes. Comprobado en el juego andando, congelando la animación y midiendo el
 
 Queda anotado en el código: si algún día se toca la duración hay que
 recalcularlos, o el gesto se acelera solo.
+
+
+## El vestuario, contra alguien
+
+El refuerzo es **la decisión más definitiva del juego**: una por ronda, cuatro
+en todo el campeonato, sin vuelta atrás. Hasta v175 la pantalla la trataba como
+información. Dos renglones apilados, sin un cartel que dijera que había que
+elegir y sin nada que avisara que eran botones; lo único que se movía era el
+tramo dorado de cada barra, de 26px.
+
+### Se eligió entre seis
+
+Primero se probaron tres marcos (las barras latiendo, las dos enfrentadas, y
+una cabecera con el escudo del que viene). Elegido el tercero, se probaron
+**cinco maneras distintas de mostrar las dos opciones** adentro de ese marco
+—enfrentadas, con el +1 en una chapa dorada, con foto, con el track en fichas
+que se cuentan, y como un interruptor de color pleno— dejando el resto de la
+tarjeta congelado para que se comparara eso y nada más.
+
+Quedó la de la foto: **el idioma de las cartas**, que es lo que el jugador
+viene tocando toda la partida.
+
+### La cabecera
+
+El refuerzo no se elige en el aire: se elige contra alguien. Arriba de las dos
+chapas va el escudo del rival que viene, el mismo recurso de la cinta de la
+jugada, y de paso es donde entra el **ELEGÍ UNO**, que era lo que faltaba
+decir.
+
+El nombre del club se corta con puntos suspensivos y no se parte: hay rivales
+de dos palabras largas que partidos quedan ilegibles.
+
+### Las dos chapas
+
+Enfrentadas y no apiladas, porque **una decisión entre dos se lee mejor lado a
+lado**: dos renglones son una lista, dos chapas son una disyuntiva. Cada una
+lleva la foto arriba con el degradé de las cartas, el ícono en el rincón y el
+texto abajo, subido sobre el pie del degradé para ganar alto sin perder
+contraste.
+
+El arte tiene que ser una foto limpia. Las pizarras tácticas del juego
+(`art_ataja`, `art_roba`) traen **el texto quemado adentro**: la primera versión
+mostraba una chapa que decía DEFENSA arriba y "ATAJA EL ARQUERO" en la imagen,
+diciendo dos cosas a la vez. Quedaron `delantero` y `arquero`.
+
+Las dos laten con el gesto de los botones de v174, **desfasadas medio ciclo**.
+Latiendo juntas parecen una sola cosa que respira; alternadas se leen como dos
+opciones que se turnan para llamarte.
+
+### El `max-width` global que se comía el sangrado
+
+La cabecera salía **corrida 12px a la izquierda** en vez de llegar a los dos
+bordes. El margen negativo estaba bien calculado y el navegador lo reportaba
+aplicado, pero la caja no se ensanchaba.
+
+La causa es un `*{max-width:100%}` global: le pone de techo el ancho del
+contenido de la tarjeta, la caja queda **sobredeterminada** y en ese caso el
+navegador descarta el margen derecho en silencio. El resultado es una cinta que
+se corre pero no se estira. Se arregla con `max-width:none`.
+
+Queda anotado porque **la cinta de la jugada tiene el mismo problema desde
+v170** y nadie lo vio: medida en el pop-up real a 320, arranca a 9px del borde
+izquierdo y termina a 45px del derecho, cuando tendría que ir de punta a punta.
+
+### El padding lateral, ahora en una variable
+
+Para que una cinta llegue a los bordes hay que saber cuánto padding lateral
+tiene la tarjeta, y ese valor **cambia seis veces** según el hueco: 26, 15, 13,
+12, 11 y 10px. La cinta de la jugada lo tenía escrito a mano (`-18px`), que no
+coincide con ninguno de los seis. Ahora es `--cpx`, declarada en cada
+breakpoint junto al `padding` que le corresponde.
+
+### Lo que costó
+
+Medido en el juego andando, abriendo el pop-up en cada ancho:
+
+| pantalla | v175 | v176 | |
+|---|---|---|---|
+| 320 x 480 | — | 384 | sin scroll |
+| 320 x 568 | 362 | 384 | +22 |
+| 360 x 640 | 386 | 412 | +26 |
+| 390 x 844 | 433 | 448 | +15 |
+| 414 x 896 | 443 | 452 | +9 |
+| 768 x 1024 | — | 567 | sin scroll |
+| 1280 x 800 | 600 | **575** | −25 |
+| 844 x 390, acostado | 596 | **571** | −25 |
+
+Las dos cosas tiran para lados distintos: **la cabecera suma unos 40px y las
+chapas enfrentadas ahorran unos 25**. En teléfono gana la cabecera y la tarjeta
+crece; de tablet para arriba gana el ahorro y baja. No aparece scroll en
+ninguna medida nueva, y el que ya había en acostado —que viene de que el
+breakpoint móvil pide 820 y un teléfono acostado mide 844— se achica 25px.
+
+La línea de "contra defensores y arqueros" se temía que se partiera en dos
+renglones en 320, como pasaba en la maqueta. En el juego **no pasa**: la
+maqueta tenía la tipografía fija en 9,4px y el juego la mide con
+`clamp(8.4px, 2.5vw, 10px)`, así que en 320 baja a 8px y entra en un renglón.

@@ -1403,6 +1403,7 @@ img{height:auto}
 }
 .overlay.open{opacity:1;pointer-events:auto}
 .card{
+  --cpx:26px;
   border:1px solid var(--line);border-top:3px solid var(--gold);padding:30px 26px;
   max-width:520px;width:100%;text-align:center;
   box-shadow:0 20px 70px rgba(0,0,0,.7);
@@ -1865,57 +1866,159 @@ img{height:auto}
 .f-dev:hover{background:rgba(255,59,82,.18)}
 .mk-nota{font-size:10.4px;color:var(--dim2);line-height:1.4;margin-top:9px}
 
-/* ================= EL VESTUARIO: LAS DOS BARRAS =================
-   Cada stat es una barra de tramos: los que tenés, **el que vas a ganar en
-   dorado y latiendo**, y los que quedan vacíos. Elegir es mirar cuál crece.
+/* ================= EL VESTUARIO: LAS DOS CHAPAS =================
+   El refuerzo es **la decisión más definitiva del juego**: una por ronda,
+   cuatro en todo el campeonato, sin vuelta atrás. Hasta v175 la pantalla la
+   trataba como información: dos renglones apilados, sin un cartel que dijera
+   que había que elegir y sin nada que avisara que eran botones. Lo único que
+   se movía era el tramo dorado, de 26px.
 
-   Todo se mide en `vw` con tope y piso, así que la misma barra sirve en un
+   Ahora son **dos chapas enfrentadas**, con el idioma de las cartas: la foto
+   arriba con el degradé, el ícono en el rincón y el texto abajo. Enfrentadas
+   y no apiladas porque una decisión entre dos se lee mejor lado a lado: dos
+   renglones son una lista, dos chapas son una disyuntiva. Y encima ocupan
+   menos alto, que en este pop-up es lo que estaba sobrando.
+
+   Todo se mide en `vw` con tope y piso, así que la misma chapa sirve en un
    teléfono de 320 y en la tarjeta de 520 del escritorio. */
-.rf-p{font-size:clamp(10.4px, 3vw, 12.4px);color:var(--dim);line-height:1.45;margin-top:8px}
-.rf-barras{display:flex;flex-direction:column;gap:clamp(7px, 2vw, 10px);margin-top:clamp(10px, 3vw, 14px)}
+
+/* ---- CONTRA QUIÉN ----
+   El refuerzo no se elige en el aire: se elige contra alguien. La cabecera
+   trae el escudo del que viene —el mismo recurso de la cinta de la jugada y
+   de la chapa de las cartas— y de paso es donde entra el «ELEGÍ UNO», que es
+   lo que faltaba decir. Va a todo el ancho para que se lea como cabecera y
+   no como una etiqueta suelta. */
+.rf-prox{
+  display:flex;align-items:center;gap:clamp(8px, 3vw, 12px);
+  margin:clamp(9px, 3vw, 12px) calc(var(--cpx, 26px) * -1) 0;
+  padding:clamp(6px, 2.4vw, 9px) var(--cpx, 26px);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  background:rgba(0,0,0,.3);text-align:left;
+  /* Sin esto la cinta no llega a los bordes: hay un `*{max-width:100%}`
+     global que la deja del ancho del contenido, la caja queda
+     sobredeterminada y el margen derecho se descarta en silencio. */
+  max-width:none;
+}
+.rf-prox .px-esc{flex:0 0 auto;display:flex}
+.rf-prox .px-tx{min-width:0;flex:1}
+/* El nombre del club se corta con puntos suspensivos y no se parte: hay
+   rivales de dos palabras largas y partidos quedan ilegibles. */
+.rf-prox .px-tx b{
+  display:block;font-family:var(--tit);font-weight:800;
+  font-size:clamp(14px, 4.4vw, 17px);letter-spacing:1.2px;color:var(--white);line-height:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.rf-prox .px-tx span{
+  display:block;font-size:clamp(8.8px, 2.7vw, 10.5px);color:var(--dim2);
+  letter-spacing:.8px;margin-top:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.rf-prox .px-eleg{
+  flex:0 0 auto;font-family:var(--tit);font-weight:800;
+  font-size:clamp(9.5px, 2.9vw, 11px);letter-spacing:2px;color:var(--gold);
+  text-align:right;line-height:1.2;
+}
+
+/* ---- LAS DOS CHAPAS ---- */
+.rf-barras{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:clamp(6px, 2vw, 9px);margin-top:clamp(9px, 2.6vw, 12px);
+}
 .rf-barra{
-  display:flex;flex-direction:column;gap:clamp(5px, 1.6vw, 8px);
-  width:100%;text-align:left;cursor:pointer;font-family:inherit;color:var(--white);
+  display:flex;flex-direction:column;align-items:stretch;
+  width:100%;text-align:center;cursor:pointer;font-family:inherit;color:var(--white);
   border:1px solid var(--line);border-radius:9px;background:rgba(0,20,64,.72);
-  padding:clamp(9px, 2.6vw, 13px) clamp(10px, 3vw, 15px);
+  padding:0;overflow:hidden;position:relative;
   transition:border-color .15s, transform .15s, background .15s;
 }
 .rf-barra.atk{border-color:rgba(255,59,82,.55)}
 .rf-barra.def{border-color:rgba(77,155,240,.55)}
-.rf-barra:hover:not(:disabled){transform:translateY(-2px)}
 .rf-barra.atk:hover{border-color:var(--red);background:rgba(255,59,82,.1)}
 .rf-barra.def:hover{border-color:var(--blue);background:rgba(77,155,240,.1)}
-.ba-top{display:flex;align-items:center;gap:clamp(7px, 2.2vw, 11px)}
-.ba-ico{flex:0 0 auto;display:block;width:clamp(20px, 6vw, 28px);height:clamp(20px, 6vw, 28px)}
+
+/* La foto y su degradé, igual que en las cartas. El arte tiene que ser una
+   foto limpia: las pizarras tácticas (`art_ataja`, `art_roba`) traen el texto
+   quemado adentro y acá dirían dos cosas a la vez. */
+.ba-foto{
+  display:block;height:clamp(50px, 17vw, 68px);position:relative;
+  background-size:cover;background-position:center 30%;
+}
+.ba-foto::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg, rgba(0,20,64,.08) 0%, rgba(0,20,64,.82) 78%, rgba(0,20,64,.97) 100%);
+}
+/* El ícono va sobre la foto y no en el flujo: adentro del texto empujaría el
+   nombre y en una chapa de 170px no hay ancho para las dos cosas. */
+.rf-barra > .ba-ico{
+  position:absolute;left:6px;top:5px;z-index:2;
+  width:clamp(16px, 5.4vw, 22px);height:clamp(16px, 5.4vw, 22px);
+}
+.ba-ico{flex:0 0 auto;display:block}
 .ba-ico .fl,.ba-ico .fn{fill:none;stroke:currentColor}
 .rf-barra.atk .ba-ico{color:var(--red)}
 .rf-barra.def .ba-ico{color:var(--blue)}
-.ba-top b{
-  flex:1;min-width:0;font-family:var(--tit);font-weight:800;
-  font-size:clamp(14px, 4.2vw, 19px);letter-spacing:1.2px;
+
+/* El texto sube sobre el pie del degradé: ahí la foto ya es casi el fondo de
+   la tarjeta, así que se gana alto sin perder contraste. */
+.ba-cuerpo{
+  display:block;position:relative;z-index:2;
+  margin-top:clamp(-18px, -4.2vw, -12px);
+  padding:0 clamp(6px, 2.4vw, 9px) clamp(7px, 2.6vw, 10px);
 }
-.rf-barra.atk .ba-top b{color:var(--red)}
-.rf-barra.def .ba-top b{color:var(--blue)}
+.rf-barra:not(.con-foto) .ba-cuerpo{margin-top:0;padding-top:clamp(9px, 2.6vw, 12px)}
+.ba-cuerpo b{
+  display:block;font-family:var(--tit);font-weight:800;
+  font-size:clamp(13.5px, 4.4vw, 18px);letter-spacing:1.1px;line-height:1;
+}
+.rf-barra.atk .ba-cuerpo b{color:var(--red)}
+.rf-barra.def .ba-cuerpo b{color:var(--blue)}
 .ba-n{
-  flex:0 0 auto;font-family:var(--tit);font-weight:800;
-  font-size:clamp(18px, 5.4vw, 25px);line-height:1;color:var(--dim2);
+  display:block;font-family:var(--tit);font-weight:800;
+  font-size:clamp(16px, 5.4vw, 22px);line-height:1;color:var(--dim2);
+  margin:clamp(3px, 1vw, 4px) 0 clamp(4px, 1.6vw, 6px);
 }
 .ba-n i{font-style:normal;font-size:.62em;margin:0 3px;opacity:.7}
 .ba-n em{font-style:normal;color:var(--white)}
 /* Los tramos se reparten el ancho: seis o siete, la barra mide siempre igual. */
-.ba-track{display:flex;gap:clamp(3px, 1vw, 5px)}
-.ba-track i{flex:1;height:clamp(7px, 2.2vw, 11px);border-radius:3px;background:rgba(18,51,110,.9)}
+.ba-track{display:flex;gap:clamp(2px, 1vw, 5px);margin-bottom:clamp(4px, 1.4vw, 5px)}
+.ba-track i{flex:1;height:clamp(6px, 2.2vw, 11px);border-radius:3px;background:rgba(18,51,110,.9)}
 .rf-barra.atk .ba-track i.on{background:var(--red)}
 .rf-barra.def .ba-track i.on{background:var(--blue)}
 /* El tramo que ganás: dorado y latiendo, para que se vea el premio antes de
-   tocarlo. Es el único dorado de la pantalla, así que no compite con nada. */
+   tocarlo. Es el único dorado de las chapas, así que no compite con nada. */
 .ba-track i.nuevo{background:var(--gold);animation:baLate 1.5s ease-in-out infinite}
 @keyframes baLate{0%,100%{opacity:.5}50%{opacity:1}}
-.ba-desc{font-size:clamp(9px, 2.6vw, 11px);color:var(--dim)}
+.ba-desc{display:block;font-size:clamp(8.4px, 2.5vw, 10px);color:var(--dim);line-height:1.25}
+
+/* ---- EL LATIDO ----
+   El mismo gesto que los botones de acción desde v174: un outline que crece y
+   vuelve, sin tocar el color. Va en outline y no en box-shadow porque la
+   chapa ya tiene sombra propia y animarla la pisaría.
+
+   Las dos laten **desfasadas medio ciclo**. Latiendo juntas parecen una sola
+   cosa que respira; alternadas se leen como dos opciones que se turnan para
+   llamarte, que es exactamente lo que son. */
+@keyframes rfLate{
+  0%      {transform:scale(1);    outline-width:0}
+  10%     {transform:scale(1.02); outline-width:3px}
+  20%     {transform:scale(1)}
+  30%     {transform:scale(1.012);outline-width:2px}
+  45%,100%{transform:scale(1);    outline-width:0}
+}
+.rf-barra{animation:rfLate 2.8s ease-in-out infinite;outline:0 solid transparent;outline-offset:2px}
+.rf-barra.atk{outline-color:rgba(255,59,82,.6)}
+.rf-barra.def{outline-color:rgba(77,155,240,.65);animation-delay:-1.4s}
+/* En el teléfono el :hover se queda pegado después de tocar, así que el corte
+   por hover vive acá adentro y no en la regla suelta. */
+@media (hover:hover){
+  .rf-barra:hover{animation:none}
+  .rf-barra:hover:not(:disabled){transform:translateY(-2px)}
+}
 .rf-ojo{font-size:clamp(9.2px, 2.7vw, 11px);color:var(--gold);opacity:.78;
   line-height:1.4;margin-top:clamp(9px, 2.6vw, 13px)}
 @media (prefers-reduced-motion:reduce){
   .ba-track i.nuevo{animation:none;opacity:1}
+  .rf-barra{animation:none;outline-width:0}
 }
 
 /* ---- ACOSTADO, LOS RENGLONES VAN DE A DOS ----
@@ -4154,7 +4257,7 @@ body{padding-bottom:36px}
 @media (max-width:700px){
   .card{
     max-height:calc(100dvh - 20px);
-    padding:16px 15px 15px;
+    --cpx:15px;padding:16px 15px 15px;
     border-radius:10px;
   }
   .card h1{font-size:clamp(21px,6.4vw,30px);line-height:1.02;margin-bottom:6px}
@@ -4238,7 +4341,7 @@ body{padding-bottom:36px}
 }
 
 @media (max-width:420px){
-  .card{padding:13px 12px 12px}
+  .card{--cpx:12px;padding:13px 12px 12px}
   .club-prev .escudo{width:66px !important;height:79px !important}
   .card-club .op-esc .escudo{width:25px !important;height:30px !important}
   .col-fila{gap:4px}
@@ -4439,7 +4542,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 
 @media (max-width:820px) and (max-height:740px){
   .overlay{padding:10px 12px 40px}
-  .card{padding:13px 13px 12px}
+  .card{--cpx:13px;padding:13px 13px 12px}
   .card h1{font-size:clamp(19px,5.6vw,26px);margin-bottom:4px}
   .card .tag{font-size:8.6px;letter-spacing:2.5px;margin-bottom:4px}
   .card p{font-size:11.8px;line-height:1.36;margin-bottom:7px;margin-top:7px}
@@ -4499,7 +4602,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
    donde con lo de arriba todavía sobran unos 40px en la pantalla de reglas,
    que es la más larga del juego. */
 @media (max-width:820px) and (max-height:680px){
-  .card{padding:10px 11px 10px}
+  .card{--cpx:11px;padding:10px 11px 10px}
   .card h1{font-size:clamp(17px,5vw,22px)}
   .card p{font-size:11px;line-height:1.3;margin-bottom:5px;margin-top:5px}
   .cta{font-size:12.5px;padding:7px;margin-top:5px}
@@ -4538,7 +4641,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
    la pantalla de reglas se pasaba 25px y el vestuario 21. */
 @media (max-width:820px) and (max-height:580px){
   .overlay{padding:6px 8px 32px}
-  .card{padding:9px 10px 9px}
+  .card{--cpx:10px;padding:9px 10px 9px}
   .card h1{font-size:clamp(16px,4.6vw,20px)}
   .card .tag{font-size:8px;margin-bottom:3px}
   .card p{font-size:10.4px;line-height:1.26;margin:4px 0}
@@ -8445,7 +8548,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 175;
+const VERSION = 176;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12321,22 +12424,41 @@ function estadoEquipo(){
   '</div>';
 }
 
+/* La cabecera del vestuario: contra quién es el refuerzo que estás por
+   elegir. El escudo sale de la tabla de clubes igual que en la cancha, y
+   si la ronda no tiene equipo sorteado —el 1v1, los penales sueltos— se
+   arma sin escudo en vez de romperse. */
+function cabeceraRival(R){
+  const esc = R.eq ? escudoDe(escudoDeEquipo(R.eq), 38) : '';
+  return '<div class="rf-prox">' +
+    (esc ? '<span class="px-esc">' + esc + '</span>' : '') +
+    '<span class="px-tx"><b>' + R.rival + '</b>' +
+      '<span>te espera en ' + R.name + '</span></span>' +
+    '<span class="px-eleg">ELEGÍ<br>UNO</span>' +
+  '</div>';
+}
+
 /* El plantel arranca en ATAQUE 2 y DEFENSA 1, y se refuerza una vez por ronda
    —cuatro veces— así que un stat puede llegar a 6. El tope de la barra crece si
    alguna vez pasara de ahí: mejor una barra más larga que un tramo sin dibujar. */
-const barraStat = (cls, nm, n, contra) => {
+const barraStat = (cls, nm, n, contra, arte) => {
   const tope = Math.max(6, n + 2);
   let tramos = '';
   for(let i = 0; i < tope; i++)
     tramos += '<i class="' + (i < n ? 'on' : i === n ? 'nuevo' : 'off') + '"></i>';
-  return '<button class="rf-barra ' + cls + '" data-stat="' + cls + '">' +
-    '<span class="ba-top">' +
-      '<svg class="ba-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-' + cls + '"/></svg>' +
+  /* Si el arte no está embebido la chapa se arma igual, sin foto: la clase
+     `con-foto` es la que le dice al texto que tiene que subir sobre ella. */
+  const foto = ARTSRC(arte);
+  return '<button class="rf-barra ' + cls + (foto ? ' con-foto' : '') +
+      '" data-stat="' + cls + '">' +
+    (foto ? '<span class="ba-foto" style="background-image:url(' + foto + ')"></span>' : '') +
+    '<svg class="ba-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-' + cls + '"/></svg>' +
+    '<span class="ba-cuerpo">' +
       '<b>' + nm + '</b>' +
       '<span class="ba-n">' + n + '<i>→</i><em>' + (n + 1) + '</em></span>' +
+      '<span class="ba-track">' + tramos + '</span>' +
+      '<span class="ba-desc">contra ' + contra + '</span>' +
     '</span>' +
-    '<span class="ba-track">' + tramos + '</span>' +
-    '<span class="ba-desc">contra ' + contra + '</span>' +
   '</button>';
 };
 
@@ -12344,18 +12466,19 @@ function showRefuerzo(){
   G.phase = 'refuerzo';
   const R = RONDA(G.ronda + 1);
 
-  /* **El refuerzo se ve antes de tocarlo.** Antes eran dos botones iguales con
-     un emoji del teclado y un «3 → 4» suelto: decían cuánto sumabas pero no
-     cuánto te faltaba, que es la mitad de la decisión. Ahora cada stat es una
-     barra de tramos —los que tenés, el que vas a ganar en dorado y latiendo, y
-     los que quedan— así que elegir es mirar cuál barra crece. */
+  /* **El refuerzo se ve antes de tocarlo.** Cada chapa muestra los tramos que
+     tenés, el que vas a ganar en dorado y los que quedan, así que elegir es
+     mirar cuál crece y no leer un número suelto.
+
+     Arriba va contra quién es: el refuerzo no se elige en el aire. Y las dos
+     chapas laten, porque son botones y hasta v175 nada lo decía. */
   openCard(
     '<div class="tag">VESTUARIO</div>' +
     '<h1>SUMÁ UN<br><em>REFUERZO</em></h1>' +
-    '<p class="rf-p">Te llega uno solo, para ' + R.name + ' contra ' + R.rival + '.</p>' +
+    cabeceraRival(R) +
     '<div class="rf-barras">' +
-      barraStat('atk', 'ATAQUE', G.atk, 'defensores y arqueros') +
-      barraStat('def', 'DEFENSA', G.def, 'medios y delanteros') +
+      barraStat('atk', 'ATAQUE', G.atk, 'defensores y arqueros', 'delantero') +
+      barraStat('def', 'DEFENSA', G.def, 'medios y delanteros', 'arquero') +
     '</div>' +
     estadoEquipo() +
     /* La advertencia baja de 13,5px a 10,2 y se apaga: sigue estando, pero
