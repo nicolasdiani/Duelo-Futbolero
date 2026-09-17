@@ -9352,3 +9352,59 @@ Una nota de medición para la próxima: el panel del navegador **congela las
 animaciones cuando está oculto**, y `golpop` arranca en `scale(.72)`. Medir el
 escudo con `getBoundingClientRect` daba 29px en vez de 40. Los números de arriba
 salen de `offsetWidth` y de estilo computado, que no dependen de eso.
+
+## v190 · las cajas de PASASTE, en dos tiempos
+
+De los tres ejemplos salió **la B**.
+
+### El orden estaba al revés
+
+Era **etiqueta → escudo → dato → nombre**. O sea que el marcador se metía
+**entre el escudo y el nombre al que pertenece**: el 2-1 separaba el escudo de
+SARMIENTO de la palabra SARMIENTO.
+
+Y había algo peor, que no se ve hasta mirar el CSS: el nombre iba último, a
+10px y con `opacity:.85`. **Lo más apagado de la caja era justamente de quién
+estamos hablando.**
+
+### Cómo queda
+
+Arriba **quién** —escudo y nombre pegados— y abajo, separado por un hilo, **qué
+pasó**: el marcador o la ronda que viene. La caja se lee en dos tiempos en vez
+de cuatro renglones del mismo peso.
+
+El hilo toma el color de la caja: gris en la que ganaste, dorado en la que
+viene. Y el nombre sube a 11px sin opacidad, con algo de peso: si es lo que
+identifica al equipo, no puede ser lo más tenue.
+
+El `padding-bottom` de la caja pasa a cero y se lo lleva el pie, así el hilo
+llega a los dos bordes en vez de quedar flotando con aire debajo.
+
+### El «en penales»
+
+Estaba suelto abajo del nombre. Ahora vive **en el pie, al lado del marcador**,
+alineado a la misma línea de base: se lee «2-1 en penales», que es una sola cosa
+y no dos.
+
+### Los tamaños
+
+La caja crece **15px de alto** —de 139 a 154 a 390 de ancho— que es lo que ocupa
+el hilo con su respiro. La tarjeta entera queda en 350x472 y entra sin problema.
+
+| pantalla | caja | tarjeta |
+|---|---|---|
+| 320 x 568 | 131 x 139 | 304 x 425 |
+| 390 x 844 | 154 x 154 | 350 x 472 |
+| 844 x 390 | 231 x 139 | 520 x 362 |
+| 1280 x 840 | 239 x 154 | 520 x 485 |
+
+A 320 y en horizontal la caja mide 139 y no 154 porque la consulta de
+`max-height:700px` ya achicaba los escudos de 70 a 55px; el pie entra en el
+lugar que eso libera.
+
+### Verificado
+
+Las dos cajas en 320x568, 390x844, 844x390 y 1280x840, con y sin «en penales»:
+mismo alto las dos, nada recortado —ni con **INDEPENDIENTE**, el nombre más
+largo, forzado en las dos— y la tarjeta entera en pantalla. Sin errores de
+consola en pestaña nueva.

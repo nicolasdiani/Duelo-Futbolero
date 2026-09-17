@@ -7113,17 +7113,35 @@ html.html-menu, html.html-menu body{overflow:hidden}
 /* Las dos cajas. La de la derecha va en dorado porque es la que importa para
    lo que sigue: con ese rival adelante elegís el refuerzo. */
 .pr-dos{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+/* **La caja se lee en dos tiempos.** El orden era etiqueta, escudo, dato,
+   nombre: o sea que el marcador se metía **entre el escudo y el nombre al que
+   pertenece** —el 2-1 separaba el escudo de SARMIENTO de la palabra
+   SARMIENTO— y el nombre quedaba último, a 10px y al 85% de opacidad. Lo más
+   apagado de la caja era justamente de quién estamos hablando.
+
+   Ahora arriba va **quién** —escudo y nombre juntos— y abajo, separado por un
+   hilo, **qué pasó**: el marcador o la ronda que viene. El relleno de abajo se
+   lo lleva el pie, por eso la caja pierde su `padding-bottom`. */
 .pd-caja{
   border:1px solid var(--line);border-radius:7px;background:rgba(8,32,70,.5);
-  padding:9px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;
+  padding:9px 8px 0;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;
 }
+.pd-pie{
+  width:100%;margin-top:7px;padding:5px 0 7px;
+  border-top:1px solid rgba(147,174,222,.2);
+  display:flex;align-items:baseline;justify-content:center;gap:6px;
+}
+.pd-caja.viene .pd-pie{border-top-color:rgba(245,200,66,.3)}
 .pd-caja.viene{border-color:var(--gold);background:rgba(245,200,66,.09)}
 .pd-lb{font-family:var(--txt);font-size:9px;letter-spacing:2px;color:var(--dim2);text-transform:uppercase}
 .pd-caja.viene .pd-lb{color:var(--gold)}
 .pd-esc{display:flex}
 .pd-m{font-family:var(--tit);font-weight:800;font-size:23px;letter-spacing:1px;color:var(--green);line-height:1}
 .pd-m.ronda{font-size:15px;color:var(--gold);letter-spacing:1.6px;text-align:center}
-.pd-nm{font-family:var(--txt);font-size:10px;color:var(--white);opacity:.85;text-align:center;line-height:1.2}
+/* El nombre deja de ser lo más tenue: si es lo que identifica al equipo, no
+   puede estar al 85%. */
+.pd-nm{font-family:var(--txt);font-weight:600;font-size:11px;letter-spacing:.4px;
+  color:var(--white);text-align:center;line-height:1.2;margin-top:1px}
 .pd-pen{font-family:var(--txt);font-size:9px;color:var(--gold);letter-spacing:.6px}
 
 /* El cuadro en cinco tramos, en vez de cinco chips que se partían en dos
@@ -9048,7 +9066,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 189;
+const VERSION = 190;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12921,15 +12939,17 @@ function matchWon(byPens){
         '<div class="pd-caja">' +
           '<span class="pd-lb">GANASTE</span>' +
           '<span class="pd-esc">' + escudoDe(G.escudoRival, 40) + '</span>' +
-          '<b class="pd-m">' + G.gU + '-' + G.gC + '</b>' +
           '<span class="pd-nm">' + R.rival + '</span>' +
-          (byPens ? '<span class="pd-pen">en penales</span>' : '') +
+          '<span class="pd-pie">' +
+            '<b class="pd-m">' + G.gU + '-' + G.gC + '</b>' +
+            (byPens ? '<span class="pd-pen">en penales</span>' : '') +
+          '</span>' +
         '</div>' +
         '<div class="pd-caja viene">' +
           '<span class="pd-lb">AHORA VA</span>' +
           '<span class="pd-esc">' + escudoDe(G.escudoProx, 40) + '</span>' +
-          '<b class="pd-m ronda">' + Sig.name + '</b>' +
           '<span class="pd-nm">' + Sig.rival + '</span>' +
+          '<span class="pd-pie"><b class="pd-m ronda">' + Sig.name + '</b></span>' +
         '</div>' +
       '</div>' +
       escaleraHTML(G.ronda + 1) +
