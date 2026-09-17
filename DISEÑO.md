@@ -8727,3 +8727,93 @@ la regla repuesta, porque **las transiciones no avanzan en un documento que no
 se está dibujando**. Apagando la transición se ve el valor de destino. Es la
 misma familia que el scroll suave que no corría: si el panel está oculto, todo
 lo que depende del reloj de animación queda congelado.
+
+
+## Las pantallas se deslizan
+
+Entre pantallas **no había ninguna transición**. `openCard` reemplaza el
+contenido de la tarjeta con el fondo ya abierto, así que el menú se convertía en
+la pantalla de club en el mismo fotograma. Medido con un observador puesto sobre
+la tarjeta, recorriendo menú → club → tutorial → tablero:
+
+```
+5816ms  contenido reemplazado → CAMPEONATO / TU CLUB
+5816ms  fondo = «overlay open»   (no cambia)
+6246ms  contenido reemplazado → ¿CÓMO SE JUEGA?
+6246ms  fondo = «overlay open»   (no cambia)
+6767ms  fondo = «overlay»        ← el único paso animado
+```
+
+El contenido y su clase cambiaban **en el mismo milisegundo**, dos veces. Lo
+único que se animaba en todo el recorrido era el último paso, cuando el fondo se
+apaga para dejar ver el tablero.
+
+O sea que el juego **ya tenía una transición, y era la de salida**. Faltaba la
+de pantalla a pantalla, que es justo donde el jugador pasa tres veces seguidas
+antes de empezar a jugar.
+
+### Cómo funciona
+
+La tarjeta que entra es **la de verdad, con sus ids**: se le pone el contenido
+nuevo enseguida y arranca corrida un ancho de pantalla. La que sale es un
+**clon** congelado en el lugar donde estaba, que se va para el otro lado más
+despacio y apagándose.
+
+El clon va **sin ids**. `$()` devuelve el primero del documento, así que un clon
+con los ids de la pantalla vieja le robaría los botones a la nueva —y el juego
+engancharía los `onclick` en una tarjeta que está por borrarse—.
+
+El desplazamiento es `calc(50vw + 50%)`: medio ancho de pantalla más la mitad
+del ancho de la propia tarjeta la deja enteramente afuera, mida lo que mida el
+hueco. Medido: a 390 arranca en 370px, a 1280 en 950.
+
+### La dirección
+
+Una variable, `dirPantalla`, que `openCard` consume y devuelve a 1. El que
+navega para atrás llama a `atras()` antes. Si alguien se olvida de marcarla, la
+pantalla avanza, que es lo normal.
+
+Son **nueve** los caminos de vuelta que se marcaron, todos los que van de una
+pantalla a otra con el fondo abierto. Los que cierran primero —del tablero al
+menú— no se deslizan: ahí la animación es el fundido del fondo, que ya existía y
+es la correcta para cruzar esa frontera.
+
+### Dos cosas que hubo que cuidar
+
+**El fondo no puede estrenar una barra horizontal.** La pantalla que sale se va
+por el costado, así que el overlay lleva `overflow-x:hidden`.
+
+Pero `hidden` le prohíbe scrollear **al dedo, no a un script**: si algo hiciera
+foco en la tarjeta mientras está corrida, el navegador la traería a la vista
+moviendo el fondo de costado, y sin barra no habría forma de volver. Comprobado
+que se puede —`scrollLeft = 300` funciona igual—, así que al terminar la
+animación se resetea a cero.
+
+**Sólo se desliza de pantalla a pantalla.** Si el fondo estaba cerrado, la
+apertura ya tiene su fundido y encimarle un desplazamiento la ensucia.
+Comprobado: abriendo desde cerrado no se crea ningún clon y la tarjeta no lleva
+ningún `transform`.
+
+Y con `prefers-reduced-motion` no se desliza nada.
+
+### Lo que se descartó
+
+**La vertical**, que era mi preferida al proponerla: el eje que la tarjeta ya
+usa. Se eligió la horizontal, que dice la dirección más claro —arriba/abajo se
+lee como *abrir y cerrar* antes que como *ir y volver*—.
+
+Queda anotado el reparo que tenía: en iOS el *swipe* desde el borde va para
+atrás, y una pantalla que viaja a lo ancho invita a ese gesto. Como el juego
+vive en una sola pantalla y no hay navegación del navegador que perder, el
+choque es teórico; si alguna vez molesta, la vertical está descripta acá.
+
+### Lo verificado
+
+Recorrido completo con los botones de verdad, a 390 y a 1280: menú → club →
+tutorial → tablero y de vuelta. Dirección correcta en los dos sentidos —adelante
+arranca en +, atrás en −—, ningún clon colgado al terminar, ningún estilo
+pegado en la tarjeta, el fondo sin desplazamiento lateral y sin un solo error de
+consola en pestaña nueva.
+
+Se animan **sólo `transform` y `opacity`**, que son las dos que el navegador
+resuelve sin recalcular el layout.

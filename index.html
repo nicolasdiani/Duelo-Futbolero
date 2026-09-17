@@ -1407,6 +1407,9 @@ img{height:auto}
   /* el padding de abajo deja libre la franja del footer, que va por encima */
   padding:20px 20px 56px;
   opacity:0;pointer-events:none;transition:opacity .3s;z-index:60;overflow-y:auto;
+  /* La pantalla que sale se va por el costado: sin esto el desplazamiento
+     estrena una barra horizontal durante los 260ms que dura. */
+  overflow-x:hidden;
 }
 .overlay.open{opacity:1;pointer-events:auto}
 .card{
@@ -1417,6 +1420,15 @@ img{height:auto}
   transform:translateY(12px);transition:transform .3s;margin:auto;
 }
 .overlay.open .card{transform:translateY(0)}
+
+/* ---- LA PANTALLA QUE SE VA ----
+   Un clon de la tarjeta anterior, congelado en el lugar donde estaba. Se
+   desplaza menos que la que entra y se apaga: así se lee cuál manda de las
+   dos y de dónde viene la nueva. Se borra sola al terminar. */
+.card-sale{
+  position:fixed;margin:0;pointer-events:none;z-index:0;
+  overflow:hidden;
+}
 .card .tag{font-family:var(--tit);font-weight:700;font-size:12px;letter-spacing:5px;color:var(--gold);margin-bottom:10px;text-transform:uppercase}
 .card h1{
   font-family:var(--tit);font-weight:800;
@@ -8045,7 +8057,7 @@ function comoSeJuega(alEmpezar){
     if(G.formato === 'unico'){ newRun(false, true); showElegirItems(); }
     else newRun();
   };
-  if(alEmpezar) $('reglasBack').onclick = () => showMenu();
+  if(alEmpezar) $('reglasBack').onclick = () => { atras(); showMenu(); };
 }
 
 /* Aviso de versión beta, entre el botón y la creación de equipos. El modo 1v1
@@ -8072,7 +8084,7 @@ function avisoBeta(){
     'card-final'
   );
   $('betaGo').onclick = () => showDuelLocal();
-  $('betaBack').onclick = () => showStart();
+  $('betaBack').onclick = () => { atras(); showStart(); };
 }
 
 /* Primera pantalla del 1v1: el local reparte sus puntos. El club y el escudo ya
@@ -8100,7 +8112,7 @@ function showDuelLocal(){
       if(b.dataset.l.slice(1) === 'atk') a1 += dl; else d1 += dl;
       pintar();
     });
-    $('localBack').onclick = () => showStart();
+    $('localBack').onclick = () => { atras(); showStart(); };
     $('localGo').onclick = () => {
       G.duelAtk1 = a1; G.duelDef1 = d1;
       showDuelSetup();
@@ -8176,7 +8188,7 @@ function showDuelSetup(){
     G.escudoRival = escudoRivalNuevo();
     pintar();
   };
-  $('duelBack').onclick = () => showStart();
+  $('duelBack').onclick = () => { atras(); showStart(); };
   $('duelGo').onclick = () => {
     const v2 = $('club2Input').value.trim().toUpperCase() || 'VISITANTE';
     G.modo = 'duelo';
@@ -8693,7 +8705,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 181;
+const VERSION = 182;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12913,7 +12925,7 @@ function showElegirItems(){
         pintar();
       };
     });
-    $('unicoBack').onclick = () => showMenu();
+    $('unicoBack').onclick = () => { atras(); showMenu(); };
     const go = $('unicoGo');
     if(go && !go.disabled) go.onclick = () => { closeCard(); startMatch(); };
   };
@@ -13066,14 +13078,93 @@ function devolver(k){
    cuando la pantalla la abriste vos con el dedo, pero muchas se abren solas
    —al terminar un partido, al vencerse el reloj, al resolverse una jugada— y
    ahí no hubo ningún toque que lo limpiara. */
+/* ---- PARA DÓNDE VA LA PRÓXIMA PANTALLA ----
+   1 adelante, -1 para atrás. Lo pone el que navega y `openCard` lo consume
+   y lo devuelve a 1, así ninguna pantalla hereda la dirección de la
+   anterior: si alguien se olvida de marcarla, avanza, que es lo normal. */
+let dirPantalla = 1;
+const atras = () => { dirPantalla = -1; };
+
+const sinMovimiento = () =>
+  window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* El desplazamiento de una pantalla a la otra. La que entra ya está puesta
+   —es la tarjeta de verdad, con sus ids— y arranca corrida un ancho de
+   pantalla; la que sale es un clon que se va para el otro lado.
+
+   **El clon va sin ids.** `$()` devuelve el primero del documento, y un clon
+   con los ids de la pantalla vieja le robaría los botones a la nueva. */
+function deslizarPantalla(card, previo, caja, dir){
+  const ov = $('overlay');
+  ov.querySelectorAll('.card-sale').forEach(f => f.remove());
+
+  previo.removeAttribute('id');
+  previo.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
+  previo.classList.add('card-sale');
+  previo.style.left   = caja.left + 'px';
+  previo.style.top    = caja.top + 'px';
+  previo.style.width  = caja.width + 'px';
+  previo.style.height = caja.height + 'px';
+  ov.appendChild(previo);
+
+  /* Se va del todo: medio ancho de pantalla más la mitad de su propio ancho
+     deja la tarjeta enteramente afuera, mida lo que mida el hueco. */
+  const fuera = dir > 0 ? 'calc(50vw + 50%)' : 'calc(-50vw - 50%)';
+  const D = 260, curva = 'cubic-bezier(.4,0,.2,1)';
+
+  card.style.position = 'relative';
+  card.style.zIndex = '1';
+  card.style.transition = 'none';
+  card.style.transform = 'translateX(' + fuera + ')';
+  void card.offsetWidth;
+  card.style.transition = 'transform ' + D + 'ms ' + curva;
+  card.style.transform = 'translateX(0)';
+
+  previo.style.transition = 'transform ' + D + 'ms ' + curva + ', opacity ' + D + 'ms';
+  previo.style.transform = 'translateX(' + (-dir * 28) + '%)';
+  previo.style.opacity = '.35';
+
+  setTimeout(() => {
+    previo.remove();
+    card.style.transition = '';
+    card.style.transform = '';
+    card.style.position = '';
+    card.style.zIndex = '';
+    /* `overflow-x:hidden` le prohíbe al dedo scrollear de costado, pero **no a
+       un script**: si algo hiciera foco en la tarjeta mientras está corrida, el
+       navegador la traería a la vista moviendo el fondo, y sin barra no habría
+       forma de volver. Cuesta una línea asegurarse. */
+    ov.scrollLeft = 0;
+  }, D + 40);
+}
+
 function openCard(html, extra){
   const card = $('card');
+  const ov = $('overlay');
+  /* Sólo se desliza de pantalla a pantalla. Si el fondo estaba cerrado, la
+     apertura ya tiene su propia animación —el fundido del overlay— y
+     encimarle un desplazamiento la ensucia. */
+  const encadena = ov.classList.contains('open') && !sinMovimiento();
+  const dir = dirPantalla;
+  dirPantalla = 1;
+
+  const caja   = encadena ? card.getBoundingClientRect() : null;
+  const previo = encadena ? card.cloneNode(true) : null;
+
   card.className = 'card' + (extra ? ' ' + extra : '');
   card.innerHTML = html;
-  $('overlay').classList.add('open');
+  ov.classList.add('open');
   sacarFoco();
+
+  if(previo) deslizarPantalla(card, previo, caja, dir);
 }
-function closeCard(){ $('overlay').classList.remove('open'); }
+function closeCard(){
+  $('overlay').classList.remove('open');
+  /* Si se cierra en pleno vuelo, el clon se iría con el fondo y volvería a
+     aparecer en la próxima apertura. */
+  document.querySelectorAll('.card-sale').forEach(f => f.remove());
+  dirPantalla = 1;
+}
 
 /* Una tanda suelta, sin partido previo: los dos equipos con nombres a elección
    y directo a los penales. */
@@ -13088,7 +13179,7 @@ function showPenalesSolos(){
     '<button class="cta alt" id="pBack">VOLVER</button>',
     'card-final'
   );
-  $('pBack').onclick = () => showMenu();
+  $('pBack').onclick = () => { atras(); showMenu(); };
   $('pGo').onclick = async () => {
     const a = $('pTu').value.trim().toUpperCase() || 'TU CLUB';
     const b = $('pRival').value.trim().toUpperCase() || 'EL RIVAL';
@@ -13127,7 +13218,7 @@ function showOpciones(){
     '<button class="cta" id="oBack">VOLVER</button>',
     'card-final'
   );
-  $('oBack').onclick = () => showMenu();
+  $('oBack').onclick = () => { atras(); showMenu(); };
 }
 
 function showCreditos(){
@@ -13147,7 +13238,7 @@ function showCreditos(){
     '<button class="cta" id="cBack">VOLVER</button>',
     'card-final'
   );
-  $('cBack').onclick = () => showMenu();
+  $('cBack').onclick = () => { atras(); showMenu(); };
 }
 
 /* ---------------- el menú principal ----------------
@@ -13347,7 +13438,7 @@ function showStart(irAlDuelo){
     elegir(otro.nm);
   };
 
-  $('volverMenu').onclick = () => showMenu();
+  $('volverMenu').onclick = () => { atras(); showMenu(); };
   $('startBtn').onclick = () => {
     G.club = eq.nm;
     G.escudo = escudoDeEquipo(eq);
