@@ -9625,3 +9625,80 @@ Un detalle de medición que vale anotar: el panel del navegador **congela las
 transiciones CSS**, así que leer `border-color` justo después del clic devuelve
 el valor de partida y parece un bug de especificidad. Con `transition:none`
 puesto a mano, el borde dorado aparece. No había tal bug.
+
+## v194 · campeón: un botón, un camino derecho y un bullet
+
+Tres cosas en la pantalla que remata el campeonato.
+
+### El pie: queda COMPARTIR solo
+
+Eran dos botones contorneados en fila —COMPARTIR y COPIAR—. Ahora en **CAMPEÓN**
+queda uno solo, centrado, con **los mismos 155px** que tenía cuando eran dos.
+
+El ancho no es un capricho: sin el segundo botón, el `flex:1` de `.cta.chica`
+—y el `width:100%` de `.cta`— lo estiran a toda la caja, y ahí compartir pasa a
+pesar lo mismo que JUGAR OTRO CAMPEONATO, que es el botón que importa. La clase
+`.cta-fila.solo` lo centra y le devuelve su ancho.
+
+**ELIMINADO sigue con los dos.** El pedido era para CAMPEÓN, y además ahí COPIAR
+es la única salida al portapapeles: COMPARTIR usa el menú del sistema y, cuando
+el navegador no lo tiene, abre WhatsApp Web. Si algún día se unifican las dos
+pantallas, el cambio es la bandera `campeon` que `botonesFinal()` ya recibe.
+
+### EL CAMINO: los nombres arrancaban en una escalera
+
+**Cada fila era su propia grilla.** Con `grid-template-columns:1fr auto`, el `auto`
+valía lo que medía *esa* fila: la columna de la derecha arrancaba en **216px** en
+CLASIFICATORIA y en **252** en OCTAVOS. Los nombres quedaban pegados al borde
+derecho y con el costado izquierdo hecho una escalera de cinco escalones.
+
+Ahora la columna fija es la del **resultado** —que mide siempre lo mismo, «N-N»—
+y la del nombre se queda con el resto. Las cinco rondas arrancan en **x = 56** en
+todas las pantallas donde el camino se dibuja como lista.
+
+El `minmax(34px, auto)` es por si algún día entra un resultado de dos cifras: esa
+fila se ensancha sola en vez de pisarse. Hoy el texto mide 27px, así que sobran
+siete.
+
+**«Ganado en penales» cambió de columna** y ahora va debajo del rival, no suelto
+al otro lado. Se lee pegado al partido que aclara.
+
+### No cuesta un píxel
+
+La caja de EL CAMINO mide **261px** antes y después: la aclaración de penales ya
+ocupaba su propio renglón, sólo que del otro lado. Y sacar un botón de la fila no
+cambia el alto, porque los dos compartían renglón.
+
+| pantalla | v193 | v194 |
+|---|---|---|
+| 390 x 844 | 350 x 759 | 350 x 759 |
+| 1280 x 840 | 520 x 748 | 520 x 748 |
+| 320 x 568 | 304 x 530 | 304 x 530 |
+| 844 x 390 | 520 x 362 | 520 x 362 |
+
+Debajo de 700px de alto el camino no es una lista sino cinco chapas en fila, y
+ahí la grilla no corre: el bloque de `max-height:700px` la reemplaza por un flex.
+Verificado a 390x690 y a 844x390: las cinco chapas intactas, con el PEN abreviado.
+
+### El texto que se comparte: un bullet por partido
+
+Cada partido arrancaba con **dos espacios**. En WhatsApp la sangría se ve pero no
+separa, así que los cinco renglones se leían como un bloque. Ahora arrancan con
+**•** y cada partido es un ítem. El mensaje no se alarga ni un carácter.
+
+Cambia en los dos lados: las copas ganadas y el ÚLTIMO INTENTO del que cayó.
+
+### Algo que encontré y no toqué
+
+Cuando compartís sin haber ganado ninguna copa, el mensaje sale con **dos
+renglones en blanco seguidos**: el `L.push('')` que precede a la línea de copas se
+empuja igual aunque esa línea no exista. Es una línea de código y no lo toqué
+porque no era parte del pedido.
+
+### Verificado
+
+Las dos pantallas finales en 320x568, 390x690, 390x844, 844x390 y 1280x840.
+CAMPEÓN con un botón de 155px centrado, ELIMINADO con los dos de 155 y 153. Los
+nombres de las rondas alineados en la misma x en las dos. Los textos compartidos
+—el de campeón y el de eliminado— leídos de `textoCompartir` corriendo, no
+escritos a mano. Sin errores de consola.

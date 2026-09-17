@@ -2451,6 +2451,12 @@ img{height:auto}
 }
 .cta.chica.alt{background:transparent;color:var(--gold);border:1px solid var(--gold)}
 .cta.chica.alt:hover{background:rgba(245,200,66,.12)}
+/* **Cuando queda uno solo.** Sin el segundo botón, el `flex:1` de `.cta.chica`
+   —y el `width:100%` de `.cta`— lo estiran a toda la caja y compartir pasa a
+   pesar lo mismo que JUGAR OTRO CAMPEONATO, que es el botón que importa. Acá
+   se centra y se le devuelve el ancho que tenía cuando eran dos. */
+.cta-fila.solo{justify-content:center}
+.cta-fila.solo .cta{flex:0 0 auto;width:auto;min-width:155px}
 .share-txt{
   width:100%;height:120px;margin-top:10px;
   font-family:var(--txt);font-size:11px;line-height:1.5;
@@ -2505,8 +2511,20 @@ img{height:auto}
   font-family:var(--txt);font-size:10px;letter-spacing:3px;
   color:var(--dim);margin-bottom:8px;
 }
+/* **Cada fila era su propia grilla**, así que `auto` valía lo que medía *esa*
+   fila: la columna de la derecha arrancaba en 216px en CLASIFICATORIA y en
+   252 en OCTAVOS. Los nombres quedaban pegados al borde derecho y con el
+   costado izquierdo hecho una escalera.
+
+   Ahora la columna fija es la del resultado —que mide siempre lo mismo, «N-N»,
+   con 7px de aire de sobra— y la del nombre se queda con el resto. Las cinco
+   rondas arrancan en la misma x. El `minmax` es por si algún día entra un
+   resultado de dos cifras: esa fila se ensancha sola en vez de pisarse.
+
+   No cuesta un píxel de alto: «ganado en penales» ya ocupaba su propio
+   renglón, sólo que del otro lado. */
 .hist-fila{
-  display:grid;grid-template-columns:1fr auto;gap:2px 10px;
+  display:grid;grid-template-columns:minmax(34px,auto) 1fr;gap:2px 10px;
   align-items:baseline;padding:6px 0;
   border-bottom:1px solid rgba(30,51,88,.5);
 }
@@ -2519,14 +2537,17 @@ img{height:auto}
 .hist-fila.no .hr{color:var(--red)}
 .hist-fila .hm{
   font-family:var(--tit);font-weight:800;font-size:19px;letter-spacing:1px;
-  grid-row:1 / span 2;align-self:center;
+  grid-column:1;grid-row:1 / span 3;align-self:center;
 }
 .hist-fila.ok .hm{color:var(--green)}
 .hist-fila.no .hm{color:var(--red)}
 .hist-fila .hv{font-family:var(--txt);font-size:10.5px;color:var(--white);opacity:.85}
+/* La ronda, el rival y la aclaración de penales, los tres en la misma columna:
+   el aviso se lee pegado al partido que aclara y no suelto al otro lado. */
+.hist-fila .hr,.hist-fila .hv,.hist-fila .hp{grid-column:2}
 .hist-fila .hp{
   font-family:var(--txt);font-size:9.6px;color:var(--gold);
-  grid-column:1;letter-spacing:.5px;
+  letter-spacing:.5px;
 }
 
 /* Cómo llega el equipo al próximo partido. Ahora que el aguante y la racha
@@ -9149,7 +9170,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 193;
+const VERSION = 194;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -13241,16 +13262,19 @@ function textoCompartir(campeon){
   L.push(campeon ? '⚽ DUELO FUTBOLERO — ¡CAMPEÓN!' : '⚽ DUELO FUTBOLERO');
   L.push('');
   if(G.copas) L.push('🏆 ' + G.copas + (G.copas === 1 ? ' copa ganada' : ' copas ganadas'));
+  /* **Un bullet por partido.** Antes cada uno arrancaba con dos espacios: en
+     WhatsApp la sangría se ve pero no separa, y los cinco se leían como un
+     bloque. Con el punto cada partido es un ítem y el mensaje no se alarga. */
   G.campeonatos.forEach(c => {
     L.push('');
     L.push('COPA ' + c.n + ':');
-    c.partidos.forEach(p => L.push('  ' + p.ronda + '  ' + p.gU + '-' + p.gC +
+    c.partidos.forEach(p => L.push('• ' + p.ronda + '  ' + p.gU + '-' + p.gC +
       (p.pens ? (p.gano ? ' (ganado en penales)' : ' (perdido en penales)') : '')));
   });
   if(!campeon && G.historial.length){
     L.push('');
     L.push('ÚLTIMO INTENTO:');
-    G.historial.forEach(p => L.push('  ' + p.ronda + '  ' + p.gU + '-' + p.gC +
+    G.historial.forEach(p => L.push('• ' + p.ronda + '  ' + p.gU + '-' + p.gC +
       (p.pens ? (p.gano ? ' (ganado en penales)' : ' (perdido en penales)') : '')));
   }
   L.push('');
@@ -13259,11 +13283,17 @@ function textoCompartir(campeon){
 }
 
 function botonesFinal(campeon){
-  return '<div class="cta-fila">' +
-    /* Los dos hacen lo mismo con distinta salida: ninguno manda, los dos van
-       contorneados. Es el único par del juego donde el relleno sobraría. */
+  /* Ninguno manda, así que los dos van contorneados: es el único par del juego
+     donde el relleno sobraría.
+
+     **En CAMPEÓN queda uno solo.** Es la pantalla que remata el campeonato: lo
+     que hay que hacer es el verde de arriba y compartir es un extra, así que va
+     solo y centrado con el ancho que tenía. En ELIMINADO siguen los dos, porque
+     ahí COPIAR es la única salida al portapapeles. */
+  return '<div class="cta-fila' + (campeon ? ' solo' : '') + '">' +
     '<button class="cta chica n-linea" data-share="wsp">' + ICO('compartir') + 'COMPARTIR</button>' +
-    '<button class="cta chica alt n-linea" data-share="copiar">' + ICO('copiar') + 'COPIAR</button>' +
+    (campeon ? '' :
+      '<button class="cta chica alt n-linea" data-share="copiar">' + ICO('copiar') + 'COPIAR</button>') +
   '</div>';
 }
 
