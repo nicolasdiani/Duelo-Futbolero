@@ -9087,3 +9087,89 @@ lado del breakpoint.
 A 1280x600 el desborde pasa de 627 a 706px, porque devolver la chapa y el
 escudo hace la carta 25px más alta. Es el precio de no esconder cosas que
 entran.
+
+## v187 · la pantalla principal es un póster
+
+De las cinco maquetas que se compararon, salió **la C**.
+
+### Lo que cambia
+
+El menú dejó de ser una tarjeta con una foto adentro y pasó a ser **una sola
+imagen a sangre con el menú encima**. La foto es la misma de antes —el estadio
+desde arriba— pero entera y sin agrandar: a sangre no hace falta acercarse.
+
+Tres razones, en orden de peso:
+
+1. Es la primera pantalla que se ve. Una tarjeta centrada sobre fondo oscuro se
+   lee como un cuadro de diálogo; el estadio ocupando todo se lee como la
+   portada de un juego.
+2. **Todo lo tocable bajó al tercio inferior**, que es adonde llega el pulgar.
+   Antes el modo principal quedaba en el medio de la pantalla.
+3. El logo dejó de competir con la foto del recuadro de CAMPEONATO. Eran dos
+   imágenes grandes a diez píxeles una de la otra.
+
+CAMPEONATO es ahora **el único botón relleno de toda la pantalla**, así que no
+necesita ser más grande para mandar. Los otros tres son chips de vidrio
+esmerilado sobre la foto, con el mismo tratamiento que la chapita del escudo en
+las cartas.
+
+### Se fueron los seis emoji
+
+El menú tenía **🏆 ⚽ 🤝 🥅 ⚙ ★** y no combinaban entre sí. Los cuatro primeros
+los dibuja el sistema operativo, o sea que **el menú se veía distinto en cada
+teléfono** y ninguno combinaba con el logo; los otros dos son glifos monocromos,
+así que ni entre ellos pegaban.
+
+Ahora son seis símbolos del sprite que ya existía —`i-copa`, `i-pelota`,
+`i-dos`, `i-arco`, `i-ajustes`, `i-firma`— con el mismo molde que `i-atk` o
+`i-gri`: 24x24, trazo de 1.6 y `currentColor`. No es una dirección nueva: es la
+que el juego ya venía siguiendo y que un comentario de `i-atk` dejó anotada.
+
+Dos decisiones de dibujo que no son obvias:
+
+- **OPCIONES lleva deslizadores, no un engranaje.** Un engranaje dice «acá está
+  el motor»; los deslizadores dicen «acá se ajusta algo», que es lo que hay.
+- **CRÉDITOS lleva una firma**, no una estrella. La estrella dice «favorito»;
+  la firma dice quién lo hizo, que es de lo que se trata.
+
+Se agregó `ICO(n)`, que arma un `<use>` del sprite, y la clase `.ic`, que los
+mide en `em`: cada lugar los escala con su propio `font-size` y no hace falta
+una regla de tamaño por ícono.
+
+### Tres cosas que sólo aparecieron al probarlo en el juego
+
+**El gris con relieve del navegador.** `.mm-enl` —OPCIONES y CRÉDITOS— era el
+único botón del menú que no declaraba fondo ni borde propios, y el juego **no
+tiene un reset global de `button`**. Salían con el `#f0f0f0` y el `border:2px
+outset` de fábrica. En la maqueta no pasaba porque ahí sí había reset.
+
+**El toque de 25px.** Medido, esos dos botones quedaban en 25px de alto, que
+para un dedo es poco. Con `min-height:40px` suben sin dejar de parecer enlaces.
+En pantalla baja el piso cede a 32, como todo lo demás.
+
+**La franja negra de 15px.** Acostado, el tablero que queda **detrás** del menú
+desborda y la página estrena su barra vertical; como el overlay es `fixed`,
+abarca la ventana menos esa barra, y la pantalla a sangre quedaba con una franja
+a la derecha. Se resuelve con un candado: mientras el menú está arriba, `html` y
+`body` van en `overflow:hidden`. No hay nada que scrollear atrás, y si el menú
+llegara a necesitarlo, el overlay tiene su propio scroll.
+
+El candado se pone en `openCard` junto con `ov-menu` y **se suelta en
+`closeCard`**, que es el camino por el que el menú se va cuando arranca el
+partido. Sin eso el tablero quedaba sin poder moverse. Verificado en los seis
+pasos del recorrido —menú, OPCIONES, vuelta al menú, tablero, menú otra vez,
+cerrado— y el candado entra y sale sin fugas.
+
+### Verificado
+
+A 390x844, 390x664, 320x568, 844x390 y 1280x840: cero texto recortado, cero
+desborde, los seis botones visibles y tocables, y la tarjeta **a sangre** en los
+cinco —el ancho de la tarjeta es igual al de la ventana—. El toque más chico
+mide 40px parado y 32 acostado. Sin errores de consola en pestaña nueva.
+
+### Lo que queda por limpiar
+
+`.menu-op`, `.mo-ico`, `.mo-txt` y `.menu-fila` quedaron **sin uso**: eran del
+menú viejo y no los toca nadie más. No se borran acá porque `.menu-op:hover`
+aparece agrupado con `.palo`, `.cta` y otros en dos reglas del bloque de touch, y
+sacarlo de esas listas es un cambio aparte que merece su propia revisión.

@@ -6066,147 +6066,179 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .pp-atajo,.pp-arq.sacude,.dl-robo{animation:none}
 }
 
-/* ================= EL MENÚ: LA MARQUESINA Y EL MODO PRINCIPAL =================
-   Todo se mide en `vh` con tope y piso, igual que los otros elementos que
-   tienen que entrar sí o sí: así los tres escalones de pantalla baja que ya
-   existen no necesitan una regla propia para cada pieza. */
+/* ================= EL MENÚ: EL PÓSTER =================
 
-/* La foto va a sangre, así que el padding pasa a vivir adentro. */
-.card-menu{padding:0;overflow:hidden}
+   La pantalla principal dejó de ser una tarjeta con una foto adentro y pasó a
+   ser **una sola imagen a sangre con el menú encima**. Tres razones:
 
-/* ---------- la marquesina ---------- */
-.mm-marq{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
-/* **El estadio, de cerca.** La foto entera se ve lejos —media ciudad alrededor
-   del estadio— así que se agranda un 55% y se corre hacia abajo: quedan el
-   cuenco de la tribuna y el césped, que es lo que dice «acá se juega». */
+   1. Es la primera pantalla que se ve. Una tarjeta centrada sobre un fondo
+      oscuro se lee como un cuadro de diálogo; el estadio ocupando todo se lee
+      como la portada de un juego.
+   2. Todo lo tocable bajó al tercio inferior, que es adonde llega el pulgar.
+      Antes el modo principal quedaba en el medio de la pantalla.
+   3. El logo dejó de competir con la foto del recuadro de CAMPEONATO. Eran dos
+      imágenes grandes a diez píxeles una de otra.
+
+   La foto es la misma que ya usaba la marquesina —el estadio desde arriba—,
+   pero ahora entera y sin agrandar: a sangre no hace falta acercarse. */
+
+/* La tarjeta se convierte en pantalla: sin borde, sin ancho máximo y sin
+   sombra, porque no hay nada de qué despegarla. */
+.card-menu{
+  padding:0;overflow:hidden;
+  max-width:none;width:100%;height:100%;
+  border:none;box-shadow:none;background:none;
+  position:relative;display:flex;flex-direction:column;
+}
+/* El overlay acolcha y centra a todas las pantallas; ésta va a sangre. El
+   padding de abajo se mantiene: es la franja donde vive el pie con los
+   contactos, que sigue estando. */
+.overlay.ov-menu{padding:0 0 46px}
+/* Acostado, el tablero que queda **detrás** del menú desborda y la página
+   estrena su barra vertical. El overlay es `fixed`, así que abarca la ventana
+   menos esa barra: la pantalla a sangre quedaba con una franja negra de 15px
+   a la derecha. Mientras el menú está arriba no hay nada que scrollear atrás
+   —y si el menú necesitara scroll, el overlay tiene el suyo—. */
+html.html-menu, html.html-menu body{overflow:hidden}
+.overlay.ov-menu .card{margin:0}
+
 .mm-foto{
-  display:block;width:100%;height:clamp(162px, 29vh, 252px);
-  object-fit:cover;object-position:center 58%;
-  transform:scale(2.4);transform-origin:center 70%;
+  position:absolute;inset:0;z-index:0;
+  width:100%;height:100%;object-fit:cover;object-position:center 46%;
 }
-/* El velo tiene dos capas: la de arriba baja el brillo del césped y la de
-   abajo apoya el logo. Con una sola, o el logo quedaba flotando sobre verde
-   claro, o la foto entera se veía apagada. */
-.mm-marq::after{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background:
-    radial-gradient(125% 82% at 50% 104%, rgba(0,8,31,.95), rgba(0,8,31,0) 72%),
-    linear-gradient(180deg,
-      rgba(0,8,31,.55) 0%, rgba(0,8,31,.12) 26%,
-      rgba(0,8,31,.55) 56%, rgba(0,8,31,.9) 82%, rgba(0,8,31,.99) 100%);
+/* Cuatro paradas y no dos: con un degradado simple el logo quedaba sobre
+   césped claro y los botones sobre tribuna. Cada tramo apaga lo que tiene
+   detrás sin apagar la foto entera. */
+.mm-velo{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,
+    rgba(0,8,31,.82) 0%, rgba(0,8,31,.42) 26%,
+    rgba(0,8,31,.72) 52%, rgba(0,8,31,.97) 78%, #00050f 100%);
 }
-/* El logo se mide **por alto**, no por ancho: sobre una foto de alto fijo, lo
-   que tiene que quedar constante es cuánto de esa foto tapa. El `max-width`
-   es el seguro para las pantallas más angostas. */
-.card-menu .logo-main{
-  position:absolute;left:50%;top:6px;z-index:2;transform:translateX(-50%);
-  width:auto;max-width:92%;height:calc(100% - 12px);max-height:none;
-  object-fit:contain;margin:0;
-  filter:drop-shadow(0 5px 16px rgba(0,4,16,.98)) drop-shadow(0 0 30px rgba(0,4,16,.92));
-}
-.card-menu .logo-txt{
-  position:absolute;left:0;right:0;bottom:8px;z-index:2;margin:0;
-  font-size:clamp(24px,7vw,38px);line-height:.95;
-  text-shadow:0 3px 14px rgba(0,4,16,.95);
+.mm-capa{
+  position:relative;z-index:2;flex:1;min-height:0;
+  display:flex;flex-direction:column;
+  padding:0 18px 14px;text-align:center;
 }
 
-/* ---------- el cuerpo ---------- */
-.mm-cuerpo{padding:13px 14px 14px}
+/* ---------- el logo ---------- */
+.mm-alto{
+  flex:1;min-height:0;display:flex;align-items:center;justify-content:center;
+  padding-top:14px;
+}
+.mm-logo{
+  width:100%;max-width:290px;height:auto;max-height:100%;object-fit:contain;
+  margin:0;filter:drop-shadow(0 8px 26px rgba(0,4,16,.99));
+}
+.mm-logo-txt{
+  font-family:var(--tit);font-weight:800;text-transform:uppercase;
+  font-size:clamp(30px,9vw,52px);line-height:.94;letter-spacing:1px;
+  text-shadow:0 4px 18px rgba(0,4,16,.98);
+}
+.mm-logo-txt em{font-style:normal;color:var(--gold)}
 
-/* ---------- el recuadro de CAMPEONATO ---------- */
-.mm-hero{
-  position:relative;display:block;width:100%;overflow:hidden;padding:0;
-  height:clamp(112px, 20vh, 176px);
-  border:2px solid var(--gold);border-radius:10px;cursor:pointer;
-  font-family:inherit;color:var(--white);
-  background:linear-gradient(160deg, rgba(38,32,4,.9), rgba(0,12,40,.96));
+/* ---------- lo tocable, abajo ---------- */
+.mm-abajo{flex:0 0 auto;display:flex;flex-direction:column;gap:10px}
+.mm-lema{
+  font-family:var(--txt);font-weight:700;font-size:8.6px;letter-spacing:3.4px;
+  color:var(--dim);margin-bottom:2px;
+}
+
+/* El modo principal: relleno y no contorneado. Es el único botón lleno de toda
+   la pantalla, así que no necesita ser más grande para mandar. */
+.mm-grande{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+  border:none;border-radius:12px;padding:15px 16px;cursor:pointer;
+  font-family:inherit;
+  background:linear-gradient(100deg, var(--gold), #ffd964);
+  color:#1a1405;box-shadow:0 10px 30px rgba(245,200,66,.26);
   transition:transform .16s, box-shadow .18s;
 }
-.mm-h-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%}
-.mm-hero::after{
-  content:'';position:absolute;inset:auto 0 0;height:86%;pointer-events:none;
-  background:linear-gradient(180deg,transparent,rgba(0,8,31,.55) 38%,rgba(0,8,31,.97));
-}
-.mm-h-txt{position:absolute;inset:auto 0 0;z-index:2;padding:0 13px 10px;text-align:left;display:block}
-.mm-h-lb{display:block;font-family:var(--txt);font-weight:700;font-size:8.6px;letter-spacing:2.6px;color:var(--gold)}
-.mm-h-nm{
-  display:block;font-family:var(--tit);font-weight:800;
-  font-size:clamp(23px, 6.2vw, 34px);letter-spacing:1.6px;line-height:1;margin-top:2px;
-}
-.mm-h-s{display:block;font-family:var(--txt);font-size:10.2px;color:var(--dim);margin-top:2px;line-height:1.3}
-.mm-hero:hover{transform:translateY(-3px);box-shadow:0 12px 34px rgba(245,200,66,.3)}
+.mm-grande .ic{font-size:24px}
+.mm-g-txt{text-align:left}
+.mm-g-nm{display:block;font-family:var(--tit);font-weight:800;font-size:25px;letter-spacing:1.6px;line-height:1}
+.mm-g-s{display:block;font-family:var(--txt);font-weight:600;font-size:9.6px;opacity:.72;margin-top:1px}
+.mm-grande:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(245,200,66,.36)}
 
-/* ---------- las tres fichas ---------- */
-.mm-tres{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:9px}
-.mm-tile{
-  position:relative;overflow:hidden;
-  background:linear-gradient(160deg, rgba(0,22,72,.95), rgba(0,8,31,.96));
-  border:2px solid var(--line);border-radius:8px;padding:12px 4px 10px;cursor:pointer;
+/* Los tres atajos: vidrio esmerilado sobre la foto, el mismo tratamiento que
+   la chapita del escudo en las cartas. */
+.mm-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.mm-chip{
+  position:relative;cursor:pointer;font-family:inherit;color:var(--white);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
-  text-align:center;min-height:clamp(62px, 10.5vh, 84px);
-  color:var(--white);font-family:inherit;
-  transition:border-color .18s, transform .14s, box-shadow .18s;
+  border:1.5px solid rgba(255,255,255,.26);border-radius:11px;padding:11px 4px;
+  background:rgba(0,10,34,.58);
+  backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
+  min-height:clamp(58px, 9vh, 72px);
+  transition:border-color .18s, transform .14s;
 }
-.mm-tile:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 6px 18px rgba(245,200,66,.2)}
-.mm-t-ico{font-size:clamp(18px, 5vw, 25px);line-height:1;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
-.mm-t-nm{
-  font-family:var(--tit);font-weight:800;
-  font-size:clamp(9.4px, 2.9vw, 11.6px);letter-spacing:1.1px;line-height:1.12;
-}
-.mm-t-beta{
-  position:absolute;top:4px;right:4px;margin:0;
-  font-size:6.6px;letter-spacing:1.2px;padding:1px 4px;
-}
-.card-menu .menu-fila{margin-top:9px}
-.card-menu .ver{margin-top:9px}
+.mm-chip .ic{font-size:clamp(19px, 5.2vw, 23px);color:#cfe0ff}
+.mm-c-nm{font-family:var(--tit);font-weight:800;font-size:clamp(9px,2.7vw,10.4px);letter-spacing:1.2px;line-height:1.1}
+.mm-chip:hover{border-color:var(--gold);transform:translateY(-2px)}
+.mm-c-beta{position:absolute;top:4px;right:4px;margin:0}
 
-/* ---------- y en touch, sin relieve pegado ---------- */
+.mm-pie{display:flex;justify-content:center;gap:18px;padding-top:4px}
+/* El juego no tiene un reset global de `button`, así que cada botón declara lo
+   suyo. Los otros dos del menú ya traen fondo y borde propios; éste es plano,
+   y sin apagarlos explícitamente se lo comía el gris con relieve del
+   navegador. */
+.mm-enl{
+  display:flex;align-items:center;gap:6px;color:var(--dim);
+  cursor:pointer;font-family:inherit;background:none;border:0;border-radius:6px;
+  /* Medido: con el relleno de antes el botón quedaba en **25px de alto**,
+     que para un dedo es poco. El piso lo lleva a 40 sin que parezca un
+     botón: sigue siendo un enlace, pero se puede tocar. */
+  padding:8px 12px;min-height:40px;
+}
+.mm-enl .ic{font-size:13px}
+.mm-enl b{font-family:var(--tit);font-weight:800;font-size:11px;letter-spacing:2px}
+.mm-enl:hover{color:var(--white)}
+.card-menu .ver{margin-top:0}
+
+/* ---------- en touch, sin relieve pegado ---------- */
 @media (hover:none){
-  .mm-hero:hover, .mm-tile:hover{transform:none;box-shadow:none}
-  .mm-tile:hover{border-color:var(--line)}
+  .mm-grande:hover, .mm-chip:hover{transform:none}
+  .mm-chip:hover{border-color:rgba(255,255,255,.26)}
 }
 @media (prefers-reduced-motion:reduce){
-  .mm-hero, .mm-tile{transition:none}
+  .mm-grande, .mm-chip{transition:none}
 }
 
-/* ---------- desktop: la misma pieza, con aire ---------- */
+/* ---------- escritorio: la foto se ve mejor, el menú no crece ----------
+   A sangre en una pantalla ancha el menú quedaría desparramado de punta a
+   punta. Se le pone un ancho máximo a lo tocable y se deja que la foto ocupe
+   todo, que es de lo que se trata. */
 @media (min-width:1025px), (min-width:821px) and (orientation:landscape){
-  .card-menu{max-width:470px}
-  .mm-cuerpo{padding:15px 16px 16px}
-  .mm-h-lb{font-size:9.4px;letter-spacing:3px}
-  .mm-h-s{font-size:11px}
-  .mm-t-nm{letter-spacing:1.3px}
+  .mm-capa{padding:0 20px 18px}
+  .mm-abajo{width:100%;max-width:440px;margin:0 auto}
+  .mm-logo{max-width:340px}
+  .mm-lema{font-size:9.4px;letter-spacing:4px}
 }
 
 /* ---------- y las pantallas bajas ----------
-   Los `vh` solos no alcanzan: lo que desborda en un teléfono acostado no es el
-   `vh` sino el **piso** de cada clamp. Con los mínimos de arriba —148 de foto,
-   112 de recuadro, 62 de ficha— la tarjeta pedía 443px en un 820x400 que solo
-   tiene 359 de hueco, y aparecía scroll adentro.
-
-   Dos escalones, con el mismo criterio que ya usan las otras pantallas: bajan
-   los pisos, no los topes. En un alto normal no cambia nada. */
+   Mismo criterio que el resto del juego: bajan los pisos, no los topes, así en
+   un alto normal no cambia nada. Lo primero que cede es el aire; después el
+   lema, que es adorno; el logo nunca se va porque es la pantalla. */
 @media (max-height:520px){
-  .mm-foto{height:clamp(112px, 26vh, 160px)}
-  .mm-hero{height:clamp(88px, 18vh, 120px)}
-  .mm-h-nm{font-size:clamp(20px, 5.4vw, 26px)}
-  .mm-tile{min-height:clamp(52px, 9.5vh, 66px);padding:9px 4px 8px}
-  .mm-cuerpo{padding:10px 11px 11px}
-  .mm-tres{margin-top:7px}
-  .card-menu .menu-fila{margin-top:7px}
-  .card-menu .ver{margin-top:6px}
+  .mm-capa{padding:0 14px 10px}
+  .mm-alto{padding-top:8px}
+  .mm-abajo{gap:7px}
+  .mm-grande{padding:10px 14px;border-radius:10px}
+  .mm-g-nm{font-size:20px}
+  .mm-grande .ic{font-size:20px}
+  .mm-chip{min-height:48px;padding:8px 4px;gap:4px}
+  .mm-pie{padding-top:0}
 }
-/* El teléfono acostado: 390 de alto y menos. Acá el subtítulo del recuadro se
-   va —el nombre y la foto ya dicen cuál es— para que entren las tres fichas. */
 @media (max-height:430px){
-  .mm-foto{height:clamp(94px, 24vh, 122px)}
-  .mm-hero{height:clamp(72px, 17vh, 96px)}
-  .mm-h-nm{font-size:20px}
-  .mm-h-s{display:none}
-  .mm-h-txt{padding:0 11px 8px}
-  .mm-tile{min-height:46px;padding:7px 3px 6px;gap:4px}
-  .mm-t-ico{font-size:16px}
-  .mm-cuerpo{padding:8px 10px 9px}
+  .mm-enl{min-height:32px;padding:5px 10px}
+  .mm-lema{display:none}
+  .mm-g-s{display:none}
+  .mm-grande{padding:9px 13px}
+  .mm-g-nm{font-size:18px}
+  .mm-chip{min-height:42px}
+  .mm-abajo{gap:6px}
+  .card-menu .ver{display:none}
 }
 
 /* ================= EL TOQUE: LA ONDA =================
@@ -6227,6 +6259,10 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
    botón y se despliega hacia afuera —`left:calc(100% + 10px)`—, así que
    recortar el botón la haría desaparecer. La caja hereda el `border-radius`
    para que la onda siga la forma de cada pieza. */
+/* Los íconos del sprite se miden en `em`, así que cada lugar los escala con su
+   propio `font-size` y no hace falta una regla de tamaño por ícono. */
+.ic{width:1em;height:1em;flex:0 0 auto;display:block}
+
 .onda-caja{
   position:absolute;inset:0;overflow:hidden;pointer-events:none;
   border-radius:inherit;z-index:0;
@@ -7304,6 +7340,53 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
             stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
       <path d="M8.5 12.1l2.5 2.5 4.5-4.8" fill="none" stroke="currentColor" stroke-width="1.9"
             stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <!-- ======== LOS DEL MENÚ ========
+         Reemplazan a los seis emoji que tenía la pantalla principal. Los de
+         color —🏆 ⚽ 🤝 🥅— los dibujaba el sistema operativo, así que el menú
+         se veía distinto en cada teléfono y no combinaba con el logo; los otros
+         dos —⚙ ★— eran glifos monocromos, o sea que ni entre ellos combinaban. -->
+    <!-- CAMPEONATO: la copa. -->
+    <symbol id="i-copa" viewBox="0 0 24 24">
+      <path d="M7 4h10v5.2a5 5 0 0 1-10 0z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M7 5.6H4.5c-.2 2.2 1 3.5 2.6 3.8M17 5.6h2.5c.2 2.2-1 3.5-2.6 3.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M12 14.2v3.4M8.8 20h6.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <!-- PARTIDO ÚNICO: la pelota. -->
+    <symbol id="i-pelota" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M12 7.6l3.3 2.4-1.26 3.9h-4.08L8.7 10z" fill="currentColor"/>
+      <path d="M12 3.8v3.8M19.8 10.4l-3.2 2.3M16.4 20.1l-1.24-3.8M7.6 20.1l1.24-3.8M4.2 10.4l3.2 2.3"
+            stroke="currentColor" stroke-width="1.35" stroke-linecap="round"/>
+    </symbol>
+    <!-- 1 vs 1: los dos jugadores. El segundo va más apagado, que es lo que
+         distingue «dos personas» de «un grupo». -->
+    <symbol id="i-dos" viewBox="0 0 24 24">
+      <circle cx="7.6" cy="7.4" r="2.7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M2.8 19.2v-1.5a4.8 4.8 0 0 1 9.6 0v1.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="16.4" cy="7.4" r="2.7" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".62"/>
+      <path d="M11.6 19.2v-1.5a4.8 4.8 0 0 1 9.6 0v1.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".62"/>
+    </symbol>
+    <!-- PENALES: el arco con su red. -->
+    <symbol id="i-arco" viewBox="0 0 24 24">
+      <path d="M2.8 18.4V7.2h18.4v11.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M2.8 18.4h18.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      <path d="M7.4 7.2v11.2M12 7.2v11.2M16.6 7.2v11.2M2.8 11h18.4M2.8 14.7h18.4"
+            stroke="currentColor" stroke-width=".85" opacity=".5"/>
+    </symbol>
+    <!-- OPCIONES: los deslizadores. Dicen «acá se ajusta algo» mejor que un
+         engranaje, que dice «acá está el motor». -->
+    <symbol id="i-ajustes" viewBox="0 0 24 24">
+      <path d="M3.5 8.4h9.2M18.4 8.4h2.1M3.5 15.6h3.9M13.1 15.6h7.4"
+            stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      <circle cx="15.6" cy="8.4" r="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="10.3" cy="15.6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    </symbol>
+    <!-- CRÉDITOS: una firma. Dice quién lo hizo, que es de lo que se trata. -->
+    <symbol id="i-firma" viewBox="0 0 24 24">
+      <path d="M3.6 16.4c3.3 0 3.9-8.6 6-8.6 1.5 0 .9 5.3 2.5 5.3 1.1 0 1.5-2.9 2.8-2.9 1.1 0 1.3 2.1 3.8 2.1"
+            fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M3.6 20h16.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" opacity=".42"/>
     </symbol>
   </defs>
 </svg>
@@ -8835,7 +8918,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 186;
+const VERSION = 187;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -9972,6 +10055,9 @@ function tapLine(kind, idx){
    Dejó de servir cuando las cuatro de duelo perdieron la palabra. Ahí el
    truco se da vuelta: DEFENSOR, ARQUERO, MEDIO y DELANTERO son del rival y
    ya no lo dicen, así que el dato tiene que estar escrito. */
+/* Un ícono del sprite. Toma el color de donde esté, así que no necesita una
+   variante por lugar. */
+const ICO = n => '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-' + n + '"/></svg>';
 const esDelRival = tipo => !!(TYPES[tipo] || {}).riv;
 /* El escudo del club al que pertenece la jugada. La carta de la mesa, la
    cinta del pop-up y el escudo sobre la foto salen todos de acá, así que no
@@ -13303,6 +13389,10 @@ function openCard(html, extra){
   const previo = encadena ? card.cloneNode(true) : null;
 
   card.className = 'card' + (extra ? ' ' + extra : '');
+  /* El menú es la única pantalla a sangre: el overlay tiene que soltarle el
+     padding con el que centra a todas las demás. */
+  ov.classList.toggle('ov-menu', extra === 'card-menu');
+  document.documentElement.classList.toggle('html-menu', extra === 'card-menu');
   card.innerHTML = html;
   ov.classList.add('open');
   sacarFoco();
@@ -13311,6 +13401,9 @@ function openCard(html, extra){
 }
 function closeCard(){
   $('overlay').classList.remove('open');
+  /* El menú se cierra sin pasar por `openCard`, así que el candado del scroll
+     se suelta acá o el tablero queda sin poder moverse. */
+  document.documentElement.classList.remove('html-menu');
   /* Si se cierra en pleno vuelo, el clon se iría con el fondo y volvería a
      aparecer en la próxima apertura. */
   document.querySelectorAll('.card-sale').forEach(f => f.remove());
@@ -13397,64 +13490,53 @@ function showCreditos(){
    directo a crear el club, así que el 1v1 y el resto quedaban escondidos detrás
    de un botón secundario. */
 function showMenu(){
-  const logo   = ARTSRC('logo');
-  const foto   = ARTSRC('cancha');   // el estadio desde arriba, para la marquesina
-  const artCam = ARTSRC('noche');    // los dos de espaldas, para el recuadro grande
+  const logo = ARTSRC('logo');
+  const fondo = ARTSRC('cancha');   // el estadio desde arriba, ahora a sangre
 
+  /* La pantalla principal es un póster: la foto ocupa todo, el logo vive en el
+     tercio de arriba y **todo lo que se toca vive abajo**, al alcance del
+     pulgar. El modo principal es el único botón relleno de la pantalla; los
+     otros tres son chips de vidrio sobre la foto, con el mismo tratamiento que
+     la chapita del escudo en las cartas.
+
+     Ninguno usa emoji: los seis que había —🏆 ⚽ 🤝 🥅 ⚙ ★— son ahora símbolos
+     del sprite, que toman el color de donde estén y se ven igual en todos los
+     teléfonos. */
   openCard(
-    /* **La marquesina.** El menú era la única pantalla del juego que no usaba
-       el molde de todas las demás —foto a sangre arriba, título encima del
-       degradado—: el logo flotaba sobre un panel liso y la cancha del fondo
-       quedaba tapada por la tarjeta. Ahora la foto entra adentro.
-
-       La del banner es **el estadio desde arriba**, recortado de cerca, y la
-       del recuadro de CAMPEONATO sigue siendo la de los dos jugadores de
-       espaldas. Son a propósito dos fotos que no se parecen: un plano general
-       verde arriba y un primer plano azul abajo. Con dos primeros planos
-       seguidos el banner competía con el botón en vez de acompañarlo. */
-    '<div class="mm-marq">' +
-      (foto ? '<img class="mm-foto" src="' + foto + '" alt="">' : '') +
-      (logo ? '<img class="logo-main" src="' + logo + '" alt="Duelo Futbolero">'
-            : '<h1 class="logo-txt">DUELO<br><em>FUTBOLERO</em></h1>') +
-    '</div>' +
-    '<div class="mm-cuerpo">' +
-      /* **Y los cuatro modos dejan de pesar lo mismo.** Eran cuatro botones
-         idénticos apilados: CAMPEONATO —el modo de verdad, el que dura cinco
-         rondas— se distinguía solo por el borde dorado, que en un teléfono se
-         pierde. Ahora es un recuadro grande con foto y los otros tres bajan a
-         tres fichas: una puerta y tres atajos. De paso ocupa menos alto que
-         antes, que en las pantallas bajas venía justo. */
-      '<button class="mm-hero" data-menu="campeonato">' +
-        (artCam ? '<img class="mm-h-art" src="' + artCam + '" alt="">' : '') +
-        '<span class="mm-h-txt">' +
-          '<span class="mm-h-lb">🏆 EL MODO PRINCIPAL</span>' +
-          '<span class="mm-h-nm">CAMPEONATO</span>' +
-          '<span class="mm-h-s">Cinco rondas hasta la copa</span>' +
-        '</span>' +
-      '</button>' +
-      '<div class="mm-tres">' +
-        '<button class="mm-tile" data-menu="unico">' +
-          '<span class="mm-t-ico">⚽</span><span class="mm-t-nm">PARTIDO<br>ÚNICO</span>' +
-        '</button>' +
-        /* El BETA no entra al lado del nombre en una ficha tan angosta, así que
-           va de chapita en la esquina. */
-        '<button class="mm-tile" data-menu="duelo">' +
-          '<span class="beta mm-t-beta">BETA</span>' +
-          '<span class="mm-t-ico">🤝</span><span class="mm-t-nm">1 vs 1</span>' +
-        '</button>' +
-        '<button class="mm-tile" data-menu="penales">' +
-          '<span class="mm-t-ico">🥅</span><span class="mm-t-nm">PENALES</span>' +
-        '</button>' +
+    (fondo ? '<img class="mm-foto" src="' + fondo + '" alt="">' : '') +
+    '<div class="mm-velo"></div>' +
+    '<div class="mm-capa">' +
+      '<div class="mm-alto">' +
+        (logo ? '<img class="mm-logo" src="' + logo + '" alt="Duelo Futbolero">'
+              : '<h1 class="mm-logo-txt">DUELO<br><em>FUTBOLERO</em></h1>') +
       '</div>' +
-      '<div class="menu-fila">' +
-        '<button class="menu-op chico" data-menu="opciones">' +
-          '<span class="mo-ico">⚙</span><span class="mo-txt"><b>OPCIONES</b></span>' +
+      '<div class="mm-abajo">' +
+        '<div class="mm-lema">ESTRATEGIA Y SUERTE</div>' +
+        '<button class="mm-grande" data-menu="campeonato">' +
+          ICO('copa') +
+          '<span class="mm-g-txt">' +
+            '<span class="mm-g-nm">CAMPEONATO</span>' +
+            '<span class="mm-g-s">Cinco rondas hasta la copa</span>' +
+          '</span>' +
         '</button>' +
-        '<button class="menu-op chico" data-menu="creditos">' +
-          '<span class="mo-ico">★</span><span class="mo-txt"><b>CRÉDITOS</b></span>' +
-        '</button>' +
+        '<div class="mm-chips">' +
+          '<button class="mm-chip" data-menu="unico">' +
+            ICO('pelota') + '<span class="mm-c-nm">PARTIDO<br>ÚNICO</span>' +
+          '</button>' +
+          '<button class="mm-chip" data-menu="duelo">' +
+            '<span class="beta mm-c-beta">BETA</span>' +
+            ICO('dos') + '<span class="mm-c-nm">1 vs 1</span>' +
+          '</button>' +
+          '<button class="mm-chip" data-menu="penales">' +
+            ICO('arco') + '<span class="mm-c-nm">PENALES</span>' +
+          '</button>' +
+        '</div>' +
+        '<div class="mm-pie">' +
+          '<button class="mm-enl" data-menu="opciones">' + ICO('ajustes') + '<b>OPCIONES</b></button>' +
+          '<button class="mm-enl" data-menu="creditos">' + ICO('firma') + '<b>CRÉDITOS</b></button>' +
+        '</div>' +
+        '<div class="ver">v' + VERSION + '</div>' +
       '</div>' +
-      '<div class="ver">v' + VERSION + '</div>' +
     '</div>',
     'card-menu'
   );
