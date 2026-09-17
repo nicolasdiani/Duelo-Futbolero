@@ -8817,3 +8817,33 @@ consola en pestaña nueva.
 
 Se animan **sólo `transform` y `opacity`**, que son las dos que el navegador
 resuelve sin recalcular el layout.
+
+
+## I. Rivadavia
+
+El club del nivel 1 pasa de `RIVADAVIA` a `I. RIVADAVIA`, que es como se lo
+nombra: Independiente Rivadavia, de Mendoza. A secas se confundía con el
+Rivadavia de Lincoln y con el propio Independiente de Avellaneda, que está en
+la misma tabla.
+
+El nombre va en mayúsculas como los otros veintinueve: la interfaz los escribe
+con `text-transform:uppercase`, así que la tabla habla en el mismo idioma en el
+que se lee.
+
+### El largo importa
+
+La ficha de la tira mide **lo que mide el nombre más largo**, así que cualquier
+nombre nuevo hay que medirlo antes. La primera versión fue `IND. RIVADAVIA`, de
+catorce letras, y pasaba a ser el más largo de la tabla; al medirlo resultó que
+entraba igual —54,7px contra los 54,5 de INDEPENDIENTE, porque el punto y el
+espacio son angostos— pero quedaba al borde.
+
+Con `I. RIVADAVIA` el más largo vuelve a ser INDEPENDIENTE, con 49,1px de texto
+en 68 de hueco a 320 de ancho. Sin recorte en ninguna pantalla.
+
+### Verificado
+
+Que se puede elegir de la tira, que llega entero a la vitrina sin puntos
+suspensivos, que arranca la copa con ese nombre y su escudo, que puede salir de
+rival, y que **el buscador lo encuentra escribiendo «rivadavia»** —que era lo
+que había que cuidar al ponerle una inicial adelante—.
