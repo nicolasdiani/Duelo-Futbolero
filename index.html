@@ -1687,6 +1687,50 @@ img{height:auto}
 .item.inutil{border-style:dashed}
 .item.inutil > :not(.item-ficha){opacity:.5}
 .item.inutil .ief{opacity:.45}
+
+/* ══════════ EL REFLEJO DEL ÍTEM QUE SE PUEDE USAR ══════════
+
+   Hasta acá el ítem usable **no tenía ninguna señal propia**: era la caja
+   común. Lo que estaba marcado era el que *no* sirve —punteado y al 50%—, así
+   que para saber si podías usar algo había que **compararlo con otro**. Y eso
+   falla justo cuando más importa: si los cuatro se pueden usar, o si no se
+   puede ninguno, no hay con qué comparar y la franja se ve igual.
+
+   Ahora los usables llevan un reflejo que los cruza, como la luz sobre un
+   vidrio. Es lo único que se mueve en esa franja, así que el ojo va solo.
+
+   **El recorte va en su propia caja, no en el botón.** Es la misma razón que
+   tiene `.onda-caja` unas líneas más abajo: la ficha del ítem vive *adentro*
+   del botón y se despliega hacia afuera, así que un `overflow:hidden` en el
+   `.item` la haría desaparecer. La caja hereda el radio para que el reflejo
+   siga la forma del botón. */
+.i-brillo{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;
+  border-radius:inherit;z-index:0;
+}
+.i-brillo::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,
+    transparent 38%, rgba(255,255,255,.16) 47%, rgba(255,255,255,.28) 50%,
+    rgba(255,255,255,.16) 53%, transparent 62%);
+  transform:translateX(-120%);
+  animation:itemBrillo 2.2s ease-in-out infinite;
+}
+/* Escalonados: cuatro reflejos saliendo juntos parecen un parpadeo de la
+   pantalla; saliendo en fila se leen como cuatro objetos distintos. */
+.item:nth-of-type(2) .i-brillo::after{animation-delay:.28s}
+.item:nth-of-type(3) .i-brillo::after{animation-delay:.56s}
+.item:nth-of-type(4) .i-brillo::after{animation-delay:.84s}
+/* El barrido se lleva el 20% del ciclo —440ms— y el resto descansa. */
+@keyframes itemBrillo{
+  0%      {transform:translateX(-120%)}
+  20%,100%{transform:translateX(120%)}
+}
+@media (prefers-reduced-motion:reduce){
+  /* Sin movimiento queda un filo quieto, que dice lo mismo sin insistir. */
+  .i-brillo::after{animation:none;opacity:0}
+  .i-brillo{box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+}
 /* Apuntando con este ítem: queda encendido y el click lo cancela. */
 .item.apuntando{
   border-color:var(--gold);background:#1e1a0c;
@@ -9066,7 +9110,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 190;
+const VERSION = 191;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -10288,6 +10332,10 @@ function renderItems(){
     b.className = 'item' + (G.targeting === k ? ' apuntando' : '') + (inutil ? ' inutil' : '');
     // el ítem con el que estás apuntando queda habilitado: ese click lo cancela
     b.disabled = G.busy || G.phase !== 'match' || (G.targeting && G.targeting !== k);
+    /* El reflejo va **sólo en el que se puede usar de verdad**: ni apagado por
+       el turno, ni inútil con la mesa que hay ahora. Se calcula de las mismas
+       dos condiciones de arriba, así que no pueden discrepar. */
+    const usable = !inutil && !b.disabled;
     if(inutil) b.title = inutil;
     // la descripción va a la vista, no escondida en un title que en celular
     // no existe: si no se lee lo que hace, el ítem no se usa
@@ -10303,6 +10351,7 @@ function renderItems(){
        número no informa nada. */
     const cuantos = G.items[k];
     b.innerHTML =
+      (usable ? '<span class="i-brillo"></span>' : '') +
       '<span class="ii">' + icoItem(k) +
         (cuantos > 1 ? '<b class="iq">' + cuantos + '</b>' : '') +
       '</span>' +

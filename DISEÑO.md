@@ -9408,3 +9408,70 @@ Las dos cajas en 320x568, 390x844, 844x390 y 1280x840, con y sin «en penales»:
 mismo alto las dos, nada recortado —ni con **INDEPENDIENTE**, el nombre más
 largo, forzado en las dos— y la tarjeta entera en pantalla. Sin errores de
 consola en pestaña nueva.
+
+## v191 · el reflejo del ítem que se puede usar
+
+De los tres ejemplos salió **la B**, con el reflejo más rápido que el de la
+maqueta.
+
+### La marca era por ausencia
+
+El ítem usable **no tenía ninguna señal propia**: era la caja común. Lo que
+estaba marcado era el que *no* sirve —punteado y todo al 50%—, así que para
+saber si podías usar algo había que **compararlo con otro**.
+
+Y eso falla justo cuando más importa: si los cuatro se pueden usar, o si no se
+puede ninguno, **no hay con qué comparar** y la franja se ve igual en los dos
+casos.
+
+### El reflejo
+
+Una luz cruza el ítem usable cada **2,2 segundos**, y el barrido se lleva el 20%
+del ciclo —440ms—. En la maqueta era 3,4s; quedó más rápido a pedido.
+
+Van **escalonados** de a 280ms: cuatro reflejos saliendo juntos parecen un
+parpadeo de la pantalla, saliendo en fila se leen como cuatro objetos distintos.
+
+Con `prefers-reduced-motion` no se mueve nada y queda un filo interior quieto,
+que dice lo mismo sin insistir.
+
+### El recorte no puede ir en el botón
+
+Esto es lo único delicado del cambio. El reflejo necesita `overflow:hidden` para
+no salirse de la caja, pero **no se lo puede poner al `.item`**: la ficha del ítem
+vive *adentro* del botón y se despliega hacia afuera, así que recortar el botón
+la haría desaparecer.
+
+Es exactamente la misma razón que ya está escrita unas líneas más abajo para
+`.onda-caja`, y la solución es la misma: el reflejo trae **su propia caja que
+recorta**, absoluta y con `border-radius:inherit` para seguir la forma del botón.
+
+Verificado: con el reflejo puesto la ficha abre en **370x226**, sigue siendo hija
+del botón y **no se recorta**.
+
+### Cuándo aparece
+
+Sólo en el que se puede usar **de verdad**. Se calcula de las dos condiciones que
+ya existían —`itemInutil(k)` y el `disabled` del botón— así que no pueden
+discrepar. Medido en los cuatro estados:
+
+| estado | reflejo |
+|---|---|
+| inútil con la mesa que hay | no |
+| usable | **sí** |
+| mesa ocupada (`G.busy`) | no |
+| vuelve a estar libre | **sí** |
+
+### Los tamaños
+
+No cambia ninguno: el reflejo vive en un elemento absoluto que no ocupa lugar.
+Medido con dos ítems: **73x29** a 390 de ancho, **55x29** a 320 y **184x93** en
+escritorio, donde la franja pasa a ser columna. El radio se hereda bien en los
+dos layouts —9px en móvil, 7 en escritorio— y la caja va con
+`pointer-events:none`, así que no se come ningún toque.
+
+### Verificado
+
+A 390x844, 320x568 y 1280x840: mismo tamaño de ítem que antes, el reflejo
+siempre dentro de su botón, sin desborde horizontal y la ficha abriendo entera.
+Sin errores de consola en pestaña nueva.
