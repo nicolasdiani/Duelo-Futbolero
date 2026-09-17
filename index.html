@@ -324,19 +324,29 @@ img{height:auto}
    exactamente lo que hace al tocarla. No es un adorno que dice «mirame»
    sino el propio botón haciendo chiquito lo que va a hacer en grande.
 
-   Dos golpes y una pausa larga: del 0 al 55% pasa todo y el resto del ciclo
-   descansa. Con tres o cuatro filas latiendo durante diez minutos de partido,
-   la pausa es lo que separa invitar de molestar.
+   Dos golpes y una pausa: del 0 al 73% pasa todo y el resto del ciclo
+   descansa. La pausa es lo que separa invitar de molestar, pero **era
+   demasiado prudente**: con 3,2s de ciclo la fila llamaba 18 veces por
+   minuto y entre golpe y golpe quedaba segundo y medio de silencio, que en
+   una mesa que estás mirando es una eternidad. Ahora son 25.
 
    Los 2px son los mismos del hover, no un número nuevo. Y como `transform` y
    `box-shadow` **pintan pero no miden**, la fila ocupa el mismo lugar esté
    donde esté del ciclo: el responsive no se entera. */
+/* Los porcentajes se ven raros pero están calculados: con el ciclo en 2,4s,
+   el 16% cae a los 0,384s, el 35% a los 0,84 y el 51% a 1,224 — exactamente
+   donde caían con 3,2s y 12 / 26 / 38%. **Los golpes son los mismos**; lo que
+   cambia es que después de 1,75s de gesto el descanso pasa de 1,44s a 0,65.
+
+   Si algún día se toca la duración hay que recalcularlos, o el gesto se
+   acelera y el empujón deja de leerse como un ensayo del toque para pasar a
+   ser un tic. */
 @keyframes filaEmpuja{
   0%,100%{transform:translateX(0);box-shadow:0 0 0 0 rgba(255,255,255,0)}
-  12%    {transform:translateX(2px);box-shadow:0 0 0 1.5px rgba(255,255,255,.55), 0 3px 14px rgba(255,255,255,.2)}
-  26%    {transform:translateX(0);box-shadow:0 0 0 1px rgba(255,255,255,.3)}
-  38%    {transform:translateX(1.5px);box-shadow:0 0 0 1.5px rgba(255,255,255,.45)}
-  55%    {transform:translateX(0);box-shadow:0 0 0 0 rgba(255,255,255,0)}
+  16%    {transform:translateX(2px);box-shadow:0 0 0 1.5px rgba(255,255,255,.55), 0 3px 14px rgba(255,255,255,.2)}
+  35%    {transform:translateX(0);box-shadow:0 0 0 1px rgba(255,255,255,.3)}
+  51%    {transform:translateX(1.5px);box-shadow:0 0 0 1.5px rgba(255,255,255,.45)}
+  73%    {transform:translateX(0);box-shadow:0 0 0 0 rgba(255,255,255,0)}
 }
 
 /* Los dos golpes y la pausa. El pico dura poco —de 0 a 14%— y después
@@ -923,7 +933,7 @@ img{height:auto}
    El `:not(:disabled)` no es decoración: una fila agotada —0%, sin cartas—
    no se resalta nunca. Invitar a tocar algo que no se puede tocar es peor
    que no invitar nada. */
-.row-pick:not(:disabled){animation:filaEmpuja 3.2s ease-in-out infinite}
+.row-pick:not(:disabled){animation:filaEmpuja 2.4s ease-in-out infinite}
 /* Ya elegida, deja de llamar. */
 .row-pick.activo:not(:disabled){animation:none}
 /* Y al pasarle el dedo **sólo donde el dedo se puede pasar**. En un teléfono
@@ -8435,7 +8445,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 174;
+const VERSION = 175;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

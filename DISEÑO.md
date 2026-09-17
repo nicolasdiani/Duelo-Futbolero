@@ -8204,3 +8204,55 @@ y el latido dice «te queda un corazón».
 Elegir el latido le pone a un botón el gesto que hasta ahora era de urgencia.
 Queda anotado: si en el partido se siente como un apuro donde nadie corre, el
 anillo de las columnas es el reemplazo, y es un cambio de tres líneas.
+
+
+## Las filas llaman más seguido
+
+El latido de v166 tenía una pausa **demasiado prudente**. Con un ciclo de 3,2s
+la fila llamaba 18 veces por minuto, y entre un par de golpes y el siguiente
+quedaba segundo y medio de silencio — que en una mesa que estás mirando es una
+eternidad.
+
+### Hay dos maneras de ir más seguido, y no dan lo mismo
+
+El latido son **dos golpes y una pausa**. Se puede acortar sólo la pausa, o
+acortar el ciclo entero. Lo segundo acelera también los golpes y **cambia el
+gesto**: a 2,2s el empujón deja de leerse como un ensayo del toque y pasa a ser
+un tic.
+
+Se eligió lo primero:
+
+| | ciclo | late | descansa | por minuto |
+|---|---|---|---|---|
+| v166 | 3,2s | 1,76s | 1,44s | 18 |
+| **v175** | **2,4s** | **1,76s** | **0,65s** | **25** |
+
+Casi un 40% más seguido, con el gesto intacto.
+
+### Los porcentajes, recalculados
+
+```css
+@keyframes filaEmpuja{
+  0%,100%{translateX(0)}
+  16%    {translateX(2px)}      /* antes 12% de 3,2s */
+  35%    {translateX(0)}        /* antes 26% */
+  51%    {translateX(1.5px)}    /* antes 38% */
+  73%    {translateX(0)}        /* antes 55% */
+}
+```
+
+Se ven raros pero están calculados: con el ciclo en 2,4s, el 16% cae a los
+**0,384s**, el 35% a **0,84** y el 51% a **1,224** — exactamente donde caían
+antes. Comprobado en el juego andando, congelando la animación y midiendo el
+`transform` en cada momento:
+
+| momento | desplazamiento |
+|---|---|
+| 0s | 0 |
+| 0,384s | **2px** |
+| 0,84s | 0 |
+| 1,224s | **1,5px** |
+| 1,75s en adelante | 0, descansando |
+
+Queda anotado en el código: si algún día se toca la duración hay que
+recalcularlos, o el gesto se acelera solo.
