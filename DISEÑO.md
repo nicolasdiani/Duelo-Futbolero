@@ -9173,3 +9173,99 @@ mide 40px parado y 32 acostado. Sin errores de consola en pestaña nueva.
 menú viejo y no los toca nadie más. No se borran acá porque `.menu-op:hover`
 aparece agrupado con `.palo`, `.cta` y otros en dos reglas del bloque de touch, y
 sacarlo de esas listas es un cambio aparte que merece su propia revisión.
+
+## v188 · el relleno de los botones
+
+Sólo botones. Ningún otro estilo se toca.
+
+### El problema
+
+Todos los botones del juego eran **contornos dorados**. El que arranca el
+partido se veía igual que el que te saca de la pantalla, y en una pila de tres
+no había manera de saber cuál era la salida principal sin leer los tres.
+
+La única excepción era `.cta.jugar`, verde y relleno, que ya existía **en tres
+lugares sueltos** y hacía exactamente lo mismo que otros cinco botones dorados.
+O sea que la idea ya estaba en el juego, a medio aplicar.
+
+### La regla
+
+Uno relleno por pantalla, y es la acción principal. El color dice de qué clase:
+
+| tratamiento | para qué |
+|---|---|
+| **verde relleno** | arranca o sigue el partido |
+| **dorado relleno** | confirma una elección y avanza |
+| **contorno** | la salida secundaria |
+| **fantasma** | volver, cuando arriba hay algo más importante |
+
+El verde es **el de `.cta.jugar`**, borde claro incluido, para que los tres que
+ya eran verdes y los diecisiete nuevos sean el mismo verde y no dos parecidos.
+
+### Por qué ninguna pantalla cambia de tamaño
+
+Porque **no son una clase nueva, son modificadores**: `.cta.n-verde`,
+`.cta.n-oro`, `.cta.n-linea`, `.cta.n-fantasma` y `.cta.n-apagado` se le suman
+a `.cta`, no la reemplazan. Heredan el ancho, el alto, el relleno, la
+tipografía y **todas las consultas de pantalla** que `.cta` ya tenía.
+
+No es una promesa: es consecuencia de cómo está escrito, y está medido. Con
+v187 sacado de su etiqueta y servido al lado, los mismos botones en las mismas
+pantallas dan **exactamente las mismas medidas**:
+
+| pantalla | v187 | v188 |
+|---|---|---|
+| elegir club | 324x48 / 324x45 | 324x48 / 324x45 |
+| opciones | 324x46 | 324x46 |
+| créditos | 324x46 | 324x46 |
+| penales | 324x46 / 324x45 | 324x46 / 324x45 |
+| aviso beta | 324x46 / 324x45 | 324x46 / 324x45 |
+| cómo se juega | 324x43 / 324x41 | 324x43 / 324x41 |
+
+Lo mismo a 320x568. La primera versión de esto **sí crecía 22px por botón**,
+porque definía una clase propia; al medirlo se rehízo como modificador.
+
+### Tres cosas que aparecieron contando los botones
+
+**Los conté por línea y no por rama, y me equivoqué.** Dije que
+`duelResultado` tenía dos botones principales juntos. No es cierto: están en
+ramas opuestas de un `if` y **nunca aparecen juntos**. Si la serie terminó sale
+JUGAR OTRA VEZ con VOLVER AL INICIO; si sigue, JUGAR EL PARTIDO N solo.
+
+**El mismo botón con dos sentidos.** En `comoSeJuega`, entrando desde el menú
+el `.cta` dice EMPEZAR LA COPA y entrando desde el partido dice **VOLVER AL
+PARTIDO**. Así que el tratamiento también cambia con la rama: verde en un caso,
+contorno en el otro.
+
+**El estado apagado.** El botón de `showElegirItems` arranca deshabilitado
+diciendo ELEGÍ AL MENOS UNO. Con relleno no alcanza con bajarle la opacidad: un
+verde lleno al 40% se lee como un botón **roto**, no como uno que todavía no se
+puede tocar. Va en contorno apagado y se rellena recién cuando hay algo que
+confirmar. Lo mismo en `showDuelLocal`.
+
+### Lo que no cambia
+
+El **latido** de `.cta.llama` se conserva tal cual: es lo que avisa que el juego
+está frenado esperándote, y es información, no decoración.
+
+Y **33 de los 60 botones no se tocan**, porque no son acciones sino selectores:
+los palos del penal, los escudos, los colores, la tira de clubes y los del menú,
+que ya se hicieron en v187.
+
+### Verificado
+
+Recorriendo el juego pantalla por pantalla: **ningún botón quedó sin
+tratamiento**. Los íconos del sprite se dibujan a 14–15px, el desplegable de
+ítems muestra bien sus dos estados —con USAR y sin USAR— y los pop-ups que
+frenan el partido conservan el latido con el relleno nuevo. Sin errores de
+consola en pestaña nueva.
+
+### Cómo volver atrás
+
+Esta versión toca **sólo botones**, así que se puede deshacer sola:
+
+```
+git revert v188-duelo-futbolero
+```
+
+o volver al estado exacto de antes con `git checkout v187-duelo-futbolero`.

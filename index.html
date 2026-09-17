@@ -1555,6 +1555,71 @@ img{height:auto}
   box-shadow:0 0 0 1px var(--white), 0 6px 20px rgba(255,255,255,.16);
 }
 .cta.ghost{background:transparent;border:1px solid var(--line);color:var(--dim);font-size:16px;letter-spacing:2px;padding:10px}
+
+/* ══════════ EL RELLENO DE LOS BOTONES ══════════
+
+   Hasta acá todos los botones del juego eran **contornos dorados**: el que
+   arranca el partido se veía igual que el que te saca de la pantalla, y en
+   una pila de tres no había forma de saber cuál era la salida principal sin
+   leer los tres.
+
+   Ahora hay **uno relleno por pantalla** y es la acción principal. El color
+   dice de qué clase es:
+
+     VERDE   arranca o sigue el partido   (el mismo verde que ya usaba
+             `.cta.jugar` en tres lugares sueltos, ahora en los veinte)
+     DORADO  confirma una elección y avanza a la pantalla siguiente
+     CONTORNO  la salida secundaria
+     FANTASMA  volver, cuando arriba hay algo más importante
+
+   **Son modificadores, no una clase nueva.** Se le suman a `.cta`, así que
+   heredan el ancho, el alto, el relleno, la tipografía y todas las consultas
+   de pantalla que `.cta` ya tiene. Por eso ninguna pantalla cambia de
+   tamaño: no es una promesa, es consecuencia de cómo está escrito. Medido
+   antes y después, los ocho grupos de botones dan las mismas medidas. */
+
+.cta, .if-btn{display:flex;align-items:center;justify-content:center;gap:9px}
+.cta{border-radius:10px}
+.if-btn{gap:6px}
+/* El ícono se mide en `em`, así que cada botón lo escala con su propio
+   `font-size` y los chicos no necesitan una regla aparte. */
+.cta .ic, .if-btn .ic{width:1.05em;height:1.05em}
+.if-btn .ic{width:1em;height:1em}
+
+/* El verde y el borde claro salen de `.cta.jugar`, que ya existía: así los
+   tres botones que ya eran verdes y los diecisiete nuevos son el mismo verde
+   y no dos parecidos. */
+.cta.n-verde, .if-btn.n-verde{
+  background:linear-gradient(165deg, #4ae87a, #25b955);
+  border-color:#8ff5ae;color:#04220f;
+  box-shadow:0 8px 24px rgba(61,220,107,.28), inset 0 1px 0 rgba(255,255,255,.45);
+}
+.cta.n-oro, .if-btn.n-oro{
+  background:linear-gradient(100deg, var(--gold), #ffd964);
+  border-color:#ffe9a3;color:#1a1405;
+  box-shadow:0 8px 24px rgba(245,200,66,.26), inset 0 1px 0 rgba(255,255,255,.5);
+}
+.cta.n-linea, .if-btn.n-linea{
+  background:rgba(0,16,52,.55);border-color:var(--line);color:var(--dim);box-shadow:none;
+}
+.cta.n-linea:hover, .if-btn.n-linea:hover{border-color:var(--filo);color:var(--white)}
+.cta.n-fantasma{background:none;border-color:transparent;color:var(--filo);box-shadow:none}
+.cta.n-fantasma:hover{color:var(--white);box-shadow:none;transform:none}
+/* El apagado **no es un relleno con opacidad**: un verde lleno al 40% se lee
+   como un botón roto, no como uno que todavía no se puede tocar. Es contorno
+   apagado, y se rellena recién cuando hay algo que confirmar. */
+.cta.n-apagado{
+  background:rgba(0,10,30,.5);border-color:var(--line);
+  color:var(--dim2);box-shadow:none;cursor:default;
+}
+.cta.n-apagado:hover{transform:none;box-shadow:none}
+.cta.n-oro:hover, .cta.n-verde:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.45);
+}
+@media (hover:none){
+  .cta.n-oro:hover, .cta.n-verde:hover{transform:none}
+}
 .cta.ghost:hover{color:var(--white);border-color:var(--white)}
 .rules{text-align:left;margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
 .rules li{font-size:14px;color:var(--dim);line-height:1.6;list-style:none;margin-bottom:6px;padding-left:13px;position:relative}
@@ -7382,6 +7447,25 @@ html.html-menu, html.html-menu body{overflow:hidden}
       <circle cx="15.6" cy="8.4" r="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
       <circle cx="10.3" cy="15.6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
     </symbol>
+    <!-- Los que frenan el partido: el rayo del envión. -->
+    <symbol id="i-rayo" viewBox="0 0 24 24">
+      <path d="M13.4 2.6L5.2 13.4h5.3l-.9 8 8.2-10.8h-5.3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    </symbol>
+    <!-- USAR, en la ficha del ítem. -->
+    <symbol id="i-check" viewBox="0 0 24 24">
+      <path d="M4.6 12.6l4.8 4.8L19.4 7.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <!-- COMPARTIR y COPIAR, al final del campeonato. -->
+    <symbol id="i-compartir" viewBox="0 0 24 24">
+      <circle cx="18" cy="5.6" r="2.6" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <circle cx="18" cy="18.4" r="2.6" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M8.3 10.7l7.4-3.8M8.3 13.3l7.4 3.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-copiar" viewBox="0 0 24 24">
+      <rect x="8.4" y="3.6" width="12" height="13.6" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M15.6 20.4H5.6a2 2 0 0 1-2-2V8.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
     <!-- CRÉDITOS: una firma. Dice quién lo hizo, que es de lo que se trata. -->
     <symbol id="i-firma" viewBox="0 0 24 24">
       <path d="M3.6 16.4c3.3 0 3.9-8.6 6-8.6 1.5 0 .9 5.3 2.5 5.3 1.1 0 1.5-2.9 2.8-2.9 1.1 0 1.3 2.1 3.8 2.1"
@@ -8256,8 +8340,11 @@ function comoSeJuega(alEmpezar){
 
     '</div>' +
     '<div class="rg-botones">' +
-      '<button class="cta" id="reglasGo">' + (alEmpezar ? 'EMPEZAR LA COPA' : 'VOLVER AL PARTIDO') + '</button>' +
-      (alEmpezar ? '<button class="cta alt" id="reglasBack">VOLVER</button>' : '') +
+      /* Entrando desde el menú es **empezar**; entrando desde el partido es
+         **volver**. Mismo botón, dos sentidos, dos tratamientos. */
+      '<button class="cta ' + (alEmpezar ? 'n-verde' : 'n-linea') + '" id="reglasGo">' +
+        (alEmpezar ? ICO('pelota') + 'EMPEZAR LA COPA' : 'VOLVER AL PARTIDO') + '</button>' +
+      (alEmpezar ? '<button class="cta alt n-fantasma" id="reglasBack">VOLVER</button>' : '') +
     '</div>',
     'card-final card-reglas'
   );
@@ -8292,8 +8379,8 @@ function avisoBeta(){
         '<li>Un partido o al mejor de 3</li>' +
       '</ul>' +
     '</div>' +
-    '<button class="cta" id="betaGo">ENTENDIDO, VAMOS</button>' +
-    '<button class="cta alt" id="betaBack">VOLVER</button>',
+    '<button class="cta n-oro" id="betaGo">ENTENDIDO, VAMOS</button>' +
+    '<button class="cta alt n-fantasma" id="betaBack">VOLVER</button>',
     'card-final'
   );
   $('betaGo').onclick = () => showDuelLocal();
@@ -8316,8 +8403,9 @@ function showDuelLocal(){
       '<p>Repartí <b>' + DUELO.PUNTOS_INICIO + ' puntos</b> entre ataque y defensa. En el entretiempo vas a poder sumar <b>' + DUELO.PUNTOS_ET + '</b> más.</p>' +
       repartoHTML(a1, d1, DUELO.PUNTOS_INICIO - usados, 'l') +
       '<p class="chico">Las cartas de duelo valen <b>2, 3, 4 o 5</b> al azar, iguales para los dos. Cada punto vale un 25% más de duelos ganados.</p>' +
-      '<button class="cta" id="localGo"' + (usados < DUELO.PUNTOS_INICIO ? ' disabled' : '') + '>SEGUIR</button>' +
-      '<button class="cta alt" id="localBack">VOLVER</button>',
+      '<button class="cta ' + (usados < DUELO.PUNTOS_INICIO ? 'n-apagado' : 'n-oro') + '" id="localGo"' +
+        (usados < DUELO.PUNTOS_INICIO ? ' disabled' : '') + '>SEGUIR</button>' +
+      '<button class="cta alt n-fantasma" id="localBack">VOLVER</button>',
       'card-final'
     );
     document.querySelectorAll('[data-l]').forEach(b => b.onclick = () => {
@@ -8358,8 +8446,8 @@ function showDuelSetup(){
     '<div id="rep2"></div>' +
     '<div class="crear-lb" style="margin-top:16px">FORMATO</div>' +
     '<div class="duel-fmt" id="duelFmt"></div>' +
-    '<button class="cta" id="duelGo">EMPEZAR</button>' +
-    '<button class="cta alt" id="duelBack">VOLVER</button>',
+    '<button class="cta n-verde" id="duelGo">' + ICO('pelota') + 'EMPEZAR</button>' +
+    '<button class="cta alt n-fantasma" id="duelBack">VOLVER</button>',
     'card-final'
   );
 
@@ -8918,7 +9006,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 187;
+const VERSION = 188;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -10300,8 +10388,8 @@ function abrirFichaGol(btn){
         '<b>' + esperadoDe(SIT_FAVOR) + '%</b> DE GOL <em>una de las cinco, al azar</em></div>' +
       minisGol(SIT_FAVOR, true) +
       '<div class="sit-botones">' +
-        '<button class="cta llama" id="fgUsar">USAR LA RACHA</button>' +
-        '<button class="cta alt" id="fgVolver">VOLVER</button>' +
+        '<button class="cta llama n-verde" id="fgUsar">' + ICO('rayo') + 'USAR LA RACHA</button>' +
+        '<button class="cta alt n-linea" id="fgVolver">VOLVER</button>' +
       '</div>' +
     '</div>';
   wrap = montarPop(wrap);
@@ -10444,8 +10532,10 @@ function abrirFicha(k, btn){
       '</div>' +
     '</div>' +
     '<div class="if-btns">' +
-      (porQueNo ? '' : '<button class="if-btn" id="ifUsar">USAR</button>') +
-      '<button class="if-btn alt" id="ifVolver">' + (porQueNo ? 'ENTENDIDO' : 'VOLVER') + '</button>' +
+      /* Si el ítem no se puede usar, USAR no existe y ENTENDIDO queda solo:
+         entonces es el único botón de la ficha y no hay nada que jerarquizar. */
+      (porQueNo ? '' : '<button class="if-btn n-verde" id="ifUsar">' + ICO('check') + 'USAR</button>') +
+      '<button class="if-btn alt n-linea" id="ifVolver">' + (porQueNo ? 'ENTENDIDO' : 'VOLVER') + '</button>' +
     '</div>';
 
   /* En mobile la ficha se ancla a la pantalla, no al botón: el CSS la pone en
@@ -10735,7 +10825,8 @@ function duelPintarTienda(quien, primera){
       '<p>Sumá <b>' + DUELO.PUNTOS_ET + ' puntos</b> al plantel y comprá lo que necesites. Todo queda para el segundo tiempo.</p>' +
       '<div id="repET"></div>' +
       tiendaHTML() +
-      '<button class="cta llama" id="etBtn">' + (quien === 0 ? 'LISTO · PASA EL OTRO' : 'AL SEGUNDO TIEMPO') + '</button>',
+      '<button class="cta llama n-verde" id="etBtn">' + ICO('pelota') +
+        (quien === 0 ? 'LISTO · PASA EL OTRO' : 'AL SEGUNDO TIEMPO') + '</button>',
       'card-final'
     );
     engancharTienda();
@@ -10794,9 +10885,10 @@ function duelResultado(ganador, cerroSerie){
       '<div class="serie-t">al mejor de ' + G.serie.alMejorDe + '</div>' +
     '</div>' : '') +
     (cerroSerie
-      ? '<button class="cta" id="duelOtra">JUGAR OTRA VEZ</button>' +
-        '<button class="cta alt" id="duelMenu">VOLVER AL INICIO</button>'
-      : '<button class="cta" id="duelSigue">JUGAR EL PARTIDO ' + (G.serie.partido + 1) + '</button>'),
+      ? '<button class="cta n-verde" id="duelOtra">' + ICO('pelota') + 'JUGAR OTRA VEZ</button>' +
+        '<button class="cta alt n-fantasma" id="duelMenu">VOLVER AL INICIO</button>'
+      : '<button class="cta n-verde" id="duelSigue">' + ICO('pelota') +
+        'JUGAR EL PARTIDO ' + (G.serie.partido + 1) + '</button>'),
     'card-final'
   );
 
@@ -11921,7 +12013,7 @@ function avisoRacha(){
           '</div>' +
         '</div>' +
         '<div class="a-s">No hace falta usarla ahora: queda disponible hasta que la gastes.</div>' +
-        '<button class="cta llama" id="avisoBtn">CONTINUAR PARTIDO</button>' +
+        '<button class="cta llama n-verde" id="avisoBtn">' + ICO('rayo') + 'CONTINUAR PARTIDO</button>' +
       '</div>';
     wrap = montarPop(wrap);
     wrap.querySelector('#avisoBtn').onclick = () => { cerrarPop(); resolve(); };
@@ -12017,7 +12109,7 @@ function fundidaRival(cayoMax){
         '<div class="fu-ahora">Y EL RIVAL SE GANA UNA LLEGADA ' +
           '<b>' + esperado + '%</b> DE GOL <em>una de las cinco, al azar</em></div>' +
         minisGol(SIT_RIVAL, false) +
-        '<button class="cta llama" id="fuBtn">A VER QUÉ PASA</button>' +
+        '<button class="cta llama n-verde" id="fuBtn">' + ICO('pelota') + 'A VER QUÉ PASA</button>' +
       '</div>';
     wrap = montarPop(wrap);
 
@@ -12073,7 +12165,7 @@ function situacionGol(lado, yaElegida){
           (favor && S.key === 'penal' ? 'LO PATEÁS VOS · ELEGÍ EL PALO'
            : favor && S.key === 'jugada' ? 'ENTRA SOLA'
            : Math.round(S.p * 100) + '% DE GOL ' + (favor ? 'A FAVOR' : 'PARA EL RIVAL')) + '</div>' +
-        '<button class="cta llama" id="sitBtn">' +
+        '<button class="cta llama n-verde" id="sitBtn">' + ICO('arco') +
           (favor && S.key === 'penal' ? 'IR AL PENAL' : 'EJECUTAR') + '</button>' +
       '</div>';
     wrap = montarPop(wrap);
@@ -12629,7 +12721,8 @@ function avisoEmpate(){
             '<b>SE ACABÓ</b></div>' +
         '</div>' +
         '<div class="e-aviso">' + (tanda ? 'TANDA DE CINCO' : 'UN SOLO PENAL Y SE DEFINE') + '</div>' +
-        '<button class="cta llama" id="empBtn">' + (tanda ? 'IR A LA TANDA' : 'PATEAR PENAL DEFINITORIO') + '</button>' +
+        '<button class="cta llama n-verde" id="empBtn">' + ICO('arco') +
+          (tanda ? 'IR A LA TANDA' : 'PATEAR PENAL DEFINITORIO') + '</button>' +
       '</div>';
     wrap = montarPop(wrap);
     wrap.querySelector('#empBtn').onclick = () => { cerrarPop(); resolve(); };
@@ -12705,8 +12798,8 @@ function matchWon(byPens){
       '<div class="final-tit gano">GANASTE</div>' +
       '<div class="final-sub">' + R.rival + ' se lo lleva puesto</div>' +
       marcadorFinal(R.rival, byPens) +
-      '<button class="cta" id="uOtro">JUGAR OTRO</button>' +
-      '<button class="cta alt" id="uMenu">VOLVER AL MENÚ</button>',
+      '<button class="cta n-verde" id="uOtro">' + ICO('pelota') + 'JUGAR OTRO</button>' +
+      '<button class="cta alt n-linea" id="uMenu">VOLVER AL MENÚ</button>',
       'card-final'
     );
     $('uOtro').onclick = () => { closeCard(); newRun(false); };
@@ -12742,7 +12835,7 @@ function matchWon(byPens){
             ? 'El <b>💪 SEGUNDO AIRE</b> recupera el corazón que gastaste.'
             : 'El equipo ya no baja más de <b class="ef-ag">' + AGUANTE_PISO + ' <i class="ih"></i></b>.') +
         '</div>' +
-        '<button class="cta jugar" id="againBtn">JUGAR OTRO CAMPEONATO</button>' +
+        '<button class="cta jugar" id="againBtn">' + ICO('copa') + 'JUGAR OTRO CAMPEONATO</button>' +
         botonesFinal(true) +
       '</div>',
       'card-final card-remate'
@@ -12787,7 +12880,7 @@ function matchWon(byPens){
       '</div>' +
       escaleraHTML(G.ronda + 1) +
       estadoRondaHTML() +
-      '<button class="cta jugar llama" id="shopBtn">IR AL VESTUARIO</button>' +
+      '<button class="cta jugar llama" id="shopBtn">' + ICO('rayo') + 'IR AL VESTUARIO</button>' +
     '</div>',
     'card-final card-remate pasa'
   );
@@ -12919,8 +13012,8 @@ function matchLost(byPens){
       '<div class="final-tit perdio">PERDISTE</div>' +
       '<div class="final-sub">' + R.rival + ' te ganó' + (byPens ? ' por penales' : '') + '</div>' +
       marcadorFinal(R.rival, byPens) +
-      '<button class="cta" id="uOtro2">REVANCHA</button>' +
-      '<button class="cta alt" id="uMenu2">VOLVER AL MENÚ</button>',
+      '<button class="cta n-verde" id="uOtro2">' + ICO('pelota') + 'REVANCHA</button>' +
+      '<button class="cta alt n-linea" id="uMenu2">VOLVER AL MENÚ</button>',
       'card-final'
     );
     $('uOtro2').onclick = () => { closeCard(); newRun(false); };
@@ -12947,7 +13040,7 @@ function matchLost(byPens){
           '<svg class="ch-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-def"/></svg>' + G.def +
         '</b></div>' +
       '</div>' +
-      '<button class="cta jugar" id="retryBtn">EMPEZAR DE NUEVO</button>' +
+      '<button class="cta jugar" id="retryBtn">' + ICO('pelota') + 'EMPEZAR DE NUEVO</button>' +
       botonesFinal(false) +
     '</div>',
     'card-final card-remate cae'
@@ -13005,8 +13098,10 @@ function textoCompartir(campeon){
 
 function botonesFinal(campeon){
   return '<div class="cta-fila">' +
-    '<button class="cta chica" data-share="wsp">COMPARTIR</button>' +
-    '<button class="cta chica alt" data-share="copiar">COPIAR</button>' +
+    /* Los dos hacen lo mismo con distinta salida: ninguno manda, los dos van
+       contorneados. Es el único par del juego donde el relleno sobraría. */
+    '<button class="cta chica n-linea" data-share="wsp">' + ICO('compartir') + 'COMPARTIR</button>' +
+    '<button class="cta chica alt n-linea" data-share="copiar">' + ICO('copiar') + 'COPIAR</button>' +
   '</div>';
 }
 
@@ -13139,9 +13234,10 @@ function showElegirItems(){
             .replace('data-buy="item:' + k + '"', 'data-elegir="' + k + '"');
         }).join('') +
       '</div>' +
-      '<button class="cta" id="unicoGo"' + (usados ? '' : ' disabled') + '>' +
-        (usados ? 'JUGAR EL PARTIDO' : 'ELEGÍ AL MENOS UNO') + '</button>' +
-      '<button class="cta alt" id="unicoBack">VOLVER</button>'
+      '<button class="cta ' + (usados ? 'n-verde' : 'n-apagado') + '" id="unicoGo"' +
+        (usados ? '' : ' disabled') + '>' +
+        (usados ? ICO('pelota') + 'JUGAR EL PARTIDO' : 'ELEGÍ AL MENOS UNO') + '</button>' +
+      '<button class="cta alt n-fantasma" id="unicoBack">VOLVER</button>'
     );
 
     document.querySelectorAll('[data-elegir]').forEach(b => {
@@ -13195,7 +13291,8 @@ function showMarket(primeraVez){
     (Object.keys(G.compras).length
       ? '<div class="mk-nota">Lo que compraste ahora se puede devolver con la ✕. Al pasar de ronda queda firme.</div>'
       : '') +
-    '<button class="cta llama" id="nextBtn">JUGAR ' + RONDA(G.ronda + 1).name + '</button>';
+    '<button class="cta llama n-verde" id="nextBtn">' + ICO('pelota') +
+      'JUGAR ' + RONDA(G.ronda + 1).name + '</button>';
   openCard(html);
   engancharTienda();
   $('nextBtn').onclick = () => { closeCard(); G.ronda++; startMatch(); };
@@ -13419,8 +13516,8 @@ function showPenalesSolos(){
     '<p>Cinco cada uno, alternando. Cuando pateás elegís el palo; cuando ataja tu arquero, elegís adónde vuela.</p>' +
     '<input id="pTu" maxlength="18" placeholder="TU EQUIPO" value="' + (G.club || '') + '">' +
     '<input id="pRival" maxlength="18" placeholder="EL RIVAL">' +
-    '<button class="cta" id="pGo">A LOS PENALES</button>' +
-    '<button class="cta alt" id="pBack">VOLVER</button>',
+    '<button class="cta n-verde" id="pGo">' + ICO('arco') + 'A LOS PENALES</button>' +
+    '<button class="cta alt n-fantasma" id="pBack">VOLVER</button>',
     'card-final'
   );
   $('pBack').onclick = () => { atras(); showMenu(); };
@@ -13439,8 +13536,8 @@ function showPenalesSolos(){
     openCard(
       '<div class="final-tit ' + (gana === 0 ? 'gano' : 'perdio') + '">GANÓ</div>' +
       '<div class="final-sub">' + G.J[gana].club + '</div>' +
-      '<button class="cta" id="pOtra">OTRA TANDA</button>' +
-      '<button class="cta alt" id="pMenu">VOLVER AL MENÚ</button>',
+      '<button class="cta n-verde" id="pOtra">' + ICO('arco') + 'OTRA TANDA</button>' +
+      '<button class="cta alt n-linea" id="pMenu">VOLVER AL MENÚ</button>',
       'card-final'
     );
     $('pOtra').onclick  = () => { closeCard(); showPenalesSolos(); };
@@ -13459,7 +13556,9 @@ function showOpciones(){
       '<div class="opt"><span>🖥 Pantalla completa</span><b class="pend">PRÓXIMAMENTE</b></div>' +
       '<div class="opt"><span>⚡ Animaciones</span><b class="pend">PRÓXIMAMENTE</b></div>' +
     '</div>' +
-    '<button class="cta" id="oBack">VOLVER</button>',
+    /* Volver **nunca** es la acción principal: hasta acá se veía dorado sólo
+       porque era el único botón de la pantalla. */
+    '<button class="cta n-linea" id="oBack">VOLVER</button>',
     'card-final'
   );
   $('oBack').onclick = () => { atras(); showMenu(); };
@@ -13479,7 +13578,7 @@ function showCreditos(){
       '</div>' +
     '</div>' +
     '<div class="ver">v' + VERSION + '</div>' +
-    '<button class="cta" id="cBack">VOLVER</button>',
+    '<button class="cta n-linea" id="cBack">VOLVER</button>',
     'card-final'
   );
   $('cBack').onclick = () => { atras(); showMenu(); };
@@ -13590,9 +13689,9 @@ function showStart(irAlDuelo){
     '<div class="cp-nada" id="cpNada">no hay ningún equipo con ese nombre</div>' +
 
     '<div class="club-pie">' +
-      '<button class="cta" id="startBtn">' +
+      '<button class="cta n-oro" id="startBtn">' + ICO('copa') +
         (irAlDuelo ? 'SEGUIR' : G.formato === 'unico' ? 'JUGAR EL PARTIDO' : 'EMPEZAR LA COPA') + '</button>' +
-      '<button class="cta alt" id="volverMenu">VOLVER</button>' +
+      '<button class="cta alt n-fantasma" id="volverMenu">VOLVER</button>' +
     '</div>',
     'card-club'
   );
