@@ -8588,3 +8588,63 @@ El centrado de la tira **no usa `scrollIntoView`**: ese sube por los ancestros y
 con el snap puesto no movía nada, así que al sacar uno lejano con el dado el
 elegido se resaltaba fuera de la vista y el botón parecía no hacer nada. El
 destino se calcula a mano.
+
+
+## La cinta de la jugada, derecha
+
+Desde v170 la cinta con el escudo del club que encabeza el pop-up de la jugada
+**no estaba centrada**: pegada al borde izquierdo y lejos del derecho. No rompía
+nada, y por eso pasó diez versiones sin que nadie la viera.
+
+La causa es la misma que en v176 dejó torcida la cabecera del vestuario: un
+`*{max-width:100%}` global. La cinta sale a todo el ancho con márgenes
+negativos, el `max-width` le pone de techo el ancho del contenido y la caja
+queda **sobredeterminada**; en ese caso el navegador **descarta el margen
+derecho en silencio**. La cinta se corre pero no se estira.
+
+```css
+.play .p-cinta{ max-width:none }
+```
+
+Medido en el juego, con y sin el arreglo inyectado en vivo:
+
+| pantalla | pop-up | izquierda | derecha | con el arreglo |
+|---|---|---|---|---|
+| 320 x 568 | 280px | 9px | **45px** | 9 / 9 |
+| 390 x 844 | 350px | 9px | **45px** | 9 / 9 |
+| 1280 x 800 | 563px | 15px | **51px** | 15 / 15 |
+
+Siempre **36px corta a la derecha**, en los tres anchos.
+
+### Dos cosas que aprendí midiendo esto
+
+**Los rects mienten mientras corre una animación.** La primera medición dio 6 y
+32 en vez de 9 y 45, y el pop-up 252px en vez de 350. Estaba midiendo con
+`getBoundingClientRect` durante la animación de entrada, que escala el pop-up:
+los rects venían multiplicados por 0,72. Para geometría hay que esperar a que
+termine, o usar valores de layout —`offsetWidth`, `clientWidth`— que el
+`transform` no toca.
+
+**Los 36px no van al nombre.** Había anotado que un nombre largo que se cortaba
+con puntos suspensivos iba a entrar entero, y **era falso**. El hueco entre el
+nombre y el minuto es un `margin-left:auto`, así que el espacio que se recupera
+se lo lleva ese margen. Medido con INDEPENDIENTE, el nombre más largo de la
+tabla: ocupa 108,9px y tiene 109 disponibles **antes y después**. No se cortaba,
+y sigue sin cortarse.
+
+### El otro pendiente, el del `hex`, sigue sin tocarse
+
+Antes de proponerlo fui a ver si se puede disparar. Envolví `arcoPenalHTML` y
+`figuraDuelo` para anotar todo lo que les llega y ejercité los tres caminos por
+los que puede venir un escudo:
+
+| camino | lo que llega | |
+|---|---|---|
+| la copa (tabla de clubes) | `c1='azul' c2='amarillo'` | válido |
+| escudo sorteado (1 vs 1, penales) | `c1=1 c2=7` | válido |
+| el selector de colores | `+b.dataset`, siempre 0..11 | válido |
+
+Ninguno produce `NaN` ni un negativo, que son los dos únicos valores con los que
+`hexEscudo` revienta. Repasadas además todas las escrituras a `c1`/`c2` del
+archivo. **Es una mina enterrada, no un incendio**, y queda enterrada hasta que
+se toque la tabla de clubes o el sorteo de escudos.
