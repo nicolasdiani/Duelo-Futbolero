@@ -8056,3 +8056,70 @@ la otra, con el comentario que lo dice.
 
 El cambio vale para los dos lugares de una: la carta de la mesa y el pop-up de
 la jugada leen el mismo `label` de `predict`.
+
+
+## El tutorial pregunta lo que contesta
+
+El titular decía **DUELO FUTBOLERO**: el nombre del juego, que el jugador ya
+vio en el menú. Lo que la pantalla es —cómo se juega— iba arriba, en una
+chapita de 9px. Ahora el titular **es la pregunta** y la chapita dice EL
+PARTIDO.
+
+Y de las seis reglas, sólo la primera traía una imagen del juego. Las otras
+cinco eran íconos sobre fondo liso, en la única pantalla que se lee **sin haber
+visto nunca una carta**. Ahora todas muestran algo de la cancha.
+
+### Lo que cambió en cada ficha
+
+| | antes | ahora |
+|---|---|---|
+| EL AGUANTE | ícono solo | + foto del calambre |
+| LA RACHA | ícono solo | + foto de la hinchada |
+| LOS DUELOS | ícono solo | + el delantero definiendo |
+| LOS ÍTEMS | ícono solo | + foto de la fama |
+| NUEVE JUGADAS | reloj dibujado aparte | **el cronómetro del partido** + foto del pase gol |
+
+El reloj era una pieza dibujada sólo para el tutorial: un anillo con un número,
+parecido pero **no igual** al del marcador. Parecido no alcanza — la pantalla
+que enseña a jugar tiene que mostrar la pieza que se va a ver en la cancha.
+Ahora arma el cronómetro de verdad, con la misma cuenta de arcos que
+`renderCronometro`: nueve porciones, tres corridas, el minuto en el medio.
+
+La última ficha queda sola en su renglón y va **centrada**: estirada a todo el
+ancho se leía como un pie de página. Y los botones pasan a estar **uno arriba
+del otro**, con EMPEZAR LA COPA primero: es el que se toca casi siempre y a lo
+ancho compartía el renglón con VOLVER como si valieran lo mismo.
+
+### La banda no cuesta alto (y donde cuesta, se va)
+
+La foto va **detrás del ícono**, que sube con un margen negativo: la banda pone
+fondo, no empuja. Aun así suma 8px por ficha, 40 en las cinco, y con los
+botones apilados la tarjeta se pasaba del hueco.
+
+Medido antes y después, en seis medidas:
+
+| | v172 | v173 al principio | v173 final |
+|---|---|---|---|
+| 320 × 568 | 500, entra | **+57 de scroll** | 512, entra |
+| 360 × 640 | 526, entra | **+24 de scroll** | entra |
+| 375 × 667 | entra | **+25 de scroll** | 604, entra |
+| 390 × 844 | 671, entra | 756, entra | 756, entra |
+| 412 × 915 | entra | entra | 748, entra |
+| 430 × 932 | entra | entra | 757, entra |
+
+El tutorial entra entero en todas las medidas desde que se pasó a dos columnas,
+y eso no se podía perder: es la pantalla donde alguien decide si el juego le
+interesa, y llegar al botón scrolleando es un peaje.
+
+Así que abajo de **680px de alto** pasan dos cosas: la foto se va —es clima, el
+ícono es lo que enseña— y los botones vuelven a la fila. Lo segundo no es una
+excepción inventada: el bloque de apaisado ya lo hacía, con el mismo motivo
+escrito al lado.
+
+### Un tropiezo de especificidad, otra vez
+
+El `display:none` de la banda no hacía nada. `.tu-fi .tu-banda` dentro de la
+consulta y `.tu-fi .tu-banda` de la regla base tienen **la misma
+especificidad** —una consulta no suma— así que ganaba el que viene después, y
+el base está 570 líneas más abajo. Se resolvió con `.card-reglas` adelante, que
+es lo mismo que hubo que hacer con el buscador en v168.

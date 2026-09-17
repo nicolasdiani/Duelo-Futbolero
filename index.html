@@ -6055,7 +6055,11 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
    pieza en el medio de cada regla ya no sobran. Uno al lado del otro cuestan
    la mitad y la lista entera entra sin scroll. Con un solo botón —cuando el
    tutorial se abre desde el partido— `flex:1` lo deja a todo el ancho igual. */
-.card-reglas .rg-botones{display:flex;gap:8px;margin-top:9px}
+/* En columna y no en fila: el de empezar es el que se toca el 95% de las
+   veces y a lo ancho compartía el renglón con VOLVER como si valieran lo
+   mismo. Apilados, el principal se lleva todo el ancho y el otro queda
+   abajo, que es donde se busca una salida. */
+.card-reglas .rg-botones{display:flex;flex-direction:column;gap:7px;margin-top:9px}
 .card-reglas .rg-botones .cta{
   flex:1;margin-top:0;padding:9px 4px;
   font-size:clamp(11.5px, 3.4vw, 13.5px);letter-spacing:clamp(.8px, .5vw, 2px);
@@ -6161,6 +6165,29 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .regla{padding:2px 0}
 }
 @media (max-width:820px) and (max-height:680px){
+  /* ---- SIN FOTO EN PANTALLAS BAJAS ----
+     La banda le suma 8px a cada ficha, 40 en las cinco, y con los botones en
+     columna la tarjeta se pasaba del hueco: 24px en 360x640 y 57 en 320x568.
+     El tutorial entra entero en todas las medidas desde que se pasó a dos
+     columnas, y eso no se puede perder: es la pantalla donde alguien decide
+     si el juego le interesa, y llegar al botón scrolleando es un peaje.
+
+     Lo que cede es la foto, que es clima. El ícono de cada regla —los
+     corazones, los rayos, el duelo, los ítems, el reloj— se queda, que es lo
+     que de verdad enseña.
+
+     Con la clase de la tarjeta adelante y no a secas: la regla base tiene la
+     misma especificidad y vive 570 lineas mas abajo, asi que sin esto ganaba
+     por orden de aparicion y la banda seguia dibujandose. */
+  .card-reglas .tu-fi .tu-banda{display:none}
+  .card-reglas .tu-fi .tu-banda + .tu-fi-vis{margin-top:0}
+  /* Y los botones vuelven a la fila. Apilados se llevan 42px, y con la foto
+     ya afuera siguen sobrando 25 en un 375x667: el boton de empezar quedaba
+     abajo del corte, que en la pantalla donde alguien decide si juega o no es
+     lo peor que puede pasar. Es el mismo recurso que ya usa el bloque de
+     apaisado, por el mismo motivo. */
+  .card-reglas .rg-botones{flex-direction:row;gap:7px;margin-top:7px}
+  .card-reglas .rg-botones .cta{flex:1;margin-top:0;padding:7px 4px}
   .rg-vis{margin:3px 0;padding:3px 7px}
   .tu-art{height:clamp(22px, 6.4vw, 34px)}
   .tu-med.cor img,.tu-med.cor i{width:clamp(16px, 4.6vw, 22px);height:clamp(16px, 4.6vw, 22px)}
@@ -6733,6 +6760,35 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
    —una regla vieja lo hacía a partir de 1025px—, así que esto sólo extiende
    lo mismo al teléfono. */
 .reglas{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left}
+
+/* ---- LA BANDA DE FOTO ----
+   `align-self:stretch` porque la ficha es un flex centrado: sin eso la
+   banda, que no tiene contenido propio, se encoge a **ancho cero** y la foto
+   no aparece. Los márgenes negativos son los del padding de la ficha, para
+   que la banda llegue a los bordes. */
+.tu-fi .tu-banda{
+  align-self:stretch;display:block;position:relative;
+  height:44px;margin:-10px -9px 6px;border-radius:7px 7px 0 0;overflow:hidden;
+  background-size:cover;background-position:center 40%;
+}
+.tu-fi .tu-banda::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,8,31,0),rgba(0,8,31,.88))}
+/* El ícono sube sobre el degradado en vez de ir debajo de la foto: así la
+   banda no le suma alto a la ficha, sólo le pone fondo. */
+.tu-fi .tu-banda + .tu-fi-vis{position:relative;z-index:1;margin-top:-32px}
+
+/* La última ficha queda sola en su renglón. Estirada a todo el ancho se leía
+   como un pie de página; centrada al ancho de una columna sigue siendo una
+   ficha más. */
+.reglas .tu-fi.sola{grid-column:1 / -1;justify-self:center;width:calc(50% - 4px)}
+
+/* El cronómetro del tutorial es el del marcador, con su propia medida. */
+.tu-crono{display:flex;align-items:center;justify-content:center}
+.tu-crono .cronos{--cro:52px}
+
+/* El titular pasó de dos renglones cortos a uno largo, así que baja de
+   tamaño: con el `clamp` de las tarjetas la pregunta se partía al medio. */
+.card-reglas h1{font-size:clamp(24px,6.2vw,33px);letter-spacing:1px;line-height:1.02}
 /* Va con el prefijo `tu-`: `.fi` a secas ya es el ícono del cartel de gol y
    los dos del pie de página, y una regla sin scope les caía encima. */
 .tu-fi{
@@ -7567,10 +7623,34 @@ const tutoDuelo = '<span class="tu-duelo"><b class="tu-a">2</b><i>vs</i><b class
    evaluarlo acá arriba rompía el script entero antes de llegar a $. */
 const tutoItems = () => '<span class="tu-items">' +
   ['suplentes','grito','revision'].map(k => '<i>' + icoItem(k) + '</i>').join('') + '</span>';
-/* El reloj del marcador: el arco dorado marca lo que va del partido. */
-const tutoReloj = '<span class="tu-reloj"><svg viewBox="0 0 44 44" aria-hidden="true">' +
-  '<circle class="tu-ro" cx="22" cy="22" r="19"/>' +
-  '<circle class="tu-ra" cx="22" cy="22" r="19"/></svg><em>5</em></span>';
+/* ---- EL RELOJ, EL MISMO DEL PARTIDO ----
+   Había un reloj dibujado sólo para el tutorial: un anillo con un número
+   adentro, parecido pero **no igual** al del marcador. Parecido no alcanza:
+   la pantalla que enseña a jugar tiene que mostrar la pieza que el jugador
+   va a ver en la cancha, no una versión de ella.
+
+   Esto arma el cronómetro de verdad, con la misma cuenta de arcos que
+   `renderCronometro`: nueve porciones, tres corridas, y el minuto en el
+   medio. Sale de una función y no de una constante porque `polar` se define
+   más abajo en el archivo.
+
+   (El `.tu-reloj` viejo quedó sin uso en el CSS; no se borró para no tocar
+   los siete escalones de breakpoint que lo dimensionan.) */
+function tutoCrono(){
+  const total = 9, corridas = 3, R = 38, CX = 50, CY = 50, hueco = 3.2;
+  const paso = 360 / total;
+  let arcos = '';
+  for(let i = 0; i < total; i++){
+    const p1 = polar(CX, CY, R, -90 + i * paso + hueco / 2);
+    const p2 = polar(CX, CY, R, -90 + (i + 1) * paso - hueco / 2);
+    arcos += '<path d="M ' + p1.x + ' ' + p1.y + ' A ' + R + ' ' + R +
+      ' 0 0 1 ' + p2.x + ' ' + p2.y + '" class="' + (i < corridas ? 'cro-on' : 'cro-off') + '"/>';
+  }
+  return '<span class="tu-crono"><span class="cronos">' +
+    '<svg viewBox="0 0 100 100" class="cro-svg" aria-hidden="true">' + arcos + '</svg>' +
+    '<span class="cro-mid"><span class="cro-min">30</span><span class="cro-lb">MIN</span></span>' +
+  '</span></span>';
+}
 
 /* Un renglón: el título, la pieza y una línea. `pie` es la nota chica que solo
    usa la racha, para su segundo escalón; `cls` marca la fila de cartas, que es
@@ -7592,8 +7672,18 @@ const tutoReloj = '<span class="tu-reloj"><svg viewBox="0 0 44 44" aria-hidden="
 
    El precio es que los textos tienen que entrar en media pantalla, así que
    son más cortos que antes. */
-const tutoFicha = (vis, tit, txt, pie, cls) =>
+/* `art` es la clave de la ilustración que va de banda arriba de la ficha.
+   Antes **sólo la fila de cartas traía una imagen del juego**: las otras
+   cinco eran íconos sobre fondo liso, en la única pantalla que se lee sin
+   haber visto nunca una carta. Ahora todas muestran algo de la cancha.
+
+   La banda va detrás del ícono y no al lado, para no empujar nada: el ícono
+   sube con un margen negativo y queda encima, sobre el degradado. */
+const tutoFicha = (vis, tit, txt, pie, cls, art) =>
   '<div class="tu-fi' + (cls ? ' ' + cls : '') + '">' +
+    (art && artCarta(art)
+      ? '<span class="tu-banda" style="background-image:url(' + artCarta(art) + ')"></span>'
+      : '') +
     '<div class="tu-fi-vis">' + vis + '</div>' +
     '<b>' + tit + '</b>' +
     '<span>' + txt + '</span>' +
@@ -7602,8 +7692,11 @@ const tutoFicha = (vis, tit, txt, pie, cls) =>
 
 function comoSeJuega(alEmpezar){
   openCard(
-    '<div class="tag">CÓMO SE JUEGA</div>' +
-    '<h1>DUELO<br><em>FUTBOLERO</em></h1>' +
+    /* El titular **es la pregunta**. Decía DUELO FUTBOLERO, que es el nombre
+       del juego y el jugador ya lo vio en el menú; lo que la pantalla es iba
+       arriba, en una chapita de 9px. */
+    '<div class="tag">EL PARTIDO</div>' +
+    '<h1>¿CÓMO SE <em>JUEGA</em>?</h1>' +
     '<div class="reglas">' +
 
       tutoFicha(tutoFila(), 'ELEGÍS UNA FILA',
@@ -7617,20 +7710,26 @@ function comoSeJuega(alEmpezar){
          para el rival o para vos — y se llama **POSIBILIDAD DE GOL**, que es
          lo que dice el cartel de la mesa cuando aparece. */
       tutoFicha(tutoMed('ico_aguante', 3, 4, 'cor'), 'EL AGUANTE',
-        'El físico. Si se <b>vacía</b>, es <b>posibilidad de gol</b> para el rival.') +
+        'El físico. Si se <b>vacía</b>, es <b>posibilidad de gol</b> para el rival.',
+        '', '', 'calambre') +
 
       tutoFicha(tutoMed('ico_racha', 4, 4, 'ray'), 'LA RACHA',
         'El envión. Si se <b>llena</b>, es <b>posibilidad de gol</b> para vos.',
-        'Con 3 <i class="ir"></i> atacás por columna.') +
+        'Con 3 <i class="ir"></i> atacás por columna.', '', 'hinchada') +
 
+      /* La foto es **el delantero definiendo**, no la del mano a mano: ésa
+         trae el rótulo UNO CONTRA UNO quemado en la imagen y a 54px de alto
+         se leía como un cartel dentro de otro cartel. */
       tutoFicha(tutoDuelo, 'LOS DUELOS',
-        'Tu número contra el suyo. Si empatan, <b>mini juego</b>.') +
+        'Tu número contra el suyo. Si empatan, <b>mini juego</b>.',
+        '', '', 'delantero') +
 
       tutoFicha(tutoItems(), 'LOS ÍTEMS',
-        'Reponen aguante, cargan racha, destraban cartas.') +
+        'Reponen aguante, cargan racha, destraban cartas.', '', '', 'fama') +
 
-      tutoFicha(tutoReloj, 'NUEVE JUGADAS',
-        'Son los 90 minutos. Cinco rondas hasta la copa.') +
+      tutoFicha(tutoCrono(), 'NUEVE JUGADAS',
+        'Son los 90 minutos. Cinco rondas hasta la copa.',
+        '', 'sola', 'pasegol') +
 
     '</div>' +
     '<div class="rg-botones">' +
@@ -8296,7 +8395,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 172;
+const VERSION = 173;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
