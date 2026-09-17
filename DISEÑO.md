@@ -7953,3 +7953,80 @@ decir cosas distintas**.
 
 El rojo de la cinta es lo único del cartel que cambia de color según de quién
 sea la jugada.
+
+
+## Se va el RIVAL de las cuatro de duelo
+
+Desde v169 el escudo dice de quién es cada carta, así que la palabra RIVAL en
+el nombre pasó a ser redundante. Pero **sólo en cuatro**.
+
+### Por qué sólo cuatro
+
+DEFENSOR, ARQUERO, MEDIO y DELANTERO pierden la palabra: no existe «tu
+defensor» como carta, así que no distinguía nada. Y son las que peor se
+partían, porque además llevan el número del duelo, que le roba ancho al título:
+
+| a 320 de ancho | antes | ahora |
+|---|---|---|
+| DELANTERO RIVAL | **4 renglones** | 1 |
+| DEFENSOR RIVAL | 3 | 1 |
+| ARQUERO RIVAL | 3 | 1 |
+| MEDIO RIVAL | 3 | 1 |
+
+Cuatro renglones en una carta de 62px es lo que hacía que se leyera
+«DELAN / TERO / RIV / AL».
+
+**A las otras seis se les queda**, y no por costumbre. Sin la palabra:
+
+| tuya | del rival | chocarían en |
+|---|---|---|
+| PENAL | PENAL RIVAL | PENAL |
+| PASE GOL | PASE GOL RIVAL | PASE GOL |
+| CÓRNER | CÓRNER RIVAL | CÓRNER |
+| TIRO LIBRE | LIBRE RIVAL | LIBRE |
+
+Dos cartas con el mismo nombre y efectos opuestos en la misma mesa. Y peor:
+AUTOGOL RIVAL es **gol tuyo** —ellos se la meten— y convive con AUTOGOL PROPIO,
+que es gol en contra. Sin RIVAL, el significado se da vuelta.
+
+### El dato deja de deducirse del nombre
+
+```js
+const esDelRival = tipo => !!(TYPES[tipo] || {}).riv;
+```
+
+Salía de un `/RIVAL/` sobre el título, y era elegante mientras todas las cartas
+del rival lo dijeran: el escudo y el texto no podían contradecirse porque eran
+lo mismo. Dejó de servir en el momento en que cuatro cartas perdieron la
+palabra y siguieron siendo del rival. Ahora `riv:true` está escrito en los diez
+tipos.
+
+## Un crash que venía de v168
+
+Al probar esto saltó un error que **ya estaba pusheado**: el mano a mano y el
+arco de los penales explotaban.
+
+```js
+const A = COLORES[((esc && esc.c1) || 0) % COLORES.length].hex;
+```
+
+Los dos dibujan muñecos con los colores del escudo, y sacaban el hex indexando
+la paleta a mano. Eso anda con un índice, pero desde v168 el escudo del club
+sale de la tabla de los treinta y trae **nombres**: `'blanco' % 12` es `NaN`, y
+`COLORES[NaN].hex` tira `Cannot read properties of undefined`.
+
+Se rompía al jugar cualquier carta de duelo —una de cada cuatro— y en toda la
+tanda de penales. `escudoSVG` ya traducía nombre a índice desde v168; estas dos
+funciones no pasan por ahí y se quedaron afuera.
+
+Ahora hay **un solo lugar donde se traduce**:
+
+```js
+const hexEscudo = v => COLORES[aIndice(v, IDX_COL) % COLORES.length].hex;
+```
+
+Probado en el juego andando, con pestaña de consola limpia: los cuatro mini
+juegos abren con sus dos muñecos, el arco del penal se dibuja, y no queda ni un
+error. Quedan tres accesos a la paleta en todo el archivo —los dos de
+`escudoSVG` y el de `hexEscudo`— y un guardián en el parche los cuenta, para
+que el próximo que agregue un dibujo con colores de escudo no repita el camino.

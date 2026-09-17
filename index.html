@@ -2801,7 +2801,7 @@ img{height:auto}
 
    Va **encima de la foto y en absoluto**, no en el flujo. El primer intento
    lo puso al lado del nombre, que parecía el lugar obvio: le comía 16 de los
-   80px del título y DEFENSOR RIVAL se partía en «DEFE / NSO / R / RIV / AL».
+   80px del título y DEFENSOR RIVAL —que así se llamaba— se partía en «DEFE / NSO / R / RIV / AL».
    En una carta de 90px de ancho no sobra nada en el renglón del nombre. Así
    **no cuesta un píxel**: la carta mide exactamente lo mismo que antes.
 
@@ -6964,19 +6964,34 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 /* ---------------- catálogo de cartas ---------------- */
 // stat: 'atk' se compara contra tu ataque, 'def' contra tu defensa, null = sin duelo
 const TYPES = {
-  defensor:  { ico:'🧱', nm:'DEFENSOR RIVAL',stat:'atk' },
-  arquero:   { ico:'🥅', nm:'ARQUERO RIVAL', stat:'atk' },
-  medio:     { ico:'🌀', nm:'MEDIO RIVAL', stat:'def' },
-  delantero: { ico:'👟', nm:'DELANTERO RIVAL', stat:'def' },
+  /* `riv:true` marca de quién es la **escena** de la carta: la jugada pasa
+     del lado de ellos. No es a quién le conviene —DEFENSOR es una oportunidad
+     tuya y AUTOGOL RIVAL te da un gol— eso lo dice el color del tono.
+
+     A las cuatro de duelo se les sacó el RIVAL del nombre: no existe «tu
+     defensor» como carta, así que la palabra no distinguía nada y en un
+     teléfono de 320 hacía que DELANTERO RIVAL se partiera en cuatro renglones
+     —«DELAN / TERO / RIV / AL»— porque además llevan el número del duelo, que
+     le roba ancho al título.
+
+     A las otras seis se les queda, y no por costumbre: sin él, PENAL RIVAL
+     choca con PENAL, PASE GOL RIVAL con PASE GOL, CÓRNER RIVAL con CÓRNER y
+     LIBRE RIVAL con TIRO LIBRE —dos cartas con el mismo nombre y efectos
+     opuestos en la misma mesa—, y AUTOGOL RIVAL, que es **gol tuyo**, se
+     leería como el AUTOGOL PROPIO, que es gol en contra. */
+  defensor:  { ico:'🧱', nm:'DEFENSOR',  stat:'atk', riv:true },
+  arquero:   { ico:'🥅', nm:'ARQUERO',   stat:'atk', riv:true },
+  medio:     { ico:'🌀', nm:'MEDIO',     stat:'def', riv:true },
+  delantero: { ico:'👟', nm:'DELANTERO', stat:'def', riv:true },
   jugada:    { ico:'⚽', nm:'JUGADA CLARA' },
   pasegol:   { ico:'🤝', nm:'PASE GOL' },
   penal:     { ico:'🎯', nm:'PENAL' },
-  penalC:    { ico:'💀', nm:'PENAL RIVAL' },
+  penalC:    { ico:'💀', nm:'PENAL RIVAL', riv:true },
   libre:     { ico:'🚧', nm:'TIRO LIBRE' },
   corner:    { ico:'🚩', nm:'CÓRNER' },
-  pasegolC:  { ico:'🕳', nm:'PASE GOL RIVAL' },
-  libreC:    { ico:'🧨', nm:'LIBRE RIVAL' },
-  cornerC:   { ico:'🌪', nm:'CÓRNER RIVAL' },
+  pasegolC:  { ico:'🕳', nm:'PASE GOL RIVAL', riv:true },
+  libreC:    { ico:'🧨', nm:'LIBRE RIVAL', riv:true },
+  cornerC:   { ico:'🌪', nm:'CÓRNER RIVAL', riv:true },
   hinchada:  { ico:'📣', nm:'HINCHADA' },
   cano:      { ico:'🪄', nm:'CAÑO' },
   ola:       { ico:'🌊', nm:'OLA EN LA TRIBUNA' },
@@ -6990,8 +7005,8 @@ const TYPES = {
   calambre:  { ico:'🦵', nm:'CALAMBRE', dana:true },
   lesion:    { ico:'🩹', nm:'LESIÓN', dana:true },
   offside:   { ico:'🚫', nm:'OFFSIDE' },
-  autogol:   { ico:'🎁', nm:'AUTOGOL RIVAL' },
-  contra:    { ico:'💥', nm:'CONTRAATAQUE RIVAL' },
+  autogol:   { ico:'🎁', nm:'AUTOGOL RIVAL', riv:true },
+  contra:    { ico:'💥', nm:'CONTRAATAQUE RIVAL', riv:true },
   encontra:  { ico:'🙈', nm:'AUTOGOL PROPIO' }
 };
 
@@ -7232,6 +7247,14 @@ const sinTilde = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/
 const IDX_COL = {}; COLORES.forEach((c, i) => IDX_COL[sinTilde(c.nm)] = i);
 const IDX_ESC = {}; ESCUDOS.forEach((e, i) => IDX_ESC[e.id] = i);
 const aIndice = (v, mapa) => typeof v === 'number' ? v : (mapa[v] != null ? mapa[v] : 0);
+
+/* El color de un escudo, venga como índice o como nombre. Los dibujos que no
+   pasan por `escudoSVG` —el arquero del penal, los muñecos del mano a mano—
+   sacaban el hex indexando la paleta a mano con un `% length`, y eso anda
+   con un índice pero da **NaN** con un nombre: desde que el escudo del club
+   sale de la tabla de los treinta, `'blanco' % 12` rompía el dibujo entero.
+   Con esto hay un solo lugar donde se traduce. */
+const hexEscudo = v => COLORES[aIndice(v, IDX_COL) % COLORES.length].hex;
 
 /* `pat` es opcional: sin él se cae al dibujo que da la silueta, que es lo
    que hacía el juego antes de que el dibujo fuera su propio eje. Así las
@@ -7883,7 +7906,7 @@ const RONDA = i => (G.copa && G.copa[i]) || RONDAS[i];
      CLASIF   ATK 1-3      DEF 1-2       arrancás ganando
      OCTAVOS  ATK 2-4      DEF 1-3
 
-   El DELANTERO RIVAL va en **1 fijo** en esas dos primeras rondas. Es la carta
+   El DELANTERO va en **1 fijo** en esas dos primeras rondas. Es la carta
    más cara de perder —su mano a mano es gol en contra— y con DEFENSA 1 de base
    el jugador todavía no tiene con qué. De cuartos en adelante sube como el
    resto.
@@ -8273,7 +8296,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 170;
+const VERSION = 171;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -8440,7 +8463,7 @@ function makeCell(lvl){
       cell.val = v + escalada(G.atk - BASE_ATK);
     } else if(T.stat === 'def'){
       cell.val = v + escalada(G.def - BASE_DEF);
-      /* El DELANTERO RIVAL no pasa de 1 en las dos primeras rondas. Es la carta
+      /* El DELANTERO no pasa de 1 en las dos primeras rondas. Es la carta
          más cara del tablero —perder su mano a mano es gol en contra— y con el
          escalado por stats llegaba a 3 aunque el pool dijera 1, así que el
          arranque se volvía duro justo donde tiene que ser accesible. */
@@ -9013,7 +9036,7 @@ function costoDuelo(cell){
    doble que ganarle raspando, igual que perder por dos duele el doble. */
 function premioDuelo(cell){
   const mio = TYPES[cell.type].stat === 'atk' ? ATK() : DEF();
-  /* El empate del DELANTERO RIVAL paga **3 de racha**: perderlo es gol en
+  /* El empate del DELANTERO paga **3 de racha**: perderlo es gol en
      contra, el peor resultado de la mesa, así que el premio tiene que estar a
      la altura del riesgo. Con 2 el 50/50 no compensaba y la carta era solo un
      peligro.
@@ -9042,7 +9065,7 @@ function duelo(cell, mio, gana, pierde, empate, premio, golGana){
      delantero lo que está en el aire es el marcador, y eso cambia por completo
      si conviene meterse en esa fila.
 
-     En el empate solo el DELANTERO RIVAL lleva naranja: es el único donde
+     En el empate solo el DELANTERO lleva naranja: es el único donde
      perder significa **gol en contra**. Los otros tres van en amarillo.
 
      El arquero estuvo un tiempo en verde porque ganarlo es GOL TUYO, pero se
@@ -9391,20 +9414,14 @@ function tapLine(kind, idx){
 }
 
 /* ---- DE QUIÉN ES LA ESCENA ----
-   Se deriva del **nombre** y no de una lista aparte. Podría llevar un
-   `riv:true` en cada tipo, pero entonces habría dos fuentes de verdad que se
-   pueden desincronizar: una carta nueva con RIVAL en el nombre y sin la
-   marca mostraría tu escudo sobre una jugada del rival.
+   Sale de `riv` en la tabla de tipos. **Salía del nombre** —un `/RIVAL/`
+   sobre el título— y era elegante mientras todas las cartas del rival lo
+   dijeran: el escudo y el texto no podían contradecirse porque eran lo mismo.
 
-   El nombre es lo que el jugador lee, así que atando el escudo al nombre los
-   dos **no pueden contradecirse nunca**, y una carta del rival que se agregue
-   mañana trae su escudo sola.
-
-   Ojo con lo que significa: es de quién es la **escena**, no a quién le
-   conviene. DEFENSOR RIVAL es una oportunidad tuya y AUTOGOL RIVAL te da un
-   gol, pero los dos pasan del lado de ellos. Lo que te conviene ya lo dice
-   el color del tono, que es otra cosa y va por otro lado. */
-const esDelRival = tipo => /RIVAL/.test((TYPES[tipo] || {}).nm || '');
+   Dejó de servir cuando las cuatro de duelo perdieron la palabra. Ahí el
+   truco se da vuelta: DEFENSOR, ARQUERO, MEDIO y DELANTERO son del rival y
+   ya no lo dicen, así que el dato tiene que estar escrito. */
+const esDelRival = tipo => !!(TYPES[tipo] || {}).riv;
 
 /* El escudo del club al que pertenece la escena. Sin escudos en juego —el
    tutorial, una pantalla suelta— no dibuja nada. El 17 es un piso: el CSS lo
@@ -10274,8 +10291,8 @@ function pelotaSVG(x, y, r, cls){
 }
 
 function arcoPenalHTML(esc){
-  const A = COLORES[((esc && esc.c1) || 0) % COLORES.length].hex;   // camiseta
-  const B = COLORES[((esc && esc.c2) || 0) % COLORES.length].hex;   // guantes
+  const A = hexEscudo(esc && esc.c1);   // camiseta
+  const B = hexEscudo(esc && esc.c2);   // guantes
 
   let red = '';
   for(let x = 26; x <= 174; x += 12) red += '<path class="pp-red" d="M' + x + ' 22 V98"/>';
@@ -10700,8 +10717,8 @@ function polar(cx, cy, r, grados){
    Cada uno va con los colores de su escudo, igual que el arquero de los
    penales: vos con los tuyos, el rival con los suyos. */
 function figuraDuelo(esc, cls){
-  const A = COLORES[((esc && esc.c1) || 0) % COLORES.length].hex;
-  const B = COLORES[((esc && esc.c2) || 0) % COLORES.length].hex;
+  const A = hexEscudo(esc && esc.c1);
+  const B = hexEscudo(esc && esc.c2);
   return '<g class="' + cls + '">' +
     '<circle cx="0" cy="-22" r="7.5" fill="#f0c9a0" stroke="rgba(0,0,0,.35)" stroke-width="1"/>' +
     '<path d="M-8 -13 h16 v20 h-16 z" fill="' + A + '" stroke="rgba(0,0,0,.35)" stroke-width="1"/>' +
@@ -11776,7 +11793,7 @@ async function scoreU(msg, racha){
    jugada. La racha no dispara nada al bajar, así que la simetría queda sin el
    efecto colateral.
 
-   `desgaste` agrega además el daño de aguante. Lo usa solo el DELANTERO RIVAL, que
+   `desgaste` agrega además el daño de aguante. Lo usa solo el DELANTERO, que
    no cuesta aguante por ser gol sino por ser un **duelo perdido**: esa regla
    vale para defensor, mediocampo y delantero por igual. */
 async function scoreC(msg, desgaste, sinRacha){
@@ -11784,7 +11801,7 @@ async function scoreC(msg, desgaste, sinRacha){
   if(G.modo === 'duelo') G.J[1 - G.turno].goles = G.gC;
   const espera = flashGol('contra');
   say(msg + ' Gol del rival. ' + G.gU + '-' + G.gC, 'big');
-  /* `sinRacha` lo usa el DELANTERO RIVAL: ese gol ya se cobra como duelo
+  /* `sinRacha` lo usa el DELANTERO: ese gol ya se cobra como duelo
      perdido (-❤ según la diferencia), y sumarle además el -1 ⚡ de la regla del
      gol era cobrar tres veces la misma carta. */
   if(!sinRacha) G.racha = clamp(G.racha - 1, 0, G.rachaMax);
