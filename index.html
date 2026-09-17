@@ -367,6 +367,7 @@ img{height:auto}
   #m-racha.lista,
   .gol-banner.lista, .gol-banner.lista .gb-go,
   .col-picks.lista .col-pick,
+  .cta.llama,
   .row-pick:not(:disabled){animation:none}
   #m-racha.lista{box-shadow:0 0 14px 2px rgba(245,200,66,.35)}
   .gol-banner.lista{box-shadow:0 0 20px 3px rgba(61,220,107,.35)}
@@ -375,6 +376,8 @@ img{height:auto}
   /* Sin latido, pero la fila tiene que seguir diciendo que se toca: queda el
      anillo quieto, que es el fotograma del pico. */
   .row-pick:not(:disabled){box-shadow:0 0 0 1px rgba(255,255,255,.32)}
+  /* Y el botón del cartel, lo mismo: el anillo se queda prendido. */
+  .cta.llama{outline-width:2px}
 }
 
 /* ---------- LAS TRES COLUMNAS ---------- */
@@ -1425,6 +1428,43 @@ img{height:auto}
 .cta:hover{
   transform:translateY(-2px);
   box-shadow:0 0 0 1px var(--gold), 0 8px 26px rgba(245,200,66,.28);
+}
+
+/* ---- EL BOTÓN QUE ESPERA ----
+   Los carteles que **frenan el partido** —el empate, la racha llena, el fin
+   de ronda, la fundida— esperaban un toque sin decirlo. El jugador terminaba
+   de leer y tenía que darse cuenta solo de que el juego estaba detenido
+   esperándolo. El único que avisaba era el de la jugada, con su «TOCÁ PARA
+   JUGARLA» parpadeando, y es justo el que menos falta le hacía: ahí la
+   tarjeta entera es el botón.
+
+   Dos golpes cortos y una pausa larga: del 0 al 45% pasa todo y el resto del
+   ciclo descansa. Un botón que late sin parar en un cartel que quizás estés
+   leyendo con calma es una mano en el hombro cada dos segundos.
+
+   El anillo va con `outline` y no con `box-shadow` **a propósito**: el botón
+   verde —IR AL VESTUARIO— tiene su propia sombra con un `inset`, y animar
+   `box-shadow` se la comería entera. El `outline` además nunca ocupa lugar,
+   así que el cartel mide exactamente lo mismo que antes. */
+@keyframes ctaLatido{
+  0%      {transform:scale(1);    outline-width:0}
+  10%     {transform:scale(1.035);outline-width:3px}
+  20%     {transform:scale(1)}
+  30%     {transform:scale(1.022);outline-width:2px}
+  45%,100%{transform:scale(1);    outline-width:0}
+}
+.cta.llama{
+  animation:ctaLatido 2.8s ease-in-out infinite;
+  outline:0 solid rgba(245,200,66,.55);outline-offset:2px;
+}
+/* El verde late con su color, no con el dorado del resto. */
+.cta.jugar.llama{outline-color:rgba(61,220,107,.65)}
+/* Se apaga al pasar el dedo **sólo donde el dedo se puede pasar**: en un
+   teléfono el `:hover` se queda pegado en lo último que tocaste, y un
+   `:hover` a secas dejaría el botón mudo justo después de abrir el cartel
+   que viene. Es la misma trampa que tuvo el latido de las filas en v166. */
+@media (hover:hover){
+  .cta.llama:hover{animation:none}
 }
 /* **El fondo más claro es del dorado, y sólo donde hay mouse.** Estaba suelto
    en la regla de arriba y lo tenía que deshacer el bloque de `(hover:none)`
@@ -8395,7 +8435,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 173;
+const VERSION = 174;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -9770,7 +9810,7 @@ function abrirFichaGol(btn){
         '<b>' + esperadoDe(SIT_FAVOR) + '%</b> DE GOL <em>una de las cinco, al azar</em></div>' +
       minisGol(SIT_FAVOR, true) +
       '<div class="sit-botones">' +
-        '<button class="cta" id="fgUsar">USAR LA RACHA</button>' +
+        '<button class="cta llama" id="fgUsar">USAR LA RACHA</button>' +
         '<button class="cta alt" id="fgVolver">VOLVER</button>' +
       '</div>' +
     '</div>';
@@ -10188,7 +10228,7 @@ function duelPintarTienda(quien, primera){
       '<p>Sumá <b>' + DUELO.PUNTOS_ET + ' puntos</b> al plantel y comprá lo que necesites. Todo queda para el segundo tiempo.</p>' +
       '<div id="repET"></div>' +
       tiendaHTML() +
-      '<button class="cta" id="etBtn">' + (quien === 0 ? 'LISTO · PASA EL OTRO' : 'AL SEGUNDO TIEMPO') + '</button>',
+      '<button class="cta llama" id="etBtn">' + (quien === 0 ? 'LISTO · PASA EL OTRO' : 'AL SEGUNDO TIEMPO') + '</button>',
       'card-final'
     );
     engancharTienda();
@@ -11357,7 +11397,7 @@ function avisoRacha(){
           '</div>' +
         '</div>' +
         '<div class="a-s">No hace falta usarla ahora: queda disponible hasta que la gastes.</div>' +
-        '<button class="cta" id="avisoBtn">CONTINUAR PARTIDO</button>' +
+        '<button class="cta llama" id="avisoBtn">CONTINUAR PARTIDO</button>' +
       '</div>';
     wrap = montarPop(wrap);
     wrap.querySelector('#avisoBtn').onclick = () => { cerrarPop(); resolve(); };
@@ -11453,7 +11493,7 @@ function fundidaRival(cayoMax){
         '<div class="fu-ahora">Y EL RIVAL SE GANA UNA LLEGADA ' +
           '<b>' + esperado + '%</b> DE GOL <em>una de las cinco, al azar</em></div>' +
         minisGol(SIT_RIVAL, false) +
-        '<button class="cta" id="fuBtn">A VER QUÉ PASA</button>' +
+        '<button class="cta llama" id="fuBtn">A VER QUÉ PASA</button>' +
       '</div>';
     wrap = montarPop(wrap);
 
@@ -11509,7 +11549,7 @@ function situacionGol(lado, yaElegida){
           (favor && S.key === 'penal' ? 'LO PATEÁS VOS · ELEGÍ EL PALO'
            : favor && S.key === 'jugada' ? 'ENTRA SOLA'
            : Math.round(S.p * 100) + '% DE GOL ' + (favor ? 'A FAVOR' : 'PARA EL RIVAL')) + '</div>' +
-        '<button class="cta" id="sitBtn">' +
+        '<button class="cta llama" id="sitBtn">' +
           (favor && S.key === 'penal' ? 'IR AL PENAL' : 'EJECUTAR') + '</button>' +
       '</div>';
     wrap = montarPop(wrap);
@@ -12065,7 +12105,7 @@ function avisoEmpate(){
             '<b>SE ACABÓ</b></div>' +
         '</div>' +
         '<div class="e-aviso">' + (tanda ? 'TANDA DE CINCO' : 'UN SOLO PENAL Y SE DEFINE') + '</div>' +
-        '<button class="cta" id="empBtn">' + (tanda ? 'IR A LA TANDA' : 'PATEAR PENAL DEFINITORIO') + '</button>' +
+        '<button class="cta llama" id="empBtn">' + (tanda ? 'IR A LA TANDA' : 'PATEAR PENAL DEFINITORIO') + '</button>' +
       '</div>';
     wrap = montarPop(wrap);
     wrap.querySelector('#empBtn').onclick = () => { cerrarPop(); resolve(); };
@@ -12223,7 +12263,7 @@ function matchWon(byPens){
       '</div>' +
       escaleraHTML(G.ronda + 1) +
       estadoRondaHTML() +
-      '<button class="cta jugar" id="shopBtn">IR AL VESTUARIO</button>' +
+      '<button class="cta jugar llama" id="shopBtn">IR AL VESTUARIO</button>' +
     '</div>',
     'card-final card-remate pasa'
   );
@@ -12611,7 +12651,7 @@ function showMarket(primeraVez){
     (Object.keys(G.compras).length
       ? '<div class="mk-nota">Lo que compraste ahora se puede devolver con la ✕. Al pasar de ronda queda firme.</div>'
       : '') +
-    '<button class="cta" id="nextBtn">JUGAR ' + RONDA(G.ronda + 1).name + '</button>';
+    '<button class="cta llama" id="nextBtn">JUGAR ' + RONDA(G.ronda + 1).name + '</button>';
   openCard(html);
   engancharTienda();
   $('nextBtn').onclick = () => { closeCard(); G.ronda++; startMatch(); };

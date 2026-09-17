@@ -8123,3 +8123,84 @@ consulta y `.tu-fi .tu-banda` de la regla base tienen **la misma
 especificidad** —una consulta no suma— así que ganaba el que viene después, y
 el base está 570 líneas más abajo. Se resolvió con `.card-reglas` adelante, que
 es lo mismo que hubo que hacer con el buscador en v168.
+
+
+## El botón que espera
+
+Los carteles que **frenan el partido** —el empate, la racha llena, el fin de
+ronda, la fundida— esperaban un toque sin decirlo. El jugador terminaba de leer
+y tenía que darse cuenta solo de que el juego estaba detenido esperándolo.
+
+El único que avisaba era el de la jugada, con su «TOCÁ PARA JUGARLA»
+parpadeando abajo — y es justo el que menos falta le hacía, porque ahí la
+tarjeta entera es el botón.
+
+### Dónde va y dónde no
+
+De los trece carteles del juego con botón de acción, el latido va en **ocho**.
+El corte es simple: lo lleva el que frena el partido —venías jugando y el juego
+se detuvo— y no lo lleva la pantalla de menú, donde ya sabés que estás
+eligiendo algo.
+
+| lleva | no lleva |
+|---|---|
+| EMPATE · *patear penal definitorio* | CÓMO SE JUEGA |
+| RACHA LLENA · *usar la racha* | TU CLUB |
+| PASASTE · *ir al vestuario* | MENÚ, OPCIONES, CRÉDITOS |
+| SE TE FUNDIÓ · *a ver qué pasa* | fin de campeonato |
+| AVISO · *continuar partido* | |
+| FIN DE RONDA · *jugar octavos…* | |
+| SITUACIÓN DE GOL | |
+| ENTRETIEMPO del 1 vs 1 | |
+
+### Dos golpes y una pausa larga
+
+```css
+@keyframes ctaLatido{
+  0%      {transform:scale(1);    outline-width:0}
+  10%     {transform:scale(1.035);outline-width:3px}
+  20%     {transform:scale(1)}
+  30%     {transform:scale(1.022);outline-width:2px}
+  45%,100%{transform:scale(1);    outline-width:0}
+}
+```
+
+Del 0 al 45% pasa todo y el resto del ciclo descansa. Un botón que late sin
+parar en un cartel que quizás estés leyendo con calma es una mano en el hombro
+cada dos segundos.
+
+### El anillo va con `outline`, no con `box-shadow`
+
+Y es a propósito. El botón verde —IR AL VESTUARIO— tiene **su propia sombra con
+un `inset`**, y animar `box-shadow` se la comería entera. El `outline` no la
+toca, y además **nunca ocupa lugar**: medido con y sin la clase, el botón mide
+284×46 y el cartel 292 en los dos casos.
+
+El color del anillo sigue al botón: dorado en los siete normales y verde en el
+de PASASTE, con su propia regla. Comprobado en el juego andando —
+`rgba(245,200,66,.55)` en el empate y `rgba(61,220,107,.65)` en el vestuario,
+con la sombra del verde intacta.
+
+### Se apaga sólo donde el dedo se puede pasar
+
+```css
+@media (hover:hover){ .cta.llama:hover{animation:none} }
+```
+
+En un teléfono el `:hover` se queda pegado en lo último que tocaste, así que un
+`:hover` a secas dejaría mudo el botón del cartel siguiente. Es la misma trampa
+que tuvo el latido de las filas en v166, y se resuelve igual.
+
+Con `prefers-reduced-motion` el latido se apaga y queda el anillo prendido en
+2px, que es el fotograma del pico.
+
+### Lo que se resignó
+
+De tres formas probadas quedó la más marcada. Las otras dos —el anillo que
+respira de las columnas y el barrido del cartel de gol— reusaban un recurso que
+en este juego **ya significa otra cosa**: el barrido dice «la racha está llena»
+y el latido dice «te queda un corazón».
+
+Elegir el latido le pone a un botón el gesto que hasta ahora era de urgencia.
+Queda anotado: si en el partido se siente como un apuro donde nadie corre, el
+anillo de las columnas es el reemplazo, y es un cambio de tres líneas.
