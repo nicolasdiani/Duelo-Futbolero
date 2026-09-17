@@ -8030,3 +8030,29 @@ juegos abren con sus dos muñecos, el arco del penal se dibuja, y no queda ni un
 error. Quedan tres accesos a la paleta en todo el archivo —los dos de
 `escudoSVG` y el de `hexEscudo`— y un guardián en el parche los cuenta, para
 que el próximo que agregue un dibujo con colores de escudo no repita el camino.
+
+
+## JUGADA CLARA dice GOL y nada más
+
+Decía `GOL +⚡`. El rayo no mentía —el gol carga un tramo de racha, lo hace
+`scoreU`— pero la carta **más simple de la mesa** terminaba con dos datos, y el
+segundo es el mismo que dan todas las cartas de gol.
+
+Acá el gol es **seguro**: no hay porcentaje que leer ni duelo que ganar. Eso se
+cuenta mejor con una palabra sola.
+
+| | antes | ahora |
+|---|---|---|
+| JUGADA CLARA | GOL +⚡ | **GOL** |
+| AUTOGOL RIVAL | GOL +⚡ | GOL +⚡ |
+
+Lo que se pierde es el aviso: la racha va a subir igual, pero la carta ya no lo
+anticipa. Se ve en el medidor cuando pasa. Medido en el juego andando: el gol
+sigue sumando y la racha sigue yendo de 0 a 1, sólo cambió el texto.
+
+**AUTOGOL RIVAL conserva el rayo** aunque hace exactamente lo mismo. Es una
+diferencia a propósito y no un olvido: las dos líneas quedaron una al lado de
+la otra, con el comentario que lo dice.
+
+El cambio vale para los dos lugares de una: la carta de la mesa y el pop-up de
+la jugada leen el mismo `label` de `predict`.

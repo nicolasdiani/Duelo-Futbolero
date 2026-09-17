@@ -8296,7 +8296,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 171;
+const VERSION = 172;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -9125,7 +9125,19 @@ function predict(cell){
                                      '<span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b>-' + costoDuelo(cell) + ' <i class="ih"></i></b>');
   if(t === 'delantero') return duelo(cell, DEF(), 'LO CORTÁS', pierdo('GOL RIVAL'),
                                      '<span class="ra">+' + premioDuelo(cell) + ' <i class="ir"></i></span> o <b class="junto">GOL RIVAL</b>');
-  if(t === 'jugada')    return { label:'GOL' + R, tone:'good' };
+  /* JUGADA CLARA dice **GOL y nada más**. Decía `GOL +⚡` y el rayo no
+     mentía —el gol carga un tramo de racha, lo hace `scoreU`— pero la carta
+     más simple de la mesa terminaba con dos datos, y el segundo es el mismo
+     que dan todas las cartas de gol. Acá el gol es **seguro**: no hay
+     porcentaje que leer ni duelo que ganar, y eso se cuenta mejor con una
+     palabra sola.
+
+     Lo que se pierde es el aviso: la racha va a subir igual, pero la carta ya
+     no lo anticipa. Se ve en el medidor cuando pasa. */
+  if(t === 'jugada')    return { label:'GOL', tone:'good' };
+  /* AUTOGOL RIVAL conserva el rayo. Hace exactamente lo mismo que JUGADA
+     CLARA, así que esto es una diferencia a propósito y no un olvido: si
+     alguna vez molesta, las dos líneas están acá al lado. */
   if(t === 'autogol')   return { label:'GOL' + R, tone:'good' };
   if(t === 'contra')    return { label:'GOL RIVAL<span class="efe"><b>-1 <i class="ir"></i></b></span>', tone:'bad' };
   if(t === 'encontra')  return { label:'GOL RIVAL<span class="efe"><b>-1 <i class="ir"></i></b></span>', tone:'bad' };
