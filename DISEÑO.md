@@ -9269,3 +9269,21 @@ git revert v188-duelo-futbolero
 ```
 
 o volver al estado exacto de antes con `git checkout v187-duelo-futbolero`.
+
+### v188.1 · el USAR del desplegable no se pintaba
+
+Jugando una partida entera apareció el único que se había escapado: en la ficha
+del ítem, **USAR seguía saliendo dorado plano** en vez de verde.
+
+La causa es de manual: `.item-ficha:not(.ficha-gol) .if-btn`, que la ficha
+estrenó en v181, pesa **0,3,0** y el modificador `.if-btn.n-verde` pesa **0,2,0**.
+Encima la regla de la ficha va más abajo en la hoja, así que ganaba por los dos
+lados.
+
+Se arregla subiendo el modificador a **0,4,0** y —esto es lo que importa para la
+próxima vez— **poniéndolo pegado a la regla que lo pisaba**, no en el bloque de
+botones. Si algún día cambia la ficha, las dos reglas están juntas.
+
+El resto de la partida salió limpio: el menú, el club, el tutorial, el tablero,
+el pop-up de la jugada, el mini juego, el cartel de racha llena, el fin de
+partido, el vestuario y el mercado. Sin errores de consola.

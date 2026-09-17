@@ -2818,6 +2818,19 @@ img{height:auto}
 .item-ficha:not(.ficha-gol) .if-btn.alt{
   background:rgba(3,14,34,.8);border-color:rgba(147,174,222,.28);color:var(--dim);
 }
+/* Y el relleno de v188, otra vez acá. La chapa plana que la ficha estrenó en
+   v181 pesa 0,3,0 y va más abajo en la hoja, así que le ganaba al modificador
+   —USAR salía dorado plano en vez de verde—. Estas dos suben a 0,4,0 y quedan
+   pegadas a la regla que las pisaba, que es donde hay que buscarlas si algún
+   día cambia. */
+.item-ficha:not(.ficha-gol) .if-btn.n-verde{
+  background:linear-gradient(165deg, #4ae87a, #25b955);
+  border-color:#8ff5ae;color:#04220f;
+  box-shadow:0 6px 18px rgba(61,220,107,.26), inset 0 1px 0 rgba(255,255,255,.45);
+}
+.item-ficha:not(.ficha-gol) .if-btn.n-linea{
+  background:rgba(3,14,34,.8);border-color:var(--line);color:var(--dim);box-shadow:none;
+}
 .item-ficha.on{opacity:1;transform:translateY(-50%);pointer-events:auto}
 
 /* El pico que apunta al ítem. */
