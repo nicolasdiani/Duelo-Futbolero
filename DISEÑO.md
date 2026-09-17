@@ -9702,3 +9702,71 @@ CAMPEÓN con un botón de 155px centrado, ELIMINADO con los dos de 155 y 153. Lo
 nombres de las rondas alineados en la misma x en las dos. Los textos compartidos
 —el de campeón y el de eliminado— leídos de `textoCompartir` corriendo, no
 escritos a mano. Sin errores de consola.
+
+## v195 · la carta trabada estaba borrada, no tapada
+
+De las tres salió **la B**. OFFSIDE queda como estaba.
+
+### Lo que había, medido
+
+La ilustración de una carta trabada terminaba al **7,8% de opacidad** —el 26%
+de la caja por el 30% de la imagen— con `grayscale(.7)` y **sin desenfoque**.
+
+O sea que el pedido —«blureemos más»— no se podía cumplir tal cual: no había
+blur que aumentar, y **desenfocar algo que ya no se ve no se nota**. Eso se
+probó y está en las maquetas: con 2,5px encima del 7,8% la carta es la misma.
+
+### Lo que hay ahora
+
+La imagen **vuelve** —25,5% efectivo— pero sin color y fuera de foco. La carta
+pasa de «borrada» a «tapada»: se ve que hay una jugada ahí abajo y que no se
+puede mirar, que es exactamente lo que significa estar trabada.
+
+| | opacidad de la foto | desenfoque |
+|---|---|---|
+| antes | 7,8% | — |
+| ahora | **25,5%** | **4px** (1,6 en mobile) |
+
+### Las cartas vuelven a distinguirse entre ellas
+
+Efecto lateral que no buscaba y que quedó: sin foto, una **ROJA** trabada y una
+**JUGADA CLARA** trabada eran el mismo rectángulo rayado. Con la imagen de
+vuelta, aunque esté borrosa, cada una tiene su mancha.
+
+### El texto no se toca
+
+Una trabada tiene que poder leerse: hay que saber que es un PENAL para decidir
+si vale gastar el VAR en destrabarla. Se desenfoca la foto, nunca el nombre ni
+el cartel. El nombre sigue al 26% y el cartel al 50%.
+
+### El desenfoque se mide en píxeles y la carta no
+
+Esto apareció probando en el teléfono y casi arruina el cambio. **4px son el 2%
+de una carta de escritorio, que mide 185, y el 5% de una de teléfono, que mide
+80.** Sin ajustar, en mobile la imagen se volvía una mancha gris lisa y
+volvíamos al rectángulo de antes, con el agravante de que ahora pesaba más.
+
+Debajo de 440 el desenfoque baja a **1,6px**, que es el mismo 2%. El corte es el
+que el juego ya usa para el canto de las cartas.
+
+### Una regresión que me hice y arreglé
+
+Con el **VAR apuntando**, las trabadas se marcan `.destrabable` y el cartel del
+ítem promete que «se ven vivas otra vez». Esa clase le sube la caja al 90%: con
+la foto al 7,8% eso daba 27% y no molestaba, pero con la foto al 25,5% pasaba a
+**76% de gris borroso** —o sea peor que trabada, un manchón— justo en el momento
+en que la carta tiene que verse bien.
+
+Ahora con el VAR apuntando **la carta vuelve en foco y con color**: 67,5% y
+`grayscale(.15)`, sin blur. Es la que estás por destrabar, así que se muestra
+como va a quedar.
+
+La regla va con `.lock.destrabable` y no con `.destrabable` sola para ganarle por
+especificidad a las dos de arriba sin depender del orden de la hoja.
+
+### Verificado
+
+Cuatro trabadas distintas —DELANTERO con duelo, PENAL, ROJA y JUGADA CLARA— en
+escritorio y a 390 de ancho. El desenfoque cambia solo en el corte de 440: 4px
+arriba, 1,6 abajo. El estado con el VAR apuntando, en foco. El texto de las
+cuatro, legible. Sin errores de consola.

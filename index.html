@@ -1296,7 +1296,11 @@ img{height:auto}
   border-color:var(--dim2);
   background:repeating-linear-gradient(135deg,#0a1424,#0a1424 7px,#0d1b30 7px,#0d1b30 14px);
 }
-.cell.lock .c-ico,.cell.lock .c-nm,.cell.lock .c-val{opacity:.26}
+.cell.lock .c-nm,.cell.lock .c-val{opacity:.26}
+/* La caja de la ilustración va un punto más arriba que el texto: lo que la
+   tapa ahora es el desenfoque, no el borrado. El porqué está abajo, en
+   `.cell.lock .c-art`. */
+.cell.lock .c-ico{opacity:.3}
 .cell.lock .c-out{opacity:.5}
 /* Una carta trabada no se puede jugar, así que tampoco se resalta: pintarla
    de verde o rojo prometería algo que no va a pasar. */
@@ -3351,7 +3355,39 @@ img{height:auto}
 }
 .row.hl .cell:not(.empty):not(.lock) .c-ico::after,
 .cell.colhl:not(.empty):not(.lock) .c-ico::after{opacity:1}
-.cell.lock .c-art{opacity:.3;filter:grayscale(.7)}
+/* **Trabada no es borrada.** La ilustración terminaba al **7,8%** —el 26% de
+   la caja por el 30% de la imagen— y sin desenfoque: o sea que no estaba fuera
+   de foco, estaba casi borrada. Y una foto borrada se lee como una carta rota,
+   no como una carta que no se puede jugar.
+
+   Ahora la imagen vuelve —22% efectivo— pero sin color y fuera de foco: se ve
+   que hay una jugada ahí abajo y que no se puede mirar, que es exactamente lo
+   que significa estar trabada.
+
+   De paso las cartas vuelven a distinguirse entre ellas. Sin foto, una ROJA
+   trabada y una JUGADA CLARA trabada eran el mismo rectángulo rayado.
+
+   **El texto no se toca.** Una trabada tiene que poder leerse: hay que saber
+   que es un PENAL para decidir si vale gastar el VAR en destrabarla. Se
+   desenfoca la foto, nunca el nombre ni el cartel. */
+.cell.lock .c-art{opacity:.85;filter:grayscale(1) blur(4px) brightness(.9)}
+/* **Con el VAR apuntando, la carta vuelve en foco.** Es la que estás por
+   destrabar, así que se muestra como se va a ver. Y hace falta escribirlo: al
+   subir la foto del 7,8% al 25,5%, el `opacity:.9` que `.destrabable` le pone a
+   la caja la dejaba en 76% de gris borroso —o sea peor que trabada, un
+   manchón— justo en el momento en que el cartel promete que se ven vivas.
+
+   Va con `.lock.destrabable` y no con `.destrabable` sola para ganarle por
+   especificidad a las dos reglas de arriba sin depender del orden. */
+.cell.lock.destrabable .c-art{opacity:.75;filter:grayscale(.15)}
+/* **El desenfoque se mide en píxeles y la carta no.** 4px son el 2% de una
+   carta de escritorio, que mide 185, y el 5% de una de teléfono, que mide 80:
+   sin este escalón la imagen se volvía una mancha gris lisa y volvíamos al
+   rectángulo de antes. 1,6px es el mismo 2%. El corte de 440 es el que el
+   juego ya usa para el canto de las cartas. */
+@media (max-width:440px){
+  .cell.lock .c-art{filter:grayscale(1) blur(1.6px) brightness(.9)}
+}
 
 /* Los medidores: el medallón en chico. Apagado = gris y translúcido. */
 .med-art{
@@ -9170,7 +9206,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 194;
+const VERSION = 195;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
