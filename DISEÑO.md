@@ -8447,3 +8447,46 @@ matcheaban en uno de los dos lados.
 
 Y en el juego se verificó que los treinta resuelven color, silueta y dibujo, y
 que ninguno de los que no es `solido` pinta un solo color.
+
+
+## No quedan dos escudos iguales
+
+UNIÓN pasa a `finas`. Era el que faltaba: hasta v177 tenía los cuatro campos
+iguales que ESTUDIANTES —rojo, blanco, rayas, inglés— y como están en niveles
+distintos podían salir **los dos en la misma copa**, uno en cuartos y otro en
+semis, sin forma de distinguirlos.
+
+Cruzando los treinta después del cambio: **cero grupos idénticos**. Las rayas
+bajan de 16 a 15 y `finas` sube a 3.
+
+Lo que queda son cinco grupos que comparten colores y dibujo pero se
+diferencian por la silueta, que es una distinción más débil pero existe:
+
+| | |
+|---|---|
+| RIESTRA / C. CÓRDOBA | negro y blanco a rayas |
+| SARMIENTO / BANFIELD | verde y blanco a rayas |
+| EST. RÍO IV / TUCUMÁN | celeste y blanco a rayas |
+| GIMNASIA LP / TALLERES | azul y blanco a rayas |
+| INSTITUTO / ESTUDIANTES | rojo y blanco a rayas |
+
+### El error del `hex`, aclarado
+
+En v177 quedó anotado un `TypeError ... reading 'hex'` que había saltado una
+vez sin poder reproducirlo. Ahora se entiende **por qué no se reproducía**: era
+una entrada retenida en la consola del panel, de una navegación anterior de esa
+misma pestaña. Volvió a aparecer al probar v178 y esta vez se pudo separar:
+
+- el *listener* puesto adentro de la página no capturó **nada**;
+- la consola del panel sí mostraba el error;
+- en una **pestaña nueva**, cargando lo mismo, no aparece.
+
+O sea que ni v177 ni v178 lo producen. Queda como método: en este panel, para
+afirmar que no hay errores de consola **hace falta una pestaña recién creada**,
+porque las entradas sobreviven a las navegaciones.
+
+Lo que no cambia es que **la fragilidad existe**: `hexEscudo` revienta con
+`NaN` o con `-1`, comprobado llamándola con los dos valores. Sigue sin
+tocarse, pero el arreglo de fondo no es tapar el caso: es que `aIndice` no
+devuelva nunca un índice inválido, y así se cierra la familia entera en vez de
+un lugar por vez.
