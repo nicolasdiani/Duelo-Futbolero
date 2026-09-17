@@ -3225,7 +3225,34 @@ img{height:auto}
   width:fit-content;margin:0 auto 4px;
   text-transform:uppercase;
 }
-.mj-ico{font-style:normal;font-size:11px;line-height:1}
+/* **Era un 🎮 del teclado**, o sea que lo dibujaba el sistema operativo y la
+   chapa se veía distinta en cada máquina. Ahora es el mismo dibujo de dos
+   jugadores que el menú usa para el 1 vs 1, que además dice lo que la carta
+   propone. Se mide en `em`, así que sigue colgando del `font-size` que cada
+   breakpoint ya le daba al emoji y no hay un solo tamaño que reajustar. */
+.mj-ico{
+  font-size:11px;line-height:1;
+  display:block;width:1.15em;height:1.15em;flex:0 0 auto;
+}
+
+/* **La chapa se va del cartel y se apoya sobre la foto.** En las cartas de
+   mano a mano el cartel de abajo gastaba tres renglones —la chapa, el nombre
+   del mini juego y el efecto— y la ilustración, que es `flex:1`, se quedaba
+   con lo que sobrara. Sobraba poco: en un teléfono la foto medía **28px** de
+   alto contra los **79** de una carta normal. Un tercio.
+
+   Sacándola del flujo, `.c-out` deja de gastar un renglón y la foto se lleva
+   la diferencia: **+22px en escritorio y +20 en el teléfono**.
+
+   Va anclada al borde de arriba del cartel —o sea al borde de abajo de la
+   foto— así que no hay ningún número mágico y se acomoda sola en cada
+   pantalla. La del pop-up (`.p-out`) no se toca: ahí no falta lugar. */
+.cell .c-out{position:relative}
+.cell .c-out .mj-lb{
+  position:absolute;left:50%;transform:translateX(-50%);
+  bottom:calc(100% + 5px);margin:0;z-index:2;
+  box-shadow:0 2px 8px rgba(0,0,0,.55);
+}
 
 /* El nombre del mini juego, debajo de la etiqueta. */
 .c-out .mj, .p-out .mj{
@@ -3304,10 +3331,24 @@ img{height:auto}
   border:1px solid rgba(255,255,255,.34);
   box-shadow:0 2px 7px rgba(0,0,0,.65);
 }
+/* El tope real contra la ilustración va acá y no en el `svg`: `.c-esc` está en
+   absoluto, así que su `100%` sí resuelve contra `.c-ico`. En el `svg`, que es
+   hijo de un flex de alto automático, el porcentaje no resolvía nada. */
+.cell .c-esc{max-height:calc(100% - 8px);overflow:hidden}
 .cell .c-esc svg{
   height:clamp(13px, calc(var(--carta) * .17), 22px);
-  width:auto;max-height:calc(100% - 4px);
+  width:auto;max-height:100%;
 }
+/* **El escudo sube al borde de arriba de la foto.** Con la chapa del mini
+   juego apoyada abajo y al medio, los dos se peleaban el mismo renglón: en un
+   teléfono de 80px no entraban, y en escritorio —con el escudo ya agrandado a
+   33px— se pisaban **2px**, medido. Arriba a la derecha no le estorba a nada y
+   sigue siendo la misma chapa esmerilada de siempre.
+
+   Va para todos los tamaños y no sólo para mobile: si abajo se cruzan en 80px
+   y en 185, no hay ancho donde convenga dejarlo ahí. */
+.cell .c-esc{top:4px;bottom:auto}
+
 /* Con la carta trabada el escudo se apaga como el resto: si quedara
    brillando sería lo único vivo de una carta que no se puede jugar. */
 .cell.lock .c-esc{opacity:.3}
@@ -4390,7 +4431,7 @@ body{padding-bottom:36px}
   .cell .c-nm{font-size:12.6px;min-height:0;letter-spacing:0;line-height:1.02}
   .cell .c-out{font-size:11px;padding-top:2px}
   .cell .c-out .efe{font-size:8.6px;margin-top:2px;padding-top:2px}
-  .cell .c-out .mj-lb{font-size:7.2px;letter-spacing:.8px;padding:1px 4px;margin-bottom:1px}
+  .cell .c-out .mj-lb{font-size:7.2px;letter-spacing:.8px;padding:1px 4px}
   .cell .c-val{font-size:13px;min-width:20px;padding:0 3px}
   .ih,.ir{width:1.3em;height:1.3em;vertical-align:-.34em}
   .ir{width:1.1em;height:1.45em;vertical-align:-.4em}
@@ -5515,10 +5556,20 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
    es un descuido: el nombre dice de qué va la jugada, el resultado dice qué te
    deja, y en la mesa se decide por lo segundo. `.efe` no se movió, así que la
    distancia entre resultado y efecto es hoy más grande que antes. */
+/* **En escritorio el escudo y el número del duelo eran de teléfono.** El
+   escudo tocaba su techo en 22px y el número iba en 20px fijos, sin escalar
+   con nada: en una carta de 185px eran dos detalles que había que buscar.
+   Acá el escudo pasa a 33 y el número a 26. Sólo en escritorio: en el
+   teléfono los dos ya ocupan lo que tienen que ocupar. */
+@media (min-width:1025px), (min-width:821px) and (orientation:landscape){
+  .cell .c-esc{padding:3.5px 5px;border-radius:9px}
+  .cell .c-esc svg{height:clamp(22px, calc(var(--carta) * .26), 34px)}
+  .cell .c-val{font-size:26px;padding:3px 10px;border-radius:7px}
+}
 @media (min-width:1025px), (min-width:821px) and (orientation:landscape){
   .cell .c-out{font-size:17.3px}          /* el nombre va en 15 · +20% */
   .cell .c-out .efe{font-size:13.2px;margin-top:5px;padding-top:5px}
-  .cell .c-out .mj-lb{font-size:10.8px;letter-spacing:2.2px;padding:3px 9px;margin-bottom:5px}
+  .cell .c-out .mj-lb{font-size:10.8px;letter-spacing:2.2px;padding:3px 9px}
   .cell .c-out .mj-ico{font-size:12px}
 }
 /* La franja media, donde la mesa tiene menos ancho. */
@@ -7518,9 +7569,10 @@ html.html-menu, html.html-menu body{overflow:hidden}
      600                    25px en 1
      560 (iPhone SE)        35px en 12
 
-   La carta del mini juego es la que primero se rompe porque es **la única
-   con tres piezas apiladas**: la chapa 🎮 MINI JUEGO, el nombre MANO A MANO
-   y el efecto. Las demás tienen dos.
+   La carta del mini juego es la que primero se rompe porque es la que más
+   pide: el nombre del mini juego, el efecto y encima la chapa. **Desde v196
+   la chapa ya no cuenta acá**: salió del flujo y se apoya sobre la foto, así
+   que lo que queda abajo son dos piezas, como en las demás cartas.
 
    Por eso los escalones van sacando de lo más decorativo a lo más informativo,
    y nunca al revés: primero la chapa —que dice lo mismo que el nombre que
@@ -9206,7 +9258,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 195;
+const VERSION = 196;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -9992,7 +10044,7 @@ function duelo(cell, mio, gana, pierde, empate, premio, golGana){
   /* Encima del nombre va **MINI JUEGO**: el nombre solo (LA MARCA, EL CRUCE) no
      alcanzaba para saber que hay que hacer algo, y esa es la diferencia con las
      demás cartas —acá no se resuelve solo, elegís un lado. */
-  const etiqueta = '<span class="mj-lb"><i class="mj-ico">🎮</i>MINI JUEGO</span>' +
+  const etiqueta = '<span class="mj-lb"><svg class="mj-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-dos"/></svg>MINI JUEGO</span>' +
                    '<span class="mj">' + mj + '</span>';
 
   const caro = cell.type === 'delantero';
@@ -10550,7 +10602,7 @@ function minisGol(lista, favor){
     lista.map(x => {
       const mj = favor && x.key === 'penal';   // el penal se patea, no se sortea
       const art = artCarta(x.key);
-      const chapa = mj ? '<span class="mj-lb"><i class="mj-ico">🎮</i>MINI JUEGO</span>' : '';
+      const chapa = mj ? '<span class="mj-lb"><svg class="mj-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-dos"/></svg>MINI JUEGO</span>' : '';
       return '<div class="fg-mini' + (favor && x.p === 1 ? ' seguro' : '') + (mj ? ' mj' : '') + '">' +
         (art
           ? '<span class="fg-art"><img src="' + art + '" alt="">' + chapa + '</span>'

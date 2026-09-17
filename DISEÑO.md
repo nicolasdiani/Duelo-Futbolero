@@ -9770,3 +9770,82 @@ Cuatro trabadas distintas —DELANTERO con duelo, PENAL, ROJA y JUGADA CLARA— 
 escritorio y a 390 de ancho. El desenfoque cambia solo en el corte de 440: 4px
 arriba, 1,6 abajo. El estado con el VAR apuntando, en foco. El texto de las
 cuatro, legible. Sin errores de consola.
+
+## v196 · la chapa del mini juego se apoya sobre la foto
+
+De las tres salió **la A**, más dos pedidos de tamaño para escritorio.
+
+### El problema, medido
+
+En las cuatro cartas de mano a mano el cartel de abajo gastaba **tres
+renglones** —la chapa MINI JUEGO, el nombre del mini juego y el efecto— y la
+ilustración, que es `flex:1`, se quedaba con lo que sobrara. Sobraba poco.
+
+En un teléfono de 390 la foto de una carta de mini juego medía **40px de alto**
+contra los **60 a 78** de una carta normal. El ARQUERO, que tiene dos líneas de
+efecto, quedaba en 31.
+
+### Lo que se hizo
+
+La chapa sale del flujo y se apoya sobre el borde de abajo de la foto. Va
+anclada al borde de arriba del cartel, así que **no hay ningún número mágico**:
+se acomoda sola en cada pantalla.
+
+| | foto antes | foto ahora |
+|---|---|---|
+| escritorio · carta 185 | 111px | **133px** |
+| teléfono · carta 80 | 40px | **61px** |
+
+En el teléfono la carta de mini juego pasa a tener **la misma foto que una**
+**carta normal**, que es de lo que se trataba.
+
+La del pop-up (`.p-out`) y la de la lista de posibilidad de gol (`.fg-art`) no se
+tocan: cada una tiene su propia regla y ahí no falta lugar. Verificado montando
+las dos.
+
+### El escudo se fue arriba, y en todos los tamaños
+
+Con la chapa apoyada abajo y al medio, el escudo del rival —que vivía abajo a la
+derecha de la foto— pasó a pelear el mismo renglón.
+
+El pedido era moverlo **en mobile**, donde en 80px directamente no entraban.
+Pero medido en escritorio, con el escudo ya agrandado a 33px, **se pisaban 2px**.
+Si se cruzan en 80 y en 185, no hay ancho donde convenga dejarlo abajo: la regla
+va para todos los tamaños. **Si lo querés abajo en escritorio, se vuelve a
+poner y se corre la chapa a la izquierda —una línea—.**
+
+### Escritorio: el escudo y el número del duelo
+
+Los dos eran de teléfono. El escudo tocaba su techo en **22px** y el número iba
+en **20px fijos**, sin escalar con nada: en una carta de 185 eran dos detalles
+que había que buscar.
+
+| | antes | ahora |
+|---|---|---|
+| escudo | 22px | **33px** |
+| número del duelo | 20px · caja de 28 | **26px · caja de 36** |
+
+Sólo en escritorio, con la misma consulta que ya usa el resto de la mesa. En el
+teléfono los dos ya ocupan lo que tienen que ocupar.
+
+### El tope del escudo estaba escrito donde no servía
+
+El `max-height:calc(100% - 4px)` vivía en el `svg`, que es hijo de un flex de alto
+automático: ahí el porcentaje no resuelve contra nada y la regla era letra
+muerta. Ahora el tope va en `.c-esc`, que está en absoluto y sí resuelve contra
+`.c-ico`. Con el escudo 50% más grande esto dejó de ser teórico.
+
+### Y se fue otro emoji
+
+La chapa decía **🎮 MINI JUEGO** con un emoji del teclado, o sea que lo dibujaba
+el sistema operativo y se veía distinto en cada máquina. Ahora lleva el mismo
+dibujo de dos jugadores que el menú usa para el 1 vs 1, que además dice lo que
+la carta propone. Se mide en `em`, así que sigue colgando del `font-size` que
+cada breakpoint ya le daba al emoji: no hubo un solo tamaño que reajustar.
+
+### Verificado
+
+320x568, 390x844, 844x390 y 1280x840. La chapa entera adentro de la carta y sin
+pisarse con el escudo en ninguna. En 320 los dos siguen apagados por los
+escalones de alto de v186, como antes. El cartel del pop-up y el de la lista de
+posibilidad de gol, intactos. Sin errores de consola.
