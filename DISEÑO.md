@@ -9545,3 +9545,83 @@ esa guarda. El arreglo es una línea.
 Las tres instancias jugables en 320x568, 390x844 y 844x390: título en una línea,
 bajada completa, cartel entero en pantalla y sin scroll interno. El estado
 resuelto intacto. Sin errores de consola en pestaña nueva.
+
+## v193 · los emoji del mini juego de penales
+
+Dos pantallas, una elección en cada una: **la B en el sorteo** y **la A en el
+penal del partido**.
+
+### No era uno: eran cuatro
+
+Buscándolo midiendo el DOM del juego andando —no leyendo el archivo— aparecieron
+cuatro, y el más grande no estaba donde parecía:
+
+- **El sorteo** —la pantalla que abre el mini juego, «el que gana patea
+  primero»— tenía **tres**: el árbitro a **56px** y las dos lunas a 30px adentro
+  de los botones CARA / SECA.
+- **El penal del partido**, el que sale de una posibilidad de gol, tenía el
+  blanco de tiro en el **título grande**.
+- **El penal definitorio** (el de v192) y la tanda de cinco no tenían ninguno.
+
+### El juego ya dibujaba la moneda
+
+Éste es el punto: cuando la moneda cae, el cartel resuelto muestra `GESTOS.cara`
+y `GESTOS.seca` —un disco con centro y un anillo—. Pero los botones para
+**elegir** usaban dos lunas del teclado, que salen naranja y violeta.
+
+O sea que elegías una luna y te salía una moneda. Ahora los tres lugares —los
+dos botones, el disco de arriba y el desenlace— muestran **el mismo par de
+dibujos**. No se inventó ninguno.
+
+### El árbitro
+
+Arriba iba un árbitro emoji a 56px. En su lugar va la moneda, **con la misma
+regla**: mismo tamaño, mismo margen, y el mismo `.girando` cuando elegís. La
+clase pasó de `.mon-arb` a `.mon-moneda`, porque el nombre viejo ya mentía.
+
+La otra opción era sacarlo del todo —el cartel bajaba 65px—, pero el sorteo
+perdía el momento. Es la pantalla que tiene que hacerte sentir que hay una
+moneda en el aire.
+
+### Los botones, que se habían quedado en v187
+
+Mientras medía apareció que **los botones CARA / SECA nunca pasaron por el
+rebranding de v188**: seguían con su degradado propio mientras todos los
+secundarios del juego usan el fondo plano de `.cta.n-linea`. Ahora lo usan.
+
+**El hover y el elegido están escritos a mano.** No es redundancia: el fondo
+plano de `.sit.moneda .palo` es 0,3,0 y le gana por orden al `.palo:hover`
+del principio de la hoja, así que sin esas dos líneas los botones se quedaban
+sin respuesta al tocarlos y el elegido perdía su borde dorado.
+
+### El penal del partido
+
+Se borró el emoji y el título quedó en **PENAL**. Nada más. La alternativa era
+sumarle una bajada al estilo de v192 diciendo quién patea, pero eso ya lo dice
+el renglón de abajo con otras palabras: «¿A qué palo **la mandás**?» contra «¿A
+qué palo **volás**?». No valía sumar 19px para repetirlo.
+
+### Los tamaños
+
+| pantalla | v192 | v193 |
+|---|---|---|
+| sorteo · 320 x 568 | 311 | **308** |
+| sorteo · 390 x 844 | 297 | **294** |
+| sorteo · 844 x 390 | 330 | **327** |
+| sorteo · 1280 x 840 | 340 | **337** |
+| penal · 390 x 844 | 323 | **323** |
+
+El sorteo baja **3px** en todos lados y el penal no se mueve un píxel.
+
+### Verificado
+
+Medido en el juego corriendo, no en maquetas: **cero emoji** en las dos
+pantallas y en el cartel resuelto del sorteo. El sorteo completo —elegir, el
+giro, SALIÓ CARA con su dibujo— y el penal suelto, en 320x568, 390x844, 844x390
+y 1280x840: todo entra en pantalla, sin scroll interno. El botón elegido
+conserva el borde dorado y el fondo dorado al 14%.
+
+Un detalle de medición que vale anotar: el panel del navegador **congela las
+transiciones CSS**, así que leer `border-color` justo después del clic devuelve
+el valor de partida y parece un bug de especificidad. Con `transition:none`
+puesto a mano, el borde dorado aparece. No había tal bug.

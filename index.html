@@ -2216,8 +2216,15 @@ img{height:auto}
 /* ---------- LA MONEDA ---------- */
 .sit.moneda{border-color:var(--gold);box-shadow:0 0 60px rgba(245,200,66,.3)}
 .sit.moneda .t{color:var(--gold)}
-.mon-arb{font-size:56px;line-height:1;margin-bottom:6px}
-.mon-arb.girando{animation:girar 1.1s ease-in-out}
+/* **Arriba iba un árbitro emoji a 56px**: el emoji más grande que quedaba en
+   todo el juego. Ahora va la moneda —el mismo dibujo que muestran los botones
+   y que aparece cuando cae—, con esta misma regla y el mismo `.girando` al
+   elegir, así que ni el alto ni el ritmo de la pantalla se mueven. */
+.mon-moneda{font-size:56px;line-height:1;margin-bottom:6px;color:var(--gold)}
+.mon-moneda.girando{animation:girar 1.1s ease-in-out}
+.mon-moneda .fx{display:block;width:1em;height:1em;margin:0 auto;overflow:visible}
+/* El disco no hace su propia animación: la vuelta la da el contenedor. */
+.mon-moneda .fx > *{animation:none}
 @keyframes girar{
   0%{transform:rotateY(0) scale(1)}
   50%{transform:rotateY(900deg) scale(1.25)}
@@ -3535,6 +3542,24 @@ body{padding-bottom:36px}
 .sit .palo:disabled{opacity:.35;cursor:not-allowed}
 .sit .palo.elegido{border-color:var(--gold);background:rgba(245,200,66,.14)}
 .sit.mam .palo .pn{font-size:13px;letter-spacing:.5px}
+
+/* **La moneda del sorteo es la que el juego ya dibuja.** Cuando cae, el cartel
+   resuelto muestra `GESTOS.cara` y `GESTOS.seca` —un disco con centro y un
+   anillo—. Los botones para elegir usaban 🌕 y 🌑, que salen naranja y violeta:
+   elegías una luna y te salía una moneda. Ahora son el mismo par de dibujos.
+
+   Y de paso los botones se alinean con el resto: el degradado propio se va y
+   queda el fondo plano de `.cta.n-linea`, que es el de todos los secundarios
+   desde v188. El hover y el elegido van escritos acá a propósito —si no, el
+   fondo plano les gana por especificidad y los botones se quedan sin respuesta
+   al tocarlos—. */
+.sit.moneda .palo{background:rgba(0,16,52,.55);border-color:var(--line)}
+.sit.moneda .palo:hover:not(:disabled){border-color:var(--gold);background:rgba(245,200,66,.1)}
+.sit.moneda .palo.elegido{border-color:var(--gold);background:rgba(245,200,66,.14)}
+.sit.moneda .palo .pi{color:var(--gold)}
+.sit.moneda .palo .pi .fx{display:block;width:1em;height:1em;margin:0 auto;overflow:visible}
+/* Quietos: el giro es de la moneda que cae, no de la que elegís. */
+.sit.moneda .palo .pi .fx > *{animation:none}
 
 /* ---------- LOS CARTELES, MÁS GRANDES EN DESKTOP ----------
    Los dos nacieron con un ancho fijo pensado para que entraran en un celular
@@ -8235,12 +8260,12 @@ function moneda(eqs, canta, titulo, bajada){
     wrap.innerHTML =
       '<div class="sit moneda">' +
         '<div class="sit-tag">' + titulo + '</div>' +
-        '<div class="mon-arb">🧑‍⚖️</div>' +
+        '<div class="mon-moneda">' + icoDesenlace('cara') + '</div>' +
         '<div class="t">' + eqs[canta].club + '</div>' +
         '<div class="s">' + bajada + '</div>' +
         '<div class="palos">' +
-          '<button class="palo" data-cara="1"><span class="pi">🌕</span><span class="pn">CARA</span></button>' +
-          '<button class="palo" data-cara="0"><span class="pi">🌑</span><span class="pn">SECA</span></button>' +
+          '<button class="palo" data-cara="1"><span class="pi">' + icoDesenlace('cara') + '</span><span class="pn">CARA</span></button>' +
+          '<button class="palo" data-cara="0"><span class="pi">' + icoDesenlace('seca') + '</span><span class="pn">SECA</span></button>' +
         '</div>' +
       '</div>';
     wrap = montarPop(wrap);
@@ -8256,7 +8281,7 @@ function moneda(eqs, canta, titulo, bajada){
           b.disabled = true;
           if(+b.dataset.cara === canto) b.classList.add('elegido');
         });
-        const arb = wrap.querySelector('.mon-arb');
+        const arb = wrap.querySelector('.mon-moneda');
         arb.classList.add('girando');
         await wait(1100);
 
@@ -9124,7 +9149,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 192;
+const VERSION = 193;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -11260,7 +11285,7 @@ function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo){
            : muerte ? 'MUERTE SÚBITA · PENAL ' + (ronda - TANDA_TIROS)
            : 'PENAL ' + ronda + ' DE 5') +
         '</div>' +
-        '<div class="t">' + (suelto ? '🎯 PENAL'
+        '<div class="t">' + (suelto ? 'PENAL'
                                     : yoPateo ? 'PATEA ' + eqs[quien].club : 'ATAJÁS VOS') + '</div>' +
         (suelto ? '' : tandaHTML(eqs, tiros, primero, quien, muerte)) +
         arcoPenalHTML(eqs[1 - quien].escudo) +
