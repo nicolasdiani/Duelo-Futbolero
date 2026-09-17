@@ -8919,3 +8919,84 @@ A 390x844: los 16 escudos en la mesa, chapita de 25 x 26 a 4px de los dos
 bordes, enteramente adentro de la ilustración, y la carta en 80 x 139 como
 antes. A 1280x800: 27 x 28 sobre una ilustración de 169 x 116, el 25%. A 750 el
 escudo no está; a 780 sí. Sin errores de consola en pestaña nueva.
+
+## v185 · el escudo sobre la foto y el renglón del valor
+
+Dos arreglos al mismo cartel: el pop-up que se abre cuando tocás una carta.
+
+### El escudo, ahora en los dos lugares
+
+La cinta de arriba ya llevaba el escudo chico al lado del nombre del club desde
+que existe. Ahora hay **también uno grande abajo a la derecha de la foto**, con
+la misma chapita de vidrio esmerilado que la carta estrenó en v184: mismo fondo
+azul al 50%, mismo `blur(5px) saturate(1.3)`, mismo borde blanco tenue, misma
+esquina. El de la cinta acompaña al nombre y dice **de quién es la jugada**; el
+de la foto es el que se ve de lejos y **ata el cartel a la carta que acabás de
+tocar**. Hacen cosas distintas, así que van los dos.
+
+De dónde sale el escudo lo decide ahora una sola línea, `escudoDeLaJugada`, que
+usan la carta de la mesa, la cinta y la foto. Antes la misma cuenta estaba
+escrita dos veces; con tres no podían seguir discrepando en silencio.
+
+Si todavía no hay escudos en juego —tutorial, pantallas sueltas— la cinta cae en
+el renglón viejo y **el escudo de la foto simplemente no se dibuja**. Verificado
+poniendo `G.escudo` y `G.escudoRival` en nulo: aparece el `p-tag` de antes y no
+queda ninguna chapa vacía.
+
+### El renglón del valor es el renglón del panel
+
+Era una línea de texto apagado, «VALOR 2 · TU ATAQUE 2», mientras el resto del
+juego mete todos sus números en un recuadro de color. Ahora usa **el molde del
+panel de stats de la columna derecha** —el número grande en su recuadro sin
+radio, y al lado el rótulo arriba con la aclaración abajo.
+
+No es una copia: son **las mismas clases**, `.stat` y `.stat-txt`. Si el panel
+cambia, el cartel lo sigue solo. Lo único que se pisa acá es lo que el panel
+necesita por estar en una columna —el relleno y la línea punteada que separa una
+fila de la siguiente— que adentro del cartel no separan nada.
+
+**El color es el eje, no el resultado.** Rojo cuando la carta se pelea con tu
+ataque, azul cuando se pelea con tu defensa, igual que la chapita del valor
+arriba de la carta. Eso significa que el renglón **se ve idéntico en los tres
+desenlaces** y no dice quién gana: eso lo dicen el cartel de abajo —LO PASÁS, LA
+PERDÉS, MINI JUEGO— y el borde del pop-up. Arriba los datos, abajo la
+conclusión.
+
+El precio de esa regla es que cuando ganás un duelo de ataque quedan **números
+rojos arriba de un cartel verde**. Se miró y se dejó así: el rojo ahí significa
+«con qué stat tuyo se pelea esta carta», y cambiarlo por el tono del resultado
+haría que el mismo color quisiera decir dos cosas distintas según dónde estés
+mirando.
+
+### Entró al tamaño del panel, sin achicar nada
+
+La duda era si el molde completo —número de 29px, rótulo de 12.5— entraba en un
+cartel que en el teléfono es mucho más angosto que la columna. Medido en el
+juego andando, con DEFENSA que es el rótulo más largo:
+
+| pantalla | ancho útil | lo que usa | sobra |
+|---|---|---|---|
+| 320 x 568 | 226px | 198px | 28px |
+| 390 x 844 | 296px | 198px | 98px |
+| 1280 x 840 | 497px | 224px | 273px |
+
+Entra hasta en el teléfono más angosto, así que **no hubo que achicar el molde**
+y las dos piezas quedaron literalmente del mismo tamaño. En escritorio el
+renglón crece con el resto del cartel: número de 34px y separación de 26.
+
+### Lo que empeoró un poco, y por qué se deja
+
+En teléfono acostado —844 x 390— el pop-up **ya se desbordaba 159px antes de
+este cambio** y ahora se desborda 188. El renglón agrega 29px a un problema que
+ya estaba: a 844 de ancho manda la rama de escritorio, porque la consulta de
+móvil pregunta por ≤820. Scrollea, así que se usa; arreglarlo es mover ese
+breakpoint, que es otro cambio y sigue en la lista.
+
+### Verificado
+
+A 390x844 los tres desenlaces con DEFENSOR —empate 2v2 con borde dorado, ganado
+1v2 verde, perdido 3v2 rojo— y el eje en rojo en los tres. Con DELANTERO el eje
+pasa a azul y el rótulo dice DEFENSA. Renglón de 296x35 sin desbordes ni rótulos
+cortados; escudo de 29x32, entero adentro de la foto, tapando el 23% de su alto
+(29% a 320px). Carta con foto y sin valor: escudo sí, renglón no. Sin errores de
+consola.
