@@ -9000,3 +9000,90 @@ pasa a azul y el rótulo dice DEFENSA. Renglón de 296x35 sin desbordes ni rótu
 cortados; escudo de 29x32, entero adentro de la foto, tapando el 23% de su alto
 (29% a 320px). Carta con foto y sin valor: escudo sí, renglón no. Sin errores de
 consola.
+
+## v186 · que la carta entre con la barra del navegador a la vista
+
+El síntoma era «no se ajusta hasta que hago un gesto mínimo para arriba».
+
+### No era lo que parecía
+
+La primera sospecha fue el tiempo: que `dvh` tardara en resolverse, o que
+faltara escuchar `resize`. Medido, ninguna de las dos. El juego **no tiene un
+solo listener de tamaño** —el ajuste es cien por ciento CSS— y la cadena de
+flex está bien armada: `body{height:100dvh}` → `.wrap` → `.cancha` → `.board`,
+todos con `min-height:0`.
+
+Lo que pasa es más simple y más tonto: **con la barra del navegador a la vista
+la carta no tiene alto para su propio texto**, y el gesto que esconde la barra
+es justo lo que le da los 80px que le faltaban. El jugador no estaba
+destrabando un cálculo: le estaba regalando pantalla.
+
+Medido en el juego andando a 390 de ancho, cuánto se recorta del renglón de
+resultado y en cuántas cartas:
+
+| alto | qué pasa |
+|---|---|
+| 745 — barra plegada | nada |
+| 664 — barra a la vista | 9px en 1 carta |
+| 600 | 25px en 1 |
+| 560 — iPhone SE | 35px en 12 |
+
+El salto 664 → 745 es exactamente el que produce el gesto. Por eso «se
+arreglaba solo».
+
+### Por qué la del mini juego es la primera en romperse
+
+Es **la única carta con tres piezas apiladas**: la chapa 🎮 MINI JUEGO, el
+nombre MANO A MANO y el efecto. Las demás tienen dos. A 664 la ilustración ya
+colapsó a **cero**, así que no queda nada más que ceder y el texto se sale por
+abajo del `overflow:hidden` de la celda.
+
+### La escalera
+
+Tres escalones que sacan **de lo más decorativo a lo más informativo**, nunca
+al revés:
+
+| alto | qué se va | por qué se puede |
+|---|---|---|
+| ≤700 | la chapa 🎮 MINI JUEGO | dice lo mismo que el nombre que tiene debajo |
+| ≤620 | aire entre piezas | uno de los dos huecos rodea una ilustración que ya vale cero |
+| ≤580 | el detalle del efecto | queda el veredicto, que es lo que hace falta para elegir la fila; el detalle sigue entero en el pop-up |
+
+Primero se probó bajar el escalón del efecto sólo a la carta del mini juego, y
+a 560 seguía rozando 8px: no es la única de dos líneas, también están las de
+«LA CLAVÁS / ⚽ GOL +1». Va para todas, y la escalera quedó en tres pasos en
+vez de cuatro.
+
+También se probó volver `.esgol` a `display:inline` para ganar una línea.
+**Empeoró**: el texto envuelve igual y la caja crece de 25 a 28px. Descartado.
+
+### La guarda de ancho no es opcional
+
+Las tres consultas preguntan por `(max-width:820px) and (max-height:…)`. Sin la
+parte del ancho, **una ventana de escritorio baja entra en las reglas**: a
+1280x600 la carta mide 185x254 y no le sobra nada, y aun así perdía la chapa.
+
+Es el mismo error que traía la consulta del escudo desde v184 —
+`@media (max-height:760px){ .cell .c-esc{display:none} }` sin guarda— que a
+1280x600 escondía el escudo con una ilustración de **112px**, donde entraba de
+sobra. Corregido en esta misma versión.
+
+### Verificado
+
+Con una grilla sembrada a propósito con las cuatro cartas de duelo, que son las
+más altas, en 390 de ancho: 560, 664, 745 y 844 quedan en **cero recortes**,
+con el marcador visible, la última fila entera y sin desborde. A 745 y 844 las
+reglas son **inertes**: la chapa vuelve sola. A 1280x600 y 1280x840 la chapa y
+el escudo están visibles, que es lo que corrige la guarda.
+
+### Lo que sigue abierto
+
+En **escritorio** el tablero no se ajusta a la ventana: a 1280x840 la página
+desborda 431px y la última fila queda abajo del pliegue. No es de esta versión
+—ya pasaba antes— y no lo toca: la cáscara de `100dvh` vive sólo en la rama de
+móvil. Es el mismo problema que se acaba de arreglar en el teléfono, del otro
+lado del breakpoint.
+
+A 1280x600 el desborde pasa de 627 a 706px, porque devolver la chapa y el
+escudo hace la carta 25px más alta. Es el precio de no esconder cosas que
+entran.

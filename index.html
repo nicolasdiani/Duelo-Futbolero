@@ -3166,7 +3166,7 @@ img{height:auto}
    Con el corte en 700 la chapita aparecía justo donde no entra. En 760 se va
    antes de eso: el que pierde el escudo es el mismo teléfono al que la carta
    ya le quedó reducida a nombre y resultado. */
-@media (max-height:760px){
+@media (max-width:820px) and (max-height:760px){
   .cell .c-esc{display:none}
 }
 .c-art{
@@ -7201,6 +7201,55 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .club-pie{flex-direction:row;gap:8px}
   .club-pie .cta{flex:1}
 }
+
+/* ══════════ QUE LA CARTA ENTRE CON LA BARRA A LA VISTA ══════════
+
+   El síntoma era «no se ajusta hasta que hago un gesto para arriba». No era
+   un problema de tiempo ni de `dvh`: es que **con la barra del navegador a
+   la vista la carta no tiene alto para su propio texto**, y el gesto que
+   esconde la barra es justo lo que le da el alto que le faltaba.
+
+   Medido en el juego andando a 390 de ancho, cuánto se recorta del renglón
+   de resultado y en cuántas cartas:
+
+     745 (barra plegada)   nada
+     664 (barra a la vista)  9px en 1 carta
+     600                    25px en 1
+     560 (iPhone SE)        35px en 12
+
+   La carta del mini juego es la que primero se rompe porque es **la única
+   con tres piezas apiladas**: la chapa 🎮 MINI JUEGO, el nombre MANO A MANO
+   y el efecto. Las demás tienen dos.
+
+   Por eso los escalones van sacando de lo más decorativo a lo más informativo,
+   y nunca al revés: primero la chapa —que dice lo mismo que el nombre que
+   tiene debajo—, después el aire, después el detalle del efecto.
+
+   **La guarda de ancho no es opcional.** Sin ella una ventana de escritorio
+   baja entra en estas reglas y pierde la chapa aunque la carta mida 185x221 y
+   no le sobre nada. Es el mismo error que traía la consulta del escudo en
+   v184, corregido en esta misma versión. */
+
+/* — la chapa dice lo mismo que el nombre que tiene abajo — */
+@media (max-width:820px) and (max-height:700px){
+  .cell .c-out .mj-lb{display:none}
+}
+
+/* — el aire entre las piezas; uno de los dos huecos rodea una ilustración
+     que a esta altura ya vale cero, así que es puro desperdicio — */
+@media (max-width:820px) and (max-height:620px){
+  .cell{gap:2px}
+  .cell .c-out{padding-top:1px}
+  .cell .c-out .efe{margin-top:1px;padding-top:1px}
+}
+
+/* — el detalle del efecto. Acá abajo ya no sobra ninguna carta: no es sólo la
+     del mini juego, también las de dos líneas como «LA CLAVÁS / ⚽ GOL +1».
+     Queda el veredicto solo, que es lo que hace falta para elegir la fila, y
+     el detalle sigue entero en el pop-up al tocar la carta. — */
+@media (max-width:820px) and (max-height:580px){
+  .cell .c-out .efe{display:none}
+}
 </style>
 </head>
 <body>
@@ -8786,7 +8835,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 185;
+const VERSION = 186;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
