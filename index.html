@@ -1557,6 +1557,10 @@ img{height:auto}
    El ítem ya es `position:relative`, así que `left` lo mueve igual sin crear
    ningún bloque contenedor. */
 .item:hover:not(:disabled){border-color:var(--gold);background:#16263f;left:2px}
+/* El fondo de la caja pasa a ser plano y el borde se apaga: las cuatro
+   cajas son el marco, no el contenido. Lo que tiene que saltar es el ícono
+   y el efecto, no el rectángulo. */
+.item{background:rgba(3,14,34,.9);border-color:rgba(147,174,222,.2)}
 /* Y por las dudas: con la ficha abierta el ítem nunca lleva transform, venga
    de donde venga. */
 .item.abierto{transform:none !important}
@@ -2636,6 +2640,73 @@ img{height:auto}
   opacity:0;pointer-events:none;
   transition:opacity .18s, transform .18s;
 }
+
+/* ---- LA CHAPA LIMPIA ----
+   El degradé y el halo se van: el degradé competía con la foto y el halo
+   dorado hacía que la ficha se leyera como un pop-up más de los muchos que
+   el juego pinta de dorado. Queda un fondo plano y un filo arriba, que es lo
+   único que hace falta para despegarla de la mesa.
+
+   Va todo con `:not(.ficha-gol)` porque el cartel de gol usa las mismas
+   clases de caja con otro contenido, y ese no se rediseña acá. */
+.item-ficha:not(.ficha-gol){
+  background:#061428;
+  border:1px solid rgba(147,174,222,.24);
+  border-top:3px solid var(--fi-luz);
+  border-left:1px solid rgba(147,174,222,.24);
+  border-radius:12px;
+  box-shadow:0 14px 40px rgba(0,0,0,.6);
+  padding:0;gap:0;overflow:hidden;
+}
+/* Sin el pico: con la foto a todo el ancho y el filo arriba, el triangulito
+   quedaba pegado a una banda de foto y no se entendía de dónde salía. */
+.item-ficha:not(.ficha-gol)::before{display:none}
+
+/* La foto pasa de cuadrado de 78px al costado a **banda a todo el ancho**,
+   con el mismo degradé con el que las cartas apoyan su texto. El cuadrado era
+   muy chico para verse y muy grande para ignorarse, y encima empujaba el
+   texto contra el borde derecho. */
+.item-ficha:not(.ficha-gol) .if-fila{display:block}
+.item-ficha:not(.ficha-gol) .if-art{
+  width:100%;height:clamp(76px, 25vw, 96px);
+  border:0;border-radius:0;box-shadow:none;
+  position:relative;display:block;
+}
+.item-ficha:not(.ficha-gol) .if-art::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg, rgba(6,20,40,.05) 0%, rgba(6,20,40,.85) 72%, #061428 100%);
+}
+.item-ficha:not(.ficha-gol) .if-ico{
+  right:9px;bottom:9px;width:30px;height:30px;border-radius:9px;
+  background:rgba(0,6,24,.9);z-index:2;
+}
+.item-ficha:not(.ficha-gol) .if-ico .ii-svg{width:19px;height:19px}
+/* Sin foto el ícono ocupa la banda entero, centrado. */
+.item-ficha:not(.ficha-gol) .if-art.sin-foto{background:var(--fi-mini)}
+
+/* El texto sube sobre el pie del degradé: ahí la foto ya es casi el fondo de
+   la ficha, así que se gana alto sin perder contraste. */
+.item-ficha:not(.ficha-gol) .if-txt{
+  padding:0 15px 13px;margin-top:-22px;position:relative;z-index:2;
+}
+.item-ficha:not(.ficha-gol) .if-nm{font-size:16px;letter-spacing:1px}
+.item-ficha:not(.ficha-gol) .if-ef{margin-left:auto}
+/* El antes→después se despega en su propia chapa: es el dato que contesta la
+   única pregunta que uno se hace con el ítem en la mano. */
+.item-ficha:not(.ficha-gol) .if-paso{
+  display:inline-flex;margin-top:8px;font-size:15px;
+  padding:5px 11px;border-radius:8px;
+  background:rgba(0,6,24,.6);border:1px solid rgba(147,174,222,.18);
+}
+.item-ficha:not(.ficha-gol) .if-desc{font-size:12.5px;margin-top:8px;color:var(--dim)}
+.item-ficha:not(.ficha-gol) .if-btns{padding:0 15px 15px;gap:8px}
+.item-ficha:not(.ficha-gol) .if-btn{
+  border-radius:9px;border-width:1px;padding:12px 10px;font-size:12px;
+  background:rgba(245,200,66,.12);border-color:rgba(245,200,66,.55);color:var(--gold);
+}
+.item-ficha:not(.ficha-gol) .if-btn.alt{
+  background:rgba(3,14,34,.8);border-color:rgba(147,174,222,.28);color:var(--dim);
+}
 .item-ficha.on{opacity:1;transform:translateY(-50%);pointer-events:auto}
 
 /* El pico que apunta al ítem. */
@@ -2739,17 +2810,29 @@ img{height:auto}
    lo que mantiene el vínculo con el ítem que la abrió. */
 @media (max-width:1024px) and (orientation:portrait), (max-width:820px){
   .item-ficha{
-    position:fixed;z-index:300;
+    /* **Por encima de todo.** La barra del pie va en 300 y el botón del
+       relato en 310: con la ficha en 300 empataba con el pie —y gana el que
+       está después en el marcado— y perdía contra el botón. En 400 no hay
+       nada que se le monte. */
+    position:fixed;z-index:400;
     top:var(--fy, 140px);left:10px;right:10px;
     width:auto;max-width:none;
+    /* Todo el ancho menos los 10px de margen, y nunca más alta que lo que
+       queda de pantalla: si no entra, scrollea adentro en vez de salirse. */
+    max-height:calc(100dvh - var(--fy, 140px) - 14px);
+    overflow-y:auto;overscroll-behavior:contain;
     transform:translateY(-5px);
   }
   /* Ocupando el ancho de la pantalla hay lugar de sobra: el nombre entra en
      una línea, la descripción en una o dos, y los botones se pueden tocar. */
-  .item-ficha:not(.ficha-gol){padding:13px 15px;gap:10px}
-  .item-ficha:not(.ficha-gol) .if-nm{font-size:13.5px;gap:8px}
-  .item-ficha:not(.ficha-gol) .if-paso{font-size:16px}
-  .item-ficha:not(.ficha-gol) .if-desc{font-size:12.5px;margin-top:4px}
+  /* Con el ancho de la pantalla el padding ya lo pone el cuerpo: acá sólo
+     suben las tipografías, que es lo que cambia entre mano y escritorio. */
+  .item-ficha:not(.ficha-gol) .if-art{flex:0 0 auto}
+  .item-ficha:not(.ficha-gol) .if-txt{padding:0 16px 14px}
+  .item-ficha:not(.ficha-gol) .if-btns{padding:0 16px 16px}
+  .item-ficha:not(.ficha-gol) .if-nm{font-size:17px;gap:8px}
+  .item-ficha:not(.ficha-gol) .if-paso{font-size:16px;margin-top:9px}
+  .item-ficha:not(.ficha-gol) .if-desc{font-size:13px;margin-top:9px}
   .item-ficha:not(.ficha-gol) .if-btns{gap:8px}
   .item-ficha:not(.ficha-gol) .if-btn{
     padding:12px 10px;font-size:11.5px;letter-spacing:1.8px;
@@ -8610,7 +8693,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 180;
+const VERSION = 181;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -10148,6 +10231,23 @@ function abrirFicha(k, btn){
 
   btn.appendChild(f);
   btn.classList.add('abierto');
+
+  /* **Que no se salga por abajo.** `--fy` la cuelga del pie de la barra de
+     ítems, que está bien mientras entre; con la ficha más alta —la banda de
+     foto suma— en una pantalla baja el pie quedaba fuera de la vista y los
+     botones no se podían tocar. Se mide una vez puesta y, si no entra, se
+     sube lo justo. El CSS ya le pone el tope de alto para el caso extremo. */
+  const hueco = window.innerHeight;
+  /* `scrollHeight` y no `offsetHeight`: el CSS ya le puso un tope de alto, así
+     que `offsetHeight` viene recortado y la cuenta daría que entra cuando en
+     realidad la ficha se está comiendo su propio contenido. Con el alto real
+     la ficha se sube lo justo y no hace falta scrollear adentro. */
+  const alto = Math.max(f.offsetHeight, f.scrollHeight);
+  if(alto){
+    const fy = parseFloat(f.style.getPropertyValue('--fy')) || 0;
+    if(fy + alto + 14 > hueco)
+      f.style.setProperty('--fy', Math.max(10, hueco - alto - 14) + 'px');
+  }
   mostrarFicha(f);
 
   const usar = f.querySelector('#ifUsar');

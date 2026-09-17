@@ -8648,3 +8648,82 @@ Ninguno produce `NaN` ni un negativo, que son los dos únicos valores con los qu
 `hexEscudo` revienta. Repasadas además todas las escrituras a `c1`/`c2` del
 archivo. **Es una mina enterrada, no un incendio**, y queda enterrada hasta que
 se toque la tabla de clubes o el sorteo de escudos.
+
+
+## La ficha del ítem, la chapa limpia
+
+Tres quejas, tres causas:
+
+**El color.** La ficha era dorada con degradé y halo. En un juego donde el
+dorado quiere decir «esto se toca» —los CTA, las chapas, los títulos, el filo
+de las tarjetas— una ficha dorada no dice nada propio.
+
+**La alineación.** La foto de 78px al costado empujaba el texto contra el borde
+derecho, y el nombre, el efecto, el salto y la descripción quedaban los cuatro
+apilados en la misma columna angosta.
+
+**El tamaño.** 154px tapando la mesa justo cuando hay que decidir mirándola.
+
+### Qué cambió
+
+Se va el degradé y el halo: queda fondo plano y un filo arriba, que es lo único
+que hace falta para despegarla del tablero. La foto pasa de cuadrado al costado
+a **banda a todo el ancho** con el mismo degradé con el que las cartas apoyan
+su texto, y el antes→después se despega en su propia chapa.
+
+La caja del ítem **no cambia de tamaño**: 73 x 29 a 390 de ancho, igual que
+antes. Sólo se le apaga el borde y se le aplana el fondo, porque la caja es el
+marco y lo que tiene que saltar es el ícono y el efecto.
+
+Todo va con `:not(.ficha-gol)`: el cartel de la posibilidad de gol usa las
+mismas clases de caja con otro contenido y **no se rediseña acá**.
+
+### Las tres condiciones que se pidieron
+
+**Todo el ancho, sin salirse.** `left:10px; right:10px` en mobile: 370px de
+ficha en una pantalla de 390, con 10px exactos de cada lado. Medido en los
+cuatro ítems.
+
+**Por encima de todo.** La ficha estaba en `z-index:300`, **empatada con la
+barra del pie** —y en un empate gana el que está después en el marcado— y
+**por debajo del botón del relato**, que va en 310. Ahora va en 400. Comprobado
+con `elementFromPoint` en tres puntos de la ficha: lo único que devuelve son
+sus propios hijos.
+
+**Que no se salga por abajo.** La banda de foto la hizo más alta —272px contra
+154— y con `--fy` colgando del pie de la barra de ítems, en una pantalla baja
+los botones quedaban fuera de la vista. Ahora hay dos defensas: un
+`max-height` que la limita a lo que queda de pantalla, y un ajuste en el JS que
+la sube lo justo si no entra.
+
+El ajuste mide con `scrollHeight` y no con `offsetHeight`: el tope de alto del
+CSS ya recortó el segundo, así que la cuenta daría que entra cuando en realidad
+la ficha se está comiendo su propio contenido. Con el alto real, a 390x420 la
+ficha se sube de 150 a 138 y entra casi entera.
+
+### Lo que costó
+
+| pantalla | ficha | dentro | scroll interno |
+|---|---|---|---|
+| 320 x 568 | 256px | sí | no |
+| 390 x 844 | 272px | sí | no |
+| 390 x 420 | 268px | sí | 4px |
+| 844 x 390, acostado | 251px | sí | no |
+| 1280 x 800 | 250 x 251 | sí | no |
+
+De 154 a 272 en teléfono: **+118px**. Es el precio de la banda de foto, y es la
+pega de esta variante —se eligió sabiéndolo—. En acostado y en escritorio la
+ficha sigue anclada al ítem, no a la pantalla, y ahí mide 251.
+
+### Un error que me hice solo
+
+Al reemplazar el bloque de CSS **me llevé puesta `.item-ficha.on`**, que es la
+regla que la enciende. La ficha se abría con la clase puesta pero en
+`opacity:0` y `pointer-events:none`: invisible e intocable. Lo delató medir la
+opacidad computada en vez de mirar la pantalla.
+
+Y de paso, una trampa del panel de pruebas: la opacidad seguía dando 0 aun con
+la regla repuesta, porque **las transiciones no avanzan en un documento que no
+se está dibujando**. Apagando la transición se ve el valor de destino. Es la
+misma familia que el scroll suave que no corría: si el panel está oculto, todo
+lo que depende del reloj de animación queda congelado.
