@@ -2583,30 +2583,46 @@ img{height:auto}
 .gf .fi{font-size:44px;line-height:1;margin-bottom:2px}
 /* El marcador, en grande. Los nombres van a los costados de su número, con la
    misma lectura que la marquesina: vos a la izquierda, el rival a la derecha. */
+/* **Tres columnas y no cinco.** Antes el marcador era una grilla de cinco
+   —nombre, número, guion, número, nombre— con los nombres en las columnas
+   elásticas de los extremos. Eso hacía que **el resultado no estuviera
+   centrado de verdad**: se corría según cuánto midiera cada nombre, así que
+   BANFIELD vs EST. RÍO IV lo empujaba para un lado y RIVER vs BOCA lo dejaba
+   derecho. Con tres columnas —equipo, resultado, equipo— el resultado queda
+   clavado en el medio mida lo que mida el nombre.
+
+   Y cada equipo pasa a ser una chapa con **el escudo arriba del nombre**, que
+   es como el juego los muestra en todos lados: la marquesina, el pop-up de la
+   jugada, la carta. Acá faltaban. */
 .gf-marc{
-  display:grid;grid-template-columns:1fr auto auto auto 1fr;
-  align-items:center;gap:8px;
+  display:grid;grid-template-columns:1fr auto 1fr;
+  align-items:center;gap:10px;
   margin-top:14px;padding-top:14px;
   border-top:1px solid rgba(255,255,255,.14);
 }
+.gm-eq{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  min-width:0;text-align:center;
+}
+.gm-eq svg{width:auto;height:30px;display:block;flex:0 0 auto}
+.gm-eq b{
+  font-family:var(--txt);font-weight:600;
+  font-size:9.6px;letter-spacing:1.1px;text-transform:uppercase;
+  color:var(--dim);line-height:1.2;max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+/* El resultado, en su propia columna: los dos números y el guion juntos. */
+.gm-res{display:flex;align-items:baseline;justify-content:center;gap:6px}
 .gm-n{
   font-family:var(--tit);font-weight:800;
-  font-size:clamp(38px,10vw,56px);line-height:1;
+  font-size:clamp(34px,9vw,48px);line-height:1;
   color:var(--white);
 }
-.gm-sep{font-family:var(--tit);font-weight:800;font-size:26px;color:var(--dim2)}
-.gm-eq{
-  font-family:var(--txt);font-weight:600;
-  font-size:11px;letter-spacing:1.2px;text-transform:uppercase;
-  color:var(--dim);line-height:1.2;
-  overflow:hidden;text-overflow:ellipsis;
-}
-.gm-eq:first-child{text-align:right}
-.gm-eq:last-child{text-align:left}
+.gm-sep{font-family:var(--tit);font-weight:800;font-size:22px;color:var(--dim2)}
 /* El equipo que acaba de marcar se enciende. */
-.gf.favor .gm-eq.marco,.gf.contra .gm-eq.marco{color:var(--white);font-weight:700}
-.gf.favor .gm-eq.marco{color:var(--green)}
-.gf.contra .gm-eq.marco{color:var(--red)}
+.gf.favor .gm-eq.marco b,.gf.contra .gm-eq.marco b{color:var(--white);font-weight:700}
+.gf.favor .gm-eq.marco b{color:var(--green)}
+.gf.contra .gm-eq.marco b{color:var(--red)}
 
 /* A favor va verde, en contra rojo. Vale para el gol y para la chance errada:
    errar una tuya es rojo, que el rival erre la suya es verde. */
@@ -6833,8 +6849,9 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .gf.gol-foto .t{font-size:clamp(52px, 4.6vw, 76px)}
   .gf.gol-foto .gfb{padding:16px 26px 18px}
   .gf.gol-foto .gm-n{font-size:clamp(46px, 4vw, 64px)}
-  .gf.gol-foto .gm-sep{font-size:32px}
-  .gf.gol-foto .gm-eq{font-size:13px}
+  .gf.gol-foto .gm-sep{font-size:28px}
+  .gf.gol-foto .gm-eq b{font-size:12px}
+  .gf.gol-foto .gm-eq svg{height:40px}
 }
 
 /* Y en un teléfono acostado se achica, porque ahí lo que falta es alto.
@@ -6842,12 +6859,24 @@ html.html-menu, html.html-menu body{overflow:hidden}
    término en `vh`—, así que acá el alto se fija con `min()`, que sí baja.
    Va después del bloque de arriba a propósito: misma especificidad, gana
    el de abajo, y una pantalla de 844x390 entra en los dos. */
+/* A 320 de ancho el nombre más largo del juego —INDEPENDIENTE— pedía 95px y
+   tenía 88: se recortaba con puntos suspensivos. Apretando el relleno y el hueco
+   entran los siete que faltaban. Medido: los otros 29 clubes entraban de una. */
+@media (max-width:360px){
+  .gf.gol-foto .gfb{padding:10px 11px 12px}
+  .gf.gol-foto .gf-marc{gap:7px}
+}
+
 @media (max-height:430px){
   .gf.gol-foto .gfo{height:min(150px, 40vh)}
   .gf.gol-foto .t{font-size:min(46px, 12vh)}
   .gf.gol-foto .gfb{padding:8px 18px 10px}
   .gf.gol-foto .gm-n{font-size:min(40px, 10vh)}
-  .gf.gol-foto .gm-sep{font-size:20px}
+  .gf.gol-foto .gm-sep{font-size:18px}
+  /* Acostado lo que falta es alto: el escudo cede antes que el número, que es
+     el dato que se busca. */
+  .gf.gol-foto .gm-eq svg{height:22px}
+  .gf.gol-foto .gm-eq{gap:2px}
 }
 
 /* ============ EL REMATE DEL CAMPEONATO ============
@@ -9019,7 +9048,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 188;
+const VERSION = 189;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12519,13 +12548,25 @@ function flashGol(tipo){
     : (RONDA(G.ronda) || {}).rival || 'RIVAL';
   const nomA = G.modo === 'duelo' ? (G.J[0] || {}).club || G.club : G.club;
 
+  /* Los escudos salen de donde ya salen para la marquesina: los del duelo de
+     cada jugador, y los del campeonato de `G`. Si todavía no hay ninguno —el
+     tutorial, una pantalla suelta— el cartel se arma igual con el nombre solo. */
+  const escA = G.modo === 'duelo' ? (G.J[0] || {}).escudo : G.escudo;
+  const escB = G.modo === 'duelo' ? (G.J[1] || {}).escudo : G.escudoRival;
+  const chapa = (e, nm, enciende) =>
+    '<span class="gm-eq' + (enciende ? ' marco' : '') + '">' +
+      (e ? escudoDe(e, 30) : '') + '<b>' + nm + '</b>' +
+    '</span>';
+
   const marc =
     '<div class="gf-marc">' +
-      '<span class="gm-eq' + (favor ? ' marco' : '') + '">' + nomA + '</span>' +
-      '<span class="gm-n">' + G.gU + '</span>' +
-      '<span class="gm-sep">-</span>' +
-      '<span class="gm-n">' + G.gC + '</span>' +
-      '<span class="gm-eq' + (favor ? '' : ' marco') + '">' + rival + '</span>' +
+      chapa(escA, nomA, favor) +
+      '<span class="gm-res">' +
+        '<span class="gm-n">' + G.gU + '</span>' +
+        '<span class="gm-sep">-</span>' +
+        '<span class="gm-n">' + G.gC + '</span>' +
+      '</span>' +
+      chapa(escB, rival, !favor) +
     '</div>';
   const titulo = '<div class="t">' + (favor ? '¡GOL!' : 'GOL RIVAL') + '</div>';
   const foto = ARTSRC(favor ? 'cartelGol' : 'cartelGolC');

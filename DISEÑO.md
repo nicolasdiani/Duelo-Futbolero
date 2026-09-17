@@ -9287,3 +9287,68 @@ botones. Si algún día cambia la ficha, las dos reglas están juntas.
 El resto de la partida salió limpio: el menú, el club, el tutorial, el tablero,
 el pop-up de la jugada, el mini juego, el cartel de racha llena, el fin de
 partido, el vestuario y el mercado. Sin errores de consola.
+
+## v189 · el cartel de gol: escudos y marcador centrado
+
+De los tres ejemplos salió **la A**: la foto no se toca y lo que cambia es la
+franja de abajo.
+
+### Tres columnas y no cinco
+
+El marcador era una grilla de cinco —nombre, número, guion, número, nombre— con
+los nombres en las columnas elásticas de los extremos. Eso hacía que **el
+resultado no estuviera centrado de verdad**: se corría según cuánto midiera cada
+nombre. BANFIELD contra EST. RÍO IV lo empujaba para un lado; RIVER contra BOCA
+lo dejaba derecho.
+
+Ahora son tres columnas —equipo, resultado, equipo— y el resultado queda clavado
+en el medio mida lo que mida el nombre. Medido: el desvío entre el centro del
+marcador y el centro de la franja es **0px** en todas las pantallas probadas, y
+las dos columnas de los costados dan siempre lo mismo.
+
+### Y aparecen los escudos
+
+Cada equipo pasa a ser una chapa con **el escudo arriba del nombre**, que es
+como el juego los muestra en todos lados —la marquesina, el pop-up de la jugada,
+la carta—. Acá faltaban: el cartel más importante del partido era el único que
+no decía de quién era el gol con algo más que el color del nombre.
+
+Salen de donde ya salían para la marquesina: `G.J[0]` y `G.J[1]` en el duelo,
+`G.escudo` y `G.escudoRival` en el campeonato. **Si no hay ninguno** —el
+tutorial, una pantalla suelta— el cartel se arma igual con el nombre solo.
+Verificado poniendo los dos en nulo.
+
+### Los tamaños
+
+El ancho y la banda de la foto no se tocan. El cartel pasa de **350x301 a
+350x305** a 390 de ancho: cuatro píxeles, que son los que ocupa el escudo arriba
+del nombre.
+
+| pantalla | cartel | escudo |
+|---|---|---|
+| 320 x 568 | 280 x 232 | 30px |
+| 390 x 844 | 350 x 305 | 30px |
+| 844 x 390 | 500 x 215 | 22px |
+| 1280 x 840 | 538 x 401 | 40px |
+
+Acostado el escudo cede antes que el número, que es el dato que se busca.
+
+### El que no entraba
+
+A 320 de ancho, **INDEPENDIENTE** —el nombre más largo del juego, 13 letras—
+pedía 95px y tenía 88: se recortaba con puntos suspensivos. Los otros 29 clubes
+entraban de una. Apretando el relleno de la franja y el hueco de la grilla en
+pantallas de hasta 360 entran los siete que faltaban, y ahora **entran los
+treinta**.
+
+### Verificado
+
+Los dos carteles —el tuyo y el del rival— en 320x568, 390x844, 844x390 y
+1280x840: grilla simétrica, marcador centrado, ningún nombre recortado, los dos
+escudos presentes y el cartel entero en pantalla. Sin errores de consola en
+pestaña nueva.
+
+Una nota de medición para la próxima: el panel del navegador **congela las
+animaciones cuando está oculto**, y `golpop` arranca en `scale(.72)`. Medir el
+escudo con `getBoundingClientRect` daba 29px en vez de 40. Los números de arriba
+salen de `offsetWidth` y de estilo computado, que no dependen de eso.
