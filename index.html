@@ -3470,6 +3470,20 @@ body{padding-bottom:36px}
 .sit.mam.tono-hot .t{color:var(--naranja)}
 .sit.penal{border-color:var(--gold);box-shadow:0 0 55px rgba(245,200,66,.25)}
 .sit.penal .t{color:var(--gold)}
+/* **El título es la instancia.** Antes decía UNA PELOTA y la ronda vivía en la
+   etiqueta de 10px de arriba, compartiendo renglón con PENAL DEFINITORIO. O
+   sea que el cartel más definitivo del campeonato usaba su tipografía más
+   grande para decir **cuántos tiros hay** en vez de **qué se está jugando**.
+
+   Y lo que decía UNA PELOTA no se pierde: que hay un solo tiro ya lo dicen el
+   arco vacío y las dos chapas de abajo. Era relato, no información.
+
+   De paso el cartel baja cuatro píxeles: el encabezado gastaba dos renglones
+   para lo mismo que ahora ocupa uno y su bajada. */
+.sit.penal .pn-sub{
+  font-family:var(--txt);font-size:11.5px;letter-spacing:4px;text-indent:4px;
+  color:var(--dim);margin-top:7px;
+}
 
 /* Resuelto: verde lo que te sirve, rojo lo que no. */
 .sit.mam.resuelta.salvado,.sit.penal.resuelta.salvado{
@@ -9110,7 +9124,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 191;
+const VERSION = 192;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12860,8 +12874,8 @@ function tirarPenal(){
     wrap.className = 'sit-flash';
     wrap.innerHTML =
       '<div class="sit penal">' +
-        '<div class="sit-tag">' + R.name + ' &nbsp;·&nbsp; PENAL DEFINITORIO</div>' +
-        '<div class="t">UNA PELOTA</div>' +
+        '<div class="t">' + R.name + '</div>' +
+        '<div class="pn-sub">PENAL DEFINITORIO</div>' +
         arcoPenalHTML(G.escudoRival) +
         '<div class="s">¿A QUÉ PALO?</div>' +
         /* Lo mismo que dicen las chapas del aviso, fino y abajo del arco: el

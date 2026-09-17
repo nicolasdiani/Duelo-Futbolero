@@ -9475,3 +9475,73 @@ dos layouts —9px en móvil, 7 en escritorio— y la caja va con
 A 390x844, 320x568 y 1280x840: mismo tamaño de ítem que antes, el reflejo
 siempre dentro de su botón, sin desborde horizontal y la ficha abriendo entera.
 Sin errores de consola en pestaña nueva.
+
+## v192 · el penal definitorio dice dónde estás
+
+De los tres ejemplos salió **la A**.
+
+### El título decía lo que menos importaba
+
+La instancia vivía en la **etiqueta de 10px** de arriba, compartiendo renglón
+con PENAL DEFINITORIO, y el título grande lo ocupaba **UNA PELOTA**.
+
+O sea que el cartel más definitivo del campeonato usaba su tipografía más
+grande para decir **cuántos tiros hay** en vez de **qué se está jugando**.
+
+Ahora el título es la instancia —CUARTOS, SEMIFINAL, lo que toque— y debajo, en
+la tipografía de texto y apagado, PENAL DEFINITORIO.
+
+### Qué se pierde, y por qué no importa
+
+«UNA PELOTA» decía que hay **un solo tiro**. Eso ya lo dicen el arco vacío y las
+dos chapas de abajo —ENTRA → SEMIFINAL, LA ATAJA → SE ACABÓ—. Era relato, no
+información.
+
+### Hay dos instancias en el cartel
+
+Conviene tenerlo anotado porque se presta a confusión: el cartel nombra **la que
+se juega** y **la que se gana**. El título ahora dice la primera —dónde estás— y
+la chapa verde de abajo sigue diciendo la segunda —el premio—.
+
+### Los tamaños
+
+El cartel **baja de 359 a 355px** de alto a 390 de ancho: el encabezado gastaba
+dos renglones para lo que ahora ocupa uno y su bajada.
+
+| pantalla | cartel | título |
+|---|---|---|
+| 320 x 568 | 294 x 355 | 24px |
+| 390 x 844 | 350 x 355 | 24px |
+| 844 x 390 | 480 x 343 | 34px |
+
+Probado con **CLASIFICATORIA**, que es el nombre de instancia más largo: entra
+en una sola línea en las tres pantallas.
+
+### El estado resuelto no se toca
+
+Cuando el penal se dispara, `morfarPop` reemplaza todo el contenido y arma su
+propia etiqueta. Verificado tirando el penal: sale «LA PONÉS IZQUIERDA · EL
+ARQUERO VUELA A TU IZQUIERDA», el título del desenlace y el resultado, sin
+rastro de la bajada nueva.
+
+### Un crash latente que encontré y no toqué
+
+`tirarPenal` arma la chapa verde con `RONDA(G.ronda + 1).name`. En **LA FINAL**
+no hay ronda siguiente, así que eso sería un `TypeError`. Y como el cartel se
+arma dentro de un `new Promise`, el error **no se vería**: se convierte en un
+rechazo silencioso, el cartel no se monta y el juego queda esperando una promesa
+que no resuelve nunca.
+
+**Hoy es inalcanzable.** Unas líneas más arriba el código desvía la final y el
+partido único a la tanda completa de cinco, y sólo las rondas de paso llegan a
+`tirarPenal`. Verificado forzando `G.ronda` a la última: el rechazo existe, pero
+ningún camino del juego pasa por ahí.
+
+Queda anotado por si algún día se agrega una ronda después de la final o cambia
+esa guarda. El arreglo es una línea.
+
+### Verificado
+
+Las tres instancias jugables en 320x568, 390x844 y 844x390: título en una línea,
+bajada completa, cartel entero en pantalla y sin scroll interno. El estado
+resuelto intacto. Sin errores de consola en pestaña nueva.
