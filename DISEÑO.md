@@ -8353,3 +8353,97 @@ La línea de "contra defensores y arqueros" se temía que se partiera en dos
 renglones en 320, como pasaba en la maqueta. En el juego **no pasa**: la
 maqueta tenía la tipografía fija en 9,4px y el juego la mide con
 `clamp(8.4px, 2.5vw, 10px)`, así que en 320 baja a 8px y entra en un renglón.
+
+
+## Los escudos, corregidos
+
+Repasando los treinta aparecieron tres cosas, y dos eran defectos de verdad.
+
+### Cinco se dibujaban de un solo color
+
+El patrón `solido` es `() => ''`: **no pinta nada encima del fondo**. Así que
+los clubes que lo usaban tenían el segundo color cargado en la tabla y no se
+veía nunca. Eran RIVADAVIA, ARGENTINOS, LANÚS, HURACÁN y BELGRANO.
+
+No era un dato faltante: era un dibujo faltante. Por eso la corrección no
+agrega colores, agrega **dibujos**.
+
+### Faltaban cuatro dibujos
+
+El motor sabía hacer cinco —`solido`, `rayas`, `franja`, `banda`, `mitades`—
+y ninguno alcanzaba para lo que pedían los clubes de verdad:
+
+| dibujo | qué es | para quién |
+|---|---|---|
+| `franjav` | la `franja`, pero vertical y al medio | RIVADAVIA, TIGRE |
+| `finas` | los bastones de `rayas` a la mitad de ancho y casi al doble de cantidad | HURACÁN, RACING |
+| `barra` | la otra diagonal: `banda` sube de izquierda a derecha, `barra` baja | INDEPENDIENTE |
+| `uve` | dos brazos que bajan de los hombros y se juntan abajo del medio | VÉLEZ |
+
+Los cuatro ids son de **siete letras o menos a propósito**. La tabla de los
+treinta está alineada en columnas para poder corregirla a ojo, y un id de ocho
+obligaba a recorrer las treinta filas para reacomodarlas.
+
+### Dos además invirtieron los colores
+
+DEFENSA y PLATENSE no cambiaron sólo el dibujo: **el que era fondo pasó a ser
+la línea**. Defensa es verde con la línea amarilla, no amarillo con verde; y
+Platense es blanco con la banda marrón, no al revés.
+
+### Qué se movió
+
+De 30 clubes, 9 cambiaron. Los que se dibujan planos bajaron de **5 a 2**, y
+las rayas de **19 a 16**:
+
+| dibujo | antes | ahora |
+|---|---|---|
+| `rayas` | 19 | **16** |
+| `solido` | 5 | **2** |
+| `banda` | 3 | **4** |
+| `franja` | 2 | **1** |
+| `mitades` | 1 | 1 |
+| `franjav` | — | **2** |
+| `finas` | — | **2** |
+| `barra` | — | **1** |
+| `uve` | — | **1** |
+
+Se deshicieron además dos grupos que compartían colores y dibujo: TIGRE se fue
+del par con San Lorenzo, y RACING del trío con Tucumán y Est. Río IV.
+
+### Lo que sigue pendiente
+
+**UNIÓN y ESTUDIANTES son el mismo escudo**: rojo, blanco, rayas, inglés, los
+cuatro campos iguales. Están en niveles distintos, así que pueden salir los dos
+en la misma copa sin forma de distinguirlos. Alcanza con cambiarle la silueta a
+uno de los dos.
+
+**LANÚS** sigue plano. La camiseta es granate lisa, así que probablemente esté
+bien, pero tiene un blanco cargado en `c2` que no se dibuja. **BELGRANO** es
+celeste dos veces y eso fue a propósito.
+
+### Un error viejo que apareció de paso
+
+Mientras se probaba esto saltó una vez, sin poder reproducirlo después, un
+`TypeError: Cannot read properties of undefined (reading 'hex')` en el flujo
+del sorteo de la racha.
+
+La fragilidad está identificada y **no la trae este cambio**: `hexEscudo` es
+`COLORES[aIndice(v, IDX_COL) % COLORES.length].hex`, y `aIndice` devuelve los
+números tal cual. Con `NaN` o con `-1` el índice no resuelve y revienta —
+comprobado llamándola con los dos valores. Es el mismo defecto que rompió el
+juego en v171, tapado en un lugar y no en el resto.
+
+No se toca acá porque es otro asunto y sin reproducción no hay forma de
+verificar el arreglo. Queda anotado.
+
+### Cómo se revisó
+
+Las dos páginas de comparación **no copian nada**: le sacan `escudoSVG`,
+`COLORES`, `PATRONES` y `EQUIPOS` al `index.html` y los ejecutan. El "antes"
+sale de `git show HEAD:index.html` y el "después" del archivo de trabajo, cada
+uno dibujado con su propio motor. Un detalle que costó: **git escupe el blob
+con LF y el archivo de trabajo está en CRLF**, así que los cortes de bloque no
+matcheaban en uno de los dos lados.
+
+Y en el juego se verificó que los treinta resuelven color, silueta y dibujo, y
+que ninguno de los que no es `solido` pinta un solo color.

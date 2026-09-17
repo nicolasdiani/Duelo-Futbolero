@@ -7424,7 +7424,7 @@ const COLORES = [
    había forma de que un club fuera celeste a bastones y otro azul con
    franja, porque para cambiar el dibujo había que cambiar la forma.
 
-   Ahora es su propio eje. Cinco dibujos por cuatro siluetas por 12 colores
+   Ahora es su propio eje. Nueve dibujos por cuatro siluetas por 12 colores
    al cuadrado: alcanza para los treinta clubes de la Primera y sobra.
 
    Se dibujan recortados contra la silueta con un clipPath, así que las
@@ -7434,7 +7434,27 @@ const PATRONES = {
   rayas:   B => '<path d="M0 0 H20 V120 H0 Z M40 0 H60 V120 H40 Z M80 0 H100 V120 H80 Z" fill="' + B + '"/>',
   franja:  B => '<rect x="0" y="42" width="100" height="36" fill="' + B + '"/>',
   banda:   B => '<path d="M0 84 L84 0 H100 V22 L22 120 H0 Z" fill="' + B + '"/>',
-  mitades: B => '<rect x="50" y="0" width="50" height="120" fill="' + B + '"/>'
+  mitades: B => '<rect x="50" y="0" width="50" height="120" fill="' + B + '"/>',
+
+  /* ---- los cuatro que pedían los clubes de verdad ----
+     `franja` es horizontal y `franjav` es la misma vertical, una sola y al
+     medio: es lo que llevan los que hasta acá se dibujaban de un color solo
+     porque `solido` no pinta nada encima.
+
+     `banda` sube de izquierda a derecha y `barra` baja: son las dos
+     diagonales, y hasta acá sólo existía una, así que no había forma de
+     pedir la otra.
+
+     `finas` son los mismos bastones que `rayas` pero a la mitad de ancho y
+     casi al doble de cantidad, para los que van a rayita fina.
+
+     `uve` son dos brazos que bajan de los hombros y se juntan abajo del
+     medio. Es el único que no es una repetición ni una diagonal. */
+  franjav: B => '<rect x="38" y="0" width="24" height="120" fill="' + B + '"/>',
+  finas:   B => '<path d="M6 0 H14 V120 H6 Z M26 0 H34 V120 H26 Z M46 0 H54 V120 H46 Z ' +
+                        'M66 0 H74 V120 H66 Z M86 0 H94 V120 H86 Z" fill="' + B + '"/>',
+  barra:   B => '<path d="M0 0 H22 L100 98 V120 H78 L0 22 Z" fill="' + B + '"/>',
+  uve:     B => '<path d="M0 0 L50 78 L100 0 H66 L50 44 L34 0 Z" fill="' + B + '"/>'
 };
 
 /* El patrón viejo, el que salía de la silueta. Lo siguen usando las
@@ -8065,23 +8085,23 @@ const EQUIPOS = [
   { nm:'RIESTRA',        c1:'negro',    c2:'blanco',   pat:'rayas',   forma:'ingles',    lvl:1 },
   { nm:'SARMIENTO',      c1:'verde',    c2:'blanco',   pat:'rayas',   forma:'clasico',   lvl:1 },
   { nm:'ALDOSIVI',       c1:'amarillo', c2:'verde',    pat:'rayas',   forma:'banderin',  lvl:1 },
-  { nm:'RIVADAVIA',      c1:'azul',     c2:'blanco',   pat:'solido',  forma:'italiano',  lvl:1 },
+  { nm:'RIVADAVIA',      c1:'azul',     c2:'blanco',   pat:'franjav', forma:'italiano',  lvl:1 },
   { nm:'GIMNASIA MZA',   c1:'blanco',   c2:'negro',    pat:'rayas',   forma:'ingles',    lvl:1 },
   { nm:'EST. RÍO IV',    c1:'celeste',  c2:'blanco',   pat:'rayas',   forma:'clasico',   lvl:1 },
 
   /* nivel 2 */
-  { nm:'DEFENSA',        c1:'amarillo', c2:'verde',    pat:'franja',  forma:'italiano',  lvl:2 },
+  { nm:'DEFENSA',        c1:'verde',    c2:'amarillo', pat:'banda',   forma:'italiano',  lvl:2 },
   { nm:'BANFIELD',       c1:'verde',    c2:'blanco',   pat:'rayas',   forma:'ingles',    lvl:2 },
-  { nm:'PLATENSE',       c1:'marron',   c2:'blanco',   pat:'rayas',   forma:'clasico',   lvl:2 },
+  { nm:'PLATENSE',       c1:'blanco',   c2:'marron',   pat:'banda',   forma:'clasico',   lvl:2 },
   { nm:'TUCUMÁN',        c1:'celeste',  c2:'blanco',   pat:'rayas',   forma:'banderin',  lvl:2 },
   { nm:'C. CÓRDOBA',     c1:'negro',    c2:'blanco',   pat:'rayas',   forma:'banderin',  lvl:2 },
   { nm:'BARRACAS',       c1:'blanco',   c2:'rojo',     pat:'rayas',   forma:'italiano',  lvl:2 },
 
   /* nivel 3 */
   { nm:'GIMNASIA LP',    c1:'azul',     c2:'blanco',   pat:'rayas',   forma:'clasico',   lvl:3 },
-  { nm:'ARGENTINOS',     c1:'rojo',     c2:'blanco',   pat:'solido',  forma:'banderin',  lvl:3 },
+  { nm:'ARGENTINOS',     c1:'rojo',     c2:'blanco',   pat:'banda',   forma:'banderin',  lvl:3 },
   { nm:'BELGRANO',       c1:'celeste',  c2:'celeste',  pat:'solido',  forma:'ingles',    lvl:3 },
-  { nm:'TIGRE',          c1:'azul',     c2:'rojo',     pat:'rayas',   forma:'italiano',  lvl:3 },
+  { nm:'TIGRE',          c1:'azul',     c2:'rojo',     pat:'franjav', forma:'italiano',  lvl:3 },
   { nm:'UNIÓN',          c1:'rojo',     c2:'blanco',   pat:'rayas',   forma:'ingles',    lvl:3 },
   { nm:'INSTITUTO',      c1:'rojo',     c2:'blanco',   pat:'rayas',   forma:'clasico',   lvl:3 },
 
@@ -8090,16 +8110,16 @@ const EQUIPOS = [
   { nm:'NEWELL\'S',      c1:'rojo',     c2:'negro',    pat:'mitades', forma:'clasico',   lvl:4 },
   { nm:'CENTRAL',        c1:'azul',     c2:'amarillo', pat:'rayas',   forma:'clasico',   lvl:4 },
   { nm:'LANÚS',          c1:'bordo',    c2:'blanco',   pat:'solido',  forma:'italiano',  lvl:4 },
-  { nm:'HURACÁN',        c1:'blanco',   c2:'rojo',     pat:'solido',  forma:'banderin',  lvl:4 },
+  { nm:'HURACÁN',        c1:'blanco',   c2:'rojo',     pat:'finas',   forma:'banderin',  lvl:4 },
   { nm:'TALLERES',       c1:'azul',     c2:'blanco',   pat:'rayas',   forma:'italiano',  lvl:4 },
 
   /* nivel 5 */
   { nm:'BOCA',           c1:'azul',     c2:'amarillo', pat:'franja',  forma:'clasico',   lvl:5 },
   { nm:'RIVER',          c1:'blanco',   c2:'rojo',     pat:'banda',   forma:'ingles',    lvl:5 },
-  { nm:'RACING',         c1:'celeste',  c2:'blanco',   pat:'rayas',   forma:'italiano',  lvl:5 },
-  { nm:'INDEPENDIENTE',  c1:'rojo',     c2:'blanco',   pat:'banda',   forma:'italiano',  lvl:5 },
+  { nm:'RACING',         c1:'celeste',  c2:'blanco',   pat:'finas',   forma:'italiano',  lvl:5 },
+  { nm:'INDEPENDIENTE',  c1:'rojo',     c2:'blanco',   pat:'barra',   forma:'italiano',  lvl:5 },
   { nm:'SAN LORENZO',    c1:'azul',     c2:'rojo',     pat:'rayas',   forma:'banderin',  lvl:5 },
-  { nm:'VÉLEZ',          c1:'blanco',   c2:'azul',     pat:'banda',   forma:'clasico',   lvl:5 }
+  { nm:'VÉLEZ',          c1:'blanco',   c2:'azul',     pat:'uve',     forma:'clasico',   lvl:5 }
 ];
 
 /* Las rondas ya no traen rival: lo sortea `armarCopa()` de la tabla de
@@ -8548,7 +8568,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 176;
+const VERSION = 177;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
