@@ -8490,3 +8490,101 @@ Lo que no cambia es que **la fragilidad existe**: `hexEscudo` revienta con
 tocarse, pero el arreglo de fondo no es tapar el caso: es que `aIndice` no
 devuelva nunca un índice inválido, y así se cierra la familia entera en vez de
 un lugar por vez.
+
+
+## Los treinta, a la vista
+
+La pantalla que te presenta el juego **no mostraba ninguno** de los escudos que
+la hacen valer: los treinta vivían adentro de un panel que se abría encima, y
+para saber que existían había que tocar.
+
+Ahora están a la vista, en una tira que se desliza. El renglón de arriba quedó
+diciendo algo limpio: **escribí, deslizá o sorteá**, tres caminos al mismo lugar,
+los tres del mismo alto y uno al lado del otro.
+
+### El botón del azar
+
+Decía `SORPRENDEME` con borde punteado y letra apagada: **la pinta exacta de un
+control deshabilitado**, que es lo último que querés para el que no tiene equipo
+favorito. Ahora dice `ALEATORIO` y es una chapa dorada del alto del buscador.
+
+Va con clase propia (`.club-azar`) y no con `.op-azar`, que la usa la pantalla
+del 1 vs 1 —donde, de paso, ya decía ALEATORIO— y no se toca.
+
+### El ancho de la ficha lo fija el nombre más largo
+
+INDEPENDIENTE, con trece letras. El nombre va en **un solo renglón y sin
+partirse**: con dos renglones las fichas quedaban de alturas distintas según el
+nombre y la tira entera se veía despareja. Medido en el juego, el texto entra
+con aire en los tres anchos:
+
+| ancho | ficha | tipografía | sobra |
+|---|---|---|---|
+| 320 | 78px | 8,2px | **18,9px** |
+| 360 | 78px | 8,5px | 17,4px |
+| 390 | 84px | 9,2px | 19,3px |
+
+### El orden
+
+Los de nivel 5 pasan a ir como se los nombra: **River, Boca, Independiente,
+Racing**, San Lorenzo, Vélez. El orden de la tabla es el que manda adentro de
+cada nivel, así que alcanzó con mover cuatro filas. El sorteo de la copa saca
+del bombo al azar, así que no le cambia nada.
+
+### Tres errores que costaron encontrar
+
+**La coma que me llevé puesta.** Al sacar el panel se fue con él la coma que
+separaba el marcado del segundo argumento de `openCard`. El `+` colgado pegó la
+cadena `'card-club'` al final del HTML y la tarjeta **se quedó sin su clase**:
+el buscador volvía a tomar los estilos de `.card input` —20px, centrado, con
+margen— y el renglón de arriba medía 72px en vez de 34. Se ve raro pero no
+rompe nada, que es lo que lo hace difícil de ver.
+
+**La consulta de medios que perdía.** El bloque de acostado quedó escrito arriba
+de las reglas base. Una consulta de medios **no suma especificidad**, así que
+una regla base de la misma fuerza escrita más abajo le gana: los botones seguían
+apilados en acostado. Se movió al final de la hoja, que es el único lugar donde
+no depende de quién esté más abajo. Van tres veces que tropiezo con lo mismo.
+
+**La tira que se encogía.** `.card-club` es un flex de columna y la tarjeta
+tiene tope de alto; cuando el contenido lo pasa, los items se **encogen** porque
+`flex-shrink` vale 1 por defecto. La tira, que no tiene nada que la sostenga por
+dentro, se iba a 10px: los escudos seguían midiendo 26 pero colgaban fuera de
+una ficha de 11. Se arregla con `flex:0 0 auto` — la tarjeta ya scrollea, así
+que encogerse no gana nada.
+
+### Los botones, uno debajo del otro
+
+EMPEZAR LA COPA arriba y VOLVER abajo, como en el tutorial. En fila se leen como
+opciones del mismo peso y no lo son: una arranca la copa y la otra se vuelve.
+
+En acostado vuelven a la fila, que es donde sobra ancho y falta alto.
+
+### Lo que costó
+
+| pantalla | v178 | v179 | |
+|---|---|---|---|
+| 320 x 568 | 411 | 473 | +62 |
+| 360 x 640 | 452 | 518 | +66 |
+| 390 x 844 | 478 | 549 | +71 |
+| 1280 x 800 | — | 593 | sin scroll |
+| 844 x 390, acostado | 435 | **424** | −11 |
+
+**No aparece scroll en ningún teléfono parado.** De los 71px que suma en 390, la
+tira pone unos 43 y los botones apilados los otros 28.
+
+Y acostado **mejoró**: era la única pantalla que ya scrolleaba antes de esto, y
+la compactación por alto le devolvió más de lo que la tira le sacó.
+
+### Cómo se probó
+
+Andando: tocar un club lejano lo trae al centro de la tira y cambia la vitrina;
+el dado tirado cinco veces seguidas no repitió ni una; el buscador encuentra
+VÉLEZ escribiendo «velez» sin tilde y las dos GIMNASIA con «gimnasia»; con un
+texto sin resultados la tira se esconde y aparece el cartel; y EMPEZAR LA COPA
+deja el club puesto y sigue al tutorial.
+
+El centrado de la tira **no usa `scrollIntoView`**: ese sube por los ancestros y
+con el snap puesto no movía nada, así que al sacar uno lejano con el dado el
+elegido se resaltaba fuera de la vista y el botón parecía no hacer nada. El
+destino se calcula a mano.
