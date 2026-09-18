@@ -2961,6 +2961,27 @@ img{height:auto}
    separar las dos columnas— pero ya no dice nada. */
 .gm-sep{width:1px;align-self:stretch;margin:4px 0;background:rgba(255,255,255,.18)}
 
+/* ---- EL AVISO DE QUE HAY QUE TOCAR ----
+   Desde que este cartel no se va solo, hay que decir que espera. El juego ya
+   tenía dos maneras de avisarlo y ésta es la de la carta del tablero —«TOCÁ PARA
+   JUGARLA»—, que es exactamente la misma situación: la tarjeta entera es el botón
+   y no hay nada que elegir. Mismo tamaño, mismo espaciado, mismo gris y el mismo
+   parpadeo; sólo cambia el texto.
+
+   La otra que tenía el juego es la del arco del penal, más chica y quieta. Se
+   eligió ésta porque el cambio de regla hay que anunciarlo: hasta ahora el cartel
+   se iba solo y el jugador no tenía que hacer nada. */
+.gf .gf-tap{
+  text-align:center;
+  font-family:var(--txt);font-size:11px;letter-spacing:4px;color:var(--dim);
+  margin-top:12px;animation:blink 1.1s steps(2,start) infinite;
+}
+@media (prefers-reduced-motion:reduce){
+  /* Sin movimiento queda el texto quieto y un punto más apagado, que dice lo
+     mismo sin insistir. */
+  .gf .gf-tap{animation:none;opacity:.75}
+}
+
 /* ---- EL MINUTO ----
    El cartel del gol era **el único pop-up del juego que no decía cuándo pasó**
    lo que pasó. El de la jugada lo dice desde siempre, con esta misma
@@ -7619,6 +7640,8 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .gf.gol-foto .gm-n{font-size:clamp(46px, 4vw, 64px)}
   .gf.gol-foto .gm-eq b{font-size:12px}
   .gf.gol-foto .gm-eq svg{height:40px}
+  /* El aviso crece como el de la jugada, que en esta misma consulta pasa a 12,5. */
+  .gf .gf-tap{font-size:12.5px;letter-spacing:4.5px;margin-top:15px}
 }
 
 /* Y en un teléfono acostado se achica, porque ahí lo que falta es alto.
@@ -9694,6 +9717,13 @@ function cerrarPop(){
 
    El click se habilita 200ms después de aparecer: sin ese respiro, el mismo
    toque con el que resolviste la jugada anterior cerraba este cartel. */
+/* Espera `ms` **o** un toque, lo que pase primero —y **sin `ms`, sólo el toque**.
+   El cartel del gol usa esa segunda forma: es el único del juego que no se va
+   solo.
+
+   `ms` se omite, no se pasa `Infinity`: un `setTimeout(fn, Infinity)` convierte
+   el número a entero de 32 bits, que da 0, y el cartel se cerraría **en el acto**
+   en vez de no cerrarse nunca. */
 function esperarOClick(wrap, ms){
   return new Promise(res => {
     let listo = false;
@@ -9708,7 +9738,7 @@ function esperarOClick(wrap, ms){
       cerrarPop();
       setTimeout(res, 0);
     };
-    const t = setTimeout(cerrar, ms);
+    const t = ms ? setTimeout(cerrar, ms) : null;
     wrap.style.cursor = 'pointer';
     wrap.classList.add('clickeable');
     wrap.style.pointerEvents = 'auto';
@@ -9875,7 +9905,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 215;
+const VERSION = 216;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -10005,7 +10035,6 @@ const ESPERA_SIT = 2500;   // lo que queda un cartel de situación
    congelado en el fotograma final. Con 2,5s se cortaba a mitad de la
    segunda. Se puede saltear con un toque, como todos. */
 const ESPERA_FIN = 3500;
-const ESPERA_GOL_POP = 3000;   // el gol dura un poco más: es el momento del partido
 const DURA_GOL   = 1500;
 const ESPERA_GOL = DURA_GOL + 120;
 
@@ -13462,17 +13491,28 @@ function flashGol(tipo){
   const titulo = '<div class="t">' + (favor ? '¡GOL!' : 'GOL RIVAL') + '</div>';
   const foto = ARTSRC(favor ? 'cartelGol' : 'cartelGolC');
 
+  /* El aviso de que hay que tocar va **al pie de la banda de abajo**, con el marcador,
+     no adentro de la foto. Es el mismo que lleva la carta del tablero. */
+  const tocar = '<div class="gf-tap">TOCÁ PARA SEGUIR</div>';
+
   wrap.innerHTML =
     '<div class="gf ' + tipo + (foto ? ' gol-foto' : '') + '">' +
       (foto
         ? '<div class="gfo" style="background-image:url(' + foto + ')">' + titulo + '</div>' +
-          '<div class="gfb">' + marc + '</div>'
-        : titulo + marc) +
+          '<div class="gfb">' + marc + tocar + '</div>'
+        : titulo + marc + tocar) +
     '</div>';
   wrap = montarPop(wrap);
-  /* El gol dura más que el resto —es el momento del partido— y también se puede
-     adelantar con un toque. */
-  return esperarOClick(wrap, ESPERA_GOL_POP);
+  /* **Este cartel no se va solo.** Todos los demás tienen reloj y se pueden
+     adelantar con un toque; éste espera. El reloj eran 3 segundos, y el problema
+     no era que fueran pocos: es que el cartel se iba **sin que el jugador dijera
+     cuándo**, y es el único momento del partido en el que uno quiere quedarse
+     mirando.
+
+     La guarda de 200ms que ya tenía `esperarOClick` pasa a ser lo único que lo
+     protege: sin ella, el mismo toque con el que resolviste la jugada anterior
+     cerraría éste antes de que se llegue a ver. */
+  return esperarOClick(wrap);
 }
 
 /* Todo gol mueve además un medidor, venga de donde venga: el tuyo levanta al

@@ -11279,3 +11279,74 @@ Las dos direcciones sobre el juego andando: con la fila marcada, las cuatro
 cartas toman el color de su tono; con la columna, las cuatro de la columna, en
 las cuatro grillas. Las cartas trabadas se quedan afuera de las dos, como antes.
 Sin scroll de más y sin desborde de costado en ningún ancho.
+
+## v216 · el cartel del gol se queda hasta que lo toques
+
+De las tres maneras de avisarlo salió **la A**: el mismo aviso que ya lleva la
+carta del tablero.
+
+### El reloj se va
+
+El cartel se iba solo a los **3000ms**, o antes si lo tocabas. El problema no era
+que tres segundos fueran pocos: es que **el cartel se iba sin que el jugador
+dijera cuándo**, y éste es el único momento del partido en el que uno quiere
+quedarse mirando. Ahora espera.
+
+Es el único cartel del juego sin reloj. Todos los demás siguen con su
+`ESPERA_FIN` de 3500ms y se pueden adelantar con un toque.
+
+### Cómo se espera sin reloj
+
+`esperarOClick(wrap, ms)` pasa a aceptar que no le pasen `ms`: ahí no arma
+temporizador y sólo escucha el toque.
+
+**Y el `ms` se omite, no se pasa `Infinity`.** Un `setTimeout(fn, Infinity)`
+convierte el número a entero de 32 bits, que da 0: el cartel se cerraría **en el
+acto** en vez de no cerrarse nunca. Es la clase de detalle que parece un chiste
+hasta que lo escribís.
+
+La guarda de 200ms que `esperarOClick` ya tenía pasa a ser **lo único que lo
+protege**: sin ella, el mismo toque con el que resolviste la jugada anterior
+cerraría este cartel antes de que se llegue a ver. Verificado: un toque a los
+60ms no lo cierra; uno a los 600 sí.
+
+### El aviso
+
+Desde que no se va solo, hay que decir que espera. El juego ya tenía dos maneras
+y se usó una, no una nueva:
+
+| | dónde vive hoy | trato |
+|---|---|---|
+| **La elegida** | la carta del tablero, «TOCÁ PARA JUGARLA» | 11px, 4 de espaciado, gris, parpadeando |
+| La otra | el arco del penal, «tocá adentro del arco» | 10px, 2 de espaciado, más apagado, quieto |
+
+Se eligió la de la carta porque es **exactamente la misma situación** —la tarjeta
+entera es el botón y no hay nada que elegir— y porque el cambio de regla hay que
+anunciarlo: hasta ahora el jugador no tenía que hacer nada acá.
+
+En pantalla ancha crece a 12,5px con 4,5 de espaciado, que es lo que hace el
+aviso de la jugada en esa misma consulta. Con `prefers-reduced-motion` se queda
+quieto y un punto más apagado.
+
+**Va al pie de la banda de abajo**, con el minuto y el marcador. En el primer
+intento de la maqueta cayó adentro de la foto, flotando abajo del «¡GOL!»: la
+inserción tomaba el primer `</div></div>` del marcado, que cierra el título y la
+imagen, en vez del último, que cierra la banda.
+
+### Verificado
+
+Sobre el juego andando: a los **5,5 segundos el cartel sigue abierto** y la
+promesa sin resolver; al tocarlo se cierra y resuelve. Un cartel cualquiera con
+`ESPERA_FIN` sigue yéndose solo a los 3500 —medido, 3907 con el fundido—.
+
+| viewport | v215 | v216 | crece | le sobra abajo |
+|---|---|---|---|---|
+| 320 x 568 | 269 x 234 | 269 x 257 | +23 | 173 |
+| 375 x 812 | 322 x 294 | 322 x 317 | +23 | 265 |
+| 390 x 844 | 336 x 304 | 336 x 327 | +23 | 276 |
+| 844 x 390 | 480 x 221 | 480 x 249 | +28 | 84 |
+| 1280 x 768 | 516 x 376 | 516 x 404 | +28 | 200 |
+
+El ancho no se movió en ninguna, el velo no estrena scroll en ninguna y no hay
+desborde de costado. El caso más apretado es el teléfono acostado y le siguen
+sobrando 58px arriba y 84 abajo.
