@@ -2107,6 +2107,20 @@ img{height:auto}
 .f-ico .ii-svg{width:24px;height:24px;display:block;color:var(--gold)}
 .f-tx{flex:1;min-width:0}
 .f-nm{display:block;font-family:var(--tit);font-weight:800;font-size:16px;letter-spacing:.8px}
+/* **Cuántos tenés, pegado al nombre.** La lista decía los precios y el efecto
+   de cada ítem pero no si ya tenías uno: eso vivía sólo en la tira de arriba,
+   y para saber con qué contabas había que mirar en otro lado y volver.
+
+   Va en dorado, que es el color con el que el juego cuenta lo que tenés —los
+   rayos de la racha, el número de la mochila— y no aparece cuando está en cero:
+   un «x0» es ruido, la ausencia ya dice lo mismo. */
+.f-x{
+  font-family:var(--tit);font-weight:800;font-size:11px;letter-spacing:.6px;
+  color:var(--gold);border:1px solid rgba(245,200,66,.45);border-radius:99px;
+  background:rgba(245,200,66,.12);padding:0 6px 1px;margin-left:7px;vertical-align:2px;
+}
+.fila.off .f-x{opacity:.55}
+
 /* El «máx 1» de los ítems que no se acumulan. La chapita de cantidad que
    compartía esta regla se fue: ahora es una columna, acá abajo. */
 .f-max{
@@ -9905,7 +9919,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 216;
+const VERSION = 217;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -14334,7 +14348,9 @@ function filaItem(k, der, off, extra, dev){
       (off ? ' disabled' : '') + '>' +
       '<span class="f-ico">' + icoItem(k) + '</span>' +
       '<span class="f-tx">' +
-        '<b class="f-nm">' + I.nm + (extra || '') + '</b>' +
+        '<b class="f-nm">' + I.nm +
+          (tengo ? '<span class="f-x">x' + tengo + '</span>' : '') +
+          (extra || '') + '</b>' +
         '<span class="f-ef">' + I.efecto + '</span>' +
       '</span>' +
       /* **Cuántos tenés, en su propia columna.** Era una chapita pegada al
@@ -14381,6 +14397,53 @@ function tiendaHTML(){
   '</div>';
 }
 
+/* ---- EL MERCADO SE ACTUALIZA EN EL LUGAR ----
+   Comprar o devolver llamaba a `showMarket()`, que vuelve a armar la tarjeta
+   entera y la pasa por `openCard`. Desde v211 eso es **un cambio de pantalla**:
+   el fondo se hunde, la tarjeta se reemplaza a oscuras y vuelve. Para el que
+   compra se ve como si la página se recargara, y encima pierde el lugar donde
+   estaba mirando.
+
+   Acá se cambian sólo las tres partes que dependen de la plata y del inventario
+   —la franja, la mochila y la lista— sin tocar el título, el párrafo ni el botón
+   de jugar. La tarjeta no se remonta, así que no hay transición de pantalla.
+
+   El 1v1 ya tenía su propia versión de esto —`duelRedibujarTienda`— desde que su
+   tienda vive adentro del cartel del entretiempo y no en una pantalla.
+
+   Devuelve `false` si la tarjeta del mercado no está en pantalla, y ahí el que
+   llama cae en `showMarket()` como antes: es la red por si alguna vez se compra
+   desde otro lado. */
+function mercadoRedibujar(){
+  const card = $('card');
+  if(!card || !card.classList.contains('card-mercado')) return false;
+
+  const franja = card.querySelector('.franja');
+  const mochila = card.querySelector('.mochila');
+  const shop = card.querySelector('.shop');
+  if(!franja || !mochila || !shop) return false;
+  franja.outerHTML  = franjaMercado();
+  mochila.outerHTML = mochilaHTML();
+  shop.outerHTML    = tiendaHTML();
+
+  /* La nota de la ✕ aparece con la primera compra y se va con la última
+     devolución, así que hay que ponerla y sacarla, no sólo redibujarla. */
+  const hayCompras = Object.keys(G.compras).length > 0;
+  let nota = card.querySelector('.mk-nota');
+  if(hayCompras && !nota){
+    nota = document.createElement('div');
+    nota.className = 'mk-nota';
+    nota.innerHTML = 'Lo que compraste ahora se puede devolver con la ✕. ' +
+                     'Al pasar de ronda queda firme.';
+    card.insertBefore(nota, $('nextBtn'));
+  } else if(!hayCompras && nota){
+    nota.remove();
+  }
+
+  engancharTienda();
+  return true;
+}
+
 function engancharTienda(){
   document.querySelectorAll('.fila[data-buy]').forEach(b => {
     b.onclick = () => buy(b.dataset.buy);
@@ -14405,7 +14468,9 @@ function buy(what){
     G.compras[k] = (G.compras[k] || 0) + 1;
   }
   if(G.modo === 'duelo'){ guardarTurno(); return duelRedibujarTienda(); }
-  showMarket();   // se redibuja con los precios y el saldo nuevos
+  /* En el lugar. `showMarket()` queda de red por si alguna vez se compra sin la
+     pantalla del mercado abierta. */
+  if(!mercadoRedibujar()) showMarket();
 }
 
 /* Devuelve un ítem comprado en este mismo mercado y reintegra la plata. Solo
@@ -14419,7 +14484,7 @@ function devolver(k){
   if(G.items[k] <= 0) delete G.items[k];
   G.dinero += ITEMS[k].price;
   if(G.modo === 'duelo'){ guardarTurno(); return duelRedibujarTienda(); }
-  showMarket();
+  if(!mercadoRedibujar()) showMarket();
 }
 
 /* ---------------- pantallas ---------------- */

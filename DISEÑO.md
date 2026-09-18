@@ -11350,3 +11350,76 @@ promesa sin resolver; al tocarlo se cierra y resuelve. Un cartel cualquiera con
 El ancho no se movió en ninguna, el velo no estrena scroll en ninguna y no hay
 desborde de costado. El caso más apretado es el teléfono acostado y le siguen
 sobrando 58px arriba y 84 abajo.
+
+## v217 · el mercado se actualiza en el lugar, y cada renglón dice cuántos tenés
+
+### Comprar ya no rehace la pantalla
+
+Comprar o devolver llamaba a `showMarket()`, que vuelve a armar la tarjeta entera
+y la pasa por `openCard`. **Desde v211 eso es un cambio de pantalla**: el fondo se
+hunde, la tarjeta se reemplaza a oscuras y vuelve. Para el que compra se ve como
+si la página se recargara, y encima pierde el lugar donde estaba mirando.
+
+Ahora `mercadoRedibujar()` cambia sólo las tres partes que dependen de la plata y
+del inventario —la franja, la mochila y la lista— y pone o saca la nota de la ✕
+según haya compras. El título, el párrafo y el botón de jugar **no se tocan**.
+
+El 1v1 ya tenía su propia versión de esto —`duelRedibujarTienda`— desde que su
+tienda vive adentro del cartel del entretiempo y no en una pantalla.
+
+`showMarket()` queda de red: si la tarjeta del mercado no está en pantalla,
+`mercadoRedibujar` devuelve `false` y el que llama cae en el camino de antes.
+
+Medido sobre el juego andando, comprando un ítem:
+
+| | |
+|---|---|
+| Transiciones de pantalla disparadas | **0** —ni un `hundido`, ni una `foto-vieja`— |
+| La tarjeta es el mismo nodo | sí |
+| El `<h1>` es el mismo nodo | sí |
+| Botones de compra reenganchados | los cuatro |
+| `#nextBtn` sigue enganchado | sí |
+
+Y la vuelta completa: comprar dos SUPLENTES y un GRITO DEL DT, después devolver
+los tres de a uno, termina en €60M, sin chapas, sin nota y sin ✕ — todo sin que
+la pantalla parpadee una sola vez.
+
+### La chapa de cuántos tenés
+
+Cada renglón de la lista muestra ahora **x1**, **x2** pegado al nombre. Va en
+dorado, que es el color con el que el juego cuenta lo que tenés —los rayos de la
+racha, el número de la mochila— y **no aparece cuando está en cero**: un «x0» es
+ruido, la ausencia ya dice lo mismo.
+
+No cuesta un píxel de alto: es una chapa en línea al lado del nombre, en el mismo
+renglón donde ya vivía el «máx 1» de los ítems que no se acumulan.
+
+### Lo que no se tocó, y conviene mirar
+
+Con la chapa en el renglón, **la tira de arriba repite lo mismo**: «LO QUE
+LLEVÁS · SUPLENTES 2 · GRITO DEL DT 1» dice exactamente lo que ahora dicen las
+chapas. Es justo la repetición que v206 había resuelto al revés —ahí se sacó la
+columna del renglón y se puso la tira—. Sacar la tira devolvería unos 56px de
+alto. **No se hizo**: se pidió la chapa, no que se fuera la tira, y esa es una
+decisión de diseño aparte.
+
+### Verificado
+
+Las medidas son **idénticas a v216** en los cuatro anchos probados, con el
+mercado vacío y con dos compras hechas:
+
+| viewport | vacío | con dos compras |
+|---|---|---|
+| 320 x 568 | 530 | 530 |
+| 375 x 812 | 676 | 732 |
+| 390 x 844 | 677 | 733 |
+| 1280 x 768 | 698 | 738 |
+
+El crecimiento al comprar es la nota de la ✕, que ya estaba antes. La chapa no
+suma nada.
+
+En un teléfono acostado —844x390— la tarjeta del mercado **scrollea por dentro**:
+tiene `max-height` y `overflow:auto`, así que el botón de JUGAR se alcanza
+bajando adentro de la tarjeta, no de la pantalla. Se comprobó porque la primera
+lectura decía que el botón quedaba 212px abajo del corte y parecía inalcanzable:
+lo que faltaba era scrollear la tarjeta. Es igual en v216.
