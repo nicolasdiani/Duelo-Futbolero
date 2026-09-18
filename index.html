@@ -1496,7 +1496,10 @@ img{height:auto}
   position:fixed;margin:0;pointer-events:none;z-index:0;
   overflow:hidden;
 }
-.card .tag{font-family:var(--tit);font-weight:700;font-size:12px;letter-spacing:5px;color:var(--gold);margin-bottom:10px;text-transform:uppercase}
+/* De esta declaración sólo llega el margen: el cuerpo, el espaciado y el color
+   los vuelve a decir la regla de más abajo, que gana por orden. Se le saca el
+   color para que no quede diciendo dorado donde ya no lo es. */
+.card .tag{font-family:var(--tit);font-weight:700;font-size:12px;letter-spacing:5px;margin-bottom:10px;text-transform:uppercase}
 .card h1{
   font-family:var(--tit);font-weight:800;
   font-size:clamp(33px,7.6vw,51.9px);letter-spacing:1px;line-height:.95;text-transform:uppercase;
@@ -2950,12 +2953,22 @@ img{height:auto}
 .sit .sit-tag, .play .p-tag{
   font-size:10.5px;letter-spacing:3px;text-indent:3px;color:var(--dim);
 }
-/* La etiqueta de las tarjetas va dorada, como en el menú y la pantalla del
-   club: es la que dice en qué parte del juego estás. Los pop-ups de jugada la
-   usan en gris porque ahí nombra la carta, no la sección. */
+/* **La etiqueta de las tarjetas pasa a gris.** Iba dorada, y el argumento era
+   que es la que dice en qué parte del juego estás. Sigue siendo cierto, pero
+   decirlo no es lo mismo que gritarlo: el dorado es el color que el juego usa
+   para lo que está en juego —la plata, la copa, el VS del duelo— y gastarlo en
+   un rótulo de 11px que sólo ubica le saca fuerza donde sí hace falta.
+
+   En gris queda en la misma familia que los otros rótulos chicos de la
+   pantalla: PRESUPUESTO, LO QUE LLEVÁS, LLEGÁS CON. Que es lo que es.
+
+   **Va en la regla de siempre, no en una excepción.** Las once tarjetas que lo
+   usan cambian juntas: el rótulo tiene que significar lo mismo en todas, y
+   apagarlo en una sola lo habría vuelto dos cosas distintas. Los pop-ups de
+   jugada ya lo usaban en gris, así que ahora coinciden. */
 .card .tag{
   font-family:var(--tit);font-weight:700;
-  font-size:11px;letter-spacing:4px;text-indent:4px;color:var(--gold);
+  font-size:11px;letter-spacing:4px;text-indent:4px;color:var(--dim2);
   text-transform:uppercase;
 }
 .gf .t, .sit .t, .aviso .a-t, .play .p-nm, .card h1{
@@ -9605,7 +9618,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 206;
+const VERSION = 207;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

@@ -10495,3 +10495,48 @@ En la maqueta el rótulo MERCADO iba en gris. No se aplicó: `.card .tag` está
 dorado a propósito y documentado —«es la que dice en qué parte del juego estás»—,
 así que apagarlo sólo en esta pantalla rompía el sistema en vez de calmarlo. Si
 se quiere, es una línea, pero habría que hacerlo en todas las tarjetas.
+
+## v207 · el rótulo de las tarjetas pasa a gris, en las once
+
+Quedó pendiente de v206 y se decidió mirándolo aparte: **todas en gris**.
+
+### Qué es el rótulo
+
+Cada tarjeta abre con dos líneas. Arriba, en 11px y muy espaciada, va el
+**rótulo** —MERCADO, VESTUARIO, OPCIONES— que dice en qué parte del juego estás.
+Abajo, grande, va el **título**, que dice qué hacés ahí. El rótulo lo pinta una
+sola regla, `.card .tag`, y la usan **once tarjetas**.
+
+### Por qué se apaga
+
+El argumento del dorado era que el rótulo dice dónde estás. Sigue siendo cierto,
+pero decirlo no es lo mismo que gritarlo: el dorado es el color que el juego usa
+para **lo que está en juego** —la plata, la copa, el VS del duelo— y gastarlo en
+un rótulo de 11px que sólo ubica le saca fuerza donde sí hace falta.
+
+En gris queda en la misma familia que los otros rótulos chicos que tiene al lado
+—PRESUPUESTO, LO QUE LLEVÁS, LLEGÁS CON—, que es lo que es.
+
+### En la regla de siempre, no en una excepción
+
+La maqueta del mercado lo pedía apagado sólo ahí. Puestas las seis cabeceras una
+debajo de la otra se veía el costo: el mercado dejaba de pertenecer a la serie y
+el rótulo pasaba a significar **dos cosas distintas según la pantalla**. Cuesta la
+misma línea hacerlo bien, así que cambian las once juntas.
+
+**Y coinciden con los pop-ups.** El rótulo de los carteles de jugada (`.sit-tag`)
+ya era gris, porque ahí nombra la carta. Ahora los dos usan el mismo gris,
+`--dim2`: verificado, los dos salen en `rgb(88,120,171)`.
+
+### De paso, una declaración que mentía
+
+`.card .tag` estaba declarada **dos veces** en la hoja base. De la primera sólo
+llegaba el margen: el cuerpo, el espaciado y el color los volvía a decir la
+segunda, que gana por orden. Se le sacó el `color:var(--gold)` para que no quede
+diciendo dorado donde ya no lo es.
+
+### Verificado
+
+Cuatro tarjetas abiertas en el juego andando —MERCADO, OPCIONES, CRÉDITOS y EL
+PARTIDO, que además lleva `card-reglas`—: las cuatro en `rgb(88,120,171)`, con el
+título en blanco. Sin errores de consola.
