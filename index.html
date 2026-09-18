@@ -1776,6 +1776,48 @@ img{height:auto}
   .i-brillo::after{animation:none;opacity:0}
   .i-brillo{box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
 }
+
+/* ---- EL MISMO REFLEJO, EN LOS DOS BOTONES QUE ARRANCAN EL CAMPEONATO ----
+   CAMPEONATO en la pantalla principal y EMPEZAR LA COPA al elegir club son
+   los dos botones rellenos que empiezan todo, y no se movía nada en ellos.
+   Llevan la misma caja `.i-brillo` que los ítems, con el mismo degradado.
+
+   **El botón tiene que ser el marco.** `.i-brillo` va en absoluto contra el
+   ancestro posicionado más cercano. `.mm-grande` ya es `position:relative`,
+   pero `.cta` no: sin esto el reflejo de EMPEZAR LA COPA se ancla a la ventana
+   y cruza la pantalla entera en vez del botón —medido, 390 x 844 en lugar de
+   350 x 48—. Va con `:has()` para que lo tome sólo el botón que lleva el
+   reflejo, y no todos los `.cta` del juego.
+
+   **El reloj no se puede reusar tal cual.** Un ítem mide 73px de ancho y estos
+   botones 354 y 350: con el ciclo de los ítems el reflejo cruza casi cinco
+   veces más distancia en el mismo tiempo —de unos 390 px/s a unos 1.700— y a
+   esa velocidad deja de leerse como luz y pasa a ser un parpadeo. Así que el
+   ciclo sube de 2,2s a 3,6s y el barrido se lleva el 26% en vez del 20%; la
+   banda también se ensancha, para que sea un reflejo y no una raya.
+
+   El apagado por movimiento reducido necesita su propio bloque, acá abajo: el
+   de los ítems no llega. El porqué está en el comentario que lo acompaña. */
+.cta:has(.i-brillo){position:relative}
+.mm-grande .i-brillo::after, .cta .i-brillo::after{
+  background:linear-gradient(105deg,
+    transparent 30%, rgba(255,255,255,.14) 42%, rgba(255,255,255,.3) 50%,
+    rgba(255,255,255,.14) 58%, transparent 70%);
+  animation-name:btnBrillo;
+  animation-duration:3.6s;
+}
+@keyframes btnBrillo{
+  0%      {transform:translateX(-120%)}
+  26%,100%{transform:translateX(120%)}
+}
+/* El apagado va acá abajo y no arriba con el de los ítems: `.mm-grande
+   .i-brillo::after` pesa (0,2,1) igual que la regla que anima, y una media
+   query no suma especificidad, así que entre dos iguales decide el orden.
+   Puesto arriba no llegaba: probado forzando la consulta, seguía saliendo
+   `btnBrillo 3.6s`. */
+@media (prefers-reduced-motion:reduce){
+  .mm-grande .i-brillo::after, .cta .i-brillo::after{animation:none}
+}
 /* Apuntando con este ítem: queda encendido y el click lo cancela. */
 .item.apuntando{
   border-color:var(--gold);background:#1e1a0c;
@@ -9480,7 +9522,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 204;
+const VERSION = 205;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -14135,6 +14177,7 @@ function showMenu(){
             '<span class="mm-g-nm">CAMPEONATO</span>' +
             '<span class="mm-g-s">Cinco rondas hasta la copa</span>' +
           '</span>' +
+          '<span class="i-brillo"></span>' +
         '</button>' +
         '<div class="mm-chips">' +
           '<button class="mm-chip" data-menu="unico">' +
@@ -14208,7 +14251,8 @@ function showStart(irAlDuelo){
 
     '<div class="club-pie">' +
       '<button class="cta n-oro" id="startBtn">' + ICO('copa') +
-        (irAlDuelo ? 'SEGUIR' : G.formato === 'unico' ? 'JUGAR EL PARTIDO' : 'EMPEZAR LA COPA') + '</button>' +
+        (irAlDuelo ? 'SEGUIR' : G.formato === 'unico' ? 'JUGAR EL PARTIDO' : 'EMPEZAR LA COPA') +
+        '<span class="i-brillo"></span></button>' +
       '<button class="cta alt n-fantasma" id="volverMenu">VOLVER</button>' +
     '</div>',
     'card-club'

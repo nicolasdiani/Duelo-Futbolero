@@ -10370,3 +10370,62 @@ de destino y no el del camino: las cinco toman `rgb(61,220,107)` del lado tuyo y
 Los dos carteles en 320x568, 360x800, 390x844, 844x390 y 1280x860. Ninguno rueda
 por dentro salvo el acostado, que ya rodaba. El tuyo queda en 350 x 588 con 178
 de aire de sobra y el del rival en 350 x 558 con 208. Sin errores de consola.
+
+## v205 · el reflejo de los ítems, en los dos botones que arrancan el campeonato
+
+De las tres salió **la B**. CAMPEONATO en la pantalla principal y EMPEZAR LA COPA
+al elegir club son los dos botones rellenos que empiezan todo, y no se movía nada
+en ellos. Ahora llevan la misma caja `.i-brillo` que los ítems, con el mismo
+degradado.
+
+### El reloj no se podía reusar tal cual
+
+| | ancho | ciclo | barrido | velocidad |
+|---|---|---|---|---|
+| Ítem | 73 | 2,2s | 440ms | ~390 px/s |
+| CAMPEONATO | 354 | 2,2s | 440ms | ~1.700 px/s |
+| EMPEZAR LA COPA | 350 | 2,2s | 440ms | ~1.680 px/s |
+
+Con el ciclo de los ítems el reflejo cruza **casi cinco veces más distancia en el
+mismo tiempo**, y a esa velocidad deja de leerse como luz y pasa a ser un
+parpadeo. Así que el ciclo sube a **3,6s**, el barrido se lleva el 26% en vez del
+20% y la banda se ensancha, para que sea un reflejo y no una raya.
+
+Es la misma pieza con otro reloj, no otra pieza: la trampa era reusar un número
+sin mirar sobre qué cae.
+
+### Dos trampas de especificidad, las dos medidas
+
+**El reflejo se iba a toda la pantalla.** `.i-brillo` va en absoluto contra el
+ancestro posicionado más cercano. `.mm-grande` ya era `position:relative`, pero
+`.cta` no, así que el de EMPEZAR LA COPA se anclaba a la ventana: medido, **390 x
+844 en vez de 350 x 48**. Se arregla con `.cta:has(.i-brillo){position:relative}`,
+con `:has()` para que lo tome sólo el botón que lleva el reflejo y no los
+cuarenta y pico de `.cta` del juego.
+
+**El apagado por movimiento reducido no llegaba.** La regla que anima es
+`.mm-grande .i-brillo::after` —(0,2,1)— y la que apaga es `.i-brillo::after`
+—(0,1,1)—: una media query no suma especificidad, así que la que anima ganaba
+igual y el reflejo seguía corriendo. Nombrar los dos botones adentro del bloque de
+arriba tampoco alcanzaba, porque ahí las dos pesan (0,2,1) y entre iguales decide
+el orden, y el bloque de arriba va antes.
+
+Probado forzando la consulta —cambiando `prefers-reduced-motion:reduce` por una
+que siempre da verdadera— seguía saliendo `btnBrillo 3.6s`. La solución es un
+`@media` propio **después** de la regla que anima. Verificado con la misma prueba:
+los tres reflejos —los ítems y los dos botones— quedan en `none 0s`, con el filo
+quieto que ya tenían los ítems.
+
+### Un efecto de yapa
+
+`#startBtn` es el mismo botón para los tres modos, así que **JUGAR EL PARTIDO** y
+**SEGUIR** también quedan con el reflejo. Es coherente: es el botón que empieza,
+se llame como se llame.
+
+### Verificado
+
+En el juego andando a 390x844. El reflejo queda **adentro de cada botón**: 354 x
+66 sobre el de 354 x 66, y 320 x 44 sobre el de 324 x 48 —ahí la caja mide la
+parte de adentro del filo dorado de 2px, que queda limpio—. Los ítems siguen
+exactamente como estaban: `itemBrillo 2.2s` y su degradado de siempre. Sin errores
+de consola.
