@@ -1490,22 +1490,38 @@ img{height:auto}
   /* el padding de abajo deja libre la franja del footer, que va por encima */
   padding:20px 20px 56px;
   opacity:0;pointer-events:none;z-index:60;overflow-y:auto;
-  transition:opacity .3s cubic-bezier(.22,1,.36,1),
+  /* **La ida y la vuelta duran distinto, igual que la mesa.** Manda la del
+     estado al que se va: yendo, manda `.overlay.open`; volviendo, manda ésta.
+
+     Era el último lugar del juego con dos relojes. La mesa vuelve en 180ms con
+     la curva de salir —v209— y el velo se iba en 300 con la curva de **entrar**,
+     que en la cola va lentísima: a los 180 la mesa ya estaba entera y quieta y
+     todavía le quedaba al velo un tinte encima desvaneciéndose 120ms más. Dos
+     cosas terminando en momentos distintos es exactamente lo que se lee como
+     entrecortado. Ahora las dos terminan juntas. */
+  transition:opacity .18s cubic-bezier(.4,0,1,1),
              background-color 150ms ease, backdrop-filter 150ms ease;
   /* Ya no se desliza nada de costado, pero la reja se queda: es una línea y
      le prohíbe al dedo sacar la pantalla de lugar. */
   overflow-x:hidden;
 }
-.overlay.open{opacity:1;pointer-events:auto}
+.overlay.open{
+  opacity:1;pointer-events:auto;
+  transition:opacity .3s cubic-bezier(.22,1,.36,1),
+             background-color 150ms ease, backdrop-filter 150ms ease;
+}
 .card{
   --cpx:26px;
   border:1px solid var(--line);border-top:3px solid var(--gold);padding:30px 26px;
   max-width:520px;width:100%;text-align:center;
   box-shadow:0 20px 70px rgba(0,0,0,.7);
   transform:translateY(12px);margin:auto;
+  transition:transform .18s cubic-bezier(.4,0,1,1), opacity 150ms ease;
+}
+.overlay.open .card{
+  transform:translateY(0);
   transition:transform .3s cubic-bezier(.22,1,.36,1), opacity 150ms ease;
 }
-.overlay.open .card{transform:translateY(0)}
 
 /* ---- EL CAMBIO A OSCURAS ----
    **Una sola manera de pasar de una cosa a la otra en todo el juego.**
@@ -9351,7 +9367,18 @@ const POOLS = {
    El tamaño en píxeles dura **lo que dura la transición** y después se suelta:
    en reposo cada cartel mide exactamente lo que medía antes, con sus mismas
    reglas y sus mismos breakpoints. */
-const POP_GRACIA = 90;    // lo que el velo espera al cartel que pueda venir atrás
+/* Lo que el velo espera al cartel que pueda venir atrás. **Eran 90 y ahora son
+   40.** Medido sobre el juego andando: cuando hay un cartel encadenado llega
+   entre 1 y 5ms —todos los que encadenan montan el suyo en el mismo tick, hasta
+   los que pasan por un `await`, porque el `montarPop` está adentro del
+   ejecutor de la promesa— y cuando no hay ninguno, el siguiente tarda más de un
+   segundo. En catorce cadenas medidas no cayó **ninguna** entre 5 y 90.
+
+   O sea que la ventana no compraba nada arriba de 5ms, y en cambio se la cobraba
+   a cada cierre: tocabas un cartel para sacarlo y durante 90ms no pasaba nada.
+   Con 40 sigue habiendo ocho veces el peor caso medido, y el toque contesta al
+   doble de rápido. */
+const POP_GRACIA = 40;
 const POP_MORF   = 300;   // lo que tarda la caja en cambiar de tamaño
 
 let POP_VELO = null;      // el velo, mientras haya un cartel arriba
@@ -9712,7 +9739,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 211;
+const VERSION = 212;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

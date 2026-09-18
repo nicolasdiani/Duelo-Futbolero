@@ -10840,3 +10840,114 @@ Lo de v210 sigue abierto: el tablero se rearma **mientras el velo todavía se es
 yendo**, porque `closeCard()` y `startMatch()` corren uno detrás del otro sin
 esperarse. Con el gesto unificado el arreglo es más fácil que antes, pero va
 aparte.
+
+## v212 · el banco de pruebas, y las dos costuras que encontró
+
+Esto no salió de mirar el juego: salió de **instrumentarlo y medirlo**. Un
+`MutationObserver` sobre `#overlay`, `#card`, `.wrap`, `.pop-velo` y `.pop-caja`
+anotando con reloj de pared cada clase que entra y sale; envoltorios sobre
+`openCard`, `closeCard`, `montarPop`, `cerrarPop`, `morfarPop`, `mesaAtras`,
+`startMatch` y `renderBoard` midiendo lo que cada uno bloquea; y un
+`PerformanceObserver` de `long-animation-frame` y `longtask` por si algo tardaba
+de más. Después, una corrida automática que recorre menú → opciones → créditos →
+club → cómo se juega → tablero, y adentro del partido unas cuarenta jugadas.
+
+Nada de esto queda en el juego: se inyecta desde afuera sobre la página andando.
+
+### Lo que el banco puede medir y lo que no
+
+**Puede**: la coreografía completa con reloj de pared, y el trabajo sincrónico de
+cada paso. Y sirve porque **el juego no usa `requestAnimationFrame` en ningún
+lado** — todo es `setTimeout` y transiciones de CSS—, así que los tiempos que mide
+son los tiempos de verdad.
+
+**No puede**: contar cuadros. El panel del navegador baja el `rAF` a 1Hz cuando no
+es la superficie que se está mirando, así que cualquier medición de fluidez
+visual desde acá sería un invento del banco, no del juego. Lo que sí se puede
+afirmar es lo que causa los cuadros perdidos: **el hilo principal no se bloquea**.
+Cada cambio de pantalla cuesta entre 1,6 y 17ms de trabajo sincrónico, y en toda
+la corrida no hubo **una sola** tarea larga de 50ms o más.
+
+| paso | trabajo sincrónico |
+|---|---|
+| menú → opciones | 3,4 ms |
+| opciones → menú | 3,1 ms |
+| menú → créditos | 10,1 ms |
+| menú → club | 14,1 ms |
+| club → cómo se juega | 8,6 ms |
+| cómo se juega → tablero | 4,6 ms (`startMatch` entero) |
+| `render()` | 0,9 ms · `renderBoard()` 0,6 ms |
+
+### Costura 1 · la pantalla se iba con dos relojes
+
+v209 dejó una regla: **manda el reloj del estado al que se va**. La mesa la
+cumple: se va atrás en 300ms con la curva de entrar y vuelve en 180 con la de
+salir. Los carteles la cumplen: entran en 300 y se van en 180.
+
+El velo de las pantallas **nunca la cumplió**. Salía con los mismos 300ms y la
+misma curva de entrar, `cubic-bezier(.22,1,.36,1)`, que en la cola va lentísima.
+Resultado medido: a los 180ms la mesa ya estaba entera, quieta y a brillo pleno,
+y encima le quedaba todavía un tinte desvaneciéndose **120ms más**.
+
+Dos cosas terminando en momentos distintos es exactamente lo que se lee como
+entrecortado, y era el último lugar del juego donde pasaba.
+
+Ahora `.overlay` y `.card` llevan una transición en cada estado, igual que
+`.wrap` y `.wrap.atras`: **300ms con la curva de entrar puestos en `.overlay.open`,
+180ms con la de salir en `.overlay`**. Verificado leyendo el estilo calculado en
+los dos estados.
+
+| | abierto | cerrado |
+|---|---|---|
+| `.overlay` opacity | .3s `(.22,1,.36,1)` | .18s `(.4,0,1,1)` |
+| `.card` transform | .3s `(.22,1,.36,1)` | .18s `(.4,0,1,1)` |
+| `.wrap` (ya era así) | .3s `(.22,1,.36,1)` | .18s `(.4,0,1,1)` |
+
+### Costura 2 · el tiempo de gracia costaba más de lo que compraba
+
+`POP_GRACIA` es lo que el velo espera antes de irse, por si atrás viene otro
+cartel que quiera engancharse. Estaba en 90ms.
+
+Medido: **cuando hay un cartel encadenado llega entre 1 y 5ms**. Todos los que
+encadenan montan el suyo en el mismo tick, incluso los que pasan por un `await`,
+porque el `montarPop` está adentro del ejecutor de la promesa —`penalUno` es el
+caso más largo y monta en la primera línea—. Y cuando no viene ninguno, el
+siguiente cartel tarda más de un segundo.
+
+En catorce cadenas medidas **no cayó ninguna entre 5 y 90ms**. La distribución es
+partida en dos y el medio está vacío.
+
+O sea que los 90ms no compraban nada arriba de 5, y se los cobraban a cada
+cierre: tocabas un cartel para sacarlo y durante 90ms no pasaba nada. Con 40
+queda ocho veces el peor caso medido y el toque contesta al doble de rápido.
+
+| | antes | ahora |
+|---|---|---|
+| tocar un cartel que se cierra | 93–99 ms hasta que se mueve algo | **50 ms** |
+| tocar un cartel que encadena | 4 ms | 3–8 ms |
+
+### Lo que se midió y estaba bien
+
+- **Abrir y cerrar una pantalla sobre el tablero**: arranca en el mismo
+  milisegundo del toque. Cero latencia.
+- **Pantalla a pantalla**: el cambio se aplica a los 12ms del toque, la foto se
+  saca a los 170 y la que entra termina cerca de los 320. Un solo movimiento.
+- **Cartel a cartel**: arranca a los 4ms, termina a los ~306.
+- **El sorteo del tablero**: el cursor frena como una ruleta —90, 134, 181, 233,
+  286, 326, 435ms— y después la elegida se queda marcada 430ms mientras las otras
+  se apagan. Parecía un hueco muerto en la traza y no lo es: es el remate.
+- **El tablero se rearma 2ms antes de que el velo empiece a irse.** Estaba anotado
+  como pendiente desde v210 y con la medición a la vista **se decide dejarlo**: el
+  velo está al 94% de opacidad con 7px de desenfoque, así que no se ve nada del
+  rearmado, y lo que sí se ve —el velo yéndose y la mesa volviendo, ahora los dos
+  en 180ms— es un solo gesto de revelado.
+
+### Verificado
+
+Quince jugadas automáticas con cinco cierres de cartel: **cero parpadeos** del
+velo (un velo que se va y otro que entra de cero en menos de 500ms). La secuencia
+quedó alternando limpio, con 1,5 segundos como mínimo entre una salida y la
+entrada siguiente.
+
+Las seis medidas de pantalla, iguales a v211: menú 375x766 y 1280x722, club
+335x549 y 620x587, cómo se juega 335x736 y 880x740. Sin scroll de más.
