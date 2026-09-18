@@ -704,12 +704,23 @@ img{height:auto}
    con tu ataque y azul cuando se pelea con tu defensa, igual que la
    chapita del valor arriba de la carta. Que ganes o pierdas lo dice el
    cartel de abajo y el borde del pop-up, que para eso están. */
-.play .p-val{
+/* **Y deja de colgar de `.play`.** Estaba atado al cartel de la jugada, así
+   que el pop-up de mini juego —que muestra exactamente el mismo choque— tenía
+   que armarse su propio renglón, y le salió distinto en todo. Ahora cuelga de
+   `.p-val` a secas: la clase es única en todo el juego, así que cualquier
+   pop-up que arme este renglón hereda el mismo.
+
+   El `:last-child` va explícito y no de adorno. `.stat:last-child` —la regla
+   que le devuelve el relleno de abajo a la última fila del panel— empata en
+   especificidad con `.p-val .stat` y está más abajo en la hoja: sin nombrarlo,
+   el segundo recuadro del renglón quedaba 1px más alto que el primero. Con el
+   `.play` adelante eso no pasaba porque el selector pesaba más. */
+.p-val{
   display:flex;justify-content:center;gap:20px;
   letter-spacing:0;margin-top:10px;
 }
-.play .p-val .stat{padding:0;border-bottom:none}
-.play .p-val .stat-txt{text-align:left}
+.p-val .stat, .p-val .stat:last-child{padding:0;border-bottom:none}
+.p-val .stat-txt{text-align:left}
 /* **El VS entre los dos números.** Sin él el renglón se lee como una lista de
    dos datos; con él se lee como lo que es, uno contra el otro. Va en la
    tipografía de título y en dorado: es el color que el juego usa para lo que
@@ -717,7 +728,7 @@ img{height:auto}
 
    No aprieta nada: el renglón reparte el aire que le sobraba, así que los dos
    recuadros siguen midiendo lo mismo y el cartel no cambia de tamaño. */
-.play .p-vs{
+.p-vs{
   align-self:center;font-family:var(--tit);font-weight:800;
   font-size:22px;letter-spacing:1px;line-height:1;color:var(--gold);
 }
@@ -803,25 +814,7 @@ img{height:auto}
   background:linear-gradient(180deg,transparent,rgba(0,8,31,.92));
 }
 
-/* El marcador del duelo: tus stats contra los de la carta, con los mismos
-   colores que usa la mesa para ataque y defensa. */
-.sit .p-emp{
-  display:flex;align-items:center;justify-content:center;gap:9px;
-  font-family:var(--txt);font-size:11px;letter-spacing:1.5px;
-  color:var(--dim);margin-bottom:10px;text-transform:uppercase;
-}
-.p-emp b{font-family:var(--tit);font-size:17px;margin-left:3px}
-.p-emp .pe-atk b{color:var(--red)}
-.p-emp .pe-def b{color:var(--blue)}
-.p-emp .pe-riv b{color:var(--white)}
-.p-emp .pe-vs{color:var(--dim2);font-size:9.5px}
-
 /* ---------- PENAL DEFINITORIO ---------- */
-.sit .p-emp{
-  font-family:var(--tit);font-weight:800;text-transform:uppercase;
-  font-size:15px;letter-spacing:3px;color:var(--dim);margin-bottom:10px;
-}
-.sit .p-emp b{font-size:25px;color:var(--white);letter-spacing:1px}
 .sit.penal{border-color:var(--gold);box-shadow:0 0 60px rgba(245,200,66,.28)}
 .sit.penal .t{color:var(--gold)}
 /* `salvado` = te fue bien, `gol` = te fue mal. Estaban al revés: venían del
@@ -3739,18 +3732,6 @@ body{padding-bottom:36px}
   background:linear-gradient(180deg,transparent,rgba(0,8,31,.93));
 }
 
-/* El marcador del duelo, con los colores del tablero. */
-.sit .p-emp{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  font-family:var(--txt);font-size:10.5px;letter-spacing:1.5px;
-  color:var(--dim);margin-bottom:8px;text-transform:uppercase;
-}
-.p-emp b{font-family:var(--tit);font-size:19px;margin-left:4px}
-.p-emp .pe-atk b{color:var(--red)}
-.p-emp .pe-def b{color:var(--blue)}
-.p-emp .pe-riv b{color:var(--white)}
-.p-emp .pe-vs{color:var(--dim2);font-size:9px}
-
 /* Los botones, como las opciones del menú. */
 .sit .palos{display:flex;gap:9px;margin-top:12px}
 .sit .palo{
@@ -3809,11 +3790,11 @@ body{padding-bottom:36px}
   .play .p-tag{font-size:12.5px;letter-spacing:3.5px;margin-bottom:15px}
   .play .p-ico{font-size:72px}
   .play .p-nm{font-size:clamp(34px, 3.4vw, 54px);letter-spacing:2.5px}
-  .play .p-val{gap:26px;margin-top:14px}
-  .play .p-val .stat .n{font-size:34px;min-width:36px}
-  .play .p-val .stat-txt{font-size:11px}
-  .play .p-val .stat-txt b{font-size:14px}
-  .play .p-vs{font-size:28px}
+  .p-val{gap:26px;margin-top:14px}
+  .p-val .stat .n{font-size:34px;min-width:36px}
+  .p-val .stat-txt{font-size:11px}
+  .p-val .stat-txt b{font-size:14px}
+  .p-vs{font-size:28px}
   .play .p-out{font-size:19px;margin-top:17px;padding:12px}
   .play .p-out .efe{font-size:15px;margin-top:10px;padding-top:9px}
   .play .p-go{font-size:12.5px;letter-spacing:4.5px;margin-top:15px}
@@ -5010,9 +4991,6 @@ body{padding-bottom:36px}
   .sit.mam .s, .sit.penal .s{font-size:14px;letter-spacing:3px;margin-top:14px}
   .mam-art{margin:-12px -16px 16px}
   .mam-art img{max-height:clamp(150px, 19vh, 250px)}
-  .sit .p-emp{font-size:14px;gap:12px;margin-bottom:14px}
-  .p-emp b{font-size:23px}
-  .p-emp .pe-vs{font-size:11.5px}
   .sit.mam .palo{padding:18px 12px}
   .sit.mam .palo .pn{font-size:16px;letter-spacing:1px}
 
@@ -9447,7 +9425,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 202;
+const VERSION = 203;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -11981,6 +11959,7 @@ function efectoDuelo(tipo, val, gana){
 
 function manoAMano(tipo, mio, val){
   const M = MANOAMANO[tipo];
+  const esAtk = TYPES[tipo].stat === 'atk';
 
   return new Promise(resolve => {
     let wrap = document.createElement('div');
@@ -11992,10 +11971,16 @@ function manoAMano(tipo, mio, val){
       '<div class="sit mam tono-' + (tipo === 'delantero' ? 'hot' : 'risk') + '">' +
         (artCarta(tipo) ? '<div class="mam-art"><img src="' + artCarta(tipo) + '" alt=""></div>' : '') +
         '<div class="sit-tag">' + TYPES[tipo].nm + '</div>' +
-        '<div class="p-emp"><span class="' + (TYPES[tipo].stat === 'atk' ? 'pe-atk' : 'pe-def') + '">' +
-          (TYPES[tipo].stat === 'atk' ? '⚔ ATAQUE' : '🛡 DEFENSA') + ' <b>' + mio + '</b></span>' +
-          '<span class="pe-vs">vs</span>' +
-          '<span class="pe-riv">RIVAL <b>' + val + '</b></span></div>' +
+        /* El mismo renglón que el cartel de la jugada, armado con la misma
+           función: los dos números en su recuadro del color del eje y el VS
+           dorado en el medio. Acá los dos son iguales siempre, porque el mini
+           juego se abre justo cuando empatan. */
+        '<div class="p-val">' +
+          filaValor(esAtk ? 'atk' : 'def', val, 'VALOR', 'de la carta') +
+          '<span class="p-vs">VS</span>' +
+          filaValor(esAtk ? 'atk' : 'def', mio,
+                    esAtk ? 'ATAQUE' : 'DEFENSA', 'el tuyo') +
+        '</div>' +
         '<div class="t">' + M.tit + '</div>' +
         escenaDuelo(!M.adivinar) +
         '<div class="s">' + M.pregunta + '</div>' +

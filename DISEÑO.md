@@ -10222,3 +10222,79 @@ el selector nuevo es `.cell .c-out .mj-lb`.
 En el juego andando a 360x800, 390x844 y 1280x860. Una línea en los tres, y la
 chapa siempre más angosta que la foto: 49 de 61, 66 de 70 y 116 de 165. Sin
 errores de consola.
+
+## v203 · el mini juego muestra el choque con el mismo renglón que la carta
+
+De las tres salió **la A**: no una parecida, la misma.
+
+### Eran dos piezas distintas para el mismo dato
+
+El pop-up de mini juego tenía su propio renglón (`.p-emp`) y no se parecía en
+nada al del pop-up de carta: números pelados sin recuadro, el del rival **en
+blanco** en vez del color del eje, un `vs` minúsculo de 9px en gris, y un `⚔` /
+`🛡` que dibujaba el sistema operativo.
+
+Ahora arma el renglón con **la misma función** que el cartel de la jugada,
+`filaValor`, así que los dos números van en su recuadro del color del eje y el VS
+dorado va en el medio.
+
+### Lo que de verdad unifica es el selector
+
+Las reglas del renglón colgaban de `.play`, o sea del cartel de la jugada, así
+que el mini juego **no podía heredarlas aunque quisiera**: tenía que copiarlas, y
+copiadas se separaron. Ahora cuelgan de `.p-val` a secas. La clase es única en
+todo el juego, así que cualquier pop-up que arme este renglón hereda el mismo.
+
+**Un efecto que salió gratis:** el escalón de escritorio también estaba atado a
+`.play`. Al soltarlo, el pop-up de mini juego pasa a tener en escritorio los
+números de 34px y el VS de 28 que hasta ahora eran sólo del cartel de la jugada.
+
+### El `:last-child` no es adorno
+
+`.p-val .stat` empata en especificidad con `.stat:last-child` —la regla que le
+devuelve el relleno de abajo a la última fila del panel— y está más arriba en la
+hoja. Con el `.play` adelante el selector pesaba más y ganaba; sin él, pierde.
+
+Probado aparte antes de escribirlo: con `.p-val .stat` solo, el segundo recuadro
+del renglón sale **1px más alto que el primero** (19 contra 18 en la prueba). Por
+eso la regla nombra el `:last-child` explícitamente. Verificado en el juego: los
+dos recuadros del renglón quedan en `padding-bottom:0`, y los del panel siguen en
+2px, que es lo suyo.
+
+### Los dos números son siempre iguales
+
+El mini juego se abre justo cuando empatan, así que los dos recuadros quedan del
+mismo color. Es lo correcto: se miden en el mismo eje.
+
+### No cuesta nada, al contrario
+
+| | pop-up | renglón | número |
+|---|---|---|---|
+| Antes | 350 x 487 | 298 x 39 | 12 x 39 |
+| Ahora | 350 x 477 | 298 x 35 | 31 x 35 |
+| Ahora, escritorio | 538 x 686 | 462 x 40 | 36 x 40 |
+
+El cartel sale **10px más bajo** que antes. Y el del cartel de la jugada no se
+movió: sigue en 350 x 468 con el renglón en 296 x 35.
+
+### Y se va CSS que quedó sin dueño
+
+`.p-emp` y sus cuatro hijos estaban declarados **tres veces en la hoja base más
+una en escritorio**, pisándose entre sí: el bloque de arriba estaba muerto entero,
+el de PENAL DEFINITORIO le ganaba el cuerpo del número al de abajo, y el escalón
+de escritorio no llegaba a aplicar nunca por especificidad. Ahora que ningún
+marcado los usa, se fueron los cuatro. El archivo queda 401 bytes más chico.
+
+### Verificado
+
+Los cuatro mini juegos —MANO A MANO, 1 vs 1, LA MARCA, DEFENDER— en 390x844 y
+1280x860. Cada uno con su eje: rojo el del arquero y el defensor, azul el del
+medio y el delantero. El panel de stats y el cartel de la jugada, sin cambios.
+Sin errores de consola.
+
+### Queda anotado
+
+El título del mini juego del DEFENSOR se llama **1 vs 1**, y va justo debajo del
+renglón. Con el VS dorado arriba quedan dos «vs» dorados apilados, uno en
+mayúscula y otro en minúscula. En los otros tres no pasa. Se arregla renombrando
+esa carta a UNO CONTRA UNO, pero no se tocó acá.
