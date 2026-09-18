@@ -11066,3 +11066,117 @@ La **D** —el número girando de 1 a 2— es la mejor idea de las cuatro y la p
 pieza: este cartel **está hecho para tocarlo** —`esperarOClick` deja adelantarlo—
 y el que lo toca antes de que termine el giro se queda mirando el número viejo.
 Queda anotada para cuando el giro pueda arrancar con el cartel entrando.
+
+## v214 · tiempo de descuento: los escudos, y que se note que son dos opciones
+
+De cuatro maneras de meterle los escudos salió **la tira**, y de tres maneras de
+marcar las cartas salió **el latido**.
+
+### Era el único marcador del juego sin escudos
+
+La marquesina del tablero los tiene, la cinta de la jugada los tiene y el cartel
+del gol los tiene desde siempre. Acá había dos números dorados flotando, y este
+cartel te pregunta justamente algo que depende de cómo va el partido.
+
+El dorado también se fue. Es el color de la racha: los cuatro rayos y la cinta
+RACHA LLENA, que está pegada arriba. El marcador le competía a lo que de verdad
+manda en este cartel. Los números pasan a blanco con el filo de un píxel, como
+quedó el del gol en v213.
+
+### Por qué al lado y no arriba
+
+La disposición del cartel del gol —escudo arriba, nombre abajo— cuesta unos 40px
+de alto, y **el alto es lo que este cartel no tiene**: medía 598px en un teléfono
+de 812, y en 320 de ancho dejaba 25px arriba y 55 abajo; acostado, 17 y 43.
+
+Puestos en una línea no cuestan un píxel. Y hubo con qué pagar el resto: abajo de
+las dos cartas había **una oración de tres renglones en mayúsculas espaciadas**
+—58px— que es la manera más cara de decir algo. Pasa a caja baja y a 35. El
+renglón de arriba —«se acabaron los 90 · elegí qué hacer con ella»— se va del
+todo yendo ganando o empatando, porque lo segundo lo dice ahora el rótulo.
+
+| | v213 | v214 | |
+|---|---|---|---|
+| 320 x 568 | 284 x 487 | 284 x 464 | −23 |
+| 375 x 812 | 322 x 598 | 322 x 544 | **−54** |
+| 844 x 390 | 461 x 329 | 461 x 329 | 0 |
+| 1280 x 768 | 516 x 643 | 516 x 543 | **−100** |
+
+**Entraron los escudos y el cartel encima se achicó.** Eso no estaba garantizado.
+
+### El nombre no entra en un teléfono, y no por poco
+
+Acá la maqueta mintió: el marco de la comparación era más ancho que la tarjeta de
+verdad —366 contra 322— y el club que salió sorteado tenía nombre corto. Sobre el
+juego andando, con INDEPENDIENTE, que es el más largo:
+
+| ancho | necesita | tiene |
+|---|---|---|
+| 320 | 90 | 61 |
+| 375 | 90 | 69 |
+| 414 | 90 | 89 |
+
+Hasta I. RIVADAVIA, que necesita 70, se recortaba en los dos primeros. **No hay
+ancho de teléfono donde entre**, así que en todos salía con puntos suspensivos,
+que es peor que no estar.
+
+Así que en el teléfono van **los escudos solos**, que es como la marquesina
+resuelve lo mismo, y las chapas dejan de estirarse para que el grupo se junte en
+el medio. El nombre vuelve en 700 de ancho, donde la tarjeta ya llegó a su tope y
+la chapa reparte unos 150 para los 90 que hacen falta.
+
+El corte **no va en la consulta ancha de más abajo** —a 820 en vertical la
+tarjeta ya mide 413 y el nombre entra perfecto— ni en el ancho de teléfono más
+uno, que sería apostar a un píxel.
+
+**Y una corrección de método.** La primera medición la hice clonando el texto en
+un medidor fuera de pantalla y comparando anchos, y esa cuenta dio recortes que
+no existían en pantalla ancha —decía que faltaban 4px donde sobraban 45—. La
+prueba que vale es `scrollWidth > clientWidth`, que es la que el navegador usa
+para decidir si pone los puntos suspensivos. Todos los números de arriba salen de
+ésa.
+
+### Que son dos opciones
+
+Las dos cartas tienen filo de color, título de color y una foto, y aun así se
+leen como dos fichas de información: son idénticas a las de la situación de gol,
+que **no se tocan**. Lo primero que les faltaba no era movimiento sino que
+alguien dijera que hay que elegir una. El rótulo **ELEGÍ UNA** cuesta un renglón
+y hace la mitad del trabajo. Yendo abajo no aparece: ahí hay una sola carta.
+
+La otra mitad es el latido, y es **el gesto que el juego ya reservó para «tocá
+esto»**: lo llevan IR AL VESTUARIO y USAR LA RACHA, que son las otras dos veces
+que hay que tocar sí o sí. Dos golpes y descanso, 2,8s de ciclo.
+
+Cada carta late **con su color** —verde JUGARLA, dorado GUARDARLA, los que ya
+tienen en el filo y en el título— y van corridas medio ciclo, porque dos cartas
+latiendo juntas se leen como un parpadeo de la pantalla y no como dos objetos.
+
+**Sin escala, a diferencia del de los CTA.** Aquéllos son botones de una línea y
+crecen un 3,5%; estas cartas miden 83px y llevan una foto adentro: escalarlas se
+ve como un temblor. Queda el anillo solo, y va con `outline`, que **no ocupa
+lugar**: el cartel mide exactamente lo mismo con latido y sin él.
+
+Se apaga al pasar el dedo sólo donde hay mouse, que es la trampa que ya había
+tenido el latido de los CTA: en un teléfono el `:hover` se queda pegado en lo
+último que tocaste.
+
+### De paso, dos limpiezas
+
+- `equiposDelPartido()`. Los dos equipos del partido —nombres y escudos, con su
+  rama para el 1v1— estaban escritos **dos veces**: una en `flashGol` y otra
+  haría falta acá. Ahora es una función que usan los dos carteles que muestran el
+  marcador.
+- `.e-marc` y sus **seis reglas** en cuatro breakpoints se van con el marcador
+  dorado: era el único lugar que las usaba.
+
+### Verificado
+
+Los tres estados sobre el juego andando: **ganando** y **empatando** dibujan las
+dos cartas con el rótulo y las dos latiendo corridas 1,4s; **perdiendo** dibuja
+una sola, sin rótulo y latiendo igual —es lo único que hay para tocar—. Los
+botones enganchados en los tres.
+
+Los escudos aparecen en los cinco anchos probados. Los nombres: ocultos en 320,
+375 y 414; puestos y sin recortar en 820 vertical, 844 acostado y 1280. Sin
+scroll de más en ninguno y el ancho de la tarjeta no se movió.

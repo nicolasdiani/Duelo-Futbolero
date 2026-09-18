@@ -898,12 +898,9 @@ img{height:auto}
 /* el empate va solo, con el marcador al tamaño en que se lee de un vistazo */
 .aviso.empate{border-color:var(--white);box-shadow:0 0 60px rgba(255,255,255,.18)}
 .aviso .e-tit{font-size:clamp(40px,11vw,68px);letter-spacing:4px;text-indent:4px;line-height:.95;color:var(--white);margin-top:2px}
-.aviso .e-marc{font-size:clamp(52px,14vw,86px);line-height:1;letter-spacing:3px;text-indent:3px;color:var(--gold);margin-top:6px}
 /* En el descuento el marcador acompaña, no encabeza: va más chico. */
-.aviso .a-t + .a-s + .e-marc{font-size:clamp(34px,9vw,52px);margin-top:8px}
 /* La nota al pie se pone roja cuando la decisión es urgente. */
 .aviso .a-s.urge{color:var(--red)}
-.aviso .e-marc span{color:var(--dim2);font-size:.6em;vertical-align:middle}
 .aviso .e-sub{font-family:var(--txt);text-transform:none;font-size:12.5px;letter-spacing:1px;color:var(--dim);margin-top:7px}
 .aviso .e-aviso{font-size:19px;letter-spacing:2px;color:var(--red);margin-top:13px}
 
@@ -5282,10 +5279,8 @@ body{padding-bottom:36px}
   .aviso .a-op.solo .on{font-size:25px;letter-spacing:2px;margin-top:6px}
   .aviso .a-op.solo .od{font-size:14.2px;margin-top:10px}
   .aviso .e-tit{font-size:clamp(52px, 5vw, 82px)}
-  .aviso .e-marc{font-size:clamp(66px, 6.4vw, 104px);margin-top:9px}
   /* El marcador chico —el que va debajo del título, en el descuento— sube en
      la misma proporción, pero sigue siendo el chico de los dos. */
-  .aviso .a-t + .a-s + .e-marc{font-size:clamp(46px, 4.2vw, 66px);margin-top:11px}
   .aviso .e-sub{font-size:14.5px;margin-top:10px}
   .aviso .e-aviso{font-size:24px;letter-spacing:2.5px;margin-top:17px}
 
@@ -6078,7 +6073,6 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .aviso .a-rayos{gap:6px;margin-top:0}
   .aviso .a-rayos img,.aviso .a-rayos .ir{width:22px;height:28px}
   .aviso .a-s{font-size:11px;margin-top:6px;line-height:1.42}
-  .aviso .a-t + .a-s + .e-marc{font-size:clamp(30px,8vw,40px);margin-top:6px}
   .aviso .a-ops{gap:7px;margin-top:11px}
   .aviso .a-op{padding:8px 7px}
   .aviso .a-op .oi{font-size:19px}
@@ -7125,6 +7119,124 @@ html.html-menu, html.html-menu body{overflow:hidden}
    respira un poco más: es la única salida, no una de dos. */
 .dc-ops.sola .dc-art img{height:clamp(78px, 11vh, 118px)}
 
+/* ---- LA TIRA DEL MARCADOR ----
+   **Era el único marcador del juego sin escudos.** La marquesina los tiene, la
+   cinta de la jugada los tiene y el cartel del gol los tiene desde siempre. Acá
+   había dos números dorados flotando, y este cartel te pregunta justamente algo
+   que depende de cómo va el partido.
+
+   **Van al lado y no arriba** porque lo que falta en este cartel es alto: mide
+   598px en un teléfono de 812, y en 320 de ancho deja 25px arriba y 55 abajo —a
+   844x390, 17 y 43—. Puestos en una línea, los escudos no cuestan un píxel.
+
+   **Y el dorado se va.** Es el color de la racha: los cuatro rayos y la cinta
+   RACHA LLENA, que está pegada arriba, ya son dorados. El marcador le competía a
+   lo que de verdad manda acá. Los números pasan a blanco, como en el cartel del
+   gol, con el mismo filo de un píxel en vez del guion. */
+.dc-tira{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin:10px 0 0;padding:9px 10px;
+  border:1px solid var(--line);border-radius:9px;background:rgba(0,8,31,.5);
+}
+/* **En un teléfono van los escudos solos.** Con el nombre al lado no entra, y no
+   por poco. Medido con INDEPENDIENTE, que es el nombre más largo del juego:
+   necesita 90px, y la chapa le da **69 a 375 de ancho y 61 a 320**. Hasta
+   I. RIVADAVIA, que necesita 70, se recorta en los dos. No hay ancho de teléfono
+   donde entre, así que en todos salía con puntos suspensivos, que es peor que no
+   estar. La identidad la lleva el escudo, igual que en la marquesina, y el nombre
+   vuelve donde hay lugar de verdad: la pantalla ancha de más abajo.
+
+   Sin nombres las chapas dejan de estirarse y el grupo se junta en el medio, que
+   es como se lee un marcador. */
+.dt-eq{display:flex;align-items:center;gap:6px;min-width:0;flex:0 0 auto}
+.dt-eq b{display:none}
+.dt-res{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.dt-res i{
+  font-style:normal;font-family:var(--tit);font-weight:800;line-height:1;
+  color:var(--white);font-size:clamp(30px,7.5vw,38px);
+}
+.dt-res s{width:1px;height:26px;background:rgba(255,255,255,.18)}
+
+/* **El nombre vuelve donde sobra lugar, y con margen de verdad.** El corte no va
+   en la consulta ancha de más abajo —a 820 de ancho en vertical la tarjeta ya
+   mide 413 y el nombre entraría— ni en el ancho de teléfono más uno, que sería
+   apostar a un píxel: a 414 la chapa le da 89 y el más largo pide 90.
+
+   Va en 700, donde la tarjeta ya llegó a su tope de ancho y la chapa reparte unos
+   150 para los 90 que hacen falta. Y sube a 11px, que es el trato que tiene el
+   mismo nombre en el cartel del gol en pantalla ancha. */
+@media (min-width:700px){
+  .dc-tira{gap:8px}
+  .dt-eq{flex:1;gap:5px}
+  .dt-eq.der{justify-content:flex-end}
+  .dt-eq b{
+    display:block;
+    font-family:var(--txt);font-weight:600;font-size:11px;letter-spacing:1.1px;
+    text-transform:uppercase;color:var(--dim2);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+}
+
+/* ---- QUE SON DOS OPCIONES ----
+   Las dos cartas tienen filo de color, título de color y una foto, y aun así se
+   leen como dos fichas de información: son idénticas a las de la situación de
+   gol, que **no se tocan**. Lo primero que les faltaba no era movimiento sino
+   que alguien dijera que hay que elegir una. El rótulo cuesta un renglón.
+
+   Yendo abajo no aparece: ahí hay una sola carta y no hay nada que elegir. */
+.dc-elegi{
+  font-family:var(--txt);font-weight:700;
+  font-size:9.5px;letter-spacing:2.6px;text-indent:2.6px;text-transform:uppercase;
+  color:var(--dim2);margin:13px 0 7px;
+}
+.aviso.dc .dc-ops{margin-top:0}
+.aviso.dc .dc-ops.sola{margin-top:14px}
+
+/* La nota del final decía en **tres renglones de mayúsculas espaciadas** —58px—
+   lo que es una oración. Las oraciones se leen en caja baja. */
+.aviso.dc .dc-nota{
+  text-transform:none;letter-spacing:.1px;font-size:12px;line-height:1.5;
+  color:var(--dim);margin-top:12px;
+}
+
+/* ---- EL LATIDO ----
+   **El gesto que el juego ya reservó para «tocá esto».** Lo llevan IR AL
+   VESTUARIO y USAR LA RACHA —`ctaLatido`, dos golpes y descanso— que son las
+   otras dos veces que hay que tocar sí o sí. Acá es la misma situación.
+
+   Cada carta late **con su color**, el que ya tiene en el filo y en el título:
+   verde JUGARLA, dorado GUARDARLA. Y van corridas medio ciclo, porque dos cartas
+   latiendo juntas se leen como un parpadeo de la pantalla y no como dos objetos.
+
+   **Sin escala, a diferencia del de los CTA.** Aquéllos son botones de una línea
+   y crecen un 3,5%; estas cartas miden 83px y llevan una foto adentro: escalarlas
+   se ve como un temblor. Queda el anillo solo. Y va con `outline`, que **no ocupa
+   lugar**, así que el cartel mide exactamente lo mismo.
+
+   Se apaga al pasar el dedo sólo donde hay mouse: en un teléfono el `:hover` se
+   queda pegado en lo último que tocaste. Es la misma trampa que tuvo el latido de
+   los CTA. */
+@keyframes dcLatido{
+  0%      {outline-width:0}
+  10%     {outline-width:3px}
+  20%     {outline-width:0}
+  30%     {outline-width:2px}
+  45%,100%{outline-width:0}
+}
+.dc-op{
+  outline:0 solid transparent;outline-offset:2px;
+  animation:dcLatido 2.8s ease-in-out infinite;
+}
+.dc-op.gol{outline-color:rgba(61,220,107,.65)}
+.dc-op.col{outline-color:rgba(245,200,66,.6);animation-delay:1.4s}
+@media (hover:hover){
+  .dc-op:hover{animation:none}
+}
+@media (prefers-reduced-motion:reduce){
+  /* Sin movimiento queda el anillo quieto, que dice lo mismo sin insistir. */
+  .dc-op{animation:none;outline-width:1px}
+}
+
 @media (min-width:1025px), (min-width:821px) and (orientation:landscape){
   .dc-cinta{padding:9px 14px}
   .dc-cinta b{font-size:12px;letter-spacing:3px}
@@ -7173,7 +7285,6 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .aviso.dc .a-foto img{max-height:clamp(44px, 11vh, 62px)}
   .aviso.dc .a-t{font-size:clamp(19px, 3.4vw, 26px)}
   .aviso.dc .a-s{font-size:9.8px;letter-spacing:1.2px;margin-top:5px;line-height:1.35}
-  .aviso.dc .e-marc{font-size:clamp(24px, 4vw, 30px);margin-top:2px}
   .dc-cinta{margin-bottom:6px;padding:4px 8px}
   .dc-ops{margin-top:8px}
   .dc-ops .dc-art{flex:0 0 72px}
@@ -9789,7 +9900,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 213;
+const VERSION = 214;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12091,6 +12202,23 @@ function dcCarta(id, tono, arte, nm, desc){
   '</button>';
 }
 
+/* El marcador del descuento: escudo y nombre **al lado** de cada número, todo en
+   un renglón. La disposición del cartel del gol —escudo arriba, nombre abajo—
+   acá no entra: son 40px de alto que este cartel no tiene. */
+function tiraDelMarcador(){
+  const { nomA, nomB, escA, escB } = equiposDelPartido();
+  const chapa = (e, nm, der) =>
+    '<span class="dt-eq' + (der ? ' der' : '') + '">' +
+      (der ? '<b>' + nm + '</b>' + (e ? escudoDe(e, 24) : '')
+           : (e ? escudoDe(e, 24) : '') + '<b>' + nm + '</b>') +
+    '</span>';
+  return '<div class="dc-tira">' +
+      chapa(escA, nomA, false) +
+      '<span class="dt-res"><i>' + G.gU + '</i><s></s><i>' + G.gC + '</i></span>' +
+      chapa(escB, nomB, true) +
+    '</div>';
+}
+
 function descuento(){
   // el mismo promedio que el aviso de racha llena, calculado y no escrito
   const esperadoFavor = esperadoDe(SIT_FAVOR);
@@ -12128,17 +12256,16 @@ function descuento(){
       '<div class="aviso con-foto dc">' +
         fotoRacha('TIEMPO DE DESCUENTO') +
         '<div class="dc-cinta">' + rayosLlenos() + '<b>RACHA LLENA</b></div>' +
-        '<div class="a-s">' +
-          (pierde ? 'Se acabaron los 90 · te queda una sola salida'
-                  : 'Se acabaron los 90 · elegí qué hacer con ella') + '</div>' +
-        '<div class="e-marc">' + G.gU + ' <span>-</span> ' + G.gC + '</div>' +
+        (pierde ? '<div class="a-s">Se acabaron los 90 · te queda una sola salida</div>' : '') +
+        tiraDelMarcador() +
+        (pierde ? '' : '<div class="dc-elegi">ELEGÍ UNA</div>') +
         '<div class="a-ops dc-ops' + (pierde ? ' sola' : '') + '">' +
           dcCarta('dJugar', 'gol', 'jugada', 'JUGARLA',
             'Una última llegada al ' + esperadoFavor + '%, antes del pitazo. Gasta la racha entera.') +
           (pierde ? '' : dcCarta('dGuardar', 'col', 'hinchada', 'GUARDARLA',
             'Te la llevás cargada al próximo partido, lista desde la primera jugada.')) +
         '</div>' +
-        '<div class="a-s ' + nota.cls + '">' + nota.txt + '</div>' +
+        '<div class="a-s dc-nota ' + nota.cls + '">' + nota.txt + '</div>' +
       '</div>';
     wrap = montarPop(wrap);
 
@@ -13304,6 +13431,21 @@ async function flashFallo(tipo, favor){
   await esperarOClick(wrap, ESPERA_FIN);
 }
 
+/* Los dos equipos del partido, de donde ya salían para la marquesina: los del
+   1v1 de cada jugador, y los del campeonato de `G`. Si todavía no hay escudos
+   —el tutorial, una pantalla suelta— el que llama se arma igual con el nombre
+   solo. Lo usan **los dos carteles que muestran el marcador**: el del gol y el
+   del descuento. Estaba escrito dos veces. */
+function equiposDelPartido(){
+  const duelo = G.modo === 'duelo';
+  return {
+    nomA: duelo ? (G.J[0] || {}).club || G.club : G.club,
+    nomB: duelo ? (G.J[1] || {}).club || 'RIVAL' : (RONDA(G.ronda) || {}).rival || 'RIVAL',
+    escA: duelo ? (G.J[0] || {}).escudo : G.escudo,
+    escB: duelo ? (G.J[1] || {}).escudo : G.escudoRival
+  };
+}
+
 function flashGol(tipo){
   // la animación toma su duración de la constante, no de un número suelto en CSS
   document.documentElement.style.setProperty('--dura-gol', DURA_GOL + 'ms');
@@ -13322,16 +13464,7 @@ function flashGol(tipo){
   /* El marcador es lo más grande del cartel: acabás de convertir (o te
      convirtieron) y lo que querés saber es cómo va el partido. Va con los dos
      nombres, como la marquesina, y el lado que acaba de marcar se enciende. */
-  const rival = G.modo === 'duelo'
-    ? (G.J[1] || {}).club || 'RIVAL'
-    : (RONDA(G.ronda) || {}).rival || 'RIVAL';
-  const nomA = G.modo === 'duelo' ? (G.J[0] || {}).club || G.club : G.club;
-
-  /* Los escudos salen de donde ya salen para la marquesina: los del duelo de
-     cada jugador, y los del campeonato de `G`. Si todavía no hay ninguno —el
-     tutorial, una pantalla suelta— el cartel se arma igual con el nombre solo. */
-  const escA = G.modo === 'duelo' ? (G.J[0] || {}).escudo : G.escudo;
-  const escB = G.modo === 'duelo' ? (G.J[1] || {}).escudo : G.escudoRival;
+  const { nomA, nomB: rival, escA, escB } = equiposDelPartido();
   const chapa = (e, nm, enciende) =>
     '<span class="gm-eq' + (enciende ? ' marco' : '') + '">' +
       (e ? escudoDe(e, 30) : '') + '<b>' + nm + '</b>' +
