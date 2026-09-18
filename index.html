@@ -1637,9 +1637,21 @@ img{height:auto}
   padding:7px 0;border-bottom:1px dashed rgba(30,51,88,.7);
 }
 .stat:last-child{border-bottom:none;padding-bottom:1px}
+/* **La misma curva que la chapita de la carta.** Los tres números del juego
+   —el del panel, el del renglón del valor y el de la carta— llevan el mismo
+   borde de 2px en el color del eje, pero los dos primeros iban con esquinas
+   rectas y el de la carta redondeado: mismo borde, dos formas.
+
+   Acá toman los 5px de `.cell .c-val`, y 7 en escritorio. Sólo el radio: el
+   fondo teñido que la chapita lleva se queda en la carta, porque en el panel
+   los dos números están uno arriba del otro y pesaría más que ahí.
+
+   **Arregla dos lugares con una regla.** El renglón del valor del cartel de la
+   jugada reusa estas mismas clases a propósito desde v185, así que lo sigue
+   solo. */
 .stat .n{
   font-family:var(--tit);font-weight:800;font-size:29px;line-height:1;
-  min-width:31px;text-align:center;border:2px solid;padding:1px 0;
+  min-width:31px;text-align:center;border:2px solid;border-radius:5px;padding:1px 0;
 }
 .stat.atk .n{color:var(--red);border-color:var(--red)}
 .stat.def .n{color:var(--blue);border-color:var(--blue)}
@@ -5565,6 +5577,8 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .cell .c-esc{padding:3.5px 5px;border-radius:9px}
   .cell .c-esc svg{height:clamp(22px, calc(var(--carta) * .26), 34px)}
   .cell .c-val{font-size:26px;padding:3px 10px;border-radius:7px}
+  /* y los números del panel y del cartel, con la misma curva que la chapita */
+  .stat .n{border-radius:7px}
 }
 @media (min-width:1025px), (min-width:821px) and (orientation:landscape){
   .cell .c-out{font-size:17.3px}          /* el nombre va en 15 · +20% */
@@ -9294,7 +9308,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 197;
+const VERSION = 198;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

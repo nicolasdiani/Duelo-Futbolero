@@ -9918,3 +9918,52 @@ antes del cambio —medido contra v196: la caja mide 460x340 en las dos—.
 El sorteo corrido de punta a punta: el cursor pasa por las cinco, cuatro se
 apagan y la que gana se levanta con su anillo. La chapa del MINI JUEGO en su
 esquina, con la foto detrás.
+
+## v198 · los números de ataque y defensa toman la curva de la chapita
+
+De las tres salió **la A**: sólo el radio.
+
+### El mismo borde, dos formas
+
+Los tres números del juego —el del panel PLANTEL, el del renglón del valor del
+cartel de la jugada y el de la carta— llevan **el mismo borde de 2px** en el
+color del eje: rojo para ataque, azul para defensa.
+
+Pero la chapita de la carta tenía **7px de radio** y los otros dos iban con
+esquinas rectas. Mismo borde, dos formas.
+
+Ahora los tres van redondeados: **5px, y 7 en escritorio**, que es exactamente
+lo que usa `.cell .c-val` desde v196.
+
+### Sólo el radio, no el fondo
+
+La chapita de la carta lleva además un fondo teñido al 10%. Eso se queda en la
+carta: en el panel los dos números están **uno arriba del otro** y dos rellenos
+de color pesan ahí más de lo que pesa uno solo en una carta.
+
+### Una regla, dos lugares
+
+El renglón del valor del cartel de la jugada **reusa a propósito las clases del
+panel** —`.stat` y `.stat-txt`— desde v185, con el comentario escrito al lado:
+«si el panel cambia el cartel lo sigue solo». Así fue: se tocó una regla y se
+arreglaron los dos.
+
+### No se movió un píxel
+
+| | caja del panel | radio |
+|---|---|---|
+| 390 x 844 | 31 x 21 | 0 → **5px** |
+| 844 x 390 | 30 x 37 | 0 → **7px** |
+| 1280 x 840 | 30 x 37 | 0 → **7px** |
+
+El número del cartel de la jugada, igual: 26x29 antes y después, con 7px.
+
+### Lo que no entra acá
+
+En el **duelo 1v1** los stats de cada jugador (`.jp-st`) se muestran sin recuadro,
+como texto suelto con el número en color. No es la misma pieza y no se tocó.
+
+### Verificado
+
+390x844, 844x390 y 1280x840. Los tres números redondeados y del mismo tamaño que
+antes en las tres. Sin errores de consola.
