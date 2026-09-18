@@ -9437,6 +9437,19 @@ function mesaAtras(si){
     cerrarFichaItem();
     const pl = document.getElementById('panelLog');
     if(pl) pl.classList.remove('abierto');
+  } else {
+    /* **No vuelve si todavía quedó algo adelante.** Desde que las pantallas
+       también mandan la mesa atrás, hay dos casos donde el pedido de vuelta
+       llega de más: un cartel que se cierra sobre una pantalla que sigue
+       abierta, y una pantalla que se cierra para dejar paso a un cartel. Sin
+       esto la mesa hacía el viaje de ida y vuelta por nada, y se veía un
+       tironcito debajo de lo que estaba adelante.
+
+       El cartel que **se está yendo** no cuenta: en ese momento `cerrarPop`
+       ya le puso `saliendo` y es justamente el que pide la vuelta. */
+    const cartel = POP_VELO && !POP_VELO.classList.contains('saliendo');
+    const ov = document.getElementById('overlay');
+    if(cartel || (ov && ov.classList.contains('open'))) return;
   }
   w.classList.toggle('atras', si);
 }
@@ -9456,8 +9469,10 @@ function cerrarPop(){
     /* La mesa arranca la vuelta junto con el cartel, no cuando el velo ya se
        fue: así el regreso es un solo movimiento y no dos pegados. */
     mesaAtras(false);
-    /* 300 = los 60ms que el velo le da de ventaja al cartel más sus 220 de
-       desvanecido. Con los 240 de antes se sacaba sin haber terminado y el
+    /* 300 es el techo: el velo le da 40ms de ventaja al cartel y el cartel
+       tarda 180 en irse —v209—, así que con 220 alcanzaría. Se dejan los 300
+       porque la vuelta de la mesa tiene que terminar adentro de esta ventana
+       y sobra margen; con los 240 de antes se sacaba sin haber terminado y el
        último fotograma era un salto. */
     setTimeout(() => {
       if(POP_VELO === velo) POP_VELO = null;
@@ -9652,7 +9667,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 209;
+const VERSION = 210;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -14197,6 +14212,12 @@ function openCard(html, extra){
   ov.classList.toggle('ov-menu', extra === 'card-menu');
   document.documentElement.classList.toggle('html-menu', extra === 'card-menu');
   card.innerHTML = html;
+  /* **La mesa se va atrás también con las pantallas.** Los carteles ya lo
+     hacían desde que el velo se enciende: la mesa se aleja un punto y se
+     apaga mientras lo que viene llega adelante. Las pantallas no, así que al
+     cerrarse la mesa **aparecía** en vez de volver, y el último paso hasta el
+     tablero se sentía un corte. Es la misma clase y el mismo reloj. */
+  mesaAtras(true);
   ov.classList.add('open');
   sacarFoco();
 
@@ -14204,6 +14225,9 @@ function openCard(html, extra){
 }
 function closeCard(){
   $('overlay').classList.remove('open');
+  /* La vuelta arranca junto con el fundido, no después: así es un solo
+     movimiento. Si atrás viene un cartel, `mesaAtras` no la trae. */
+  mesaAtras(false);
   /* El menú se cierra sin pasar por `openCard`, así que el candado del scroll
      se suelta acá o el tablero queda sin poder moverse. */
   document.documentElement.classList.remove('html-menu');

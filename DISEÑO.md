@@ -10658,3 +10658,52 @@ Sólo cambiaron `transform`, `opacity` y tiempos. Medido en el juego andando a
 
 Pop-up abriendo y cerrando sobre la mesa, pantalla abriendo y cerrando, y las
 cuatro medidas de arriba. Sin errores de consola.
+
+## v210 · la mesa se va atrás también con las pantallas
+
+De las tres salió **la A**, que además es la que no agrega una sola regla de CSS.
+
+### El último paso era un corte
+
+La tarjeta se desvanecía y **la mesa ya estaba ahí**, entera y quieta. No es que
+llegara: es que se destapaba. Nada conectaba una pantalla con la otra.
+
+Y el juego ya sabía hacerlo: cuando se abre un cartel, `.wrap` toma `.atras` y se
+aleja un punto mientras lo que viene llega adelante, y vuelve sola al cerrarse.
+Con las pantallas eso **no pasaba**. Son dos líneas, una en `openCard` y otra en
+`closeCard`, y de paso carteles y pantallas pasan a comportarse igual.
+
+### Hubo que enseñarle cuándo no volver
+
+Desde que las pantallas también mandan la mesa atrás hay dos casos donde el
+pedido de vuelta llega de más:
+
+- un **cartel que se cierra sobre una pantalla** que sigue abierta,
+- una **pantalla que se cierra para dejar paso a un cartel**.
+
+Sin el guard la mesa hacía el viaje de ida y vuelta por nada y se veía un
+tironcito debajo de lo que estaba adelante. El guard vive adentro de `mesaAtras`,
+en un solo lugar: no vuelve si hay un cartel vivo o una pantalla abierta.
+
+El cartel que **se está yendo** no cuenta, porque en ese momento `cerrarPop` ya le
+puso `saliendo` y es justamente el que pide la vuelta.
+
+Probado los cuatro casos a mano sobre el juego andando: con pantalla abierta se
+queda atrás, con cartel vivo se queda atrás, con el cartel yéndose vuelve, y sin
+nada adelante vuelve.
+
+### Verificado
+
+La corrida entera desde el menú: club `atras true`, cómo se juega `atras true`,
+mercado `atras true`, y al llegar al tablero `atras false` con las 16 cartas
+puestas y el overlay cerrado. Sin errores de consola.
+
+Las medidas del alejado se leyeron **con las transiciones apagadas**, que es la
+única forma de leer el valor de destino y no el del camino: `scale(.955)` y
+`brightness(.72)` con la clase, nada sin ella.
+
+### Queda pendiente
+
+El tablero se rearma **mientras el velo todavía se está yendo** —`closeCard()` y
+`startMatch()` corren uno detrás del otro, sin esperar— así que las cartas cambian
+por detrás del fundido. Se ofreció junto con esto y no se aplicó: va aparte.
