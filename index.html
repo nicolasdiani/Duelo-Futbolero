@@ -4148,15 +4148,33 @@ body{padding-bottom:36px}
 .club-pie{display:flex;flex-direction:column;gap:7px;margin-top:2px}
 .club-pie .cta{margin-top:0}
 .club-pie .cta.alt{font-size:clamp(11px, 3.2vw, 12.5px)}
-.opts{margin-top:16px;text-align:left}
+/* ---- LA PANTALLA DE OPCIONES ----
+   El nombre y su ícono van juntos a la izquierda y el estado a la derecha.
+   El ícono es un SVG del sprite y se pinta en `--dim`: es un dibujo que
+   acompaña al nombre, no algo que haya que mirar.
+
+   El renglón pasa de 11 a 14 de alto y el último se queda sin la línea de
+   abajo, que no separaba nada del botón. Y la chapa de PRÓXIMAMENTE se apaga
+   un punto: está tres veces y no es lo que hay que leer. */
+.opts{margin-top:14px;text-align:left}
 .opt{
   display:flex;justify-content:space-between;align-items:center;gap:10px;
-  border-bottom:1px solid var(--line);padding:11px 2px;
-  font-family:var(--txt);font-size:13px;
+  border-bottom:1px solid var(--line);padding:14px 2px;
+  font-family:var(--txt);font-size:13.5px;
 }
+.opt:last-child{border-bottom:none}
+.opt > span{display:flex;align-items:center;gap:9px;min-width:0}
+.opt .ic{width:16px;height:16px;flex:0 0 auto;color:var(--dim)}
 .opt .pend{
   font-family:var(--txt);font-weight:600;font-size:9px;letter-spacing:2px;
-  color:var(--dim2);border:1px solid var(--line);border-radius:3px;padding:3px 7px;
+  color:var(--dim2);border:1px solid rgba(30,51,88,.8);border-radius:3px;
+  padding:3px 7px;background:rgba(0,10,30,.5);opacity:.85;
+}
+/* Acostado la tarjeta entraba justo: con los 14 de alto hay que rodar 4px
+   para llegar al botón, medido en 844x390. Ahí los renglones se quedan con
+   los 11 de siempre. */
+@media (orientation:landscape) and (max-height:560px){
+  .opt{padding:11px 2px}
 }
 .cred{
   border:1px solid var(--gold);background:rgba(245,200,66,.06);
@@ -9618,7 +9636,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 207;
+const VERSION = 208;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -14224,9 +14242,17 @@ function showOpciones(){
     '<div class="tag">OPCIONES</div>' +
     '<h1>AJUSTES</h1>' +
     '<div class="opts">' +
-      '<div class="opt"><span>🔊 Volumen</span><b class="pend">PRÓXIMAMENTE</b></div>' +
-      '<div class="opt"><span>🖥 Pantalla completa</span><b class="pend">PRÓXIMAMENTE</b></div>' +
-      '<div class="opt"><span>⚡ Animaciones</span><b class="pend">PRÓXIMAMENTE</b></div>' +
+      /* Los tres íconos eran emoji —🔊 🖥 ⚡— o sea que los dibujaba el
+         sistema operativo y la pantalla se veía distinta en cada máquina.
+         Los tres reemplazos ya estaban en el sprite y no hubo que dibujar
+         nada: el altavoz es el del GRITO DEL DT, el monitor el del VAR y el
+         rayo el de la racha. */
+      '<div class="opt"><span>' + ICO('gri') + ' Volumen</span>' +
+        '<b class="pend">PRÓXIMAMENTE</b></div>' +
+      '<div class="opt"><span>' + ICO('var') + ' Pantalla completa</span>' +
+        '<b class="pend">PRÓXIMAMENTE</b></div>' +
+      '<div class="opt"><span>' + ICO('rayo') + ' Animaciones</span>' +
+        '<b class="pend">PRÓXIMAMENTE</b></div>' +
     '</div>' +
     /* Volver **nunca** es la acción principal: hasta acá se veía dorado sólo
        porque era el único botón de la pantalla. */

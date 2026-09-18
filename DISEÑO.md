@@ -10540,3 +10540,48 @@ diciendo dorado donde ya no lo es.
 Cuatro tarjetas abiertas en el juego andando —MERCADO, OPCIONES, CRÉDITOS y EL
 PARTIDO, que además lleva `card-reglas`—: las cuatro en `rgb(88,120,171)`, con el
 título en blanco. Sin errores de consola.
+
+## v208 · opciones: se van los últimos tres emoji de una pantalla entera
+
+De las tres salió **la A**: la misma lista, con los íconos del juego y más aire.
+
+### Lo que estaba mal, no mejorable
+
+Los tres íconos eran emoji —🔊, 🖥 y ⚡— o sea que los dibujaba el sistema
+operativo: la pantalla se veía distinta en cada máquina y no combinaba con el
+resto del juego, que ya es todo SVG. Era de las últimas que quedaban así.
+
+**Los tres reemplazos ya estaban en el sprite** y no hubo que dibujar nada:
+
+| | era | ahora | de dónde sale |
+|---|---|---|---|
+| Volumen | 🔊 | `#i-gri` | el altavoz del GRITO DEL DT |
+| Pantalla completa | 🖥 | `#i-var` | el monitor del VAR |
+| Animaciones | ⚡ | `#i-rayo` | el rayo de la racha |
+
+Van en `--dim`: son un dibujo que acompaña al nombre, no algo que haya que
+mirar.
+
+### Y el renglón respira
+
+De 11 a 14 de alto, y el último se queda sin la línea de abajo, que no separaba
+nada del botón. La chapa de PRÓXIMAMENTE se apaga un punto: está tres veces y no
+es lo que hay que leer.
+
+Se dejó escrita tres veces a propósito. La otra propuesta la subía a una sola
+línea arriba, que dice lo mismo con menos ruido, pero **esta lista envejece
+mejor**: cuando alguna de las tres empiece a funcionar, sólo cambia la chapa de
+la derecha por un control y el resto sirve tal cual.
+
+### Un guard para el teléfono acostado
+
+Ahí la tarjeta entraba justo. Con los 14 de alto había que rodar **4px** para
+llegar al botón —medido en 844x390—, así que en `(orientation:landscape) and
+(max-height:560px)` los renglones se quedan con los 11 de siempre.
+
+### Verificado
+
+En el juego andando: 390x844 en 279 con los renglones de 47, 320x568 en 246,
+1280x860 en 366 y 844x390 en 348, ninguno rodando por dentro. Los tres íconos
+salen de `#i-gri`, `#i-var` y `#i-rayo`, y en la tarjeta **no queda un solo
+emoji**. Sin errores de consola.
