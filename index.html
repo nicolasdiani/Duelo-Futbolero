@@ -465,18 +465,23 @@ img{height:auto}
    duración fija de 1,5s: como el cartel ahora dura 3 segundos, se apagaba a la
    mitad y quedaba la pantalla gris sin nada encima. El cierre lo decide el JS
    —por tiempo o por toque— y el desvanecido va aparte, en `.saliendo`. */
+/* **Sin sobrepaso.** Entraban desde el 72% de su tamaño y pasaban por el 106
+   antes de frenar: un salto del 34% con rebote, que es lo que se veía
+   exagerado. Ahora arrancan en 96 y llegan a 100 sin pasarse.
+
+   Y la salida deja de escaparse: se iba agrandándose a 105 mientras se
+   apagaba, que se lee como un tirón. Ahora cierra hacia adentro, que es la
+   entrada al revés. */
 @keyframes golpop{
-  0%  {opacity:0;transform:scale(.72)}
-  55% {opacity:1;transform:scale(1.07)}
+  0%  {opacity:0;transform:scale(.96)}
   100%{opacity:1;transform:scale(1)}
 }
 @keyframes golsale{
   from{opacity:1;transform:scale(1)}
-  to  {opacity:0;transform:scale(1.05)}
+  to  {opacity:0;transform:scale(.99)}
 }
 @keyframes poppin{
-  0%{opacity:0;transform:scale(.72)}
-  55%{opacity:1;transform:scale(1.06)}
+  0%  {opacity:0;transform:scale(.96)}
   100%{opacity:1;transform:scale(1)}
 }
 @keyframes blink{0%,60%{opacity:1}61%,100%{opacity:.25}}
@@ -499,10 +504,10 @@ img{height:auto}
    se estaba yendo: 60ms de retraso alcanzan para que se lean en orden. Y el
    aviso —que no estaba en la lista— se iba de golpe, sin desvanecerse. */
 .saliendo .gf, .saliendo .sit, .saliendo .aviso, .saliendo .play{
-  animation:golsale .22s ease-in both;
+  animation:golsale .18s cubic-bezier(.4,0,1,1) both;
 }
-.saliendo .pop-caja{animation:golsale .22s ease-in both !important}
-.saliendo{transition:opacity .22s ease .06s;opacity:0}
+.saliendo .pop-caja{animation:golsale .18s cubic-bezier(.4,0,1,1) both !important}
+.saliendo{transition:opacity .18s ease .04s;opacity:0}
 
 /* ---------- EL ESCENARIO ----------
    Todos los carteles del juego comparten **un solo velo y una sola caja**.
@@ -525,25 +530,36 @@ img{height:auto}
    punto y se apaga mientras el cartel llega adelante. No es que se tapó la
    mesa — es que el cartel está delante de ella. Al cerrarse, la mesa vuelve
    sola, y esa vuelta es la que le faltaba a la salida. */
-.pop-velo{transition:background-color .26s ease, backdrop-filter .26s ease,
-          opacity .2s ease}
+.pop-velo{transition:background-color .3s cubic-bezier(.22,1,.36,1),
+          backdrop-filter .3s cubic-bezier(.22,1,.36,1),
+          opacity .3s cubic-bezier(.22,1,.36,1)}
 .pop-velo.entrando{opacity:0;backdrop-filter:blur(0px);-webkit-backdrop-filter:blur(0px)}
 
 /* La mesa atrás. El origen está arriba del centro geométrico —42%— porque
    abajo hay menos mesa que arriba: con 50% el alejado se comía la franja de
    ítems más que la marquesina. */
 .wrap{
-  /* 240 y no 280: la vuelta tiene que terminar antes de que se saque el velo
-     —300ms después del cierre—, porque mientras la transición corre el
-     `transform` sigue vivo y con él el bloque contenedor de los `fixed`. */
-  transition:transform .24s cubic-bezier(.3,0,.2,1), filter .24s ease;
+  /* **La ida y la vuelta duran distinto, a propósito.** La que manda es la del
+     estado al que se va: yendo atrás manda `.wrap.atras`, volviendo manda ésta.
+     Así la mesa se va con el reloj de entrar y vuelve con el de salir, igual
+     que el cartel que la tapa.
+
+     Y la vuelta tiene que terminar **antes de que se saque el velo** —300ms
+     después del cierre—, porque mientras la transición corre el `transform`
+     sigue vivo y con él el bloque contenedor de los `fixed`. Con 180 sobra. */
+  transition:transform .18s cubic-bezier(.4,0,1,1), filter .18s ease;
   transform-origin:50% 42%;
 }
-.wrap.atras{transform:scale(.955);filter:brightness(.72)}
+.wrap.atras{
+  transition:transform .3s cubic-bezier(.22,1,.36,1), filter .3s ease;
+  transform:scale(.955);filter:brightness(.72);
+}
 @media (prefers-reduced-motion:reduce){
   .wrap{transition:none}
-  /* Sin movimiento queda sólo el apagado, que es lo que separa los planos. */
-  .wrap.atras{transform:none;filter:brightness(.78)}
+  /* Sin movimiento queda sólo el apagado, que es lo que separa los planos.
+     El `transition:none` va también acá porque `.wrap.atras` ahora trae el
+     suyo y le gana al de arriba por especificidad. */
+  .wrap.atras{transition:none;transform:none;filter:brightness(.78)}
   .pop-velo{transition:none}
 }
 /* La caja que ya se transformó una vez no vuelve a hacer su animación de
@@ -551,12 +567,12 @@ img{height:auto}
    metía un rebote en el medio de la transformación. */
 .pop-caja{
   animation:none !important;
-  transition:border-color .28s ease, box-shadow .28s ease;
+  transition:border-color .3s ease, box-shadow .3s ease;
 }
 .pop-caja.pop-morfando{
   overflow:hidden;
-  transition:width .3s cubic-bezier(.4,0,.2,1), height .3s cubic-bezier(.4,0,.2,1),
-             border-color .28s ease, box-shadow .28s ease;
+  transition:width .3s cubic-bezier(.22,1,.36,1), height .3s cubic-bezier(.22,1,.36,1),
+             border-color .3s ease, box-shadow .3s ease;
 }
 /* Lo que se va queda un instante encima, quieto y en su lugar, y se apaga.
    Lleva las clases del cartel viejo para que se siga viendo igual, pero sin
@@ -564,7 +580,7 @@ img{height:auto}
    lado. El `padding` se lo pone el JS, copiado del cartel que se va. */
 .pop-fantasma{
   position:absolute;inset:0;pointer-events:none;opacity:1;
-  transition:opacity .19s ease;
+  transition:opacity .18s ease;
   width:auto !important;height:auto !important;max-width:none !important;
   border:0 !important;background:none !important;box-shadow:none !important;
   backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
@@ -580,7 +596,7 @@ img{height:auto}
 .gf{
   font-family:var(--tit);font-weight:800;text-transform:uppercase;
   text-align:center;padding:22px 40px;border:3px solid;
-  animation:golpop .42s cubic-bezier(.2,.9,.25,1) both;
+  animation:golpop .3s cubic-bezier(.22,1,.36,1) both;
 }
 .gf .t{font-size:clamp(38px,9vw,76px);letter-spacing:2px;text-indent:2px;line-height:.92}
 .gf .s{font-family:var(--txt);font-size:12px;letter-spacing:3px;margin-top:9px}
@@ -604,7 +620,7 @@ img{height:auto}
   text-align:center;padding:20px 24px;border:3px solid var(--line);
   max-width:400px;width:100%;cursor:pointer;
   box-shadow:0 20px 60px rgba(0,0,0,.6);
-  animation:poppin .42s cubic-bezier(.2,.9,.25,1) both;
+  animation:poppin .3s cubic-bezier(.22,1,.36,1) both;
 }
 .play .p-tag{font-family:var(--txt);font-size:11px;letter-spacing:3px;color:var(--dim);margin-bottom:12px}
 
@@ -764,7 +780,7 @@ img{height:auto}
   text-align:center;padding:26px 34px;border:3px solid var(--red);
   max-width:430px;width:100%;
   box-shadow:0 0 60px rgba(255,59,82,.3);
-  animation:poppin .5s cubic-bezier(.2,.9,.25,1) both;
+  animation:poppin .3s cubic-bezier(.22,1,.36,1) both;
 }
 .sit .sit-tag{font-family:var(--txt);font-size:11.5px;letter-spacing:4px;text-indent:4px;color:var(--dim);margin-bottom:14px}
 .sit .sit-ico{font-size:52px;line-height:1;margin-bottom:8px}
@@ -849,7 +865,7 @@ img{height:auto}
   text-align:center;padding:var(--apy) var(--apx);border:3px solid var(--gold);
   max-width:430px;width:100%;
   box-shadow:0 0 60px rgba(245,200,66,.32);
-  animation:poppin .45s cubic-bezier(.2,.9,.25,1) both;
+  animation:poppin .3s cubic-bezier(.22,1,.36,1) both;
 }
 .aviso .a-ico{font-size:50px;line-height:1}
 .aviso .a-t{font-size:clamp(28px,7vw,46px);letter-spacing:2px;text-indent:2px;line-height:.95;color:var(--gold)}
@@ -1473,7 +1489,7 @@ img{height:auto}
   display:flex;align-items:center;justify-content:center;
   /* el padding de abajo deja libre la franja del footer, que va por encima */
   padding:20px 20px 56px;
-  opacity:0;pointer-events:none;transition:opacity .3s;z-index:60;overflow-y:auto;
+  opacity:0;pointer-events:none;transition:opacity .3s cubic-bezier(.22,1,.36,1);z-index:60;overflow-y:auto;
   /* La pantalla que sale se va por el costado: sin esto el desplazamiento
      estrena una barra horizontal durante los 260ms que dura. */
   overflow-x:hidden;
@@ -1484,7 +1500,7 @@ img{height:auto}
   border:1px solid var(--line);border-top:3px solid var(--gold);padding:30px 26px;
   max-width:520px;width:100%;text-align:center;
   box-shadow:0 20px 70px rgba(0,0,0,.7);
-  transform:translateY(12px);transition:transform .3s;margin:auto;
+  transform:translateY(12px);transition:transform .3s cubic-bezier(.22,1,.36,1);margin:auto;
 }
 .overlay.open .card{transform:translateY(0)}
 
@@ -9636,7 +9652,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 208;
+const VERSION = 209;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

@@ -10585,3 +10585,76 @@ En el juego andando: 390x844 en 279 con los renglones de 47, 320x568 en 246,
 1280x860 en 366 y 844x390 en 348, ninguno rodando por dentro. Los tres íconos
 salen de `#i-gri`, `#i-var` y `#i-rayo`, y en la tarjeta **no queda un solo
 emoji**. Sin errores de consola.
+
+## v209 · las transiciones: un solo reloj y sin sobrepaso
+
+Salió **la B más lo de la A**: son dos problemas distintos y no se pisan.
+
+### Lo exagerado: el sobrepaso
+
+Los carteles entraban desde el **72%** de su tamaño y pasaban por el **106**
+antes de frenar: un salto del 34% con rebote. Y al cerrarse hacían lo contrario
+de entrar —se agrandaban a 105 mientras se apagaban—, que se lee como un tirón.
+
+Ahora arrancan en **96** y llegan a 100 sin pasarse, y la salida cierra hacia
+adentro, a 99. Es la entrada al revés.
+
+### Lo entrecortado: siete relojes
+
+No era que algo fuera lento o rápido: era que **nada terminaba junto**.
+
+| Pieza | Entraba | Ahora | Salía | Ahora |
+|---|---|---|---|---|
+| Pop-up de jugada | 420ms | 300 | 220ms | 180 |
+| Pop-up de situación | 500ms | 300 | 220ms | 180 |
+| Aviso | 450ms | 300 | 220ms | 180 |
+| Cartel de gol | 420ms | 300 | 220ms | 180 |
+| El velo | 260ms | 300 | 200ms | 300 |
+| La mesa, atrás | 240ms | 300 | 240ms | 180 |
+| Pantalla y tarjeta | 300ms | 300 | 300ms | 300 |
+| Caja que se transforma | 300ms | 300 | — | — |
+
+Dos números para todo el juego —**entrar 300, salir 180**— y dos curvas: una
+que frena sin pasarse al entrar y otra que arranca suave y se va al salir.
+
+### La mesa va y vuelve con relojes distintos, a propósito
+
+La transición que manda es la del **estado al que se va**: yendo atrás manda
+`.wrap.atras` y volviendo manda `.wrap`. Así la mesa se aleja con el reloj de
+entrar y vuelve con el de salir, igual que el cartel que la tapa.
+
+Y la vuelta tiene que terminar antes de que se saque el velo, 300ms después del
+cierre, porque mientras la transición corre el `transform` sigue vivo y con él el
+bloque contenedor de los `fixed`. Con 180 sobra. Verificado muestreando cada
+45ms: a los 90 ya está `golsale 0.18s` en el cartel y `0.18s` en la mesa.
+
+### Todo se editó en su lugar
+
+Ni una regla nueva al final de la hoja. El bloque de `prefers-reduced-motion`
+está **justo debajo** de `.wrap` y de `.pop-velo`, así que un override más abajo
+le habría ganado —que es la trampa que apareció en v205—. Y como `.wrap.atras`
+ahora trae su propia transición, el bloque de movimiento reducido tuvo que
+apagarla también ahí: sola, `.wrap{transition:none}` ya no le llegaba.
+
+### Lo que no se tocó
+
+El levantado de la carta de la mesa —`.cell`, 200ms de `translate` y `rotate` con
+la curva vieja— es otra cosa: no es una transición entre pantallas sino el gesto
+de la carta que elegís, y ahí los 200ms con un toque de sobrepaso están bien.
+
+### Los tamaños, intactos
+
+Sólo cambiaron `transform`, `opacity` y tiempos. Medido en el juego andando a
+390x844, contra los números anotados en las versiones donde se fijaron:
+
+| | antes | ahora |
+|---|---|---|
+| Pop-up de carta | 350 x 468 (v201) | 350 x 468 |
+| Mini juego | 350 x 477 (v203) | 350 x 477 |
+| Sorteo | 350 x 588 (v204) | 350 x 588 |
+| Opciones | 350 x 279 (v208) | 350 x 279 |
+
+### Verificado
+
+Pop-up abriendo y cerrando sobre la mesa, pantalla abriendo y cerrando, y las
+cuatro medidas de arriba. Sin errores de consola.
