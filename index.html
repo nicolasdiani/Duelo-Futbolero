@@ -2979,14 +2979,66 @@ img{height:auto}
 .gm-res{display:flex;align-items:baseline;justify-content:center;gap:6px}
 .gm-n{
   font-family:var(--tit);font-weight:800;
-  font-size:clamp(34px,9vw,48px);line-height:1;
+  font-size:clamp(40px,11vw,52px);line-height:1;
   color:var(--white);
 }
-.gm-sep{font-family:var(--tit);font-weight:800;font-size:22px;color:var(--dim2)}
-/* El equipo que acaba de marcar se enciende. */
+/* **El separador deja de ser un guion.** A 22px al lado de números de 34
+   parecía un menos, y no está restando nada: es un filo de un píxel, del alto
+   de los dígitos. El elemento se queda —la caja lo sigue necesitando para
+   separar las dos columnas— pero ya no dice nada. */
+.gm-sep{width:1px;align-self:stretch;margin:4px 0;background:rgba(255,255,255,.18)}
+
+/* ---- EL MINUTO ----
+   El cartel del gol era **el único pop-up del juego que no decía cuándo pasó**
+   lo que pasó. El de la jugada lo dice desde siempre, con esta misma
+   tipografía y este mismo trato, así que acá no se inventa nada: se usa el
+   rótulo que el juego ya tiene. En la tanda de penales no hay minuto y la
+   línea no aparece. */
+.gf-min{
+  font-family:var(--txt);font-weight:700;
+  font-size:9.5px;letter-spacing:2.6px;text-indent:2.6px;text-transform:uppercase;
+  color:var(--dim2);margin:0 0 7px;
+}
+
+/* ---- EL COLOR ESTABA EN EL LUGAR EQUIVOCADO ----
+   El nombre del que marcaba se ponía verde o rojo. Medido sobre el juego: ese
+   nombre mide **9,6px**, y el dato que de verdad cambió —el número, de 34—
+   salía **blanco**, igual que el otro. O sea que la señal de «esto acaba de
+   pasar» estaba en la etiqueta y no en la noticia, y los dos números eran
+   indistinguibles.
+
+   El blanco del nombre **ya estaba escrito acá**; abajo tenía dos líneas que lo
+   pisaban. Se fueron esas dos, y el color se mudó al número. */
 .gf.favor .gm-eq.marco b,.gf.contra .gm-eq.marco b{color:var(--white);font-weight:700}
-.gf.favor .gm-eq.marco b{color:var(--green)}
-.gf.contra .gm-eq.marco b{color:var(--red)}
+
+/* Los nombres bajan un punto y se apagan: son la etiqueta de cada lado, no la
+   noticia. El escudo cede los cuatro píxeles que necesita el número. */
+.gf .gm-eq b{font-size:9.2px;letter-spacing:1.2px;color:var(--dim2)}
+.gf .gm-eq svg{height:26px}
+.gf .gm-res{gap:10px}
+
+/* ---- EL LATIDO ----
+   El número que subió late mientras el cartel está arriba. Un solo golpe se
+   perdía: el cartel dura tres segundos y el ojo llega tarde. Con 820ms de
+   ciclo son unos cuatro latidos —y 820ms es, además, el pulso de alguien
+   corriendo—. El golpe ocupa los primeros 570 y el resto del ciclo descansa,
+   que es lo que lo hace latido y no vibración.
+
+   No se corrige a sí mismo: el cartel se va a los 3s o cuando lo tocan, así
+   que `infinite` nunca dura más que eso. */
+.gm-n.sube{display:inline-block;animation:golLate 820ms cubic-bezier(.22,1,.36,1) infinite both}
+.gf.favor .gm-n.sube{color:var(--green);text-shadow:0 0 26px rgba(61,220,107,.5)}
+.gf.contra .gm-n.sube{color:var(--red);text-shadow:0 0 26px rgba(255,59,82,.5)}
+@keyframes golLate{
+  0%{transform:scale(1)}
+  22%{transform:scale(1.18)}
+  50%{transform:scale(.99)}
+  70%,100%{transform:scale(1)}
+}
+@media (prefers-reduced-motion:reduce){
+  /* Sin movimiento queda el color solo, que es lo que lleva el dato. */
+  .gm-n.sube{animation:none}
+}
 
 /* A favor va verde, en contra rojo. Vale para el gol y para la chance errada:
    errar una tuya es rojo, que el rival erre la suya es verde. */
@@ -7466,7 +7518,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
   font-size:clamp(40px, 11vw, 62px);
   text-shadow:0 4px 26px rgba(0,4,16,.95);
 }
-.gf.gol-foto .gfb{padding:12px 18px 14px;border-top:2px solid rgba(255,255,255,.12)}
+.gf.gol-foto .gfb{padding:9px 18px 14px;border-top:2px solid rgba(255,255,255,.12)}
 .gf.gol-foto.favor .gfb{border-top-color:rgba(61,220,107,.45)}
 .gf.gol-foto.contra .gfb{border-top-color:rgba(255,59,82,.45)}
 /* El marcador ya no necesita su propia línea de arriba: la trae la banda. */
@@ -7479,7 +7531,6 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .gf.gol-foto .t{font-size:clamp(52px, 4.6vw, 76px)}
   .gf.gol-foto .gfb{padding:16px 26px 18px}
   .gf.gol-foto .gm-n{font-size:clamp(46px, 4vw, 64px)}
-  .gf.gol-foto .gm-sep{font-size:28px}
   .gf.gol-foto .gm-eq b{font-size:12px}
   .gf.gol-foto .gm-eq svg{height:40px}
 }
@@ -7502,7 +7553,6 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .gf.gol-foto .t{font-size:min(46px, 12vh)}
   .gf.gol-foto .gfb{padding:8px 18px 10px}
   .gf.gol-foto .gm-n{font-size:min(40px, 10vh)}
-  .gf.gol-foto .gm-sep{font-size:18px}
   /* Acostado lo que falta es alto: el escudo cede antes que el número, que es
      el dato que se busca. */
   .gf.gol-foto .gm-eq svg{height:22px}
@@ -9739,7 +9789,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 212;
+const VERSION = 213;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12132,6 +12182,26 @@ function minutoActual(){
   return (total - G.reloj + 1) * MIN_POR_TURNO;
 }
 
+/* El mismo minuto, pero para el cartel del gol, que sale de más lados que la
+   carta: del 1v1, de la situación de gol y de un penal suelto. El del 1v1 se
+   calcula como el del cronómetro —los 90 repartidos entre 16 turnos— y donde
+   no hay partido detrás **devuelve null**: la tanda de penales no tiene minuto
+   y ahí la línea no se dibuja.
+
+   El gol se cuenta en el mismo minuto que la jugada que lo produjo, así que
+   lleva el mismo `+1` que `minutoActual`. */
+function minutoDelGol(){
+  try{
+    if(G.modo === 'duelo'){
+      const t = G.turnosJugados || 0;
+      return t ? Math.round(t * 90 / DUELO.TURNOS) : null;
+    }
+    const r = RONDA(G.ronda);
+    if(!r || !r.reloj || G.reloj == null) return null;
+    return Math.min(90, Math.max(MIN_POR_TURNO, (r.reloj - G.reloj + 1) * MIN_POR_TURNO));
+  }catch(e){ return null; }
+}
+
 /* ---------------- el cronómetro ----------------
    Un reloj redondo que se llena por porciones, una por jugada. Arranca vacío
    en 0' y se completa a los 90'. Se lee al revés que el contador anterior:
@@ -13267,13 +13337,17 @@ function flashGol(tipo){
       (e ? escudoDe(e, 30) : '') + '<b>' + nm + '</b>' +
     '</span>';
 
+  /* **La marca va en el número que se movió, no en el nombre.** El de la
+     izquierda si el gol es tuyo, el de la derecha si es del rival. */
+  const min = minutoDelGol();
   const marc =
+    (min != null ? '<p class="gf-min">MINUTO ' + min + '&rsquo;</p>' : '') +
     '<div class="gf-marc">' +
       chapa(escA, nomA, favor) +
       '<span class="gm-res">' +
-        '<span class="gm-n">' + G.gU + '</span>' +
-        '<span class="gm-sep">-</span>' +
-        '<span class="gm-n">' + G.gC + '</span>' +
+        '<span class="gm-n' + (favor ? ' sube' : '') + '">' + G.gU + '</span>' +
+        '<span class="gm-sep"></span>' +
+        '<span class="gm-n' + (favor ? '' : ' sube') + '">' + G.gC + '</span>' +
       '</span>' +
       chapa(escB, rival, !favor) +
     '</div>';

@@ -10951,3 +10951,118 @@ entrada siguiente.
 
 Las seis medidas de pantalla, iguales a v211: menú 375x766 y 1280x722, club
 335x549 y 620x587, cómo se juega 335x736 y 880x740. Sin scroll de más.
+
+## v213 · el cartel del gol: el color se muda de la etiqueta al dato
+
+De las cuatro salió **la C**, con el latido más seguido de lo que proponía la
+maqueta.
+
+### Lo que estaba mal, medido
+
+El nombre del equipo que marcaba se ponía verde o rojo. Medido sobre el juego
+andando: ese nombre mide **9,6px**. Y el dato que de verdad había cambiado —el
+número, de **34px**— salía **blanco**, igual que el otro.
+
+O sea que la señal de «esto acaba de pasar» estaba puesta en la etiqueta y no en
+la noticia, y los dos números del marcador eran indistinguibles. Los dos pedidos
+que llegaron —«el nombre en blanco» y «resaltar el número»— eran las dos mitades
+del mismo problema.
+
+Un detalle que ya había pasado antes: **la línea que pone el nombre en blanco ya
+estaba escrita**, con dos abajo que la pisaban.
+
+```
+.gf.favor .gm-eq.marco b,.gf.contra .gm-eq.marco b{color:var(--white)}
+.gf.favor .gm-eq.marco b{color:var(--green)}      ← se va
+.gf.contra .gm-eq.marco b{color:var(--red)}       ← se va
+```
+
+Es el mismo enredo que tenía el rótulo de las cartas en v207: una declaración
+correcta arriba y su contraria abajo, ganando por orden.
+
+### Lo que cambió
+
+| | antes | ahora |
+|---|---|---|
+| Nombre del que marcó | verde / rojo, 9,6px | **blanco**, 9,2px |
+| El otro nombre | `--dim` | `--dim2`, un punto más apagado |
+| Número que subió | blanco, sin marca | **color del gol + latido** |
+| Tamaño del número | `clamp(34px, 9vw, 48px)` | `clamp(40px, 11vw, 52px)` |
+| Separador | guion de 22px | filo de 1px, del alto de los dígitos |
+| Escudo | 30px | 26px |
+| Minuto | no existía | **línea nueva arriba del marcador** |
+
+El guion se iba solo: a 22px al lado de números de 34 parecía un menos, y no
+está restando nada. El elemento se queda —la caja lo necesita para separar las
+dos columnas— pero ya no dice nada.
+
+### El minuto
+
+El cartel del gol era **el único pop-up del juego que no decía cuándo pasó** lo
+que pasó. El de la jugada lo dice desde siempre, con esta misma tipografía y este
+mismo trato, así que acá no se inventó nada: se usa el rótulo que ya existía.
+
+El minuto sale de `minutoDelGol()`, que es `minutoActual()` pero a prueba de los
+otros lados de donde sale este cartel: el 1v1 reparte los 90 entre 16 turnos como
+hace el cronómetro, y **donde no hay partido detrás devuelve `null`** y la línea
+no se dibuja. El gol se cuenta en el mismo minuto que la jugada que lo produjo,
+así que lleva el mismo `+1`.
+
+Verificado contra el cartel de la jugada: los dos dicen 10' en la primera. Y los
+bordes: reloj en 1 → 90', 1v1 sin turnos → sin línea, 1v1 a los 5 turnos → 28',
+sin ronda → sin línea, sin reloj → sin línea.
+
+### El latido
+
+La maqueta proponía **un solo golpe**. No alcanzaba: el cartel dura tres segundos
+y el ojo llega tarde. Queda latiendo mientras el cartel está arriba, con 820ms de
+ciclo —unos tres latidos y medio, y de paso el pulso de alguien corriendo—.
+
+Lo que lo hace latido y no vibración es que **descansa**: el golpe ocupa los
+primeros 570ms del ciclo y los 250 que sobran quedan quietos. Medido pisando el
+reloj de la animación y leyendo la escala calculada:
+
+| ms | 0 | 60 | 120 | **180** | 240 | 360 | 480 | 574 | 820 |
+|---|---|---|---|---|---|---|---|---|---|
+| escala | 1 | 1,156 | 1,178 | **1,18** | 1,032 | 0,99 | 0,999 | 1 | 1 |
+
+No hace falta apagarlo: el cartel se va a los 3s o cuando lo tocan, así que
+`infinite` nunca dura más que eso. Con `prefers-reduced-motion` queda el color
+solo, que es lo que lleva el dato —la regla va después y con la misma
+especificidad, comprobado sobre el CSSOM: índice 728 la animación, 732 el
+apagado—.
+
+### Verificado
+
+Las dos direcciones, sobre el juego andando: con **¡GOL!** se marca el número de
+la izquierda y se enciende tu nombre; con **GOL RIVAL**, el de la derecha y el
+del rival. En los dos casos el otro nombre queda en `--dim2` y el otro número en
+blanco sin animación.
+
+| viewport | v212 | v213 | crece | le sobra abajo |
+|---|---|---|---|---|
+| 320 x 568 | 269 x 222 | 269 x 234 | +12 | — |
+| 375 x 812 | 322 x 285 | 322 x 294 | +9 | — |
+| 390 x 844 | 336 x 293 | 336 x 304 | +11 | 288 |
+| 844 x 390 | 480 x 206 | 480 x 221 | +15 | 98 |
+| 1280 x 768 | 516 x 360 | 516 x 376 | +16 | 214 |
+
+**El ancho no se movió en ninguna** y el velo no estrena scroll en ninguna.
+
+El caso que había que mirar era **320 de ancho con INDEPENDIENTE**, que es el
+nombre más largo del juego y el que ya había obligado a apretar el relleno en
+v206. El número creció 6px y el nombre bajó 0,4, y la cuenta dio a favor: la
+columna pasó de 97,5 a 94,0 y el nombre de pedir 91 a pedir 89. Queda con **5px
+de margen**, contra los 6,5 de antes. No se recorta.
+
+### Lo que no se aplicó
+
+De las cuatro propuestas, la **B** —la chapa llena de color— es la más legible sin
+discusión, y sigue siendo la que habría que elegir si el cartel se mirara de lejos
+o en una pantalla mala. Rompe la simetría del marcador: el dígito con chapa mide
+31px y el otro 11.
+
+La **D** —el número girando de 1 a 2— es la mejor idea de las cuatro y la peor
+pieza: este cartel **está hecho para tocarlo** —`esperarOClick` deja adelantarlo—
+y el que lo toca antes de que termine el giro se queda mirando el número viejo.
+Queda anotada para cuando el giro pueda arrancar con el cartel entrando.
