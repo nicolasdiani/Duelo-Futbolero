@@ -11180,3 +11180,102 @@ botones enganchados en los tres.
 Los escudos aparecen en los cinco anchos probados. Los nombres: ocultos en 320,
 375 y 414; puestos y sin recortar en 820 vertical, 844 acostado y 1280. Sin
 scroll de más en ninguno y el ancho de la tarjeta no se movió.
+
+## v215 · el resaltado de la fila: se va el 3D y queda el filo
+
+De cuatro mecanismos distintos salió **el más corto**: sacar el relieve y no
+poner nada en su lugar.
+
+### Qué hacía
+
+Al pasar por una fila o una columna, cada carta hacía lo suyo por separado:
+subía 7px, se acercaba 30 en el eje Z —lo que la agrandaba por perspectiva— y se
+inclinaba 6 grados, más un canto de cinco capas con una sombra grande. En el
+teléfono la versión chica era 4px, 18 de Z y 5 grados.
+
+Eran **cuatro efectos sueltos** que el ojo tenía que juntar para leer una sola
+cosa: esta fila está elegida. Medido a 375, la carta pasaba de 76x131 en la
+posición 48,360 a 79x131 en 44,355.
+
+### Qué queda
+
+El resaltado ya tenía su idioma —el color de lo que te hace cada carta, que sale
+de `predict()`— y lo único que sobraba era el relieve. Queda el filo del tono y
+una línea del mismo color por adentro, que es lo que lo hace ver **encendido** en
+vez de sólo pintado. Nada se mueve, nada crece, nada se apaga.
+
+Se fueron `translate`, `rotate`, el `perspective` de `.cells` y los cantos
+propios del resaltado. De paso el `perspective` se lleva una trampa: convierte al
+elemento en el bloque contenedor de todo lo que tenga `position:fixed` adentro,
+igual que un `transform` o un `filter`.
+
+### El grosor va adentro, no en el borde
+
+Un borde ocupa lugar. La carta es `border-box`, así que lo que gana el filo se lo
+saca al contenido, y eso tiene dos costos distintos según la pantalla:
+
+- **En el teléfono** el alto de la fila está fijado, así que el borde no corre
+  nada… pero se come la ilustración. Medido en 320x568, que es la más apretada:
+  con el borde en 3px la caja del dibujo pasa de 16 a 12 píxeles. **Un cuarto del
+  dibujo.**
+- **En escritorio** la mesa es `flex` y la carta se estira con lo que tiene
+  adentro, así que los píxeles que el borde le roba al interior vuelven como
+  alto: la carta resaltada pasaba de 229 a 230 y **empujaba un píxel para abajo a
+  las filas de abajo**, cada vez que el dedo pasaba por una fila.
+
+Ese segundo problema **ya existía antes de este cambio** —venía del
+`border-width:3px` de escritorio, con un comentario que decía que no corría nada
+justamente porque el borde crece hacia adentro— y se arregla acá.
+
+La solución es la misma para los dos: **el grosor entero va por adentro, con
+`box-shadow`, y el borde no se toca.** Se ve igual —1px de borde más 1 de sombra
+son los 2 de siempre en el teléfono, y más 2 son los 3 de siempre en
+escritorio— y no ocupa nada.
+
+| | fila resaltada se mueve | columna resaltada se mueve |
+|---|---|---|
+| 320 x 568 | no | no |
+| 375 x 812 | no | no |
+| 844 x 390 | no | no |
+| 1280 x 768 | no | no |
+
+Medido con `offsetLeft/Top/Width/Height` sobre las 16 cartas: **la mesa entera da
+exactamente los mismos números en reposo y resaltada**, en los cuatro anchos.
+
+### El color, por variable
+
+Los seis tonos eran seis bloques idénticos salvo el color. Ahora cada uno pone su
+`--tono` en una línea y el filo, la línea interior y sus transparencias se
+escriben **una sola vez**. El grosor de escritorio es un `--filo-hl:2px` en vez
+de repetir seis reglas.
+
+### Lo que se probó y se descartó
+
+Antes de la D estaba la idea de **pasar el color del filo al fondo de la carta**,
+para que las cuatro quedaran pintadas iguales y se leyeran como una banda. No se
+lee: las cartas son casi toda foto, así que el lavado queda tapado por el arte y
+sólo asoma en las dos franjas de texto. Se armó, se miró y se cambió.
+
+De los otros tres mecanismos, el que más me seguía gustando es **el riel** —un
+halo del tono que cruza el hueco de 5px y forma una placa continua—, que es el
+único que hace que las cuatro cartas se lean como un renglón y no como cuatro
+cosas. Queda anotado.
+
+### Una corrección de método, otra vez
+
+Las primeras lecturas decían que el color del tono **no se aplicaba**: la carta
+resaltada seguía dando el azul de reposo. Era falso. El panel del navegador tiene
+el reloj de las transiciones congelado, así que `getComputedStyle` devolvía para
+siempre el valor de arranque de la transición de `border-color`. Con las
+transiciones apagadas el color aparece correcto.
+
+Es la misma trampa de v204 y la misma regla: **este resaltado se mide con las
+transiciones apagadas**, porque lo que se quiere leer es el valor de destino y no
+el del camino.
+
+### Verificado
+
+Las dos direcciones sobre el juego andando: con la fila marcada, las cuatro
+cartas toman el color de su tono; con la columna, las cuatro de la columna, en
+las cuatro grillas. Las cartas trabadas se quedan afuera de las dos, como antes.
+Sin scroll de más y sin desborde de costado en ningún ancho.

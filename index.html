@@ -1031,14 +1031,14 @@ img{height:auto}
    invitar, y el pulso vuelve a empezar cuando el cartel se cierra —que es
    justo cuando el jugador vuelve a mirar el tablero—. */
 .wrap.atras .row-pick{animation:none}
-/* La perspectiva vive **en cada fila**, no en la mesa entera: así el punto de
-   fuga de las cuatro cartas que se levantan es el mismo, y la mesa en reposo
-   no se inclina. Inclinar el tablero entero era la otra opción y se descartó:
-   rasterizar en ángulo ablanda los nombres y los porcentajes, que es
-   justamente lo que hay que leer para elegir. */
+/* Acá vivía una `perspective` de 820px, que era lo que hacía posible que las
+   cartas de la fila elegida se inclinaran y se acercaran. Se fue con el 3D.
+   De paso se lleva una trampa: un `perspective` convierte al elemento en el
+   bloque contenedor de todo lo que tenga `position:fixed` adentro, igual que un
+   `transform` o un `filter`. Mientras estuvo, nada `fixed` podía vivir adentro
+   de una fila sin anclarse a ella en vez de a la ventana. */
 .cells{
   display:grid;grid-template-columns:repeat(4,1fr);gap:6px;flex:1;
-  perspective:820px;perspective-origin:50% 120%;
 }
 
 /* Las columnas van pegadas arriba de la mesa, alineadas con sus cartas: el
@@ -1231,18 +1231,15 @@ img{height:auto}
   border:1px solid var(--filo);border-radius:7px;
   min-height:126px;padding:9px 9px 8px;
   display:flex;flex-direction:column;gap:4px;
-  /* El `transform-origin` abajo: la carta se levanta apoyada en su borde
-     inferior, como una ficha que se inclina hacia vos.
+  /* El apoyo abajo era para el levantado, que ya no está. Se queda porque el
+     cursor del sorteo —`.foco`, que sí escala— se apoya acá, y creciendo desde
+     el pie no se mete en la fila de arriba.
 
-     **Y se levanta con `translate` y `rotate`, no con `transform`.** Son
-     propiedades aparte, así que se componen con el `transform` en vez de
-     pisarlo: la animación de la carta jugada (`.hit`, que la agranda de golpe)
-     y el `scale` del VAR siguen corriendo encima del levantado, sin el salto
-     que había al empezar la animación con la carta ya inclinada. */
+     **Y la transición ya no lleva `translate` ni `rotate`.** Eran del relieve y
+     nada más los usa: desde que el resaltado es sólo color, lo único que hay que
+     fundir es el filo y la sombra. */
   transform-origin:50% 100%;
-  transition:
-    translate .2s cubic-bezier(.2,.9,.25,1),rotate .2s cubic-bezier(.2,.9,.25,1),
-    transform .15s,box-shadow .2s,border-color .15s,background .15s;
+  transition:transform .15s,box-shadow .2s,border-color .15s,background .15s;
   overflow:hidden;
 }
 
@@ -1375,63 +1372,53 @@ img{height:auto}
 
    El color sale de `predict()`, el mismo que colorea el cartel de la carta,
    así el resaltado nunca puede contradecir lo que dice el texto. */
+/* ---- EL RESALTADO ES SÓLO EL FILO ----
+   **Se fue el relieve y no lo reemplazó nada.** La carta subía 7px, se acercaba
+   30 en el eje Z —lo que la agrandaba por perspectiva— y se inclinaba 6 grados,
+   más un canto de cinco capas con una sombra grande. Eran cuatro efectos sueltos
+   que el ojo tenía que juntar para leer una sola cosa: esta fila está elegida.
+
+   El resaltado ya tenía su idioma —el color de lo que te hace cada carta— y lo
+   único que sobraba era el relieve. Queda el filo de 2px del tono y **una línea
+   de 1px del mismo color por adentro**, que es lo que lo hace ver encendido en
+   vez de sólo pintado.
+
+   **El grosor va entero por adentro, con `box-shadow`, y el borde no se toca.**
+   Un borde ocupa lugar: la carta es `border-box`, así que lo que gana el filo se
+   lo saca al contenido. En el teléfono eso no corría nada —el alto de la fila está
+   fijado— pero en escritorio la mesa es `flex` y la carta se estira con lo que
+   tiene adentro, así que los píxeles que el borde le robaba al interior volvían
+   como alto: medido, la carta resaltada pasaba de 229 a 230 y **empujaba un píxel
+   para abajo a las filas de abajo**, cada vez que el dedo pasaba por una fila. Y
+   eso ya pasaba antes de este cambio.
+
+   Con el filo adentro no ocupa nada y se ve igual: 1px de borde más 1 de sombra
+   son los 2 de siempre en el teléfono, y más 2 son los 3 de siempre en escritorio.
+   Medido en los cinco anchos: la carta resaltada mide **exactamente lo mismo y
+   está exactamente en el mismo lugar** que en reposo.
+
+   **Y el color entra por una variable.** Cada tono pone su `--tono` y el filo, la
+   línea y su transparencia se escriben una sola vez. Antes eran seis bloques
+   iguales salvo el color, y cualquier cambio había que hacerlo seis veces. */
 .row.hl .cell:not(.empty):not(.lock),
 .cell.colhl:not(.empty):not(.lock){
-  /* Borde de 2px y halo tenue: alcanza para saber qué te hace cada carta sin
-     que la mesa se vuelva un semáforo. Antes eran 3px con sombra saturada y
-     cuatro colores fuertes juntos tapaban el contenido de las cartas.
-
-     **Y la carta se levanta.** Antes subía 2px y nada más. Ahora sube siete,
-     se acerca 30 en el eje Z y se inclina 6 grados: la fila que estás por
-     jugar se despega de la mesa. El canto crece de 4 a 6px y la sombra que
-     tira se agranda, que es lo que dice cuánto se levantó.
-
-     Es la única parte que se anima, y sólo mientras la fila está elegida. */
-  translate:0 -7px 30px;
-  rotate:x 6deg;
-  border-width:2px;
-  --canto:
-    inset 0 1px 0 rgba(255,255,255,.24),
-    inset 0 -1px 0 rgba(0,0,0,.5),
-    0 1px 0 rgba(150,195,250,.42),
-    0 2px 0 rgba(96,145,215,.4),
-    0 3px 0 rgba(56,92,155,.38),
-    0 4px 0 rgba(30,54,102,.36),
-    0 5px 0 rgba(16,34,68,.34),
-    0 20px 26px -8px rgba(0,0,0,.72);
+  border-color:rgba(var(--tono),.9);
+  box-shadow:inset 0 0 0 var(--filo-hl,1px) rgba(var(--tono),.85), var(--canto);
 }
 .row.hl .cell.tono-good:not(.empty):not(.lock),
-.cell.colhl.tono-good:not(.empty):not(.lock){
-  border-color:rgba(61,220,107,.75);
-  box-shadow:var(--canto), 0 3px 14px rgba(61,220,107,.16);
-}
+.cell.colhl.tono-good:not(.empty):not(.lock){--tono:61,220,107}
 .row.hl .cell.tono-bad:not(.empty):not(.lock),
-.cell.colhl.tono-bad:not(.empty):not(.lock){
-  border-color:rgba(255,59,82,.75);
-  box-shadow:var(--canto), 0 3px 14px rgba(255,59,82,.16);
-}
+.cell.colhl.tono-bad:not(.empty):not(.lock){--tono:255,59,82}
 /* Celeste: hay un porcentaje de gol en juego. */
 .row.hl .cell.tono-gol:not(.empty):not(.lock),
-.cell.colhl.tono-gol:not(.empty):not(.lock){
-  border-color:rgba(94,205,242,.85);
-  box-shadow:var(--canto), 0 3px 14px rgba(94,205,242,.2);
-}
+.cell.colhl.tono-gol:not(.empty):not(.lock){--tono:94,205,242}
 /* Amarillo: se juega la racha en un empate. */
 .row.hl .cell.tono-risk:not(.empty):not(.lock),
-.cell.colhl.tono-risk:not(.empty):not(.lock){
-  border-color:rgba(245,200,66,.75);
-  box-shadow:var(--canto), 0 3px 14px rgba(245,200,66,.16);
-}
+.cell.colhl.tono-risk:not(.empty):not(.lock){--tono:245,200,66}
 .row.hl .cell.tono-hot:not(.empty):not(.lock),
-.cell.colhl.tono-hot:not(.empty):not(.lock){
-  border-color:rgba(232,116,20,.75);
-  box-shadow:var(--canto), 0 3px 14px rgba(232,116,20,.16);
-}
+.cell.colhl.tono-hot:not(.empty):not(.lock){--tono:232,116,20}
 .row.hl .cell.tono-neutral:not(.empty):not(.lock),
-.cell.colhl.tono-neutral:not(.empty):not(.lock){
-  border-color:rgba(147,174,222,.6);
-  box-shadow:var(--canto), 0 3px 12px rgba(147,174,222,.12);
-}
+.cell.colhl.tono-neutral:not(.empty):not(.lock){--tono:147,174,222}
 /* **El canto, por tamaño de carta.** En escritorio la carta mide 185px de ancho
    y el canto de 4px es el 2% de eso. En un teléfono de 390 la carta mide 80 y
    ese mismo canto pasa a ser el 5%: la mesa se empasta, porque la sombra
@@ -1446,25 +1433,14 @@ img{height:auto}
       0 2px 0 rgba(52,92,158,.3),
       0 6px 10px -3px rgba(0,0,0,.6);
   }
-  .row.hl .cell:not(.empty):not(.lock),
-  .cell.colhl:not(.empty):not(.lock){
-    translate:0 -4px 18px;
-    rotate:x 5deg;
-    --canto:
-      inset 0 1px 0 rgba(255,255,255,.2),
-      inset 0 -1px 0 rgba(0,0,0,.45),
-      0 1px 0 rgba(150,195,250,.4),
-      0 2px 0 rgba(96,145,215,.36),
-      0 3px 0 rgba(30,54,102,.32),
-      0 12px 16px -6px rgba(0,0,0,.7);
-  }
+  /* Acá vivía el levantado en versión chica —4px y 5 grados— y un canto propio.
+     Se fueron los dos con el relieve: ahora la carta resaltada usa el mismo canto
+     que en reposo, que es justamente el que este breakpoint ya achica. */
 }
 
-/* Con movimiento reducido la carta no se inclina ni se acerca: sube los mismos
-   2px de antes. El canto se queda, que es color y no movimiento. */
+/* El resaltado ya no mueve nada, así que con movimiento reducido no hay nada que
+   apagar: el filo y su línea interior son color, no movimiento. */
 @media (prefers-reduced-motion:reduce){
-  .row.hl .cell:not(.empty):not(.lock),
-  .cell.colhl:not(.empty):not(.lock){translate:0 -2px;rotate:none}
   .cell .c-ico::after{transition:none}
 }
 
@@ -4994,16 +4970,15 @@ body{padding-bottom:36px}
   .row{display:flex;gap:6px;align-items:stretch}
   .row .cell{min-height:126px;overflow:visible}
 
-  /* **El resaltado, un punto más grueso acá.** Son los mismos 2px que en mobile,
-     pero la carta de desktop mide 215px de alto contra 136: el mismo borde pesa
-     menos sobre una superficie más grande y el resaltado se leía flojo. Con 3px
-     recupera la presencia que tiene en el celular sin llegar a su peso relativo,
-     que a este tamaño encerraría la carta.
+  /* **El resaltado, un punto más grueso acá.** La carta de escritorio mide 229px
+     de alto contra 131: el mismo filo pesa menos sobre una superficie más grande y
+     se leía flojo.
 
-     No corre nada de lugar: el `box-sizing:border-box` global hace que el borde
-     crezca hacia adentro. */
+     El grosor va en la línea interior, como en el teléfono: acá vale 2px, que con
+     el borde de siempre dan los mismos 3 que tenía. El porqué de no engordar el
+     borde está arriba, donde vive el resaltado. */
   .row.hl .cell:not(.empty):not(.lock),
-  .cell.colhl:not(.empty):not(.lock){ border-width:3px }
+  .cell.colhl:not(.empty):not(.lock){ --filo-hl:2px }
 
   /* Los paneles laterales, con sus etiquetas completas. */
   #panelEquipo,#panelPlantel,#panelItems{display:flex;flex-direction:column;gap:9px}
@@ -9900,7 +9875,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 214;
+const VERSION = 215;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
