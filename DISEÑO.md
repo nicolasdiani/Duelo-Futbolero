@@ -9849,3 +9849,72 @@ cada breakpoint ya le daba al emoji: no hubo un solo tamaño que reajustar.
 pisarse con el escudo en ninguna. En 320 los dos siguen apagados por los
 escalones de alto de v186, como antes. El cartel del pop-up y el de la lista de
 posibilidad de gol, intactos. Sin errores de consola.
+
+## v197 · la foto es la ficha, en los dos carteles del sorteo
+
+De las cuatro salió **la A**, con los botones apilados y el cartel del rival
+igualado.
+
+### El problema, medido
+
+Cada ficha del sorteo era una cajita con **tres cosas apiladas** —foto, nombre
+y porcentaje— y la foto se quedaba con el 40% de su propio alto. En un teléfono
+de 390: ficha de **51x84**, foto de **41x34**.
+
+El límite duro es el ancho: cinco columnas en 350px dan 51px por ficha, y eso no
+se toca sin romper la fila de cinco. Así que lo que se buscó fue el alto.
+
+### Lo que se hizo
+
+La foto ocupa la ficha entera y el nombre y el porcentaje se apoyan encima,
+sobre el degradado que la foto ya tenía. **La ficha mide exactamente lo mismo.**
+
+| | foto antes | foto ahora |
+|---|---|---|
+| teléfono · 390x844 | 41 x 34 | **49 x 82** |
+| escritorio · 1280x840 | 57 x 59 | **89 x 110** |
+
+En una pantalla baja la ficha cede como cede todo lo demás: a 390x660 queda en
+62 de alto en vez de 84, y la foto en **60 x 62**.
+
+El alto lo fija ahora `min-height` en la ficha y no un `clamp` contra `vh` en la
+imagen: la imagen se estira al 100% de lo que le den. Las dos consultas que le
+daban su propia altura se fueron porque quedaban en letra muerta.
+
+### Los botones, uno debajo del otro
+
+Iban en fila y eran los únicos así en todo el juego. Ahora van apilados: el que
+hace algo arriba, el que se va abajo. **El cartel sube 53px** en el teléfono —de
+437 a 490— que es lo que cuesta poner un botón debajo del otro.
+
+### El cartel del rival, igualado
+
+AGUANTE AGOTADO y POSIBILIDAD DE GOL comparten `.sorteo` y se separan sólo en el
+color, pero el botón se había quedado atrás: del lado tuyo USAR LA RACHA es
+verde lleno desde v188 y del lado del rival seguía siendo **un contorno rojo**
+sobre fondo oscuro, el último contorneado de los dos carteles.
+
+Ahora el botón del rival entra en la misma caja `.sit-botones` —que es la que los
+apila y les da su medida— y se rellena con su rojo. Mismo molde, mismo peso,
+cada uno con su color. Ahí va uno solo: de ese cartel no se sale.
+
+### Una trampa de orden que me comí
+
+Al mover la chapa del MINI JUEGO al borde de arriba de la foto puse la regla
+junto al resto del cambio, **antes** de la regla base que la ancla abajo. Misma
+especificidad, así que ganaba la de abajo: la chapa quedaba con `top` **y**
+`bottom` puestos y se estiraba a los 76px de la ficha. La casilla del PENAL se
+veía como **un bloque dorado macizo**, sin foto.
+
+El arreglo no fue agregar otra regla sino corregir la de siempre: la chapa se
+ancla arriba en su propia declaración, y la consulta de escritorio también.
+
+### Verificado
+
+390x844, 390x660, 844x390 y 1280x840, los dos carteles. El cartel entra en
+pantalla en las cuatro y no rueda por dentro salvo en apaisado, donde ya rodaba
+antes del cambio —medido contra v196: la caja mide 460x340 en las dos—.
+
+El sorteo corrido de punta a punta: el cursor pasa por las cinco, cuatro se
+apagan y la que gana se levanta con su anillo. La chapa del MINI JUEGO en su
+esquina, con la foto detrás.

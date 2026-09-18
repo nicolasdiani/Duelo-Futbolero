@@ -5708,10 +5708,31 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   position:relative;display:block;border-radius:4px;overflow:visible;
   border:1px solid rgba(255,255,255,.09);
 }
-.fg-art img{display:block;width:100%;height:clamp(30px, 5.2vh, 44px);object-fit:cover;border-radius:3px}
+/* **La foto pasa a ser la ficha.** La casilla era una cajita con tres cosas
+   apiladas —foto, nombre y porcentaje— y la foto se quedaba con el 40% de su
+   propio alto: medido en un teléfono de 390, **41x34 dentro de una casilla de**
+   **51x84**. Ahora la foto ocupa la casilla entera y el nombre y el porcentaje
+   se apoyan encima, sobre el degradado que la foto ya tenía.
+
+   La casilla mide exactamente lo mismo, así que **el cartel no crece**: lo
+   único que cambia es quién se queda con el alto. La foto pasa de 34 a 82 en el
+   teléfono y de 59 a 110 en escritorio.
+
+   El alto lo fija ahora `min-height` en la casilla y no un `clamp` contra `vh`
+   en la imagen: la imagen se estira al 100% de lo que le den. Por eso las dos
+   consultas que le daban su propia altura se fueron; quedaría letra muerta. */
+.fg-mini{
+  padding:0;overflow:hidden;min-height:84px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+}
+.fg-art{position:absolute;inset:0;height:100%;border:none;border-radius:6px}
+.fg-art img{display:block;width:100%;height:100%;object-fit:cover;border-radius:6px}
+.fg-cnm,.fg-pct{position:relative;z-index:2;margin:0;padding:0 3px}
+.fg-cnm{margin-bottom:1px}
+.fg-pct{padding-bottom:4px}
 .fg-art::after{
-  content:'';position:absolute;inset:auto 0 0;height:62%;border-radius:0 0 3px 3px;
-  background:linear-gradient(180deg,transparent,rgba(0,8,31,.88));
+  content:'';position:absolute;inset:0;border-radius:6px;
+  background:linear-gradient(180deg,rgba(0,8,31,0) 34%,rgba(0,8,31,.9) 78%,rgba(0,8,31,.96));
 }
 /* La chapa del mini juego: la misma del tablero, apoyada sobre la foto.
 
@@ -5721,7 +5742,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
    tres renglones encima de la foto. Medido en un teléfono de 390px eran
    **34px de ancho por 22 de alto** sobre una foto de 30, y sin fondo dorado. */
 .fg-art .mj-lb{
-  position:absolute;left:50%;bottom:3px;transform:translateX(-50%);z-index:2;
+  position:absolute;left:50%;top:3px;transform:translateX(-50%);z-index:2;
   display:flex;align-items:center;justify-content:center;
   font-family:var(--txt);font-weight:700;text-transform:uppercase;
   color:var(--black);background:var(--gold);border-radius:3px;
@@ -5752,8 +5773,8 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 }
 
 @media (min-width:1025px), (min-width:821px) and (orientation:landscape){
-  .fg-art img{height:clamp(40px, 7vh, 62px)}
-  .fg-art .mj-lb{font-size:8.5px;letter-spacing:.8px;padding:2px 5px;gap:3px;bottom:4px}   /* 87px de los 91 de la casilla */
+  .fg-mini{min-height:112px}
+  .fg-art .mj-lb{font-size:8.5px;letter-spacing:.8px;padding:2px 5px;gap:3px;top:4px}   /* 87px de los 91 de la casilla */
   .fg-art .mj-ico{font-size:10px}
   .fg-cnm{font-size:13px;letter-spacing:.5px;margin-top:5px}
   .fg-mini{padding:6px 5px 7px}
@@ -5761,7 +5782,6 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .fg-esp em::before{content:'· '}
 }
 @media (max-width:440px){
-  .fg-art img{height:clamp(26px, 4.4vh, 34px)}
   .fg-cnm{font-size:8px;margin-top:3px}
   .fg-art .mj-lb{font-size:6px;letter-spacing:.3px;padding:0 3px;gap:2px}   /* 45px de los 51 que tiene la casilla */
   /* El emoji se lleva 8 de los 47px que tiene la casilla y es lo primero
@@ -5819,9 +5839,17 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   box-shadow:0 0 0 3px var(--red), 0 0 28px rgba(255,59,82,.5) !important;
 }
 .sit.fundida .fg-mini.gana .fg-pct{color:var(--red) !important}
-.sit.fundida .cta{
-  background:linear-gradient(160deg, rgba(58,10,18,.9), rgba(0,12,40,.96));
-  border-color:var(--red);color:var(--red);
+/* **El botón del rival, relleno como el tuyo.** Era el último contorneado de
+   los dos carteles: del lado tuyo USAR LA RACHA es verde lleno desde v188 y de
+   este lado seguía siendo un contorno rojo sobre fondo oscuro. Mismo molde,
+   mismo peso, cada uno con su color. */
+.sit.fundida .sit-botones .cta{
+  background:linear-gradient(165deg,#ff5a6e,#d21f34);
+  border-color:#ff9aa7;color:#2a0308;
+  box-shadow:0 8px 24px rgba(255,59,82,.28), inset 0 1px 0 rgba(255,255,255,.35);
+}
+.sit.fundida .sit-botones .cta:hover{
+  box-shadow:0 10px 30px rgba(255,59,82,.4), inset 0 1px 0 rgba(255,255,255,.45);
 }
 
 /* ---- Y VERDE DEL LADO TUYO ----
@@ -5862,11 +5890,18 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   animation:avisoRayo 1.5s ease-in-out infinite;
 }
 
-/* Dos botones en fila, porque éste **sí se puede cerrar**: la racha queda
-   cargada hasta que la gastes, así que mirarla no puede costarte nada. El de
-   la fundida sigue llevando uno solo. */
-.sit-botones{display:flex;gap:8px;margin-top:15px}
-.sit.sorteo .sit-botones .cta{margin-top:0;flex:1;font-size:15px;letter-spacing:1.8px;text-indent:1.8px;padding:11px 6px}
+/* **Los botones van apilados**, como en el resto del juego: el que hace algo
+   arriba y el que se va abajo. Iban en fila y eran los únicos así.
+
+   Los dos carteles usan la misma caja. El de la racha llena lleva dos —éste
+   **sí se puede cerrar**, porque la racha queda cargada hasta que la gastes y
+   mirarla no puede costarte nada— y el de la fundida uno solo, porque de ahí no
+   se sale. */
+.sit-botones{display:flex;flex-direction:column;gap:8px;margin-top:15px}
+.sit.sorteo .sit-botones .cta{
+  margin-top:0;flex:0 0 auto;width:100%;
+  font-size:15px;letter-spacing:1.8px;text-indent:1.8px;padding:11px 6px;
+}
 .sit.llena .sit-botones .cta{
   background:linear-gradient(165deg,#4ae87a,#25b955);
   border-color:#8ff5ae;color:#04220f;
@@ -5893,6 +5928,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .fu-linea{margin:10px -10px}
   .fu-ahora{font-size:10px;letter-spacing:1.6px;margin-bottom:8px}
   .fu-ahora em{font-size:8.6px}
+  .fg-mini{min-height:64px}
   .sit.sorteo .cta{margin-top:10px;font-size:14px;padding:9px}
   .sit.sorteo .sit-botones{margin-top:10px}
   .sit.sorteo .sit-botones .cta{margin-top:0;font-size:12.5px;letter-spacing:1px;text-indent:1px;padding:9px 4px}
@@ -9258,7 +9294,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 196;
+const VERSION = 197;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12366,7 +12402,11 @@ function fundidaRival(cayoMax){
         '<div class="fu-ahora">Y EL RIVAL SE GANA UNA LLEGADA ' +
           '<b>' + esperado + '%</b> DE GOL <em>una de las cinco, al azar</em></div>' +
         minisGol(SIT_RIVAL, false) +
-        '<button class="cta llama n-verde" id="fuBtn">' + ICO('pelota') + 'A VER QUÉ PASA</button>' +
+        /* En la misma caja que los del otro cartel: es la que los apila y les
+           da su medida. Acá va uno solo porque de este cartel no se sale. */
+        '<div class="sit-botones">' +
+          '<button class="cta llama n-verde" id="fuBtn">' + ICO('pelota') + 'A VER QUÉ PASA</button>' +
+        '</div>' +
       '</div>';
     wrap = montarPop(wrap);
 
