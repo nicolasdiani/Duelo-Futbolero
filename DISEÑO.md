@@ -10707,3 +10707,136 @@ Las medidas del alejado se leyeron **con las transiciones apagadas**, que es la
 El tablero se rearma **mientras el velo todavía se está yendo** —`closeCard()` y
 `startMatch()` corren uno detrás del otro, sin esperar— así que las cartas cambian
 por detrás del fundido. Se ofreció junto con esto y no se aplicó: va aparte.
+
+## v211 · el velo se hunde, y ahora es la única transición del juego
+
+De las tres salió **la C**, y con ella el pedido de aplicarla también entre
+pop-ups: unificar todas las transiciones del juego en un solo gesto.
+
+### Por qué las otras dos rondas no servían
+
+La primera tanda entraba de un costado y se descartó entera: *"no quiero que
+aparezca de un costado, porque se ve cortado al cargar"*. Y tenía razón, pero el
+motivo no era el costado. Era **qué estaba pasando mientras la pantalla viajaba**.
+
+La pantalla que llegaba cruzaba un ancho entero en 260ms, y durante esos 260ms el
+navegador todavía la estaba armando: imágenes, escudos, cronómetros. Lo que se
+veía no era una pantalla entrando — era una pantalla **dibujándose mientras se
+movía**. En la de cómo se juega, que mide 756 de alto, salta a la vista.
+
+Moverla más despacio, o desde otro lado, no arregla nada: el trabajo sigue
+cayendo arriba del movimiento.
+
+### El gesto
+
+Ahora **no viaja nada**. El fondo se hunde —tapa un poco más y desenfoca un poco
+más—, el cambio pasa mientras no se lo está mirando, y el fondo vuelve. Son dos
+medios tiempos de 150ms que suman los mismos 300 de entrar que fijó v209.
+
+Por pesada que sea la pantalla que viene, **se arma a oscuras**.
+
+| | antes | ahora |
+|---|---|---|
+| Pantalla a pantalla | clon que se desliza, 260ms | el velo se hunde, 150 + 150 |
+| Cartel a cartel | la caja se estira y el viejo se disuelve | el velo se hunde, 150 + 150 |
+| Los cinco desenlaces en el lugar | la caja se estira | **igual que antes** |
+
+Se fueron `deslizarPantalla`, `dirPantalla`, `atras()` —nueve llamadas— y la regla
+`.card-sale`. Entraron `cambiarAOscuras`, `.hundido`, `.apagada` y `.foto-vieja`.
+
+### Lo que rompió el primer intento
+
+El primer patch aplicó limpio, pasó todos los controles de estructura… y **en el
+juego los botones del menú no hacían nada**. Se veían bien y no respondían.
+
+La causa: para que el cambio no se viera, lo había puesto **adentro del
+`setTimeout`**. Pero todos los que llaman a `openCard` y a `montarPop` enganchan
+sus botones en el renglón siguiente:
+
+    openCard(html, 'card-menu');
+    $('oBack').onclick = () => showMenu();
+
+Si el marcado nuevo todavía no está puesto, `$('oBack')` es `null` y el botón
+queda sin dueño. No era un caso raro: rompía **todos** los llamadores.
+
+La versión que quedó da vuelta el orden. **El cambio se aplica en el acto**, y lo
+que se demora es una **foto** —un clon quieto de lo que había— colgada encima. Al
+llegar el fondo a lo más oscuro, la foto se saca y abajo ya está lo nuevo, que
+nunca se vio armarse.
+
+### Y lo que rompió el segundo
+
+Con la foto puesta, medido en el juego andando: la tarjeta nueva **no se apagaba**.
+
+El apagado se ponía antes de aplicar el cambio, y tanto la pantalla como el cartel
+eligen sus clases de cero —`card.className = 'card ' + extra`—, así que se lo
+llevaban puesto. Va **después** de aplicar: entre una línea y la otra no hay
+pintado, y lo nuevo nunca llega a verse encendido.
+
+### Tres detalles que hubo que resolver
+
+- **La foto cuelga del `body`, no del velo.** Adentro del velo sus clases
+  contestarían a los `querySelector` de quien montó el cartel —`wrap.querySelector('.sit')`,
+  `wrap.querySelector('#fgUsar')`— y **le robaría los botones al cartel de verdad**.
+  Es el mismo pozo que ya tenía el clon que se deslizaba, que por eso iba sin
+  `id`. Acá van los dos: sin `id` y fuera del velo.
+- **El bloque contenedor de un `fixed` no siempre es la ventana.** Cualquier
+  `filter` o `backdrop-filter` arriba lo cambia, y el overlay tiene
+  `backdrop-filter` puesto. En vez de adivinar quién es, la foto se cuelga en 0,0
+  y se mide dónde cayó: esa es la esquina de la que hay que partir, valga lo que
+  valga. Medido con el overlay scrolleado 30px: la foto cae en 127,-10, clavada
+  sobre la tarjeta que reemplaza.
+- **Dos cambios encadenados en menos de 150ms.** El reloj del primero, al vencer,
+  le sacaría el apagado a la que recién entra. El reloj se guarda en la caja y el
+  siguiente lo cancela.
+
+### `morfarPop` se queda
+
+Lo usan los cinco carteles que **se resuelven en el lugar**: la moneda, los dos
+penales, el mano a mano y la situación de gol. Ésos no son un cambio de cartel —
+son el cartel que estás mirando mostrando lo que pasó. Apagarlos sería taparle al
+jugador justo lo que fue a ver.
+
+La distinción cae sola en el código: lo que pasa por `montarPop` es un cartel
+nuevo y va a oscuras; lo que llama a `morfarPop` directo es un desenlace y se
+queda a la vista.
+
+### Sin movimiento
+
+Con `prefers-reduced-motion` no hay hundido ni foto: se aplica y listo. Verificado
+pisando `matchMedia`: cero fotos, cero `hundido`, y el botón enganchado igual.
+
+### Verificado
+
+Sobre el juego andando, no a ojo:
+
+| | v210 | v211 |
+|---|---|---|
+| Menú 375x812 | 375 x 766 | 375 x 766 |
+| Club 375x812 | 335 x 549 | 335 x 549 |
+| Cómo se juega 375x812 | 335 x 736 | 335 x 736 |
+| Menú 320x568 | 320 x 522 | 320 x 522 |
+| Club 320x568 | 304 x 473 | 304 x 473 |
+| Menú 1280x768 | 1280 x 722 | 1280 x 722 |
+| Cómo se juega 1280x768 | 880 x 740 | 880 x 740 |
+| Opciones 844x390 | 560 x 348 | 560 x 348 |
+| Club 844x390 | 620 x 314 | 620 x 314 |
+
+Sin scroll de más en ninguna, ni horizontal ni vertical. Las dos cadenas medidas
+paso a paso: menú → opciones → club → cómo se juega → tablero, con los botones
+enganchados en cada una; y carta → mini juego adentro del partido, con los dos
+lados del arco respondiendo.
+
+El desenlace en el lugar, medido en la moneda de la tanda de penales: la caja
+crece de 336x282 a 350x294 con `pop-morfando` puesto y el fantasma apagándose,
+**sin** `apagada`. Sigue siendo lo que era.
+
+Los 458 contra 466 de scroll del tablero a 1280x768 no son una regresión: el
+tablero se arma al azar y tres corridas seguidas de v211 dieron 458, 483 y 470.
+
+### Queda pendiente
+
+Lo de v210 sigue abierto: el tablero se rearma **mientras el velo todavía se está
+yendo**, porque `closeCard()` y `startMatch()` corren uno detrás del otro sin
+esperarse. Con el gesto unificado el arreglo es más fácil que antes, pero va
+aparte.

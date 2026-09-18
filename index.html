@@ -567,7 +567,7 @@ img{height:auto}
    metía un rebote en el medio de la transformación. */
 .pop-caja{
   animation:none !important;
-  transition:border-color .3s ease, box-shadow .3s ease;
+  transition:border-color .3s ease, box-shadow .3s ease, opacity 150ms ease;
 }
 .pop-caja.pop-morfando{
   overflow:hidden;
@@ -1489,9 +1489,11 @@ img{height:auto}
   display:flex;align-items:center;justify-content:center;
   /* el padding de abajo deja libre la franja del footer, que va por encima */
   padding:20px 20px 56px;
-  opacity:0;pointer-events:none;transition:opacity .3s cubic-bezier(.22,1,.36,1);z-index:60;overflow-y:auto;
-  /* La pantalla que sale se va por el costado: sin esto el desplazamiento
-     estrena una barra horizontal durante los 260ms que dura. */
+  opacity:0;pointer-events:none;z-index:60;overflow-y:auto;
+  transition:opacity .3s cubic-bezier(.22,1,.36,1),
+             background-color 150ms ease, backdrop-filter 150ms ease;
+  /* Ya no se desliza nada de costado, pero la reja se queda: es una línea y
+     le prohíbe al dedo sacar la pantalla de lugar. */
   overflow-x:hidden;
 }
 .overlay.open{opacity:1;pointer-events:auto}
@@ -1500,17 +1502,44 @@ img{height:auto}
   border:1px solid var(--line);border-top:3px solid var(--gold);padding:30px 26px;
   max-width:520px;width:100%;text-align:center;
   box-shadow:0 20px 70px rgba(0,0,0,.7);
-  transform:translateY(12px);transition:transform .3s cubic-bezier(.22,1,.36,1);margin:auto;
+  transform:translateY(12px);margin:auto;
+  transition:transform .3s cubic-bezier(.22,1,.36,1), opacity 150ms ease;
 }
 .overlay.open .card{transform:translateY(0)}
 
-/* ---- LA PANTALLA QUE SE VA ----
-   Un clon de la tarjeta anterior, congelado en el lugar donde estaba. Se
-   desplaza menos que la que entra y se apaga: así se lee cuál manda de las
-   dos y de dónde viene la nueva. Se borra sola al terminar. */
-.card-sale{
-  position:fixed;margin:0;pointer-events:none;z-index:0;
-  overflow:hidden;
+/* ---- EL CAMBIO A OSCURAS ----
+   **Una sola manera de pasar de una cosa a la otra en todo el juego.**
+
+   La pantalla que llegaba lo hacía deslizándose: cruzaba un ancho entero en
+   260ms y, mientras viajaba, el navegador todavía la estaba armando. Eso es lo
+   que se veía cortado — no era una pantalla entrando, era una pantalla
+   dibujándose mientras se movía, y saltaba a la vista en la del tutorial, que
+   mide 756 de alto y trae imágenes, cronómetros y la fila de ejemplo.
+
+   Ahora **no viaja nada**: el fondo se hunde, el cambio pasa mientras no se lo
+   está mirando, y el fondo vuelve. Por pesada que sea la que viene, se arma a
+   oscuras. Y el mismo gesto sirve para las pantallas y para los carteles, que
+   eran el único lugar del juego que todavía tenía el suyo.
+
+   El hundido tapa un poco más y desenfoca un poco más: con la opacidad sola no
+   alcanzaría, porque el velo de las pantallas ya está casi opaco. */
+.overlay.hundido{background:rgba(3,7,16,.99);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.pop-velo.hundido{background:rgba(3,7,16,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.apagada{opacity:0 !important}
+
+/* **La foto de lo que había.** El cambio se aplica en el acto —el que llama
+   engancha sus botones en el renglón siguiente, así que el marcado nuevo tiene
+   que estar puesto ya— y lo que se ve durante el primer medio tiempo es esta
+   foto quieta, encima y apagándose. Cuando el fondo toca lo más oscuro la foto
+   se saca, y abajo ya está lo nuevo, que nunca se vio armarse.
+
+   Cuelga del `body`, no del velo: adentro del velo sus clases contestarían a los
+   `querySelector` de quien la montó y le robaría los botones a la pantalla de
+   verdad. Por eso también se le van los `id`. Y por eso se le apaga el
+   `transform`, que lo traía puesto de `.card` y la dejaba 12px más abajo. */
+.foto-vieja{
+  position:fixed;margin:0;pointer-events:none;z-index:999;
+  transform:none;overflow:hidden;transition:opacity 150ms ease;
 }
 /* De esta declaración sólo llega el margen: el cuerpo, el espaciado y el color
    los vuelve a decir la regla de más abajo, que gana por orden. Se le saca el
@@ -9003,7 +9032,7 @@ function comoSeJuega(alEmpezar){
     if(G.formato === 'unico'){ newRun(false, true); showElegirItems(); }
     else newRun();
   };
-  if(alEmpezar) $('reglasBack').onclick = () => { atras(); showMenu(); };
+  if(alEmpezar) $('reglasBack').onclick = () => { showMenu(); };
 }
 
 /* Aviso de versión beta, entre el botón y la creación de equipos. El modo 1v1
@@ -9030,7 +9059,7 @@ function avisoBeta(){
     'card-final'
   );
   $('betaGo').onclick = () => showDuelLocal();
-  $('betaBack').onclick = () => { atras(); showStart(); };
+  $('betaBack').onclick = () => { showStart(); };
 }
 
 /* Primera pantalla del 1v1: el local reparte sus puntos. El club y el escudo ya
@@ -9059,7 +9088,7 @@ function showDuelLocal(){
       if(b.dataset.l.slice(1) === 'atk') a1 += dl; else d1 += dl;
       pintar();
     });
-    $('localBack').onclick = () => { atras(); showStart(); };
+    $('localBack').onclick = () => { showStart(); };
     $('localGo').onclick = () => {
       G.duelAtk1 = a1; G.duelDef1 = d1;
       showDuelSetup();
@@ -9135,7 +9164,7 @@ function showDuelSetup(){
     G.escudoRival = escudoRivalNuevo();
     pintar();
   };
-  $('duelBack').onclick = () => { atras(); showStart(); };
+  $('duelBack').onclick = () => { showStart(); };
   $('duelGo').onclick = () => {
     const v2 = $('club2Input').value.trim().toUpperCase() || 'VISITANTE';
     G.modo = 'duelo';
@@ -9362,7 +9391,23 @@ function montarPop(wrap){
   vivo.onclick = null;
   vivo.style.cursor = '';
   vivo.style.pointerEvents = '';
-  morfarPop(caja, nueva.className, [...nueva.childNodes]);
+  /* **De un cartel al siguiente, el mismo cambio a oscuras que entre pantallas.**
+     Antes la caja se estiraba hasta la medida del cartel nuevo mientras el viejo
+     se disolvía por encima. Se veía bien, pero era el único gesto propio que
+     quedaba en el juego, y la idea era que hubiese uno solo.
+
+     `pop-caja` se la sigue poniendo: es lo que le apaga la animación de entrada.
+     Sin eso el cartel nuevo correría su `poppin` justo cuando el fondo vuelve, y
+     serían dos movimientos encimados.
+
+     **`morfarPop` se queda.** Lo usan los cinco carteles que se resuelven en el
+     lugar —la moneda, los dos penales, el mano a mano y la situación de gol— y
+     ésos no son un cambio de cartel: son el cartel que estás mirando mostrando
+     lo que pasó. Apagarlos sería taparle al jugador justo lo que fue a ver. */
+  cambiarAOscuras(vivo, caja, () => {
+    caja.className = 'pop-caja ' + nueva.className;
+    caja.replaceChildren(...nueva.childNodes);
+  });
   return vivo;
 }
 
@@ -9667,7 +9712,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 210;
+const VERSION = 211;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -13963,7 +14008,7 @@ function showElegirItems(){
         pintar();
       };
     });
-    $('unicoBack').onclick = () => { atras(); showMenu(); };
+    $('unicoBack').onclick = () => { showMenu(); };
     const go = $('unicoGo');
     if(go && !go.disabled) go.onclick = () => { closeCard(); startMatch(); };
   };
@@ -14133,85 +14178,87 @@ function devolver(k){
    cuando la pantalla la abriste vos con el dedo, pero muchas se abren solas
    —al terminar un partido, al vencerse el reloj, al resolverse una jugada— y
    ahí no hubo ningún toque que lo limpiara. */
-/* ---- PARA DÓNDE VA LA PRÓXIMA PANTALLA ----
-   1 adelante, -1 para atrás. Lo pone el que navega y `openCard` lo consume
-   y lo devuelve a 1, así ninguna pantalla hereda la dirección de la
-   anterior: si alguien se olvida de marcarla, avanza, que es lo normal. */
-let dirPantalla = 1;
-const atras = () => { dirPantalla = -1; };
-
 const sinMovimiento = () =>
   window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* El desplazamiento de una pantalla a la otra. La que entra ya está puesta
-   —es la tarjeta de verdad, con sus ids— y arranca corrida un ancho de
-   pantalla; la que sale es un clon que se va para el otro lado.
+/* ---- EL CAMBIO A OSCURAS ----
+   El fondo se hunde, lo que tenga que cambiar cambia mientras no se ve, y el
+   fondo vuelve. Lo usan **las dos** transiciones que le quedan al juego —de
+   pantalla a pantalla y de cartel a cartel—, así que vive en una sola función.
+   Son dos medios tiempos de 150 que suman los 300 de entrar de v209.
 
-   **El clon va sin ids.** `$()` devuelve el primero del documento, y un clon
-   con los ids de la pantalla vieja le robaría los botones a la nueva. */
-function deslizarPantalla(card, previo, caja, dir){
-  const ov = $('overlay');
-  ov.querySelectorAll('.card-sale').forEach(f => f.remove());
+   **El cambio se aplica en el acto, no al final.** Todos los que llaman a
+   `openCard` y a `montarPop` enganchan sus botones en el renglón siguiente, y si
+   el marcado nuevo no está puesto todavía se los enganchan a nadie: la pantalla
+   se ve bien y no hace nada. Por eso `aplicar` corre sincrónico, y lo que se
+   demora es la foto que lo tapa.
 
-  previo.removeAttribute('id');
-  previo.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
-  previo.classList.add('card-sale');
-  previo.style.left   = caja.left + 'px';
-  previo.style.top    = caja.top + 'px';
-  previo.style.width  = caja.width + 'px';
-  previo.style.height = caja.height + 'px';
-  ov.appendChild(previo);
+   Con movimiento reducido no hay hundido ni foto: se aplica y listo. */
+const OSCURO = 150;
+function cambiarAOscuras(velo, caja, aplicar){
+  if(sinMovimiento()){ aplicar(); return; }
 
-  /* Se va del todo: medio ancho de pantalla más la mitad de su propio ancho
-     deja la tarjeta enteramente afuera, mida lo que mida el hueco. */
-  const fuera = dir > 0 ? 'calc(50vw + 50%)' : 'calc(-50vw - 50%)';
-  const D = 260, curva = 'cubic-bezier(.4,0,.2,1)';
+  /* Si ya había uno en curso —dos cambios encadenados en menos de 150ms— se lo
+     termina acá: su reloj, al vencer, le sacaría el apagado a la que recién
+     entra y la dejaría aparecer de golpe. */
+  clearTimeout(caja.__oscuro);
+  document.querySelectorAll('.foto-vieja').forEach(f => f.remove());
 
-  card.style.position = 'relative';
-  card.style.zIndex = '1';
-  card.style.transition = 'none';
-  card.style.transform = 'translateX(' + fuera + ')';
-  void card.offsetWidth;
-  card.style.transition = 'transform ' + D + 'ms ' + curva;
-  card.style.transform = 'translateX(0)';
+  const r = caja.getBoundingClientRect();
+  const foto = caja.cloneNode(true);
+  foto.classList.remove('apagada');   // podía venir apagada del cambio anterior
+  foto.removeAttribute('id');
+  foto.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
+  foto.classList.add('foto-vieja');
+  foto.style.width = r.width + 'px'; foto.style.height = r.height + 'px';
+  /* El bloque contenedor de un `fixed` no siempre es la ventana: cualquier
+     `filter` o `backdrop-filter` arriba lo cambia. En vez de adivinar quién es,
+     se la cuelga en 0,0 y se mide dónde cayó: esa es la esquina de la que hay
+     que partir, valga lo que valga. */
+  foto.style.left = '0px'; foto.style.top = '0px';
+  document.body.appendChild(foto);
+  const o = foto.getBoundingClientRect();
+  foto.style.left = (r.left - o.left) + 'px';
+  foto.style.top  = (r.top  - o.top)  + 'px';
 
-  previo.style.transition = 'transform ' + D + 'ms ' + curva + ', opacity ' + D + 'ms';
-  previo.style.transform = 'translateX(' + (-dir * 28) + '%)';
-  previo.style.opacity = '.35';
+  /* El apagado se pone **después** de aplicar: los dos cambios reescriben el
+     `className` entero —la pantalla y el cartel eligen sus clases de cero— y si
+     se pusiera antes se lo llevarían puesto. Entre una línea y la otra no hay
+     pintado, así que lo nuevo nunca llega a verse encendido. */
+  aplicar();
+  caja.classList.add('apagada');
 
-  setTimeout(() => {
-    previo.remove();
-    card.style.transition = '';
-    card.style.transform = '';
-    card.style.position = '';
-    card.style.zIndex = '';
-    /* `overflow-x:hidden` le prohíbe al dedo scrollear de costado, pero **no a
-       un script**: si algo hiciera foco en la tarjeta mientras está corrida, el
-       navegador la traería a la vista moviendo el fondo, y sin barra no habría
-       forma de volver. Cuesta una línea asegurarse. */
-    ov.scrollLeft = 0;
-  }, D + 40);
+  velo.classList.add('hundido');
+  void foto.offsetWidth;
+  foto.classList.add('apagada');
+
+  caja.__oscuro = setTimeout(() => {
+    foto.remove();
+    velo.classList.remove('hundido');
+    caja.classList.remove('apagada');
+  }, OSCURO);
 }
 
 function openCard(html, extra){
   const card = $('card');
   const ov = $('overlay');
-  /* Sólo se desliza de pantalla a pantalla. Si el fondo estaba cerrado, la
-     apertura ya tiene su propia animación —el fundido del overlay— y
-     encimarle un desplazamiento la ensucia. */
-  const encadena = ov.classList.contains('open') && !sinMovimiento();
-  const dir = dirPantalla;
-  dirPantalla = 1;
+  /* Poner la pantalla nueva es siempre esto, se la vea llegar o no. */
+  const poner = () => {
+    card.className = 'card' + (extra ? ' ' + extra : '');
+    /* El menú es la única pantalla a sangre: el overlay tiene que soltarle el
+       padding con el que centra a todas las demás. */
+    ov.classList.toggle('ov-menu', extra === 'card-menu');
+    document.documentElement.classList.toggle('html-menu', extra === 'card-menu');
+    card.innerHTML = html;
+    sacarFoco();
+  };
 
-  const caja   = encadena ? card.getBoundingClientRect() : null;
-  const previo = encadena ? card.cloneNode(true) : null;
+  /* Si el fondo ya estaba abierto esto es **pasar de una pantalla a otra**, y va
+     a oscuras. Si estaba cerrado es una apertura, y ésa ya tiene su entrada —el
+     fundido del velo—, así que el hundido sobra. */
+  if(ov.classList.contains('open')){ cambiarAOscuras(ov, card, poner); return; }
 
-  card.className = 'card' + (extra ? ' ' + extra : '');
-  /* El menú es la única pantalla a sangre: el overlay tiene que soltarle el
-     padding con el que centra a todas las demás. */
-  ov.classList.toggle('ov-menu', extra === 'card-menu');
-  document.documentElement.classList.toggle('html-menu', extra === 'card-menu');
-  card.innerHTML = html;
+  poner();
   /* **La mesa se va atrás también con las pantallas.** Los carteles ya lo
      hacían desde que el velo se enciende: la mesa se aleja un punto y se
      apaga mientras lo que viene llega adelante. Las pantallas no, así que al
@@ -14219,9 +14266,6 @@ function openCard(html, extra){
      tablero se sentía un corte. Es la misma clase y el mismo reloj. */
   mesaAtras(true);
   ov.classList.add('open');
-  sacarFoco();
-
-  if(previo) deslizarPantalla(card, previo, caja, dir);
 }
 function closeCard(){
   $('overlay').classList.remove('open');
@@ -14231,10 +14275,11 @@ function closeCard(){
   /* El menú se cierra sin pasar por `openCard`, así que el candado del scroll
      se suelta acá o el tablero queda sin poder moverse. */
   document.documentElement.classList.remove('html-menu');
-  /* Si se cierra en pleno vuelo, el clon se iría con el fondo y volvería a
-     aparecer en la próxima apertura. */
-  document.querySelectorAll('.card-sale').forEach(f => f.remove());
-  dirPantalla = 1;
+  /* Si se cierra en pleno hundido, el fondo se quedaría oscuro para siempre y la
+     foto vieja colgada encima de todo. */
+  document.querySelectorAll('.foto-vieja').forEach(f => f.remove());
+  $('overlay').classList.remove('hundido');
+  $('card').classList.remove('apagada');
 }
 
 /* Una tanda suelta, sin partido previo: los dos equipos con nombres a elección
@@ -14250,7 +14295,7 @@ function showPenalesSolos(){
     '<button class="cta alt n-fantasma" id="pBack">VOLVER</button>',
     'card-final'
   );
-  $('pBack').onclick = () => { atras(); showMenu(); };
+  $('pBack').onclick = () => { showMenu(); };
   $('pGo').onclick = async () => {
     const a = $('pTu').value.trim().toUpperCase() || 'TU CLUB';
     const b = $('pRival').value.trim().toUpperCase() || 'EL RIVAL';
@@ -14299,7 +14344,7 @@ function showOpciones(){
     '<button class="cta n-linea" id="oBack">VOLVER</button>',
     'card-final'
   );
-  $('oBack').onclick = () => { atras(); showMenu(); };
+  $('oBack').onclick = () => { showMenu(); };
 }
 
 function showCreditos(){
@@ -14319,7 +14364,7 @@ function showCreditos(){
     '<button class="cta n-linea" id="cBack">VOLVER</button>',
     'card-final'
   );
-  $('cBack').onclick = () => { atras(); showMenu(); };
+  $('cBack').onclick = () => { showMenu(); };
 }
 
 /* ---------------- el menú principal ----------------
@@ -14510,7 +14555,7 @@ function showStart(irAlDuelo){
     elegir(otro.nm);
   };
 
-  $('volverMenu').onclick = () => { atras(); showMenu(); };
+  $('volverMenu').onclick = () => { showMenu(); };
   $('startBtn').onclick = () => {
     G.club = eq.nm;
     G.escudo = escudoDeEquipo(eq);
