@@ -10086,3 +10086,82 @@ ronda sin `eq`: sale el rótulo, el club y la chapa, sin escudo y sin error.
 
 320x568, 390x844 y 1280x840. La tarjeta entra en pantalla en las tres y no rueda
 por dentro. Cuatro nombres de club, ninguno cortado. Sin errores de consola.
+
+## v201 · el valor sobre la foto del pop-up, y el VS entre los dos números
+
+Dos cosas que venían de la misma charla: primero el número, después el tamaño.
+
+### El pop-up no decía el valor donde la carta lo dice
+
+La carta de la mesa lleva su valor en una chapita arriba a la derecha. El
+pop-up que se abre al tocarla no lo llevaba: el valor aparecía recién abajo, en
+el renglón que lo compara con el tuyo. Sobre la foto había **un solo dato**, el
+escudo del rival.
+
+Ahora la chapita está también sobre la ilustración, con el mismo molde: borde de
+2px en el color del eje —rojo si la carta se pelea con tu ataque, azul si se
+pelea con tu defensa— y la misma esquina.
+
+### El vidrio, porque atrás hay una foto
+
+En la carta el fondo teñido al 10% alcanza, porque atrás hay una carta oscura.
+Acá atrás hay una foto, y contra un cielo claro la chapita casi no se despega.
+Así que lleva **el mismo vidrio esmerilado que el escudo**: fondo azul al 50%,
+`blur(5px) saturate(1.3)` y la misma sombra.
+
+Lo único que no copia del escudo es su filo blanco al 34%: la chapita conserva el
+borde de color, que es lo que la ata a la carta que acabás de tocar.
+
+### El tamaño: emparejada con el escudo
+
+De las tres salió **la B**. El dato que definió el problema es que **el escudo no
+tiene escalón de escritorio**: mide 40 x 44 en todos los anchos. La chapita sí lo
+tenía, así que para emparejarlos había que sacárselo.
+
+| | celular | escritorio | vs. escudo |
+|---|---|---|---|
+| Escudo | 40 x 44 | 40 x 44 | — |
+| Antes | 27 x 28 | 36 x 36 | 16 y 8 más baja |
+| Ahora | 40 x 44 | 40 x 44 | igual |
+
+Son 34px de cuerpo más 3 de aire, que dan los 44 justos. El radio quedó en **8 y
+no en los 10 del escudo**: 8 es la proporción que la chapita tiene en la carta —5
+sobre 28, 7 sobre 36—, así que sigue leyendo como la chapita de la carta, sólo
+que del tamaño del escudo.
+
+**El ancho va por `min-width` y no fijo.** Con un dígito da los 40 justos, y si el
+valor pasa de 9 la chapita crece en vez de recortarlo. No es hipotético: el valor
+sale de 2–5 más la mitad de tu ataque, así que en una partida larga llega.
+Probado con un 12: sale 50 x 44, misma altura.
+
+### El VS
+
+El renglón de abajo tenía los dos números uno al lado del otro, que se lee como
+una lista de dos datos. Ahora va un **VS** en el medio, en la tipografía de
+título y en dorado: es el color que el juego usa para lo que está en juego, y no
+se pisa con el rojo ni el azul de los ejes.
+
+No aprieta nada. El renglón reparte el aire que ya le sobraba: los dos recuadros
+siguen midiendo 84 y 87, y el conjunto sigue centrado.
+
+### No cuesta nada
+
+| | pop-up | ilustración | chapita | escudo |
+|---|---|---|---|---|
+| 390 x 780 | 350 x 468 | 296 x 192 | 40 x 44 | 40 x 44 |
+| 844 x 390 | 430 x 340 | 349 x 192 | 40 x 44 | 40 x 44 |
+| 1280 x 860 | 563 x 553 | 497 x 208 | 40 x 44 | 40 x 44 |
+
+Las mismas medidas de pop-up que antes del cambio: la chapita va en absoluto
+sobre la foto y no empuja nada.
+
+### Las cartas que no son de duelo no cambian
+
+Las 25 cartas sin eje —jugada, penal, offside, lesión, los mini juegos— no tienen
+renglón de valor, así que no llevan ni chapita ni VS. Verificado abriendo una: no
+aparece ninguna de las dos.
+
+### Verificado
+
+390x780, 844x390 y 1280x860, en los dos ejes y con valores de un dígito y de dos.
+La chapita entra siempre dentro de la ilustración. Sin errores de consola.

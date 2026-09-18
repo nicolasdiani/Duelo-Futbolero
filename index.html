@@ -649,6 +649,31 @@ img{height:auto}
   box-shadow:0 3px 10px rgba(0,0,0,.65);
 }
 .play .p-esc svg{height:34px;width:auto;display:block}
+/* **El valor de la carta, sobre la foto.** La chapita de la mesa —mismo borde
+   de 2px en el color del eje— pero del tamaño del escudo: 40 x 44, los mismos
+   que él en celular y en escritorio. El escudo no tiene escalón de escritorio,
+   así que para que se emparejen la chapita tampoco puede tenerlo.
+
+   Lleva el mismo vidrio esmerilado que el escudo para despegarse de la foto:
+   contra un cielo claro, el fondo teñido al 10% que usa en la carta no alcanza.
+   Lo único que no copia es el filo blanco, porque el borde de color es lo que
+   la ata a la carta que acabás de tocar.
+
+   El ancho va por `min-width` y no fijo: con un dígito da los 40 justos del
+   escudo, y si el valor pasa de 9 —sale de 2 a 5 más la mitad de tu ataque— la
+   chapita crece en vez de recortarlo. */
+.play .p-vnum{
+  position:absolute;top:8px;right:8px;z-index:3;
+  display:flex;align-items:center;justify-content:center;pointer-events:none;
+  min-width:40px;padding:3px 10px;border:2px solid;border-radius:8px;
+  font-family:var(--tit);font-weight:800;font-size:34px;line-height:1;
+  background:rgba(22,44,86,.5);
+  backdrop-filter:blur(5px) saturate(1.3);
+  -webkit-backdrop-filter:blur(5px) saturate(1.3);
+  box-shadow:0 3px 10px rgba(0,0,0,.65);
+}
+.play .p-vnum.r{border-color:var(--red);color:var(--red)}
+.play .p-vnum.b{border-color:var(--blue);color:var(--blue)}
 .play .p-cinta b{
   font-family:var(--tit);font-weight:800;font-size:16px;letter-spacing:1.4px;
   color:var(--white);line-height:1;min-width:0;
@@ -685,6 +710,17 @@ img{height:auto}
 }
 .play .p-val .stat{padding:0;border-bottom:none}
 .play .p-val .stat-txt{text-align:left}
+/* **El VS entre los dos números.** Sin él el renglón se lee como una lista de
+   dos datos; con él se lee como lo que es, uno contra el otro. Va en la
+   tipografía de título y en dorado: es el color que el juego usa para lo que
+   está en juego, y no se pisa con el rojo ni el azul de los ejes.
+
+   No aprieta nada: el renglón reparte el aire que le sobraba, así que los dos
+   recuadros siguen midiendo lo mismo y el cartel no cambia de tamaño. */
+.play .p-vs{
+  align-self:center;font-family:var(--tit);font-weight:800;
+  font-size:22px;letter-spacing:1px;line-height:1;color:var(--gold);
+}
 .play .p-out{
   font-family:var(--txt);font-size:16px;letter-spacing:2px;
   margin-top:14px;padding:9px;border-top:1px solid var(--line);
@@ -3755,6 +3791,7 @@ body{padding-bottom:36px}
   .play .p-val .stat .n{font-size:34px;min-width:36px}
   .play .p-val .stat-txt{font-size:11px}
   .play .p-val .stat-txt b{font-size:14px}
+  .play .p-vs{font-size:28px}
   .play .p-out{font-size:19px;margin-top:17px;padding:12px}
   .play .p-out .efe{font-size:15px;margin-top:10px;padding-top:9px}
   .play .p-go{font-size:12.5px;letter-spacing:4.5px;margin-top:15px}
@@ -9375,7 +9412,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 200;
+const VERSION = 201;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12048,12 +12085,14 @@ function mostrarJugada(cell){
         (artCarta(cell.type)
           ? '<div class="p-art"><img src="' + artCarta(cell.type) + '" alt="">' +
             (esc ? '<span class="p-esc">' + escudoDe(esc, 28) + '</span>' : '') +
+            (cell.val ? '<span class="p-vnum ' + (esAtk ? 'r' : 'b') + '">' + cell.val + '</span>' : '') +
             '</div>'
           : '<div class="p-ico">' + T.ico + '</div>') +
         '<div class="p-nm">' + T.nm + '</div>' +
         (cell.val
           ? '<div class="p-val">' +
             filaValor(esAtk ? 'atk' : 'def', cell.val, 'VALOR', 'de la carta') +
+            '<span class="p-vs">VS</span>' +
             filaValor(esAtk ? 'atk' : 'def', esAtk ? ATK() : DEF(),
                       esAtk ? 'ATAQUE' : 'DEFENSA', 'el tuyo') +
             '</div>'
