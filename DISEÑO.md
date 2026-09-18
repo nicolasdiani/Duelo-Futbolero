@@ -11423,3 +11423,60 @@ tiene `max-height` y `overflow:auto`, así que el botón de JUGAR se alcanza
 bajando adentro de la tarjeta, no de la pantalla. Se comprobó porque la primera
 lectura decía que el botón quedaba 212px abajo del corte y parecía inalcanzable:
 lo que faltaba era scrollear la tarjeta. Es igual en v216.
+
+## v218 · la amarilla acumulada deja de pisar la racha
+
+De tres lugares salió **el ícono del aguante**: el otro extremo del mismo
+renglón donde ya estaba.
+
+### Por qué se montaba
+
+En el teléfono la advertencia de amarilla es una tarjeta chica colgada del
+aguante con `right:-17px`, apoyada en el hueco que hay entre el aguante y la
+racha. **Ese hueco mide 8px y la tarjeta 14** —el emoji sale más ancho que su
+tamaño de letra— así que le pisaba 8px al primer rayo. Medido a 375: la tarjeta
+iba de 118 a 134 y la racha arranca en 126.
+
+Achicarla no arreglaba nada: probada a 10px seguía pisando 4.
+
+Y no se puede simplemente correrla adentro de la línea, porque **no sobra un
+píxel**: el aguante mide 106, la racha 106 y la plata 43; con los dos huecos de
+10 dan los **286 exactos** que mide la franja. Por eso la tarjeta estaba en
+absoluto desde el principio.
+
+### Adónde se fue
+
+Al **otro extremo del mismo renglón**: la esquina del ícono del corazón, que
+está al principio de la línea y no tiene a nadie al lado. Sigue en absoluto, así
+que tampoco cuesta un píxel, y sigue pegada a lo que la amarilla amenaza —la
+próxima es roja y la roja cuesta corazones—. El anillo dorado que ya rodea el
+ícono se queda, así que la advertencia se sigue leyendo como una sola cosa.
+
+Son dos números: `right:-17px;top:50%;transform:translateY(-50%)` pasa a
+`left:14px;top:-1px`, y el tamaño de 12 a 11.
+
+### Las otras dos que se vieron
+
+- **En el escudo del club**, arriba en la marquesina. Es la que más se ve y la
+  que más aire tiene alrededor, pero queda lejos de los corazones y dejaría
+  huérfano el anillo dorado del aguante: habría que sacarlo.
+- **En la esquina del reloj**, que es —medido— la única esquina de la pantalla
+  con aire de sobra. Se ve perfecto, pero el reloj cuenta minutos: sería usar el
+  lugar que está libre, no el que corresponde.
+
+### Verificado
+
+| | pisa la racha | el resto de la pantalla |
+|---|---|---|
+| antes | 8px | igual |
+| ahora | **0** | igual |
+
+Medido con la amarilla apagada y encendida, a 375 y a 320: la marquesina, la
+franja de medidores, el aguante, la racha y la mesa dan **exactamente los mismos
+números en los dos estados**. La tarjeta no cuesta layout.
+
+En escritorio y en teléfono acostado no cambia nada: ahí la advertencia no es la
+tarjeta suelta sino la caja entera del panel, que es lo que ya hacía.
+
+Y la línea de ayuda de abajo lo sigue diciendo con palabras —«🟨 amarilla
+acumulada»—, que es la otra mitad del aviso y no se tocó.

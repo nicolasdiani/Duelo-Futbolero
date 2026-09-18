@@ -4596,13 +4596,26 @@ body{padding-bottom:36px}
   }
   /* La tarjeta va **fuera del flujo**: puesta como un elemento más se llevaba
      su ancho más el hueco de la línea —35px contra los 34 que sobran— y la
-     línea volvía a envolver, que es justo lo que se venía a arreglar. Absoluta,
-     se apoya en el hueco que ya hay entre el aguante y la racha y no cuesta
-     nada. */
+     línea volvía a envolver, que es justo lo que se venía a arreglar.
+
+     **Y va sobre el ícono del aguante, no colgando del otro borde.** Estaba en
+     `right:-17px`, apoyada en el hueco que hay entre el aguante y la racha, y ese
+     hueco no alcanza: mide 8px y la tarjeta 14 —el emoji sale más ancho que su
+     tamaño de letra—, así que **le pisaba 8px al primer rayo de la racha**. Medido
+     a 375: la tarjeta iba de 118 a 134 y la racha arranca en 126.
+
+     Achicarla no arreglaba nada: probada a 10px seguía pisando 4. En esa línea no
+     hay lugar, porque no sobra un píxel —aguante 106, racha 106, plata 43 y dos
+     huecos de 10 dan los 286 exactos que mide la franja—.
+
+     Así que se muda al **otro extremo del mismo renglón**: la esquina del ícono
+     del corazón, que está al principio y no tiene a nadie al lado. Sigue siendo
+     absoluta, así que tampoco cuesta un píxel, y sigue estando pegada a lo que la
+     amarilla amenaza: la próxima es roja y la roja cuesta corazones. */
   #m-aguante{position:relative}
   #m-aguante.con-amarilla .am-tag{
-    display:block;position:absolute;right:-17px;top:50%;transform:translateY(-50%);
-    font-size:12px;line-height:1;pointer-events:none;
+    display:block;position:absolute;left:14px;top:-1px;
+    font-size:11px;line-height:1;pointer-events:none;
     filter:drop-shadow(0 0 5px rgba(245,200,66,.65));
   }
   .rec-lb{display:none}
@@ -9919,7 +9932,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 217;
+const VERSION = 218;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
