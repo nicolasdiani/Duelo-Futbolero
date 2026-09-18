@@ -10165,3 +10165,60 @@ aparece ninguna de las dos.
 
 390x780, 844x390 y 1280x860, en los dos ejes y con valores de un dígito y de dos.
 La chapita entra siempre dentro de la ilustración. Sin errores de consola.
+
+## v202 · la chapa de MINI JUEGO entra en un renglón y baja el tono
+
+De las tres salió **la B**.
+
+### Por qué se partía
+
+La chapa pedía **72px** para entrar en una línea y la foto de la carta mide **68**
+en un teléfono de 390. Le faltaban 4, así que se partía en MINI / JUEGO. Por eso
+en escritorio no se veía nunca: ahí la foto mide 236.
+
+Partida no le robaba alto a la foto —la chapa flota sobre la ilustración desde
+v196, no está en el flujo— pero pasaba de **13 a 19px de alto**, o sea que tapaba
+6px más de foto. Y sobre todo se leía como algo roto.
+
+### `nowrap` sola no alcanzaba
+
+Con `white-space:nowrap` la chapa dejaba de partirse pero se salía de la carta.
+El encaje lo terminan dos escalones:
+
+| | 360 x 800 | 390 x 844 | Escritorio |
+|---|---|---|---|
+| Foto de la carta | 61 | 68 | 236 |
+| Antes | 52 · **2 líneas** | 52 · **2 líneas** | 114 |
+| Ahora | 49 | 66 | 116 |
+
+En mobile la letra baja de 7,2 a 6,8, el espaciado de 0,8 a 0,2 y el ícono de 9,5
+a 8. Y en **360 o menos** —la medida de media Android— la foto baja a 61, así que
+hay otro escalón donde la letra va a 6,2 y **el ícono se va**. Eso no es nuevo: es
+lo mismo que el juego ya hace con las casillas chicas del pop-up de posibilidad de
+gol, donde el dibujo de dos jugadores tampoco entra. El rótulo, que es lo que
+avisa, se queda siempre.
+
+### Y deja de ser un bloque dorado
+
+Llena era **la única mancha de color maciza sobre una foto**, repetida en cada
+carta de mano a mano: lo más ruidoso de la mesa. Ahora lleva el mismo vidrio
+esmerilado que el escudo del rival y la chapita del valor del pop-up —fondo azul
+al 50% y `blur(5px) saturate(1.3)`— con el dorado reducido a **un filo de 1px y al
+texto**.
+
+Sigue avisando que en esa carta hay que elegir algo, un tono más abajo. Es la
+misma idea que los botones `n-linea`: contorno en vez de relleno.
+
+### El pop-up no se toca
+
+La chapa del cartel de la jugada (`.p-out .mj-lb`) sigue llena y dorada, porque
+ahí no compite con quince cartas al lado. Verificado abriendo un mano a mano: sale
+en `rgb(245,200,66)` con texto negro, sin filo y sin `nowrap`, igual que antes. Y
+las casillas del pop-up de posibilidad de gol (`.fg-art .mj-lb`) tampoco, porque
+el selector nuevo es `.cell .c-out .mj-lb`.
+
+### Verificado
+
+En el juego andando a 360x800, 390x844 y 1280x860. Una línea en los tres, y la
+chapa siempre más angosta que la foto: 49 de 61, 66 de 70 y 116 de 165. Sin
+errores de consola.

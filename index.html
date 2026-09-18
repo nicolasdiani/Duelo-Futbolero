@@ -3354,10 +3354,32 @@ img{height:auto}
    foto— así que no hay ningún número mágico y se acomoda sola en cada
    pantalla. La del pop-up (`.p-out`) no se toca: ahí no falta lugar. */
 .cell .c-out{position:relative}
+/* **Y deja de ser un bloque dorado.** Llena era la única mancha de color
+   maciza sobre una foto, repetida en cada carta de mano a mano: lo más
+   ruidoso de la mesa. Ahora lleva el mismo vidrio esmerilado que el escudo
+   del rival y la chapita del valor del pop-up —fondo azul al 50% y
+   `blur(5px) saturate(1.3)`— con el dorado reducido a un filo de 1px y al
+   texto. Sigue avisando que en esta carta hay que elegir algo, un tono más
+   abajo.
+
+   **Y entra siempre en un renglón.** La chapa pedía 72px y la foto de la
+   carta mide 68 en un teléfono de 390, así que se partía en MINI / JUEGO:
+   pasaba de 13 a 19px de alto —seis más de foto tapada— y se leía como algo
+   roto. `nowrap` sola no alcanzaba, porque entonces se salía de la carta; el
+   encaje lo terminan los dos escalones de mobile más abajo.
+
+   La del pop-up (`.p-out`) no se toca: ahí la chapa sigue llena, porque no
+   compite con quince cartas al lado. */
 .cell .c-out .mj-lb{
   position:absolute;left:50%;transform:translateX(-50%);
   bottom:calc(100% + 5px);margin:0;z-index:2;
-  box-shadow:0 2px 8px rgba(0,0,0,.55);
+  white-space:nowrap;
+  background:rgba(22,44,86,.5);
+  backdrop-filter:blur(5px) saturate(1.3);
+  -webkit-backdrop-filter:blur(5px) saturate(1.3);
+  border:1px solid rgba(245,200,66,.55);
+  color:var(--gold);
+  box-shadow:0 2px 8px rgba(0,0,0,.6);
 }
 
 /* El nombre del mini juego, debajo de la etiqueta. */
@@ -4547,7 +4569,10 @@ body{padding-bottom:36px}
   .cell .c-nm{font-size:12.6px;min-height:0;letter-spacing:0;line-height:1.02}
   .cell .c-out{font-size:11px;padding-top:2px}
   .cell .c-out .efe{font-size:8.6px;margin-top:2px;padding-top:2px}
-  .cell .c-out .mj-lb{font-size:7.2px;letter-spacing:.8px;padding:1px 4px}
+  /* Con 7,2 y 0,8 de espaciado la chapa pedía 72 de los 68 que tiene la foto.
+     Baja a 6,8 y 0,2, y el ícono de 9,5 a 8: mide 66. */
+  .cell .c-out .mj-lb{font-size:6.8px;letter-spacing:.2px;padding:1px 4px;gap:2px}
+  .cell .c-out .mj-ico{font-size:8px}
   .cell .c-val{font-size:13px;min-width:20px;padding:0 3px}
   .ih,.ir{width:1.3em;height:1.3em;vertical-align:-.34em}
   .ir{width:1.1em;height:1.45em;vertical-align:-.4em}
@@ -4616,6 +4641,16 @@ body{padding-bottom:36px}
   .item .ii{font-size:12px}
   .item{padding:3px 4px;gap:3px}
   .gol-banner .gb-t{font-size:9.5px}
+}
+
+/* En 360 —la medida de media Android— la foto de la carta baja a 61, así que
+   la chapa del mini juego necesita otro escalón. Acá **el ícono se va**: es lo
+   mismo que el juego ya hace con las casillas chicas del pop-up de posibilidad
+   de gol, donde el dibujo de dos jugadores tampoco entra. El rótulo, que es lo
+   que avisa, se queda. */
+@media (max-width:360px){
+  .cell .c-out .mj-lb{font-size:6.2px;letter-spacing:.1px;padding:1px 3px}
+  .cell .c-out .mj-ico{display:none}
 }
 
 /* ══════════ MOBILE LANDSCAPE ══════════
@@ -9412,7 +9447,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 201;
+const VERSION = 202;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
