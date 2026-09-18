@@ -10298,3 +10298,75 @@ El título del mini juego del DEFENSOR se llama **1 vs 1**, y va justo debajo de
 renglón. Con el VS dorado arriba quedan dos «vs» dorados apilados, uno en
 mayúscula y otro en minúscula. En los otros tres no pasa. Se arregla renombrando
 esa carta a UNO CONTRA UNO, pero no se tocó acá.
+
+## v204 · las cinco del sorteo, en tres y dos, y el cursor del color del cartel
+
+Dos cosas del mismo cartel: el layout salió **la C** y el cursor **la B**. Vale
+para los dos —el tuyo y el del rival—, que comparten `.sit.sorteo`.
+
+### Las fotos no se veían chicas por tamaño: por forma
+
+El dibujo mide **248 x 164** —apaisado— y la casilla era un rectángulo parado de
+51 x 84. Con `object-fit:cover` la imagen se agranda hasta llenar el alto y **lo
+que sobra de ancho se recorta**: se veía el **40%** del dibujo.
+
+Eso cambia el problema. Estirar para abajo, que era lo primero que uno prueba,
+**agranda la figura pero muestra menos foto**: la casilla se hace todavía más
+angosta de forma. Medido, a 124 de alto queda el 27% y a 164 el 20%. La única
+manera de ver más es **ensanchar la casilla**, y para eso hay que salir de la
+fila de cinco.
+
+| | 320 x 568 | 360 x 800 | 390 x 844 | Acostado | Escritorio |
+|---|---|---|---|---|---|
+| Antes | 45 x 64 · 46% | 45 x 84 · 35% | 51 x 84 · 40% | 67 x 112 · 39% | 91 x 112 · 53% |
+| Ahora | igual | 78 x 88 · 58% | 88 x 88 · 66% | igual | 154 x 112 · 91% |
+
+El porcentaje es cuánto del dibujo original se ve sin recortar.
+
+Lo que cuesta es la lectura de «una de las cinco»: en dos filas ya no se leen
+como cinco puertas iguales. Es el precio y va a ojos abiertos.
+
+### Dos vueltas atrás donde no hay alto
+
+En **pantallas bajas** —un teléfono chico de pie— no hay lugar para dos filas, y
+**acostado** el cartel ya rodaba por dentro antes de este cambio. En los dos
+casos vuelve a la fila de cinco con la medida de siempre, así que ahí queda
+exactamente igual que antes. Verificado: 320x568 sale en una fila de 48 x 64 y
+844x390 en una de 67 x 112, los mismos de v203.
+
+El escalón grande también se acotó: era `min-width:1025px` **o** `821px` en
+apaisado, que es la misma consulta que usa un teléfono acostado. Ahora ese brazo
+pide además `min-height:561px`, así que una tablet acostada lo toma y un teléfono
+acostado no.
+
+### El cursor toma el color del cartel
+
+Mientras el sorteo gira, el aro deja de ser blanco: **verde si la llegada es
+tuya, rojo si es del rival**. El sorteo empieza a decir de quién es desde la
+primera vuelta, en vez de decirlo recién en la casilla que gana.
+
+Es lo único de la ficha que cambia entre un cartel y el otro, y a propósito: el
+layout, los tiempos y el salto son una sola regla para los dos.
+
+### Y hubo que mudarlo de lugar
+
+La primera versión del cursor no funcionaba sobre dos de las cinco casillas. Las
+dos marcas que existen del lado tuyo —`.fg-mini.mj`, el filo dorado del MINI
+JUEGO, y `.fg-mini.seguro`, el verde claro de la que entra siempre— **empatan en
+especificidad** con el cursor y están más abajo en la hoja, así que le ganaban: el
+aro se quedaba del color de la marca.
+
+Con el aro blanco pasaba lo mismo y no se notaba, porque el dorado del MINI JUEGO
+no desentona con un cursor blanco. Con el aro de color sí se nota, y es justo la
+casilla que más se mira. Se arregla poniendo el bloque del cursor **después** de
+las marcas, no subiéndole la especificidad.
+
+Verificado casilla por casilla, con las transiciones apagadas para leer el valor
+de destino y no el del camino: las cinco toman `rgb(61,220,107)` del lado tuyo y
+`rgb(255,59,82)` del lado del rival, **incluidas la del mini juego y la segura**.
+
+### Verificado
+
+Los dos carteles en 320x568, 360x800, 390x844, 844x390 y 1280x860. Ninguno rueda
+por dentro salvo el acostado, que ya rodaba. El tuyo queda en 350 x 588 con 178
+de aire de sobra y el del rival en 350 x 558 con 208. Sin errores de consola.
