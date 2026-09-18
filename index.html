@@ -2083,12 +2083,44 @@ img{height:auto}
 }
 .rf-prox .px-esc{flex:0 0 auto;display:flex}
 .rf-prox .px-tx{min-width:0;flex:1}
-/* El nombre del club se corta con puntos suspensivos y no se parte: hay
-   rivales de dos palabras largas y partidos quedan ilegibles. */
-.rf-prox .px-tx b{
-  display:block;font-family:var(--tit);font-weight:800;
-  font-size:clamp(14px, 4.4vw, 17px);letter-spacing:1.2px;color:var(--white);line-height:1;
+/* **La cinta dice qué partido es y en qué instancia.** Decía el nombre del club
+   grande y, en gris abajo, «te espera en CUARTOS»: la ronda **ya estaba**, pero
+   en el cuerpo más chico y el color más apagado del cartel, y en ningún lado
+   decía que eso era el próximo partido.
+
+   Ahora arriba va el rótulo PRÓXIMO PARTIDO y la ronda se pega al nombre del
+   club en una chapa dorada —la misma pieza que el MINI JUEGO de la mesa—. El
+   club no pierde el renglón grande, que es contra quien se elige el refuerzo.
+
+   La cinta mide lo mismo que antes: 66px de alto y la tarjeta 366x426. */
+.rf-prox .px-tx .px-rot{
+  display:block;font-family:var(--txt);font-weight:700;
+  font-size:clamp(7.6px, 2.3vw, 9px);letter-spacing:2px;text-transform:uppercase;
+  color:var(--dim2);margin:0 0 3px;line-height:1;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.rf-prox .px-tx b{
+  display:flex;align-items:center;gap:7px;white-space:nowrap;
+  font-family:var(--tit);font-weight:800;
+  font-size:clamp(14px, 4.4vw, 17px);letter-spacing:1.2px;color:var(--white);line-height:1;
+}
+/* El corte con puntos suspensivos se muda del `b` al nombre: ahora el `b` es
+   una fila con dos piezas y el que tiene que ceder es el club, no la chapa.
+   Probado con el nombre más largo de la tabla —CENTRAL CÓRDOBA— y entra sin
+   cortarse hasta en una pantalla de 320.
+
+   Va con la clase repetida en el selector porque `.rf-prox .px-tx span` —el
+   renglón chico de abajo— le ganaría por especificidad y lo dejaría en 10,5px
+   y gris. */
+.rf-prox .px-tx .px-nm{
+  min-width:0;overflow:hidden;text-overflow:ellipsis;
+  font-size:inherit;color:inherit;letter-spacing:inherit;margin:0;line-height:inherit;
+}
+.rf-prox .px-tx .px-chapa{
+  flex:0 0 auto;font-family:var(--txt);font-weight:700;font-style:normal;
+  font-size:clamp(7.4px, 2.2vw, 8.8px);letter-spacing:1.4px;
+  color:var(--black);background:var(--gold);
+  border-radius:3px;padding:2px 6px;line-height:1.2;
 }
 .rf-prox .px-tx span{
   display:block;font-size:clamp(8.8px, 2.7vw, 10.5px);color:var(--dim2);
@@ -9343,7 +9375,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 199;
+const VERSION = 200;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -13288,16 +13320,19 @@ function estadoEquipo(){
   '</div>';
 }
 
-/* La cabecera del vestuario: contra quién es el refuerzo que estás por
-   elegir. El escudo sale de la tabla de clubes igual que en la cancha, y
-   si la ronda no tiene equipo sorteado —el 1v1, los penales sueltos— se
-   arma sin escudo en vez de romperse. */
+/* La cabecera del vestuario: **qué partido viene y contra quién**. El escudo
+   sale de la tabla de clubes igual que en la cancha, y si la ronda no tiene
+   equipo sorteado —el 1v1, los penales sueltos— se arma sin escudo en vez de
+   romperse. La ronda va en la chapa dorada; el club, en el renglón grande. */
 function cabeceraRival(R){
   const esc = R.eq ? escudoDe(escudoDeEquipo(R.eq), 38) : '';
   return '<div class="rf-prox">' +
     (esc ? '<span class="px-esc">' + esc + '</span>' : '') +
-    '<span class="px-tx"><b>' + R.rival + '</b>' +
-      '<span>te espera en ' + R.name + '</span></span>' +
+    '<span class="px-tx">' +
+      '<span class="px-rot">PRÓXIMO PARTIDO</span>' +
+      '<b><span class="px-nm">' + R.rival + '</span>' +
+        '<i class="px-chapa">' + R.name + '</i></b>' +
+    '</span>' +
     '<span class="px-eleg">ELEGÍ<br>UNO</span>' +
   '</div>';
 }

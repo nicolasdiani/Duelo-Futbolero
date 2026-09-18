@@ -10032,3 +10032,57 @@ etiqueta a 7,5px.
 
 320x568, 390x844 y 1280x840, los dos paneles y los dos modos. Sin desborde
 lateral en ninguna. El campeonato, intacto. Sin errores de consola.
+
+## v200 · la cinta del refuerzo dice qué partido viene
+
+De las tres salió **la B**.
+
+### La instancia ya estaba, pero escondida
+
+La cinta decía el nombre del club grande y, en gris abajo, «te espera en
+CUARTOS». O sea que la ronda **ya se nombraba** —el dato estaba— pero en el
+cuerpo más chico y el color más apagado del cartel, y en ningún lado decía que
+eso era **el próximo partido**.
+
+### Lo que hay ahora
+
+Arriba va el rótulo **PRÓXIMO PARTIDO** y la ronda se pega al nombre del club en
+una **chapa dorada**: la misma pieza que el MINI JUEGO usa en la mesa.
+
+El club no pierde el renglón grande, y eso fue a propósito: el refuerzo **se
+elige contra alguien**. Las otras dos propuestas lo bajaban a 10px o lo dejaban
+compitiendo con la ronda, y ninguna de las dos ayudaba a decidir.
+
+### No cuesta nada
+
+| | tarjeta | cinta |
+|---|---|---|
+| 320 x 568 | 304 x 384 | 302 x 63 |
+| 390 x 844 | 350 x 448 | 348 x 66 |
+| 1280 x 840 | 520 x 575 | 518 x 66 |
+
+Las mismas medidas que antes del cambio: el rótulo entra en el aire que la línea
+gris ya ocupaba.
+
+### Dos detalles del CSS que hubo que escribir
+
+**El corte con puntos suspensivos se mudó del `b` al nombre.** El `b` pasó a ser
+una fila con dos piezas, así que el que tiene que ceder es el club y no la
+chapa. Probado con el nombre más largo de la tabla —CENTRAL CÓRDOBA— y entra sin
+cortarse **hasta en una pantalla de 320**.
+
+**Y el selector va con la clase repetida** —`.rf-prox .px-tx .px-nm`—: el
+nombre del club es un `span` adentro de `.px-tx`, y la regla del renglón chico de
+abajo le ganaba por especificidad y lo dejaba en 10,5px y gris. Lo mismo con el
+rótulo.
+
+### La ronda sin escudo sigue andando
+
+Cuando la ronda no tiene equipo sorteado —el 1v1, los penales sueltos— la
+cabecera se arma sin escudo en vez de romperse. Verificado llamándola con una
+ronda sin `eq`: sale el rótulo, el club y la chapa, sin escudo y sin error.
+
+### Verificado
+
+320x568, 390x844 y 1280x840. La tarjeta entra en pantalla en las tres y no rueda
+por dentro. Cuatro nombres de club, ninguno cortado. Sin errores de consola.
