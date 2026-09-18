@@ -9967,3 +9967,68 @@ como texto suelto con el número en color. No es la misma pieza y no se tocó.
 
 390x844, 844x390 y 1280x840. Los tres números redondeados y del mismo tamaño que
 antes en las tres. Sin errores de consola.
+
+## v199 · los stats del duelo también llevan el recuadro
+
+Eran los últimos números de ataque y defensa sin caja: texto suelto en color al
+lado de su palabra, mientras el panel del campeonato y la carta los muestran
+metidos en un recuadro con borde. Ahora llevan el mismo: **borde de 2px en el**
+**color del eje y 5px de radio**.
+
+El alineado pasa de `baseline` a `center`: con la caja puesta, la palabra se colgaba
+del renglón de base del número y quedaba alta.
+
+### El renglón tenía tres piezas, no dos
+
+Ahí estaba el problema. Además de los dos stats, en esa fila vive **la plata**.
+Con el recuadro los stats pasaron de 53 a 68px y las tres dejaron de entrar: la
+columna del rival tiene 164px de ancho útil y piden 169.
+
+Y el resultado era peor que quedarse corto: la plata caía a un segundo renglón
+**en un panel sí y en el otro no**, según cuántos dígitos tuviera. Dos paneles
+que son la misma pieza, viéndose distintos.
+
+**Apretar no alcanzaba.** Probado en el juego: con la etiqueta en 8px y el
+espaciado en 0,4 las tres piezas todavía piden 166 de 164, y a esa altura el
+texto ya no se lee.
+
+Así que la plata baja **siempre**, a su propio renglón y alineada a la derecha.
+Los dos paneles quedan idénticos. Cuesta **33px de alto** por panel.
+
+### Y una consecuencia que no se veía venir
+
+En mobile las dos columnas de la mesa son `minmax(0,1fr) auto`: la derecha pide
+lo suyo y la izquierda se queda con el resto. En el campeonato eso es justo lo
+que se quiere —la derecha es el PLANTEL— pero **en el duelo las dos llevan un
+panel de jugador**, y al cambiar cuánto mide el contenido la repartición se fue
+al diablo: medido, **155 contra 219**, y el panel angosto partía sus dos stats
+en dos renglones.
+
+El arreglo va acotado al duelo con `:has()`:
+
+    .cancha:has(#jugL .jp){grid-template-columns:1fr 1fr}
+
+Con eso los dos paneles miden **187** en un teléfono de 390 y el campeonato
+sigue con su `auto` de siempre. Verificado que la consulta no lo toca: en
+campeonato las columnas siguen dando 300 y 73.
+
+### Los tamaños
+
+| | panel antes | panel ahora |
+|---|---|---|
+| 1280x840 · tuyo | 210 x 195 | 210 x 228 |
+| 1280x840 · rival | 190 x 181 | 190 x 214 |
+| 390x844 | 186 y 188 | **187 y 187** |
+
+### Lo que cede en 320
+
+A 320 de ancho el panel queda en 152 y los dos stats **ya no entran en la misma**
+**línea**: se apilan, uno arriba del otro. Antes entraban. Los dos paneles hacen
+lo mismo, así que se lee como una decisión y no como un error, y es el tamaño
+más apretado que el juego soporta. Forzarlos a una línea ahí pedía bajar la
+etiqueta a 7,5px.
+
+### Verificado
+
+320x568, 390x844 y 1280x840, los dos paneles y los dos modos. Sin desborde
+lateral en ninguna. El campeonato, intacto. Sin errores de consola.

@@ -2317,15 +2317,41 @@ img{height:auto}
 .jp-hearts .off{opacity:.22}
 .jp-racha{font-size:13px;letter-spacing:1px;line-height:1}
 
+/* **En este renglón hay tres piezas, no dos**: los dos stats y la plata. Con el
+   recuadro puesto los stats pasan de 53 a 68px y la plata deja de entrar: la
+   columna del rival tiene **164px de ancho útil** y las tres piden 169.
+
+   El resultado era peor que quedarse corto: la plata caía a un segundo renglón
+   **en un panel sí y en el otro no**, según cuántos dígitos tuviera. Dos paneles
+   iguales que se veían distintos.
+
+   Apretarla no alcanza. Probado en el juego: con la etiqueta en 8px y el
+   espaciado en 0,4 las tres piezas todavía piden 166 de 164, y a esa altura el
+   texto ya no se lee.
+
+   Así que la plata baja **siempre**, a su propio renglón y alineada a la
+   derecha. Los dos paneles quedan idénticos y cuesta 15px de alto. */
 .jp-stats{display:flex;align-items:center;gap:8px;margin-top:9px;flex-wrap:wrap}
+/* **El molde de la chapita, también en el duelo.** Eran los últimos números de
+   ataque y defensa sin recuadro: texto suelto en color, al lado de su palabra,
+   mientras el panel del campeonato y la carta los muestran metidos en una caja
+   con borde. Ahora llevan la misma —borde de 2px en el color del eje y 5px de
+   radio— apretada al tamaño que el panel del duelo tiene.
+
+   El alineado pasa de `baseline` a `center`: con la caja puesta, la palabra se
+   colgaba del renglón de base del número y quedaba alta. */
 .jp-st{
-  display:inline-flex;align-items:baseline;gap:4px;
+  display:inline-flex;align-items:center;gap:5px;
   font-family:var(--txt);font-size:8.5px;letter-spacing:1px;color:var(--dim);
 }
-.jp-st b{font-family:var(--tit);font-size:17px;line-height:1}
-.jp-st.r b{color:var(--red)} .jp-st.b b{color:var(--blue)}
+.jp-st b{
+  font-family:var(--tit);font-weight:800;font-size:17px;line-height:1;
+  border:2px solid;border-radius:5px;padding:2px 5px;
+}
+.jp-st.r b{color:var(--red);border-color:var(--red)}
+.jp-st.b b{color:var(--blue);border-color:var(--blue)}
 .jp-plata{
-  margin-left:auto;font-family:var(--tit);font-weight:800;
+  flex-basis:100%;text-align:right;font-family:var(--tit);font-weight:800;
   font-size:14px;color:var(--coin);
 }
 
@@ -4146,6 +4172,15 @@ body{padding-bottom:36px}
     gap:5px 6px;align-items:center;
     flex:1;min-height:0;
   }
+  /* **En el duelo las dos columnas llevan un panel de jugador.** El `auto` de
+     la derecha la hace pedir lo suyo y la izquierda se queda con el resto, así
+     que dos paneles que son la misma pieza salían de anchos distintos. Con el
+     recuadro puesto en los stats la diferencia saltó a **155 contra 219** y el
+     panel angosto partía sus dos stats en dos renglones. Acá van mitad y mitad.
+
+     El `:has()` es lo que lo deja acotado al duelo: en el campeonato la columna
+     de la derecha es el PLANTEL y ahí el `auto` es justo lo que se quiere. */
+  .cancha:has(#jugL .jp){grid-template-columns:1fr 1fr}
   .lado,.centro,.fila-accion,.fa-izq,.fa-meds{display:contents}
 
   /* El `backdrop-filter` que hereda del panel **crea un contexto de
@@ -9308,7 +9343,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 198;
+const VERSION = 199;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
