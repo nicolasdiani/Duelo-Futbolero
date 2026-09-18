@@ -10429,3 +10429,69 @@ En el juego andando a 390x844. El reflejo queda **adentro de cada botón**: 354 
 parte de adentro del filo dorado de 2px, que queda limpio—. Los ítems siguen
 exactamente como estaban: `itemBrillo 2.2s` y su degradado de siempre. Sin errores
 de consola.
+
+## v206 · el mercado: la plata arriba, la mochila aparte y menos colores
+
+De los cinco layouts salió **la B**.
+
+### Las tres cosas, medidas
+
+**La plata era más chica que los precios.** El presupuesto era una de tres
+columnas de la franja y medía **20px**, contra los 19 de cada precio —pero cuatro
+precios contra un presupuesto—. Ahora ocupa el renglón entero a **46px** y
+centrado, y el aguante y la racha se reparten el de abajo.
+
+**Lo que tenés obligaba a leer los cuatro renglones.** La columna existía, pero
+estaba pegada al precio y con la misma forma de chapa, así que competía con él.
+Ahora sube a una tira propia arriba de la lista, con sólo los que llevás y su
+número; cuando no tenés ninguno lo dice en una línea. Y como ya está dicho ahí,
+los renglones se quedan sin la columna.
+
+**Hablaban cinco colores a la vez:** dorado el rótulo y la chapa de tenés, verde
+el presupuesto y los cuatro precios, rojo el que no alcanza, azul el DESTRABA del
+VAR, amarillo la racha. Ahora el verde es **sólo la plata que tenés**, los precios
+pasan a blanco y el rojo se guarda para el renglón que dice cuánto falta, que es
+el dato.
+
+### El entretiempo del 1v1 no se toca
+
+Esa pantalla reusa `tiendaHTML()` y no tiene mochila, así que si la columna se
+escondía en todos lados perdía el dato y no ganaba nada. Todo lo del layout va
+scopeado a `.card-mercado`, una clase nueva que sólo lleva la tarjeta del
+mercado. El precio en blanco sí es para las dos, porque es la misma lista.
+
+Verificado sacándole la clase a la tarjeta en vivo: la plata vuelve a 20,28px y
+la columna de «tenés» vuelve a `flex`, con el precio en blanco en los dos casos.
+
+### Un guard para las pantallas anchas y bajas
+
+Apilar la plata cuesta alto, y hay pantallas donde el alto es justo lo escaso. En
+un **portátil de 1280 x 768** la tarjeta pasaba de 651 —que entraba— a **740, con
+87px para rodar hasta el botón de jugar**: exactamente el problema que esta
+pantalla ya había resuelto una vez.
+
+Así que en `(min-width:821px) and (max-height:820px)` la franja vuelve a ser tres
+columnas y la mochila pone el rótulo en la misma línea que las chapas. La plata
+igual queda más grande que antes: **34px** contra los 22 de tope que tenía.
+
+### Verificado
+
+| | tarjeta | plata | hay que rodar |
+|---|---|---|---|
+| 320 x 568 | 530 | 46px | no |
+| 360 x 740 | 679 | 46px | no |
+| 390 x 844 | 695 | 46px | no |
+| 1280 x 768 | 714 | 34px | no |
+| 1280 x 860 | 827 | 46px | no |
+| 844 x 390 | — | 34px | 228px |
+
+El acostado ya rodaba antes de este cambio: eran 227px y ahora son 228, o sea que
+queda como estaba. Probado también con la mochila vacía y con dos ítems. Sin
+errores de consola.
+
+### Lo que no se hizo
+
+En la maqueta el rótulo MERCADO iba en gris. No se aplicó: `.card .tag` está
+dorado a propósito y documentado —«es la que dice en qué parte del juego estás»—,
+así que apagarlo sólo en esta pantalla rompía el sistema en vez de calmarlo. Si
+se quiere, es una línea, pero habría que hacerlo en todas las tarjetas.

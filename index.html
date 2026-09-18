@@ -2098,11 +2098,18 @@ img{height:auto}
 .f-tengo.cero em{opacity:.55}
 .fila.off .f-tengo{opacity:.55}
 .f-ef{display:block;font-size:11.4px;margin-top:2px}
+/* **El precio deja de ser verde.** El verde es la plata que tenés; los precios
+   son lo que cuestan las cosas, y pintados del mismo color la pantalla tenía
+   cinco números verdes discutiendo entre ellos. En blanco se leen igual y el
+   presupuesto queda como el único verde de arriba.
+
+   El que no alcanza tampoco va en rojo entero: el precio se apaga y el rojo
+   se guarda para el renglón que dice cuánto falta, que es el dato. */
 .f-pr{
   flex:0 0 auto;text-align:right;white-space:nowrap;
-  font-family:var(--tit);font-weight:800;font-size:19px;color:var(--coin);
+  font-family:var(--tit);font-weight:800;font-size:19px;color:var(--white);
 }
-.fila.off .f-pr{color:var(--red)}
+.fila.off .f-pr{color:var(--dim2)}
 /* El faltante escrito: es más rápido que restar dos números de cabeza. */
 .f-pr em{display:block;font-family:var(--txt);font-style:normal;font-weight:600;
   font-size:9px;letter-spacing:.4px;color:var(--red)}
@@ -2118,6 +2125,82 @@ img{height:auto}
 }
 .f-dev:hover{background:rgba(255,59,82,.18)}
 .mk-nota{font-size:10.4px;color:var(--dim2);line-height:1.4;margin-top:9px}
+
+/* ---------- EL MERCADO: LA PLATA ARRIBA Y LA MOCHILA APARTE ----------
+   Tres cosas pasaban en esta pantalla. El presupuesto era **una de tres
+   columnas** de la franja y medía 20px, o sea que era más chico que los cuatro
+   precios de abajo. Lo que tenías estaba en una columna pegada al precio y con
+   la misma forma de chapa, así que competía con él y había que leer los cuatro
+   renglones para saber con qué contabas. Y hablaban cinco colores a la vez:
+   dorado el rótulo y la chapa, verde el presupuesto y los cuatro precios, rojo
+   el que no alcanza, azul el DESTRABA, amarillo la racha.
+
+   Ahora el presupuesto ocupa el renglón entero a 46px y centrado, el aguante y
+   la racha se reparten el de abajo, y lo que llevás sube a **una tira propia**
+   arriba de la lista. Como ya está dicho ahí, los renglones se quedan sin la
+   columna: ícono, nombre, efecto y precio.
+
+   **Va todo scopeado a `.card-mercado`.** El entretiempo del 1v1 reusa
+   `tiendaHTML()` y no tiene mochila, así que ahí la columna se queda: sin el
+   scope, esa pantalla perdía el dato y no ganaba nada. El precio en blanco sí
+   es para las dos, porque es la misma lista. */
+.card-mercado .franja{display:flex;flex-flow:row wrap;gap:0;align-items:stretch;padding:14px 12px 11px}
+/* El filo que separaba las tres columnas se saca: con el envoltorio le tocaba
+   al primero del segundo renglón. Lo reemplaza la línea de abajo de la plata. */
+.card-mercado .franja .fr-it + .fr-it{border-left:none}
+.card-mercado .franja .fr-it:first-child{
+  flex:0 0 100%;align-items:center;padding:0 0 10px;
+  border-bottom:1px solid rgba(30,51,88,.7);margin-bottom:10px;
+}
+.card-mercado .franja .fr-it:first-child .fr-lb{font-size:9px;letter-spacing:3.4px;margin-bottom:4px}
+/* La fila queda en fila y no en columna a propósito: con `flex-direction:column`
+   el `flex:0 0 50%` de las dos de abajo pasa a medir alto en vez de ancho y las
+   tres quedan apiladas. */
+.card-mercado .franja .fr-it:nth-child(2),
+.card-mercado .franja .fr-it:nth-child(3){flex:0 0 50%;align-items:center}
+.card-mercado .fr-plata{font-size:46px;line-height:1;letter-spacing:.5px}
+
+/* La mochila: sólo lo que llevás, con su número. */
+.mochila{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  margin:10px 0 2px;padding:9px 11px;border-radius:9px;
+  border:1px solid var(--line);background:rgba(0,10,30,.45);
+}
+.mochila .mo-lb{
+  font-family:var(--tit);font-weight:800;font-size:9px;letter-spacing:2.6px;
+  color:var(--dim2);text-transform:uppercase;flex:0 0 100%;margin-bottom:1px;
+}
+.mochila .mo-it{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--tit);font-weight:800;font-size:12.5px;letter-spacing:.8px;
+  color:var(--white);padding:3px 8px;border-radius:6px;
+  border:1px solid rgba(147,174,222,.26);background:rgba(255,255,255,.05);
+}
+.mochila .mo-it b{color:var(--gold);font-size:14px}
+.mochila .mo-nada{font-family:var(--txt);font-weight:500;font-size:11.5px;color:var(--dim2)}
+.card-mercado .f-tengo{display:none}
+
+/* **En ancho y bajo, la plata vuelve a la fila.** Un portátil de 768 y un
+   teléfono acostado tienen el problema al revés que un teléfono de pie: sobra
+   ancho y falta alto. Apilar la plata ahí cuesta 89px y deja el botón de jugar
+   abajo del corte —medido: la tarjeta pasaba de 651 a 740 sobre 653 de hueco—,
+   que es el mismo problema que esta pantalla ya había resuelto una vez.
+
+   Así que ahí la franja vuelve a ser tres columnas y la mochila pone el rótulo
+   en la misma línea que las chapas. La plata igual queda más grande que antes:
+   34px contra los 22 de tope que tenía. */
+@media (min-width:821px) and (max-height:820px){
+  .card-mercado .franja .fr-it:first-child{
+    flex:1;padding:0;margin-bottom:0;border-bottom:none;
+  }
+  .card-mercado .franja .fr-it + .fr-it{border-left:1px solid rgba(18,51,110,.8)}
+  .card-mercado .franja .fr-it:nth-child(2),
+  .card-mercado .franja .fr-it:nth-child(3){flex:1}
+  .card-mercado .franja .fr-it:first-child .fr-lb{font-size:8.6px;letter-spacing:2.4px;margin-bottom:0}
+  .card-mercado .fr-plata{font-size:34px}
+  .card-mercado .mochila{padding:7px 10px;gap:7px}
+  .card-mercado .mochila .mo-lb{flex:0 0 auto;margin:0 3px 0 0}
+}
 
 /* ================= EL VESTUARIO: LAS DOS CHAPAS =================
    El refuerzo es **la decisión más definitiva del juego**: una por ronda,
@@ -9522,7 +9605,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 205;
+const VERSION = 206;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -13847,13 +13930,14 @@ function showMarket(primeraVez){
     '<h1>ÍTEMS</h1>' +
     '<p class="mk-p">Gastá ahora o guardá para las rondas de arriba, donde la mesa ya casi no te regala nada.</p>' +
     franjaMercado() +
+    mochilaHTML() +
     tiendaHTML() +
     (Object.keys(G.compras).length
       ? '<div class="mk-nota">Lo que compraste ahora se puede devolver con la ✕. Al pasar de ronda queda firme.</div>'
       : '') +
     '<button class="cta llama n-verde" id="nextBtn">' + ICO('pelota') +
       'JUGAR ' + RONDA(G.ronda + 1).name + '</button>';
-  openCard(html);
+  openCard(html, 'card-mercado');
   engancharTienda();
   $('nextBtn').onclick = () => { closeCard(); G.ronda++; startMatch(); };
 }
@@ -13909,6 +13993,21 @@ function filaItem(k, der, off, extra, dev){
     '</button>' +
     (dev ? '<button class="f-dev" data-dev="' + k + '" ' +
            'title="Devolver uno y recuperar ' + plata(I.price) + '">✕</button>' : '') +
+  '</div>';
+}
+
+/* **Lo que llevás, en una tira propia.** Sale de los mismos números que la
+   lista —`G.items`— pero muestra sólo los que tenés, así que con qué contás se
+   lee de una y no hay que recorrer los cuatro renglones. Cuando no tenés
+   ninguno lo dice en una línea, que es más corto que cuatro ceros. */
+function mochilaHTML(){
+  const llevo = Object.keys(ITEMS).filter(k => (G.items[k] || 0) > 0);
+  return '<div class="mochila">' +
+    '<span class="mo-lb">Lo que llevás</span>' +
+    (llevo.length
+      ? llevo.map(k => '<span class="mo-it">' + ITEMS[k].nm +
+                       ' <b>' + G.items[k] + '</b></span>').join('')
+      : '<span class="mo-nada">Todavía no tenés ninguno.</span>') +
   '</div>';
 }
 
