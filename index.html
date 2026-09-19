@@ -375,7 +375,7 @@ img{height:auto}
   .hearts.ultimo .med-art.on,
   #m-reloj.urgente .cro-min, #m-reloj.ultima .cro-min, #m-reloj.ultima .cronos,
   #m-racha.lista,
-  .gol-banner.lista, .gol-banner.lista .gb-go,
+  .gol-banner.lista,
   .col-picks.lista .col-pick,
   .cta.llama,
   .row-pick:not(:disabled){animation:none}
@@ -1085,11 +1085,21 @@ img{height:auto}
   font-size:19px;letter-spacing:2.5px;color:var(--dim2);line-height:1.1;
 }
 .gb-s{display:block;font-size:10.2px;color:var(--dim2);margin-top:2px;line-height:1.4}
+/* ---- EL HUECO DE LA DERECHA ----
+   Antes era una chapa con borde que decía «2/4» mientras cargaba y «USAR»
+   cuando estaba lista. Ahora es un hueco sin marco: **los rayos de la racha**
+   mientras carga, la palabra USAR cuando está.
+
+   El marco se fue porque se comía el ancho que le faltaba al título. Medido a
+   375: el cartel tiene 343px adentro, la chapa se llevaba 51 y el título se
+   quedaba con 74 —el resto era aire—. */
 .gb-go{
-  font-family:var(--tit);font-weight:800;font-size:14px;letter-spacing:2px;
-  color:var(--dim);background:transparent;border:1px solid var(--line);
-  padding:5px 12px;white-space:nowrap;
+  display:flex;align-items:center;gap:3px;flex:0 0 auto;
+  font-family:var(--tit);font-weight:800;font-size:12px;letter-spacing:1.6px;
+  color:var(--dim);white-space:nowrap;
 }
+.gb-go .ir{width:7px;height:10px;display:block;flex:0 0 auto}
+.gb-go .ir.off{opacity:.28;filter:grayscale(1)}
 
 /* Encendido */
 /* **El cartel no late: lo cruza un brillo.** Latía con `golvivo`, que además
@@ -1130,22 +1140,11 @@ img{height:auto}
 .gol-banner.lista .gb-ico{filter:none;opacity:1}
 .gol-banner.lista .gb-t{color:var(--green)}
 .gol-banner.lista .gb-s{color:var(--dim)}
-/* La chapa tiene su propia luz, que le pasa por adentro. Es un fondo que se
-   corre, no una escala: el «USAR» queda quieto en sus 44.4 × 23.0px.
-
-   Va a otro ritmo que el barrido —2.2s contra 1.8— a propósito: sincronizados
-   el cartel entero pulsaría de una sola vez, que es de lo que veníamos. */
-.gol-banner.lista .gb-go{
-  color:#04220f;border-color:var(--green);
-  background:linear-gradient(100deg,
-    var(--green) 0%, var(--green) 30%, #c8ffdb 46%, var(--green) 62%, var(--green) 100%);
-  background-size:260% 100%;
-  animation:chapaluz 2.2s linear infinite;
-}
-@keyframes chapaluz{
-  0%  {background-position:130% 0}
-  100%{background-position:-70% 0}
-}
+/* Lista, el hueco dice USAR en el verde del cartel. **Y ya no tiene luz propia:**
+   la chapa rellena tenía la suya —`chapaluz`, un fondo que se corría— porque era
+   un bloque de color aparte. Sin marco, la palabra vive adentro del cartel y le
+   alcanza con el barrido que ya lo cruza entero. */
+.gol-banner.lista .gb-go{color:var(--green)}
 .gol-banner.lista:hover:not(:disabled){translate:0 -2px;background:linear-gradient(180deg,rgba(27,76,44,.98),rgba(13,44,24,.98))}
 .gol-banner.lista:disabled{opacity:.45;animation:none}
 /* `golvivo` se fue con el latido del cartel: no lo usaba nadie más. */
@@ -4755,20 +4754,31 @@ body{padding-bottom:36px}
   }
   .no-items{font-size:9px;grid-column:1/-1}
 
-  .gol-banner{width:100%;min-width:0;padding:6px 9px;gap:7px;justify-content:center;max-width:none}
-  /* Acá el cartel esconde la descripción y queda solo el ícono, el título y el
-     botón, y los tres van **juntos en el medio**.
+  /* **El título ocupa el ancho, entre las dos pelotas.**
 
-     El que lo impedía era `.gb-txt{flex:1}`: se quedaba con todo el ancho
-     sobrante, así que el título salía centrado dentro de esa caja enorme pero
-     el botón USAR terminaba pegado al borde derecho, lejos. Sin `flex:1` la
-     caja mide lo que mide el texto y el `justify-content:center` del cartel
-     centra a los tres como un solo grupo. */
+     Acá el cartel esconde la descripción y quedan el título, los rayos y las dos
+     pelotas. Antes los tres iban juntos en el medio y el resto era hueco: medido
+     a 375, adentro del cartel entran 343px y se usaban 155 —pelota 16, título 74,
+     chapa 51—. **188px de aire, más de la mitad.**
+
+     Ahora las pelotas se van a las puntas con `space-between`, el título toma lo
+     que sobra con `flex:1` y sube de 9,4 a **15px**: el texto pasa de 74px de
+     ancho a 154. En 320 —la pantalla más angosta— el hueco del título mide 191
+     con la racha cargando, así que entra en un renglón con 37 de sobra.
+
+     **El relleno sube de 6 a 9, no a 8.** La caja tiene que seguir midiendo 39
+     de alto y la pieza que la sostenía era la chapa, de 23px. Los rayos miden 10
+     y la pelota 17, así que el renglón adentro queda en 21 y el relleno tiene que
+     poner los 18 que faltan. Con 8 la caja bajaba a 37: **medido**, no calculado.
+
+     Y la pelota se queda en 17 en toda la franja del teléfono. A 19 el renglón
+     pasaba a 23 y la caja a 41 en las pantallas de 441 a 820. */
+  .gol-banner{width:100%;min-width:0;padding:9px 9px;gap:8px;justify-content:space-between;max-width:none}
   .gol-banner .gb-s{display:none}
-  .gol-banner .gb-txt{flex:0 1 auto;text-align:center}
-  .gol-banner .gb-ico{font-size:16px}
-  .gol-banner .gb-t{font-size:9.4px;letter-spacing:.3px;line-height:1.1}
-  .gol-banner .gb-go{padding:3px 8px;font-size:9.4px;flex:0 0 auto}
+  .gol-banner .gb-txt{flex:1;min-width:0;text-align:center}
+  .gol-banner .gb-ico{font-size:17px}
+  .gol-banner .gb-t{font-size:15px;letter-spacing:1.4px;line-height:1.1}
+  .gol-banner .gb-go{font-size:11px;letter-spacing:1.4px}
 
   /* El hueco entre los dos stats es el mismo de la grilla —5px— y no 3. Los
      dos renglones de la izquierda miden 29 cada uno con 5 en el medio; si
@@ -4911,7 +4921,10 @@ body{padding-bottom:36px}
   .item .ief{font-size:8.8px}
   .item .ii{font-size:12px}
   .item{padding:3px 4px;gap:3px}
-  .gol-banner .gb-t{font-size:9.5px}
+  /* **El cartel de la posibilidad de gol no baja acá.** Tenía un escalón —el
+     título se achicaba a 9,5— porque con la chapa del contador no entraba. Sin
+     la chapa entra: medido a 320, el texto ocupa 154 de los 191 del hueco. Una
+     sola medida de 320 a 820, que es una cosa menos que mantener. */
 }
 
 /* En 360 —la medida de media Android— la foto de la carta baja a 61, así que
@@ -5042,7 +5055,16 @@ body{padding-bottom:36px}
   .gol-banner .gb-s{display:block;font-size:10.5px;line-height:1.3}
   .gol-banner .gb-ico{font-size:26px}
   .gol-banner .gb-t{font-size:12.5px;letter-spacing:1px}
-  .gol-banner .gb-go{padding:6px 12px;font-size:11.5px}
+  /* El `min-height` es la altura que tenía la chapa. Acá la descripción se ve, y
+     la chapa era **más alta que el bloque de texto**: 32px contra 29, así que era
+     ella la que daba los 58 de alto del cartel con la racha llena. Sin marco el
+     hueco mide 21 y el cartel se caía a 55 al llenarse la racha —un salto de 6px
+     donde antes había 3—. Con los 32 guardados, 61 y 58 como siempre. */
+  .gol-banner .gb-go{font-size:13px;letter-spacing:2px;gap:4px;min-height:32px}
+  .gol-banner .gb-go .ir{width:9px;height:13px}
+  /* En escritorio el cartel es más ancho y el título no necesita pelear por el
+     hueco, así que la bajada se queda y el texto va a la izquierda como siempre. */
+  .gol-banner .gb-txt{flex:1;min-width:0}
 
   /* Los medidores vuelven a su panel, con etiqueta. */
   .rec-lb{display:block}
@@ -8402,10 +8424,12 @@ html.html-menu, html.html-menu body{overflow:hidden}
       <button class="gol-banner" id="golBanner" style="display:none">
         <span class="gb-ico"></span>
         <span class="gb-txt">
-          <span class="gb-t">POSIBILIDAD DE GOL</span>
+          <span class="gb-t">LA POSIBILIDAD DE GOL</span>
           <span class="gb-s">Cambiás la racha por una llegada clara &middot; 51% de gol &middot; gasta una jugada</span>
         </span>
         <span class="gb-go">USAR</span>
+        <!-- la segunda pelota: el título queda entre las dos -->
+        <span class="gb-ico"></span>
       </button>
 
       <div class="board-zona">
@@ -9932,7 +9956,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 218;
+const VERSION = 219;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -10975,9 +10999,15 @@ function renderBoard(){
   banner.querySelector('.gb-s').innerHTML = rachaReady
     ? 'Cambiás la racha por una llegada clara · 51% de gol · gasta una jugada'
     : 'Necesitás la racha llena (' + G.rachaMax + ' <i class="ir"></i>) · 51% de gol · gasta una jugada';
+  /* **La racha se cuenta con rayos, no con un número.** Era el único lugar del
+     juego donde se escribía «2/4»; arriba, en la franja de medidores, la misma
+     racha ya se dibuja con rayos encendidos y apagados. Acá se usa el mismo
+     idioma, y de paso ocupa menos: cuatro rayos se llevan 34px contra los 51 de
+     la chapa con borde, y esos 17 se los queda el título. */
   banner.querySelector('.gb-go').innerHTML = rachaReady
     ? 'USAR'
-    : '<i class="ir"></i> ' + G.racha + '/' + G.rachaMax;
+    : Array.from({ length: G.rachaMax }, (_, n) =>
+        '<i class="ir' + (n < G.racha ? '' : ' off') + '"></i>').join('');
   /* El toque abre la ficha con las cinco posibilidades, no cobra directo: la
      racha llena es el recurso más caro del partido y conviene saber qué puede
      salir antes de gastarla. */
@@ -15057,8 +15087,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* El cartel de la mesa vive en el HTML, así que la pelota se le pone acá y no
      duplicando el dibujo dentro del markup. */
-  const gi = document.querySelector('#golBanner .gb-ico');
-  if(gi) gi.innerHTML = icoPelota();
+  document.querySelectorAll('#golBanner .gb-ico').forEach(e => { e.innerHTML = icoPelota(); });
 })();
 
 /* ---------------- arranque ---------------- */

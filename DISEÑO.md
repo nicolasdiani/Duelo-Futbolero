@@ -11480,3 +11480,92 @@ tarjeta suelta sino la caja entera del panel, que es lo que ya hacía.
 
 Y la línea de ayuda de abajo lo sigue diciendo con palabras —«🟨 amarilla
 acumulada»—, que es la otra mitad del aviso y no se tocó.
+
+## v219 · el cartel de la posibilidad de gol se llena de letra
+
+El recuadro mide lo mismo que antes. Lo que cambió es lo que hay adentro.
+
+### El problema: 188px de aire
+
+En el teléfono el cartel esconde la descripción y quedan tres cosas en una
+línea. Medido a 375: adentro del recuadro entran **343px** y se usaban **155**
+—pelota 16, título 74, la chapa del contador 51—. El resto, **188px, más de la
+mitad del cartel, era hueco**.
+
+El título salía en 9,4px, más chico que cualquier otro texto de la pantalla, en
+el cartel más ancho que tiene el juego.
+
+### Qué se hizo
+
+**Dos pelotas, una en cada punta.** El título queda entre las dos y el cartel
+se lee como una sola cosa con principio y fin. Las pelotas se van a los bordes
+con `space-between` y el título toma lo que sobra con `flex:1`.
+
+**El título pasa de 9,4 a 15px** y dice *LA POSIBILIDAD DE GOL* —con el
+artículo—. El texto pasa de **74px de ancho a 154**.
+
+**La racha se cuenta con rayos, no con un número.** Era el único lugar del juego
+donde se escribía «2/4»; arriba, en la franja de medidores, la misma racha ya se
+dibuja con rayos encendidos y apagados. Ahora acá se usa el mismo idioma:
+encendidos los que llevás, apagados los que faltan.
+
+**La chapa perdió el marco.** Era un rectángulo con borde y relleno que se
+llevaba 51px; sin él, el hueco de la derecha mide 39 con los rayos y 27 con la
+palabra USAR. Esos píxeles se los quedó el título.
+
+Se fue también la luz propia de la chapa —`chapaluz`, un fondo que se corría por
+adentro—: sin marco, la palabra USAR vive dentro del cartel y le alcanza con el
+barrido verde que ya lo cruza entero.
+
+### La altura, que era la condición
+
+El pedido fue explícito: **sin tocar el tamaño del recuadro**. La chapa era la
+pieza más alta del renglón, 23px, y sacarla dejaba el cartel en 35 de alto en
+vez de 39.
+
+Los que faltaban volvieron como relleno, pero **no alcanzaba con subirlo de 6 a
+8**: los rayos miden 10 y la pelota 17, así que el renglón adentro queda en 21 y
+el relleno tiene que poner 18. Con 8 el cartel quedaba en **37**. Es el tipo de
+cosa que no se ve calculando y aparece midiendo.
+
+También hubo que dejar la pelota en 17 en toda la franja del teléfono: a 19 el
+renglón pasaba a 23 y el cartel a 41 en las pantallas de 441 a 820.
+
+Y en escritorio, donde la descripción sí se ve, la chapa era **más alta que el
+bloque de texto** —32px contra 29—, así que era ella la que daba la altura con
+la racha llena. Sin marco el hueco mide 21 y el cartel se caía de 58 a 55. Se le
+guardó la altura con un `min-height:32px`.
+
+### Un escalón menos
+
+El cartel tenía una bajada en 440px: el título se achicaba a 9,5. Ya no hace
+falta. Medido a 320 —la pantalla más angosta— el texto ocupa **154 de los 191**
+que mide el hueco del título con la racha cargando, y entra en un renglón con 37
+de sobra. Una sola medida de 320 a 820.
+
+### Verificado
+
+| ancho | v218 (cargando / lista) | v219 | título |
+|---|---|---|---|
+| 320 | 39 / 39 | **39 / 39** | 74 → 154 |
+| 360 | 39 / 39 | **39 / 39** | 74 → 154 |
+| 375 | 39 / 39 | **39 / 39** | 74 → 154 |
+| 390 | 39 / 39 | **39 / 39** | 74 → 154 |
+| 441 | 39 / 39 | **39 / 39** | 74 → 154 |
+| 600 | 39 / 39 | **39 / 39** | 73 → 154 |
+| 820 | 39 / 39 | **39 / 39** | 73 → 154 |
+| 844 × 390 | 75 / 69 | **75 / 69** | 108 → 125 |
+| 1280 | 61 / 58 | **61 / 58** | 108 → 125 |
+
+Las dos columnas se midieron con la v218 servida al lado de la v219, en la misma
+pantalla y en los dos estados de la racha, con las transiciones apagadas. **No
+hay un solo píxel de diferencia en la altura del cartel en ninguno de los nueve
+anchos.**
+
+El título no se parte en ninguno: un solo renglón en todos, y el cartel no
+desborda —`scrollWidth` igual a `clientWidth`, que es la única prueba de recorte
+que sirve—.
+
+A 375 el resto de la pantalla también da igual: la marquesina, el cartel, el
+`wrap` y el alto del documento dan los mismos cuatro números en las dos
+versiones.
