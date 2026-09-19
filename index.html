@@ -4900,6 +4900,24 @@ body{padding-bottom:36px}
     border:2px solid var(--black);
   }
   .panel-log.abierto ~ .log-fab, body:has(.panel-log.abierto) .log-fab{display:none}
+
+  /* **Y el botón vive en el tablero, no en el resto del juego.**
+
+     Se crea una sola vez al cargar y se cuelga del `body`, así que estaba en
+     todas las pantallas: en el menú principal, en elegir club, en opciones, en
+     los créditos, en el mercado y encima de los carteles de fin de partido. En
+     el menú, además, con el punto verde de «hay relato sin leer» prendido y el
+     relato vacío: un botón que no lleva a ningún lado, tapando la esquina.
+
+     Todas esas pantallas son el mismo `#overlay` abierto encima de la mesa; el
+     tablero es la única donde no hay ninguno. Así que la regla es esa: si hay un
+     overlay abierto, el relato no está. Y el relato del tablero nunca queda vacío
+     —`startMatch` escribe la primera línea antes de que se vea la mesa—.
+
+     Va con las dos formas, igual que la de arriba: el hermano para los navegadores
+     sin `:has()` —el botón se cuelga después del overlay, así que alcanza— y el
+     `:has()` para los que lo tienen. */
+  #overlay.open ~ .log-fab, body:has(#overlay.open) .log-fab{display:none}
 }
 
 /* ══════════ MOBILE CHICO ══════════ */
@@ -5366,8 +5384,14 @@ body{padding-bottom:36px}
   /* La línea de ayuda arranca después del botón, no debajo. */
   .board-hint{padding-left:calc(var(--fab) + 10px)}
   /* Y los créditos se centran en lo que queda, para que en pantallas de
-     320px el botón no se le monte al primer link. */
+     320px el botón no se le monte al primer link.
+
+     **Pero solo cuando el botón está.** Ahora el relato vive nada más que en el
+     tablero, así que en el menú ese hueco quedaba reservado para nada y los
+     créditos salían 20px corridos a la derecha: medido a 390, el centro del
+     renglón caía en 215 y el de la pantalla está en 195. Sin botón, sin hueco. */
   .ft{padding-left:calc(var(--fab) + 12px)}
+  #overlay.open ~ .ft, body:has(#overlay.open) .ft{padding-left:12px}
 }
 
 /* ================= NI FOCO NI DESTELLO AL TOCAR =================
@@ -9977,7 +10001,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 220;
+const VERSION = 221;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

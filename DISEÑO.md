@@ -11652,3 +11652,66 @@ A 320, con nombres de 13 letras, el marcador los parte **a mitad de palabra**
 `marcadorFinal` desde siempre, igual en ELIMINADO y en CAMPEÓN. Traerlo acá
 trajo también eso, que es justamente de lo que se trataba: que las tres digan el
 resultado igual.
+
+## v221 · el relato vive en el tablero y en ningún otro lado
+
+El botón del relato —el de la esquina de abajo a la izquierda— se creaba **una
+sola vez al cargar la página** y se colgaba del `body`. Como nunca se lo sacaba
+de ahí, estaba en todas las pantallas del juego.
+
+### Dónde aparecía y no tenía que aparecer
+
+En el **menú principal**, en **elegir club**, en **opciones**, en **créditos**, en
+el **mercado** y encima de los carteles de **fin de partido**. En el menú, además,
+con el punto verde de «hay relato sin leer» prendido y el relato vacío: un botón
+que no lleva a ningún lado, tapando una esquina de la pantalla de entrada.
+
+### La regla
+
+Todas esas pantallas son **el mismo `#overlay` abierto** encima de la mesa. El
+tablero es la única donde no hay ninguno. Así que:
+
+```css
+#overlay.open ~ .log-fab, body:has(#overlay.open) .log-fab{display:none}
+```
+
+Va con las dos formas, igual que la regla que ya lo esconde cuando el panel está
+abierto: el hermano para los navegadores sin `:has()` —el botón se cuelga
+después del overlay, así que alcanza— y el `:has()` para los que lo tienen.
+
+Y el relato del tablero **nunca queda vacío**: `startMatch` escribe la primera
+línea antes de que se vea la mesa.
+
+### El hueco que dejaba reservado
+
+El pie de la página se corre a la derecha para que el botón no se le monte al
+primer link: `padding-left:calc(var(--fab) + 12px)`. Sin botón, ese hueco quedaba
+reservado para nada y **los créditos salían 20px corridos**. Medido a 390: el
+centro del renglón caía en 215 y el de la pantalla está en 195.
+
+Así que la reserva también se ata al botón: donde no está, el pie vuelve a 12.
+
+### Verificado
+
+Recorrido completo —menú, opciones, créditos, elegir club, tablero, mercado,
+ganaste de ronda y de vuelta al tablero— a 320, 390, 768 × 1024, 844 × 390 y
+1280 × 768:
+
+| pantalla | botón | pie |
+|---|---|---|
+| menú | **no** | centrado |
+| opciones | **no** | centrado |
+| créditos | **no** | centrado |
+| elegir club | **no** | centrado |
+| **tablero** | **sí** | corrido 20, que es el hueco del botón |
+| mercado | **no** | centrado |
+| ganaste de ronda | **no** | centrado |
+
+En el tablero a 320 —la pantalla más angosta— el botón termina **17px antes** del
+primer link del pie, así que sigue sin montársele.
+
+El panel sigue funcionando igual: se abre tocando el botón, se cierra tocando el
+título, y mientras está abierto el botón se esconde, que es lo que ya hacía.
+
+En escritorio y en teléfono acostado no cambia nada: ahí el relato no es un botón
+flotante sino el panel fijo de la columna, y el botón ya estaba apagado.
