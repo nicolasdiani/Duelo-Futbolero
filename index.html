@@ -4079,7 +4079,10 @@ body{padding-bottom:36px}
    Y solo alcanza a la foto que tiene cinta arriba: el cartel de la situación de
    gol comparte la clase y no comparte el apretón. */
 @media (max-height:640px) and (orientation:portrait){
-  .sit.mam .p-cinta + .mam-art img{max-height:min(216px, 24vh)}
+  /* La cancha se lleva 36px más que la escena de antes y en 320 x 568 el cartel
+     se pasaba por 4. La foto cede dos puntos más de alto y vuelve a entrar con
+     21 de sobra: acá el que tiene que ganar es el lugar donde se juega. */
+  .sit.mam .p-cinta + .mam-art img{max-height:min(216px, 21vh)}
 }
 
 /* Los botones, como las opciones del menú. */
@@ -5423,7 +5426,13 @@ body{padding-bottom:36px}
   .sit.mam .p-cinta + .mam-art{margin-bottom:8px}
   .sit.mam .t{margin:9px 0 6px}
   .sit.mam .s{margin-top:8px}
-  .sit.mam .duelo{max-width:410px;margin-left:auto;margin-right:auto}
+  /* Con el viewBox más alto, toparla en 410 dejaba el cartel 17px por encima de
+     su tope y lo hacía rodar. En 350 la escena mide lo mismo de alto que antes
+     y las zonas quedan un poco más angostas: con mouse, el alto es lo que
+     importa. */
+  .sit.mam .duelo{max-width:350px;margin-left:auto;margin-right:auto}
+  /* El arco no se topa: su cartel tiene 235px de sobra en escritorio y el arco
+     grande se aprovecha entero. El que estaba al límite era el del duelo. */
   /* Acá el número va a 34px y su recuadro mide 38 de alto: el escudo sube con él
      para que el renglón no quede con una punta más chica que la otra. */
   .pv-esc svg{height:40px}
@@ -6732,14 +6741,14 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 
 /* Las tres zonas: laten hasta que se dispara. */
 .pp-zona{
-  fill:var(--fi-luz);fill-opacity:.05;
-  stroke:var(--fi-luz);stroke-width:1.5;stroke-opacity:.35;
+  fill:#fff;fill-opacity:.05;
+  stroke:#fff;stroke-width:2.2;stroke-opacity:.55;
   cursor:pointer;transition:fill-opacity .15s, stroke-opacity .15s;
   animation:zonaLate 1.7s ease-in-out infinite;
 }
 @keyframes zonaLate{
-  0%,100%{stroke-opacity:.3;fill-opacity:.04}
-  50%    {stroke-opacity:1;fill-opacity:.16}
+  0%,100%{stroke-opacity:.4;fill-opacity:.04}
+  50%    {stroke-opacity:1;fill-opacity:.18}
 }
 .pp-zona:hover{fill-opacity:.2;stroke-opacity:1;animation:none}
 .pp-zona.off{pointer-events:none;animation:none;stroke-opacity:.12;fill-opacity:0}
@@ -6890,22 +6899,35 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
    figuras con los colores de cada escudo, y el rival sale primero para que se
    vea el cruce. */
 .duelo{display:block;width:100%;margin:12px 0 2px;overflow:visible}
-.dl-cesped{fill:rgba(0,33,118,.42)}
-.dl-cesped2{fill:rgba(0,20,66,.42)}
-.dl-linea{fill:none;stroke:rgba(232,238,248,.26);stroke-width:1.5;stroke-dasharray:4 6}
-.dl-camino{fill:none;stroke:var(--fi-luz);stroke-width:2.4;stroke-linecap:round;stroke-dasharray:5 5;opacity:.5}
+/* ---- LA CANCHA ----
+   El fondo era un azul transparente sobre el azul del cartel, con dos caminos
+   punteados en celeste. Ahora es **césped con franjas de corte y cal blanca**:
+   el mismo verde que el juego ya tenía en la paleta —`--cesped` y `--cesped2`—
+   y que no usaba en ninguna pantalla.
+
+   No es decoración: lo que se toca **es un área de la cancha**, y en verde con
+   la línea blanca alrededor eso se entiende sin leer la pregunta. El arco de
+   los penales comparte el césped, así que las dos escenas del juego pasan a
+   pasar en el mismo lugar.
+
+   Los caminos punteados se fueron con el azul: con la cancha dibujada, la
+   línea del medio alcanza para decir que son dos lados. */
+.dl-cesped{fill:var(--cesped)}
+.dl-raya{fill:var(--cesped2)}
+.dl-cal{fill:none;stroke:rgba(255,255,255,.8);stroke-width:2.2;stroke-linecap:round}
+.dl-cal.pt{stroke-width:1.5;stroke-dasharray:5 7;stroke-opacity:.5}
 
 /* Los dos lados, con la esquina redondeada. */
 .dl-z{
-  fill:var(--fi-luz);fill-opacity:.05;
-  stroke:var(--fi-luz);stroke-width:1.5;stroke-opacity:.35;
+  fill:#fff;fill-opacity:.05;
+  stroke:#fff;stroke-width:2.2;stroke-opacity:.55;
   cursor:pointer;transition:fill-opacity .15s, stroke-opacity .15s;
   animation:dlLate 1.7s ease-in-out infinite;
 }
 .dl-z[data-l="der"]{animation-delay:.35s}
 @keyframes dlLate{
-  0%,100%{stroke-opacity:.3;fill-opacity:.04}
-  50%    {stroke-opacity:1;fill-opacity:.16}
+  0%,100%{stroke-opacity:.4;fill-opacity:.04}
+  50%    {stroke-opacity:1;fill-opacity:.18}
 }
 .dl-z:hover{fill-opacity:.2;stroke-opacity:1;animation:none}
 .dl-z.off{pointer-events:none;animation:none;stroke-opacity:.12;fill-opacity:0}
@@ -10121,7 +10143,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 223;
+const VERSION = 224;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12170,18 +12192,33 @@ function arcoPenalHTML(esc){
   const B = hexEscudo(esc && esc.c2);   // guantes
 
   let red = '';
-  for(let x = 26; x <= 174; x += 12) red += '<path class="pp-red" d="M' + x + ' 22 V98"/>';
-  for(let y = 30; y <= 96; y += 12) red += '<path class="pp-red" d="M22 ' + y + ' H178"/>';
+  for(let x = 30; x <= 170; x += 13) red += '<path class="pp-red" d="M' + x + ' 14 V104"/>';
+  for(let y = 27; y <= 100; y += 13) red += '<path class="pp-red" d="M22 ' + y + ' H178"/>';
 
+  /* El césped del duelo, abajo de la línea de gol: las dos escenas del juego
+     pasan en la misma cancha. */
+  let rayas = '';
+  for(let y = 104; y < 136; y += 13)
+    rayas += '<rect class="dl-raya" x="0" y="' + y + '" width="200" height="6.5"/>';
+
+  /* **El arco crece hacia arriba: el travesaño sube de 22 a 14.** El arquero
+     sigue parado en (100,62) y la pelota en (100,112), que es contra lo que
+     `animarPenal` calcula el vuelo y el disparo —y contra lo que apunta
+     `PENAL_Z`—, así que el dibujo crece sin tocar una línea de la animación.
+     Cada palo pasa de 77x113 a 77x140 en un teléfono de 390. */
   const zonas = [22, 74, 126].map((x, i) =>
-    '<rect class="pp-zona" data-z="' + i + '" x="' + x + '" y="22" width="52" height="76" rx="3" ' +
+    '<rect class="pp-zona" data-z="' + i + '" x="' + x + '" y="14" width="52" height="90" rx="3" ' +
     'style="animation-delay:' + (i * 260) + 'ms"/>').join('');
 
-  return '<svg class="parco" viewBox="0 0 200 120" aria-label="Arco">' +
+  return '<svg class="parco" viewBox="0 0 200 136" aria-label="Arco">' +
+    '<defs><clipPath id="ppCaja"><rect x="0" y="0" width="200" height="136" rx="8"/></clipPath></defs>' +
+    '<g clip-path="url(#ppCaja)">' +
+      '<rect class="dl-cesped" x="0" y="100" width="200" height="36"/>' + rayas +
+    '</g>' +
     '<g class="pp-redg">' + red + '</g>' +
-    '<path class="pp-post" d="M22 100 V22 H178 V100"/>' +
-    '<path class="pp-piso" d="M8 103 H192"/>' +
-    '<path class="pp-gol" d="M22 100 V22 H178 V100"/>' +
+    '<path class="pp-post" d="M22 104 V14 H178 V104"/>' +
+    '<path class="pp-piso" d="M8 108 H192"/>' +
+    '<path class="pp-gol" d="M22 104 V14 H178 V104"/>' +
     /* El arquero, con los colores del que ataja. */
     '<g class="pp-arq idle">' +
       '<circle cx="100" cy="56" r="8" fill="#f0c9a0" stroke="rgba(0,0,0,.35)" stroke-width="1"/>' +
@@ -12652,20 +12689,39 @@ const icoPelota = (cls) =>
 /* `mia` es de quién es la pelota: con la tuya ganás esquivando, con la de él
    adivinando. Es el mismo dato que `adivinar`, dado vuelta. */
 function escenaDuelo(mia){
-  return '<svg class="duelo" viewBox="0 0 200 116" aria-label="El duelo">' +
-    '<rect class="dl-cesped" x="0" y="4" width="200" height="108" rx="8"/>' +
-    '<rect class="dl-cesped2" x="0" y="4" width="200" height="26"/>' +
-    '<path class="dl-linea" d="M4 96 H196"/>' +
-    /* los dos caminos, que son las dos zonas que se tocan */
-    '<path class="dl-camino" d="M92 92 C 70 78, 50 62, 44 40"/>' +
-    '<path class="dl-camino" d="M108 92 C 130 78, 150 62, 156 40"/>' +
-    '<g transform="translate(100,44) scale(.92)">' + figuraDuelo(G.escudoRival, 'dl-fig dl-riv vaiven2') + '</g>' +
-    '<g transform="translate(100,102) scale(.92)">' + figuraDuelo(G.escudo, 'dl-fig dl-yo vaiven') + '</g>' +
-    (mia ? pelotaDuelo(100, 112) : pelotaDuelo(100, 58)) +
-    '<g class="dl-chog"><circle class="dl-choque" cx="100" cy="74" r="20"/></g>' +
-    '<circle class="dl-robo" cx="100" cy="74" r="13"/>' +
-    '<rect class="dl-z" data-l="izq" x="6" y="8" width="90" height="102" rx="8"/>' +
-    '<rect class="dl-z" data-l="der" x="104" y="8" width="90" height="102" rx="8"/>' +
+  /* Las franjas de corte, recortadas a la caja: sueltas se salen por las
+     esquinas redondeadas. */
+  let rayas = '';
+  for(let y = 4; y < 136; y += 22)
+    rayas += '<rect class="dl-raya" x="0" y="' + y + '" width="200" height="11"/>';
+
+  /* **El viewBox pasa de 200x116 a 200x140.** El ancho no se toca, así que lo
+     único que cambia es el alto: a 390 la escena va de 173 a 209px y cada lado
+     que se toca, de 134x152 a 131x182. Un 17% más de blanco para el dedo.
+
+     **El contenido va corrido 12 hacia abajo y con las coordenadas de siempre.**
+     La animación mueve las figuras y la pelota con deltas —±50 de lado, ±54 de
+     alto— calculados contra estas posiciones; corriendo el grupo entero, los
+     deltas siguen valiendo y no hay un segundo lugar donde acordarse de esos
+     números. */
+  return '<svg class="duelo" viewBox="0 0 200 140" aria-label="El duelo">' +
+    '<defs><clipPath id="dlCaja"><rect x="0" y="4" width="200" height="132" rx="8"/></clipPath></defs>' +
+    '<g clip-path="url(#dlCaja)">' +
+      '<rect class="dl-cesped" x="0" y="4" width="200" height="132"/>' + rayas +
+    '</g>' +
+    '<path class="dl-cal" d="M8 118 H192"/>' +
+    '<path class="dl-cal pt" d="M100 10 V130"/>' +
+    '<g transform="translate(0,12)">' +
+      '<g transform="translate(100,44) scale(1.02)">' + figuraDuelo(G.escudoRival, 'dl-fig dl-riv vaiven2') + '</g>' +
+      '<g transform="translate(100,102) scale(1.02)">' + figuraDuelo(G.escudo, 'dl-fig dl-yo vaiven') + '</g>' +
+      (mia ? pelotaDuelo(100, 112) : pelotaDuelo(100, 58)) +
+      '<g class="dl-chog"><circle class="dl-choque" cx="100" cy="74" r="20"/></g>' +
+      '<circle class="dl-robo" cx="100" cy="74" r="13"/>' +
+    '</g>' +
+    /* Los dos lados, del borde al borde: el ancho que sobraba al costado no
+       servía para nada y sí sirve para el dedo. */
+    '<rect class="dl-z" data-l="izq" x="6" y="8" width="90" height="124" rx="7"/>' +
+    '<rect class="dl-z" data-l="der" x="104" y="8" width="90" height="124" rx="7"/>' +
   '</svg>';
 }
 

@@ -11885,3 +11885,94 @@ pista fue que crecían **todas** las piezas a la vez —cinta, foto, cancha,
 renglón, título—, que es lo que no puede pasar cuando se toca una sola.
 
 Medidas las dos versiones en la misma pestaña, la diferencia es cero.
+
+## v224 · los mini juegos se juegan en una cancha
+
+Las dos escenas del juego —el duelo de a dos y el arco de tres palos— pasaban en
+un azul transparente sobre el azul del cartel, con dos caminos punteados en
+celeste. Ahora pasan en **césped con franjas de corte y cal blanca**.
+
+El verde ya estaba en la paleta desde siempre —`--cesped` y `--cesped2`— y no lo
+usaba ninguna pantalla.
+
+### Por qué la cancha y no otra cosa
+
+No es decoración: **lo que se toca es un área de la cancha**. En verde, con la
+línea blanca alrededor, eso se entiende sin leer la pregunta; en azul sobre azul
+había que deducir que esos dos rectángulos eran botones.
+
+Y el arco comparte el césped, así que las dos escenas dejan de ser dos dibujos
+distintos y pasan a ser **el mismo lugar**: la línea de gol es la misma cal que
+la línea del medio del duelo.
+
+Los caminos punteados se fueron con el azul. Con la cancha dibujada, la línea del
+medio alcanza para decir que hay dos lados.
+
+### Más grande, que era la otra mitad del pedido
+
+- **El duelo** pasa de `viewBox 200x116` a `200x140`, y las dos zonas van ahora de
+  borde a borde de la caja.
+- **El arco** pasa de `200x120` a `200x136` y **crece hacia arriba**: el travesaño
+  sube de 22 a 14.
+
+El ancho no se toca en ninguna de las dos, así que lo único que cambia es el alto.
+
+### Lo que no se movió ni un píxel
+
+El arquero sigue parado en `(100,62)`, la pelota del penal en `(100,112)` y
+`PENAL_Z` apunta a los mismos tres puntos. En el duelo, las figuras siguen en
+`(100,44)` y `(100,102)`, la pelota en 58 y 112, y el anillo en 74.
+
+Es a propósito: `animarPenal` calcula el vuelo y el disparo como **deltas contra
+esas posiciones**, y el duelo mueve las figuras ±50 de lado y la pelota ±54 de
+alto. Para que el duelo creciera sin tocar esos números, todo el contenido va
+dentro de un `<g transform="translate(0,12)">`: se corre entero y **las distancias
+relativas quedan iguales**. Ninguna constante de animación se duplicó en un
+segundo lugar.
+
+### Los tres penales, de un solo lugar
+
+El arco sale de `arcoPenalHTML`, y de ahí lo toman los tres: la **tanda completa**
+y el **penal suelto** de la posibilidad de gol pasan por `penalUno`, y el **penal
+definitorio** por `tirarPenal`. Una sola función cambiada y los tres quedan en la
+misma cancha.
+
+### Verificado
+
+Medido con la v223 servida en la misma pestaña, para que las dos midan en la
+misma escala. Los números del duelo son los del peor de los cuatro mini juegos,
+que siempre es el del delantero:
+
+**El duelo**
+
+| pantalla | v223 | v224 | cada lado que se toca |
+|---|---|---|---|
+| 320 × 568 | 487 (sobran 31) | **498** (sobran 20) | 105 × 119 → **105 × 144** |
+| 390 × 844 | 579 (sobran 189) | **613** (sobran 155) | 129 × 146 → **129 × 177** |
+| 1280 × 768 | 632 (sobran 60) | **639** (sobran 53) | 177 × 201 → **151 × 208** |
+
+**El arco**
+
+| pantalla | v223 | v224 | cada palo |
+|---|---|---|---|
+| 320 × 568 | 278 | **296** | 60 × 88 → **60 × 105** |
+| 390 × 844 | 310 | **333** | 74 × 109 → **74 × 129** |
+| 1280 × 768 | 457 | **492** | 115 × 168 → **115 × 199** |
+
+El blanco para el dedo crece **un 21% en el duelo y un 18% en el arco** en un
+teléfono de 390. Ninguna de las seis se rueda ni se corta por arriba.
+
+En **escritorio** el duelo se topa en 350px de ancho —antes en 410—: con el
+viewBox más alto, 410 dejaba el cartel 17px por encima de su tope y lo hacía
+rodar. Ahí las zonas quedan un 15% más angostas y **un 3% más altas**, que es lo
+que importa con mouse. El arco no se topa: su cartel tiene 200px de sobra.
+
+En **320 × 568** la cancha se llevaba 36px más de los que había y el cartel se
+pasaba por 4. La foto de la carta cede dos puntos de alto —de 24vh a 21— y vuelve
+a entrar con 20 de sobra: en esa pantalla el que tiene que ganar es el lugar
+donde se juega.
+
+Probado además de punta a punta: el duelo resuelve —zonas apagadas, figuras que
+se cruzan, pelota que cambia de dueño y el cartel de desenlace— y el penal
+también, con la pelota terminando **a 17px del guante** en la atajada y la red
+encendiéndose en el gol.
