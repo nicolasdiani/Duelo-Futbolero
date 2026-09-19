@@ -3753,10 +3753,41 @@ img{height:auto}
      alto 770   franja 42px   chapita 24   57%
      alto 844   franja 60px   chapita 26   43%   <- lo normal
 
-   Con el corte en 700 la chapita aparecía justo donde no entra. En 760 se va
-   antes de eso: el que pierde el escudo es el mismo teléfono al que la carta
-   ya le quedó reducida a nombre y resultado. */
+   Con el corte en 700 la chapita aparecía justo donde no entra.
+
+   **Pero 760 se llevaba puestos teléfonos donde entra de sobra.** Medido en el
+   juego andando, con la chapita forzada a la vista:
+
+     alto 568   foto 13   chapita 5    <- una astilla, no se lee
+     alto 629   foto 22   chapita 14   <- el escudo empieza a cortarse
+     alto 640   foto 25   chapita 17   <- el escudo entero, sin relleno
+     alto 660   foto 30   chapita 20   <- entera
+     alto 716   foto 44   chapita 21   <- iPhone 13 mini
+     alto 745   foto 51   chapita 21   <- iPhone 17 Pro
+
+   El iPhone 13 mini y el 17 Pro caen justo en esa franja: en Safari la altura
+   que ve el CSS no es la de la pantalla sino la que queda **abajo de las barras
+   del navegador**, así que los dos daban menos de 760 y se quedaban sin escudo
+   aunque la foto midiera 27 y 37 respectivamente.
+
+   Así que el corte baja a **640**, que es donde el escudo empieza a cortarse de
+   verdad, y de 640 a 760 va **la versión compacta**: el mismo escudo con menos
+   relleno alrededor, para que no lo recorte el tope contra la foto. */
 @media (max-width:820px) and (max-height:760px){
+  /* **Y la chapita deja de medirse contra la foto.** El tope de más arriba
+     —el que la limita al 100% de la ilustración menos 8— la ataba a ese alto, y
+     ese alto **no es el mismo en las 16 cartas**: la que tiene el nombre en dos
+     renglones se queda con mucho menos. Medido a 375x716, con la chapita
+     forzada a la vista: la mejor carta la mostraba en 21px y la peor en **8**.
+     Esa es la razón de fondo por la que el corte estaba tan arriba.
+
+     Sin el tope, las 16 la muestran del mismo tamaño: 21 a 716, 19 a 640. Se
+     sale unos píxeles de la foto en las cartas de nombre largo y no molesta a
+     nadie: sigue adentro de la carta y no pisa ni el nombre ni el resultado. */
+  .cell .c-esc{padding:1.5px 2.5px;border-radius:6px;max-height:none;overflow:visible}
+  .cell .c-esc svg{height:clamp(11px, calc(var(--carta) * .17), 22px)}
+}
+@media (max-width:820px) and (max-height:639px){
   .cell .c-esc{display:none}
 }
 .c-art{
@@ -10143,7 +10174,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 224;
+const VERSION = 225;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

@@ -11976,3 +11976,70 @@ Probado además de punta a punta: el duelo resuelve —zonas apagadas, figuras q
 se cruzan, pelota que cambia de dueño y el cartel de desenlace— y el penal
 también, con la pelota terminando **a 17px del guante** en la atajada y la red
 encendiéndose en el gol.
+
+## v225 · el escudo vuelve a las cartas del teléfono
+
+En un iPhone 13 mini y en un 17 Pro las cartas de la mesa salían **sin escudo**.
+No era un bug nuevo: era una regla puesta a propósito —`(max-width:820px) and
+(max-height:760px)` apagaba la chapita— y el corte estaba mal puesto.
+
+### Por qué 760 se llevaba puestos esos teléfonos
+
+En Safari, **la altura que ve el CSS no es la de la pantalla** sino la que queda
+abajo de las barras del navegador. Un 13 mini de 812 de pantalla reporta 716, y
+un 17 Pro queda alrededor de 745. Los dos caían debajo de 760 y se quedaban sin
+escudo aunque en la carta hubiera lugar de sobra.
+
+### Pero el corte no era lo único
+
+Midiendo las **16 cartas** en vez de la primera apareció la razón de fondo. La
+chapita tenía un tope atado al alto de la ilustración, y ese alto **no es el
+mismo en todas**: la carta con el nombre en dos renglones —DELANTERO, PASE GOL—
+se queda con mucho menos foto. Medido a 375 × 716, con la chapita forzada a la
+vista:
+
+| | la mejor carta | la peor carta |
+|---|---|---|
+| foto | 47px | **16px** |
+| chapita | 21px | **8px** |
+
+Con ese tope, bajar el corte habría puesto en algunas cartas una astilla de 8px.
+Por eso el corte estaba tan arriba: tapaba un problema que no era el corte.
+
+### Las dos cosas que se hicieron
+
+**La chapita deja de medirse contra la foto.** Sin ese tope, las 16 la muestran
+del mismo tamaño: 21px a 716 y 19 a 640. Se sale unos píxeles de la ilustración
+en las cartas de nombre largo y no molesta a nadie —sigue adentro de la carta y
+no pisa ni el nombre ni el resultado, medido carta por carta—.
+
+**Y recién entonces baja el corte, de 760 a 640**, que es donde el escudo empieza
+a cortarse de verdad. Entre 640 y 760 va una versión compacta: el mismo escudo
+con menos relleno alrededor.
+
+### Verificado
+
+Las 16 cartas, en el juego andando:
+
+| pantalla | antes | ahora | chapita |
+|---|---|---|---|
+| 320 × 568 | sin escudo | sin escudo | — |
+| 375 × 640 | sin escudo | **16 de 16** | 19px |
+| 375 × 716 · iPhone 13 mini | sin escudo | **16 de 16** | 21px |
+| 402 × 745 · iPhone 17 Pro | sin escudo | **16 de 16** | 21px |
+| 375 × 812 | 16 de 16 | 16 de 16 | 22–25px |
+| 1280 × 768 | 16 de 16 | 16 de 16 | 42px |
+
+En las seis, **todas las chapitas quedan adentro de la carta y ninguna pisa el
+nombre**. Abajo de 640 el escudo se sigue apagando, como antes: ahí la carta
+queda reducida a nombre y resultado y la foto mide 3px.
+
+### Una trampa de medición, anotada
+
+Las primeras mediciones daban números que no cerraban entre sí —la misma pantalla
+daba foto 25 una vez y 10 la siguiente— porque estaban tomadas sobre
+`querySelector('.cell')`, **la primera carta de la mesa**, y la mesa se sortea de
+nuevo en cada carga. El alto de la foto depende de si el nombre entró en uno o en
+dos renglones, así que el número cambiaba con la carta que había tocado.
+
+Medido sobre las 16 a la vez, el rango aparece solo y con él la causa.
