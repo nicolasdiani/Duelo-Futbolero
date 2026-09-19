@@ -3210,60 +3210,82 @@ img{height:auto}
    Va todo con `:not(.ficha-gol)` porque el cartel de gol usa las mismas
    clases de caja con otro contenido, y ese no se rediseña acá. */
 .item-ficha:not(.ficha-gol){
-  background:#061428;
-  border:1px solid rgba(147,174,222,.24);
-  border-top:3px solid var(--fi-luz);
-  border-left:1px solid rgba(147,174,222,.24);
+  background:linear-gradient(180deg, rgba(0,16,52,.99), rgba(0,8,31,.99));
+  /* Sin el filo dorado de arriba: era el cuarto lugar donde la ficha usaba el
+     color del juego para decir «soy un cartel», que ya lo dice la sombra. */
+  border:1px solid var(--line);
   border-radius:12px;
-  box-shadow:0 14px 40px rgba(0,0,0,.6);
+  box-shadow:0 16px 44px rgba(0,0,0,.66);
   padding:0;gap:0;overflow:hidden;
 }
 /* Sin el pico: con la foto a todo el ancho y el filo arriba, el triangulito
    quedaba pegado a una banda de foto y no se entendía de dónde salía. */
 .item-ficha:not(.ficha-gol)::before{display:none}
 
-/* La foto pasa de cuadrado de 78px al costado a **banda a todo el ancho**,
-   con el mismo degradé con el que las cartas apoyan su texto. El cuadrado era
-   muy chico para verse y muy grande para ignorarse, y encima empujaba el
-   texto contra el borde derecho. */
-.item-ficha:not(.ficha-gol) .if-fila{display:block}
-.item-ficha:not(.ficha-gol) .if-art{
-  width:100%;height:clamp(76px, 25vw, 96px);
-  border:0;border-radius:0;box-shadow:none;
-  position:relative;display:block;
-}
-.item-ficha:not(.ficha-gol) .if-art::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg, rgba(6,20,40,.05) 0%, rgba(6,20,40,.85) 72%, #061428 100%);
-}
-.item-ficha:not(.ficha-gol) .if-ico{
-  right:9px;bottom:9px;width:30px;height:30px;border-radius:9px;
-  background:rgba(0,6,24,.9);z-index:2;
-}
-.item-ficha:not(.ficha-gol) .if-ico .ii-svg{width:19px;height:19px}
-/* Sin foto el ícono ocupa la banda entero, centrado. */
-.item-ficha:not(.ficha-gol) .if-art.sin-foto{background:var(--fi-mini)}
+/* ---- LA FICHA MÍNIMA ----
+   La ficha ocupaba **370 x 273** en un teléfono de 390: casi toda la pantalla,
+   encima de la mesa que estabas mirando para decidir. Y tenía cuatro colores
+   —el filo dorado, la chapa del paso, los dos botones dorados— para decir una
+   cosa sola: cuánto sube un medidor.
 
-/* El texto sube sobre el pie del degradé: ahí la foto ya es casi el fondo de
-   la ficha, así que se gana alto sin perder contraste. */
-.item-ficha:not(.ficha-gol) .if-txt{
-  padding:0 15px 13px;margin-top:-22px;position:relative;z-index:2;
+   Ahora mide **284** de ancho y entre 262 y 279 de alto, un 21 a 26% menos de
+   superficie, y el único color que **decora** es el número. El verde de USAR no
+   cuenta como quinto: no decora, es el mismo verde con el que se confirma en
+   todo el juego y es lo que el jugador viene a tocar.
+
+   El alto no es lo que baja —en dos de los cuatro sube, porque los botones
+   pasaron a estar uno abajo del otro—. Lo que baja es el ancho: 370 a 284, de
+   margen a margen a una ficha que deja ver la mesa atrás.
+
+   Se va la banda de foto. Era lo que más alto costaba —96px— y no contestaba la
+   pregunta que uno se hace con el ítem en la mano. Lo que queda es el orden en
+   el que se lee: **qué ítem es, qué hace, de cuánto a cuánto, por qué**. */
+.item-ficha:not(.ficha-gol){width:min(284px, calc(100vw - 24px))}
+.item-ficha:not(.ficha-gol) .if-h{
+  display:flex;align-items:center;gap:9px;padding:12px 14px 0;
 }
-.item-ficha:not(.ficha-gol) .if-nm{font-size:16px;letter-spacing:1px}
-.item-ficha:not(.ficha-gol) .if-ef{margin-left:auto}
-/* El antes→después se despega en su propia chapa: es el dato que contesta la
-   única pregunta que uno se hace con el ítem en la mano. */
+.item-ficha:not(.ficha-gol) .if-h .ii-svg{width:18px;height:18px;color:var(--dim);flex:0 0 auto}
+.item-ficha:not(.ficha-gol) .if-nm{
+  font-family:var(--tit);font-weight:800;font-size:14px;letter-spacing:1.4px;
+  color:var(--white);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+/* El renglón del efecto. `flex-wrap` a propósito: en 320 el paso se va abajo en
+   vez de apretar el número, que es el que tiene que leerse primero. */
+.item-ficha:not(.ficha-gol) .if-q{
+  display:flex;align-items:baseline;gap:7px;padding:9px 14px 0;flex-wrap:wrap;
+}
+.item-ficha:not(.ficha-gol) .if-n{
+  font-family:var(--tit);font-weight:800;font-size:26px;line-height:1;white-space:nowrap;
+}
+/* La única tinta de la ficha, y va en el número. */
+.item-ficha:not(.ficha-gol) .if-n.tono-ag{color:var(--red)}
+.item-ficha:not(.ficha-gol) .if-n.tono-ra{color:var(--gold)}
+.item-ficha:not(.ficha-gol) .if-med{
+  font-family:var(--tit);font-weight:800;font-size:11.5px;letter-spacing:2px;color:var(--dim);
+}
 .item-ficha:not(.ficha-gol) .if-paso{
-  display:inline-flex;margin-top:8px;font-size:15px;
-  padding:5px 11px;border-radius:8px;
-  background:rgba(0,6,24,.6);border:1px solid rgba(147,174,222,.18);
+  margin-left:auto;display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--tit);font-weight:700;font-size:12px;color:var(--dim2);
+  background:none;border:0;padding:0;
 }
-.item-ficha:not(.ficha-gol) .if-desc{font-size:12.5px;margin-top:8px;color:var(--dim)}
-.item-ficha:not(.ficha-gol) .if-btns{padding:0 15px 15px;gap:8px}
+.item-ficha:not(.ficha-gol) .if-paso i{font-style:normal;opacity:.6}
+.item-ficha:not(.ficha-gol) .if-paso .hay{color:var(--dim)}
+.item-ficha:not(.ficha-gol) .if-desc{
+  padding:8px 14px 0;font-family:var(--txt);font-size:11.5px;line-height:1.45;color:var(--dim2);
+  margin:0;
+}
+/* **Los botones, uno abajo del otro.** En 284px, dos al lado dan 127 cada uno:
+   alcanza para la palabra y no para el dedo. Apilados se llevan el ancho entero. */
+.item-ficha:not(.ficha-gol) .if-btns{
+  display:flex;flex-direction:column;gap:6px;padding:11px 13px 12px;
+}
 .item-ficha:not(.ficha-gol) .if-btn{
-  border-radius:9px;border-width:1px;padding:12px 10px;font-size:12px;
-  background:rgba(245,200,66,.12);border-color:rgba(245,200,66,.55);color:var(--gold);
+  width:100%;margin:0;display:flex;align-items:center;justify-content:center;gap:7px;
+  font-family:var(--tit);font-weight:800;font-size:12.5px;letter-spacing:1.5px;
+  padding:9px 12px;border-radius:9px;min-height:38px;border-width:1px;
+  background:rgba(3,14,34,.8);border-color:rgba(147,174,222,.28);color:var(--dim);
 }
+.item-ficha:not(.ficha-gol) .if-btn .ic{width:15px;height:15px}
 .item-ficha:not(.ficha-gol) .if-btn.alt{
   background:rgba(3,14,34,.8);border-color:rgba(147,174,222,.28);color:var(--dim);
 }
@@ -3298,6 +3320,9 @@ img{height:auto}
    gritando, la tribuna empujando, el árbitro revisando— y un renglón con el
    medidor **antes y después**, con los números de verdad de la partida: si
    tenés 2 de racha dice 2 ⚡ → 3 ⚡, no «+1». */
+/* `.if-fila` y `.if-art` eran la banda de foto de la ficha. La ficha ya no
+   tiene foto; estas reglas se quedan porque el cartel de la posibilidad de gol
+   comparte la caja y su propio marcado, y barrerlas es una pasada aparte. */
 .if-fila{display:flex;gap:12px;align-items:flex-start;min-width:0}
 .if-fila .if-txt{flex:1 1 auto}
 .if-art{
@@ -3388,27 +3413,22 @@ img{height:auto}
        está después en el marcado— y perdía contra el botón. En 400 no hay
        nada que se le monte. */
     position:fixed;z-index:400;
-    top:var(--fy, 140px);left:10px;right:10px;
-    width:auto;max-width:none;
-    /* Todo el ancho menos los 10px de margen, y nunca más alta que lo que
-       queda de pantalla: si no entra, scrollea adentro en vez de salirse. */
+    /* **Ya no ocupa el ancho de la pantalla.** Iba de margen a margen porque
+       la ficha vivía adentro del botón del ítem y heredaba sus 69px; con
+       `position:fixed` eso se arregló estirándola, que era el remedio de
+       entonces. Ahora tiene ancho propio —284, o lo que entre— y el JS le pasa
+       en `--fl` la izquierda **ya corregida contra los dos márgenes**: si el
+       ítem está en la punta, la ficha se corre para adentro en vez de salirse.
+
+       El pico sigue apuntando al ítem: `--fx` pasa a ser su centro **medido
+       desde la ficha**, no desde el borde de la pantalla. */
+    top:var(--fy, 140px);left:var(--fl, 12px);right:auto;
+    width:min(284px, calc(100vw - 24px));max-width:none;
+    /* Nunca más alta que lo que queda de pantalla: si no entra, scrollea
+       adentro en vez de salirse. */
     max-height:calc(100dvh - var(--fy, 140px) - 14px);
     overflow-y:auto;overscroll-behavior:contain;
     transform:translateY(-5px);
-  }
-  /* Ocupando el ancho de la pantalla hay lugar de sobra: el nombre entra en
-     una línea, la descripción en una o dos, y los botones se pueden tocar. */
-  /* Con el ancho de la pantalla el padding ya lo pone el cuerpo: acá sólo
-     suben las tipografías, que es lo que cambia entre mano y escritorio. */
-  .item-ficha:not(.ficha-gol) .if-art{flex:0 0 auto}
-  .item-ficha:not(.ficha-gol) .if-txt{padding:0 16px 14px}
-  .item-ficha:not(.ficha-gol) .if-btns{padding:0 16px 16px}
-  .item-ficha:not(.ficha-gol) .if-nm{font-size:17px;gap:8px}
-  .item-ficha:not(.ficha-gol) .if-paso{font-size:16px;margin-top:9px}
-  .item-ficha:not(.ficha-gol) .if-desc{font-size:13px;margin-top:9px}
-  .item-ficha:not(.ficha-gol) .if-btns{gap:8px}
-  .item-ficha:not(.ficha-gol) .if-btn{
-    padding:12px 10px;font-size:11.5px;letter-spacing:1.8px;
   }
   .item-ficha.on{transform:none}
   /* El pico se para bajo el ítem, no bajo la esquina de la ficha. */
@@ -10174,6 +10194,16 @@ const ITEMS = {
                  art:'offside', tono:'var' }
 };
 
+/* **Qué mueve cada ítem, escrito.** `efecto` es el renglón corto de la barra
+   —`+1 ❤`— y ahí la palabra no entra. La ficha sí tiene lugar y es donde hace
+   falta: con el ítem en la mano, la pregunta es qué medidor sube. */
+const MEDIDOR = {
+  suplentes: { n:'+1', med:'AGUANTE', i:'<i class="ih"></i>' },
+  grito:     { n:'+1', med:'RACHA',   i:'<i class="ir"></i>' },
+  refuerzo:  { n:'+2', med:'AGUANTE', i:'<i class="ih"></i>', mas:'También recuperás un máximo.' },
+  revision:  { n:'',   med:'DESTRABA', i:'' }
+};
+
 /* El ícono dibujado del ítem. Si alguno no lo tuviera, cae en su emoji: así se
    puede agregar un ítem sin dibujarle el suyo el mismo día. */
 const icoItem = k => {
@@ -10190,7 +10220,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 226;
+const VERSION = 227;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -11707,24 +11737,23 @@ function abrirFicha(k, btn){
   /* Con el medidor al tope el ítem no hace nada, así que en vez del paso va el
      motivo: prometer «3 ❤ → 3 ❤» sería peor que no decir nada. */
   const paso = porQueNo ? null : pasoItem(k);
-  const foto = ARTSRC(I.art);
+
+  /* **Qué medidor mueve, con todas las letras.** La ficha decía `+1 ❤` y había
+     que saber que ese corazón es el aguante. Ahora lo dice: +1 AGUANTE, +1 RACHA.
+     El nombre del medidor sale de acá y no de `I.efecto`, que es el renglón
+     comprimido que usa la barra de ítems, donde no entra la palabra. */
+  const Q = MEDIDOR[k];
 
   const f = nuevaFicha();
   f.innerHTML =
-    '<div class="if-fila">' +
-      '<span class="if-art' + (foto ? '' : ' sin-foto') + '">' +
-        (foto ? '<img src="' + foto + '" alt="">' : '') +
-        '<span class="if-ico">' + icoItem(k) + '</span>' +
-      '</span>' +
-      '<div class="if-txt">' +
-        '<div class="if-nm">' + I.nm +
-          '<span class="if-ef">' + I.efecto + '</span></div>' +
-        (paso ? '<div class="if-paso tono-' + I.tono + '">' +
-          '<b>' + paso[0] + '</b><span class="fl">→</span>' +
-          '<b class="hay">' + paso[1] + '</b></div>' : '') +
-        '<div class="if-desc">' + (porQueNo || I.desc) + '</div>' +
-      '</div>' +
+    '<div class="if-h">' + icoItem(k) + '<span class="if-nm">' + I.nm + '</span></div>' +
+    '<div class="if-q">' +
+      (Q.n ? '<span class="if-n tono-' + I.tono + '">' + Q.n + ' ' + Q.i + '</span>' : '') +
+      '<span class="if-med">' + Q.med + '</span>' +
+      (paso ? '<span class="if-paso"><b>' + paso[0] + '</b><i>→</i>' +
+        '<b class="hay">' + paso[1] + '</b></span>' : '') +
     '</div>' +
+    '<div class="if-desc">' + (porQueNo || I.desc + (Q.mas ? ' ' + Q.mas : '')) + '</div>' +
     '<div class="if-btns">' +
       /* Si el ítem no se puede usar, USAR no existe y ENTENDIDO queda solo:
          entonces es el único botón de la ficha y no hay nada que jerarquizar. */
@@ -11743,10 +11772,21 @@ function abrirFicha(k, btn){
   const r = btn.getBoundingClientRect();
   const barra = (document.querySelector('.item-list') || btn).getBoundingClientRect();
   f.style.setProperty('--fy', Math.round(barra.bottom + 8) + 'px');
-  f.style.setProperty('--fx', Math.round(r.left + r.width / 2 - 10) + 'px');
 
   btn.appendChild(f);
   btn.classList.add('abierto');
+
+  /* **La horizontal, después de medirla.** La ficha tiene ancho propio, así que
+     centrarla en el ítem la sacaría de la pantalla en el primero y en el último
+     de los cuatro. Se la centra y después se la mete a la fuerza entre los dos
+     márgenes; el pico se recalcula contra la posición final para que siga
+     apuntando al ítem aunque la ficha se haya corrido. */
+  const MRG = 12;
+  const ancho = f.getBoundingClientRect().width;
+  const centro = r.left + r.width / 2;
+  const x = Math.max(MRG, Math.min(centro - ancho / 2, window.innerWidth - ancho - MRG));
+  f.style.setProperty('--fl', Math.round(x) + 'px');
+  f.style.setProperty('--fx', Math.round(centro - x) + 'px');
 
   /* **Que no se salga por abajo.** `--fy` la cuelga del pie de la barra de
      ítems, que está bien mientras entre; con la ficha más alta —la banda de
@@ -11764,6 +11804,32 @@ function abrirFicha(k, btn){
     if(fy + alto + 14 > hueco)
       f.style.setProperty('--fy', Math.max(10, hueco - alto - 14) + 'px');
   }
+
+  /* **Y lo mismo en escritorio y en el teléfono acostado.** Ahí la ficha no va
+     fija sino colgada del ítem, centrada en él con `top:50%`, y esa corrección
+     de arriba no la toca: el `--fy` sólo lo lee el bloque de mobile.
+
+     Medido acostado a 844 x 390, donde los cuatro ítems son una columna: la del
+     segundo se iba 39px por debajo del borde, la del tercero 165 y la del cuarto
+     256 —o sea, entera—. Pasaba desde antes de este rediseño.
+
+     Se mide una vez puesta y, si se sale, se la corre lo justo contra el borde
+     que la empuja. El `calc` conserva el centrado en el ítem como punto de
+     partida, así que cuando entra no se mueve nada. */
+  if(getComputedStyle(f).position === 'absolute'){
+    const MB = 12;
+    const rf = f.getBoundingClientRect();
+    let dy = 0;
+    if(rf.bottom > window.innerHeight - MB) dy = (window.innerHeight - MB) - rf.bottom;
+    if(rf.top + dy < MB) dy = MB - rf.top;
+    if(dy) f.style.top = 'calc(50% + ' + Math.round(dy) + 'px)';
+    /* Y si el ancho no entra a la derecha del ítem, se pasa al otro lado. */
+    if(rf.right > window.innerWidth - MB){
+      f.style.left = 'auto';
+      f.style.right = 'calc(100% + 10px)';
+    }
+  }
+
   mostrarFicha(f);
 
   const usar = f.querySelector('#ifUsar');

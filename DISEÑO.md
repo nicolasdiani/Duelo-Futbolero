@@ -12102,3 +12102,148 @@ gol, tocar la tarjeta **no** la cierra y tocar el velo sí.
 
 La última comprobación es con un toque de verdad del navegador —no un evento
 sintético— sobre GOL RIVAL en un teléfono de 375 × 812.
+
+## v227 · la ficha del ítem, mínima
+
+En el teléfono la ficha de un ítem medía **370 × 273** sobre una pantalla de
+390: iba de margen a margen y tapaba la mesa que estabas mirando justo para
+decidir si usarlo. Y usaba cuatro colores —el filo dorado de arriba, la chapa
+del paso, los dos botones dorados— para decir una sola cosa: cuánto sube un
+medidor.
+
+### Qué quedó
+
+Cuatro renglones, en el orden en que uno los pregunta:
+
+| | |
+|---|---|
+| **qué ítem es** | el ícono y el nombre |
+| **qué hace** | `+2 ❤ AGUANTE` — el número grande, el medidor **con todas las letras** |
+| **de cuánto a cuánto** | `3 ❤ → 4 ❤`, a la derecha del mismo renglón |
+| **por qué** | una línea de descripción |
+
+y abajo **USAR / VOLVER, uno abajo del otro**.
+
+El medidor escrito es lo que antes había que saberse. La ficha decía `+1 ❤` y
+vos tenías que acordarte de que ese corazón es el aguante y el rayo la racha.
+Ese renglón corto —`I.efecto`— existe porque en la barra de ítems no entra la
+palabra; en la ficha sí entra, y es justo donde hace falta. Sale de una tabla
+nueva, `MEDIDOR`, al lado de `ITEMS`.
+
+### Los botones, apilados
+
+En 284px de ancho, dos botones al lado dan 127 cada uno: alcanza para la
+palabra y no para el dedo. Apilados se llevan el ancho entero, con 38px de alto
+mínimo cada uno.
+
+### Se va la banda de foto
+
+Era lo que más alto costaba —96px— y era la foto del ítem, que no contesta
+ninguna de las cuatro preguntas de arriba. Con ella se fueron `.if-fila`,
+`.if-art`, `.if-ico`, `.if-txt` y `.if-ef` del bloque de la ficha; las reglas
+sueltas de `.if-fila` y `.if-art` se quedan porque el cartel de la posibilidad
+de gol comparte la caja con su propio marcado.
+
+### El ancho propio, y el margen
+
+La ficha iba de margen a margen por una razón vieja: vive **adentro del botón
+del ítem**, y heredaba sus 69px de ancho. Ponerla en `position:fixed` y
+estirarla de 10 a 10 era el remedio de entonces.
+
+Ahora tiene ancho propio —`min(284px, 100vw - 24px)`— y eso reabre el problema
+que el estirón tapaba: centrada en su ítem, la del primero y la del cuarto se
+salen de la pantalla. Así que el JS la mide **ya puesta** y la mete a la fuerza
+entre los dos márgenes:
+
+```js
+const x = Math.max(MRG, Math.min(centro - ancho / 2, window.innerWidth - ancho - MRG));
+f.style.setProperty('--fl', Math.round(x) + 'px');
+f.style.setProperty('--fx', Math.round(centro - x) + 'px');   // el pico, contra la posición final
+```
+
+`--fx` pasa a ser el centro del ítem **medido desde la ficha** y no desde el
+borde de la pantalla, así el pico sigue apuntando al ítem aunque la ficha se
+haya corrido.
+
+### Y lo mismo en escritorio y en el teléfono acostado
+
+Ahí la ficha no va fija sino colgada del ítem, con `top:50%`, y la corrección de
+arriba no la toca: `--fy` sólo lo lee el bloque de mobile.
+
+Acostado a 844 × 390 los cuatro ítems son una columna, y medido **antes de
+tocar nada** la ficha del segundo se iba 39px por debajo del borde, la del
+tercero 165 y la del cuarto 256 —o sea, entera—. Eso **ya pasaba en v226**:
+está comprobado sirviendo el `index.html` de v226 y midiéndolo igual, no
+deducido. Se arregla midiéndola una vez puesta y corriéndola contra el borde
+que la empuja, con `calc(50% + …)` para no perder el centrado cuando entra.
+
+### Medido
+
+Las dos versiones **en la misma pestaña** —cambiar de pestaña invalida la
+comparación, ver v223— en un teléfono de 390 × 844, con los cuatro ítems
+usables de verdad (aguante por debajo del máximo, racha en cero y una carta
+trabada), porque si no, tres de los cuatro muestran el cartel de «no se puede»
+y se mide otra cosa:
+
+| ítem | v226 | v227 | superficie |
+|---|---|---|---|
+| SUPLENTES | 370 × 272 | 284 × 262 | **−26%** |
+| GRITO DT | 370 × 273 | 284 × 266 | **−25%** |
+| SEGUNDO AIRE | 370 × 272 | 284 × 279 | **−21%** |
+| VAR | 370 × 272 | 284 × 269 | **−24%** |
+
+**El alto no es lo que baja.** En SEGUNDO AIRE sube, porque los botones pasaron
+a estar uno abajo del otro. Lo que baja es el ancho, 370 a 284, y con él la
+superficie. Vale decirlo porque la primera versión de este comentario decía
+«284 × 258, un 28% menos» —escrito de memoria antes de medir la ficha ya
+armada— y ninguno de los dos números era cierto.
+
+Y en ocho pantallas, abriendo los cuatro ítems en cada una y mirando margen,
+apilado, scroll interno y desborde. El margen es el **más chico de los cuatro**
+en cada pantalla, contra el borde que esté más cerca:
+
+| | ancho | margen al costado | margen abajo | se sale | scroll |
+|---|---|---|---|---|---|
+| 320 × 568 | 284 | 12 | 144 | no | no |
+| 360 × 640 | 284 | 12 | 216 | no | no |
+| 375 × 667 | 284 | 12 | 243 | no | no |
+| 390 × 844 | 284 | 12 | 405 | no | no |
+| 412 × 915 | 284 | 12 | 491 | no | no |
+| 768 × 1024 | 284 | 12 | 658 | no | no |
+| 1280 × 768 | 284 | 214 | 128 | no | no |
+| 844 × 390 acostado | 284 | 249 | **12** | no | no |
+
+En las cinco primeras el tope de 12 es el que trabaja: la ficha del primer ítem
+y la del cuarto llegan al margen y ahí se frenan. En las dos últimas la ficha
+cuelga del ítem en medio de la pantalla y de los costados le sobra todo; el que
+trabaja es el de abajo, y el 12 de `844 × 390` es exactamente la corrección
+nueva apoyándose contra el borde.
+
+### Dos cosas que aparecieron recién con la ficha armada
+
+Las dos estaban en la maqueta que se eligió, y ninguna se ve leyendo el código:
+hay que abrir los cuatro ítems y leer lo que dicen.
+
+**La frase partida del SEGUNDO AIRE.** `desc` ya termina en punto y el agregado
+se pegaba detrás en minúscula y con otro punto al final:
+
+> El equipo saca fuerzas de donde no hay. ~~y recuperás un máximo.~~
+
+Ahora el agregado es una oración entera —mayúscula y punto incluidos— y se pega
+sin tocarle nada: «El equipo saca fuerzas de donde no hay. También recuperás un
+máximo.»
+
+**El renglón doble de la VAR.** `DESTRABA UNA CARTA` mide 128px y el paso
+`TRABADA → JUGABLE` otros 128: no entran en los 256 que quedan, así que el
+renglón se partía en dos y la ficha crecía 15px. Y encima decían lo mismo dos
+veces. La palabra sola alcanza, porque el paso ya cuenta de qué a qué: la ficha
+pasó de **294 a 269**.
+
+### Una nota sobre el verde
+
+La ficha bajó de cuatro colores a uno, pero el botón USAR sigue verde lleno.
+No es un descuido ni una quinta tinta: es el mismo verde con el que se confirma
+en todo el juego, y es lo que el jugador viene a tocar. El comentario del
+código dice «el único color que **decora** es el número» por eso mismo —la
+primera versión decía «el color queda en un solo lugar», que mirando la
+pantalla es falso—.
