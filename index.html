@@ -4032,17 +4032,22 @@ body{padding-bottom:36px}
 .sit.mam .p-cinta.riv{background:rgba(74,10,22,.34);border-bottom-color:rgba(255,59,82,.26)}
 /* Con la cinta arriba, la foto ya no tiene que subirse al relleno. */
 .sit.mam .p-cinta + .mam-art{margin-top:0}
-.sit.mam .p-esc{
-  position:absolute;right:8px;bottom:8px;z-index:2;
-  display:flex;pointer-events:none;
-  padding:4px 5px;border-radius:10px;
-  background:rgba(22,44,86,.5);
-  backdrop-filter:blur(5px) saturate(1.3);
-  -webkit-backdrop-filter:blur(5px) saturate(1.3);
-  border:1px solid rgba(255,255,255,.34);
-  box-shadow:0 3px 10px rgba(0,0,0,.65);
-}
-.sit.mam .p-esc svg{height:34px;width:auto;display:block}
+/* ---- LOS ESCUDOS DEL CHOQUE ----
+   Uno en cada punta del renglón, del alto del recuadro del número, y el hueco
+   se ajusta porque los rótulos que estaban ahí ya no están. El renglón mide lo
+   mismo que antes.
+
+   **Acá vivía `.sit.mam .p-esc`**, el escudo sobre la foto. Se fue: con el del
+   renglón, el mismo escudo salía tres veces en un cartel de 600px. */
+.p-val.con-esc{gap:14px}
+.pv-esc{display:flex;flex:0 0 auto}
+.pv-esc svg{height:34px;width:auto;display:block}
+/* El VS deja el dorado. Con los escudos al lado, el dorado era **lo más
+   brillante del renglón** y se llevaba la mirada al separador en vez de a los
+   dos que se enfrentan. En gris hace lo que tiene que hacer: marcar el medio y
+   no competir. Va scopeado al mini juego; el cartel de la jugada, que todavía
+   lleva los rótulos, se queda con el suyo. */
+.sit.mam .p-vs{color:var(--dim)}
 .sit.mam .p-vnum{
   position:absolute;top:8px;right:8px;z-index:3;
   display:flex;align-items:center;justify-content:center;pointer-events:none;
@@ -5419,6 +5424,9 @@ body{padding-bottom:36px}
   .sit.mam .t{margin:9px 0 6px}
   .sit.mam .s{margin-top:8px}
   .sit.mam .duelo{max-width:410px;margin-left:auto;margin-right:auto}
+  /* Acá el número va a 34px y su recuadro mide 38 de alto: el escudo sube con él
+     para que el renglón no quede con una punta más chica que la otra. */
+  .pv-esc svg{height:40px}
   .sit.mam .palo{padding:18px 12px}
   .sit.mam .palo .pn{font-size:16px;letter-spacing:1px}
 
@@ -10113,7 +10121,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 222;
+const VERSION = 223;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12700,8 +12708,8 @@ function manoAMano(tipo, mio, val){
       '<div class="sit mam tono-' + (tipo === 'delantero' ? 'hot' : 'risk') + '">' +
         /* **La misma cabecera que el cartel de la jugada.** Sale de la misma
            función —`cintaDelClub`— así que dice de quién es la jugada y en qué
-           minuto pasa, igual que un toque antes. Y sobre la foto van las dos
-           chapas de allá: el escudo abajo y el valor de la carta arriba.
+           minuto pasa, igual que un toque antes, y sobre la foto va la chapa
+           del valor de la carta.
 
            Va en `manoAMano`, que es por donde pasan **los cuatro mini juegos**
            —la marca, el cruce, el uno contra uno y la salida—, así que los cuatro
@@ -12709,21 +12717,37 @@ function manoAMano(tipo, mio, val){
         cintaDelClub(tipo) +
         (artCarta(tipo)
           ? '<div class="mam-art"><img src="' + artCarta(tipo) + '" alt="">' +
-            (escudoDeLaJugada(tipo)
-              ? '<span class="p-esc">' + escudoDe(escudoDeLaJugada(tipo), 28) + '</span>' : '') +
             '<span class="p-vnum ' + (esAtk ? 'r' : 'b') + '">' + val + '</span>' +
             '</div>'
           : '') +
         '<div class="sit-tag">' + TYPES[tipo].nm + '</div>' +
-        /* El mismo renglón que el cartel de la jugada, armado con la misma
-           función: los dos números en su recuadro del color del eje y el VS
-           dorado en el medio. Acá los dos son iguales siempre, porque el mini
-           juego se abre justo cuando empatan. */
-        '<div class="p-val">' +
-          filaValor(esAtk ? 'atk' : 'def', val, 'VALOR', 'de la carta') +
+        /* **El choque, con los escudos de los dos clubes.**
+
+           Decía de quién era cada número **con palabras** —VALOR / de la carta y
+           ATAQUE / el tuyo—, en un juego que a los equipos los nombra con escudos
+           en todas las demás pantallas. Y el escudo del rival salía dos veces en
+           el mismo cartel —en la cinta y sobre la foto— mientras que el tuyo no
+           salía ninguna, aunque uno de los dos números es tuyo.
+
+           Ahora el renglón es `escudo · número · VS · número · escudo`, que es el
+           mismo orden con el que el juego cuenta un marcador. Los rótulos se van
+           y el escudo ocupa su hueco: medido, el renglón sigue midiendo 35px y el
+           cartel entero **no cambia de alto en ninguna pantalla**.
+
+           Lo que decían los rótulos y ahora no se escribe es **qué eje se mide**.
+           Lo dice el color del recuadro: rojo el ataque, azul la defensa, el mismo
+           código que la chapita de la carta y el panel de stats.
+
+           El escudo de la izquierda es el del club de la carta y el de la derecha
+           el tuyo; las cuatro cartas de mini juego son siempre del rival, así que
+           nunca son el mismo escudo. */
+        '<div class="p-val con-esc">' +
+          (escudoDeLaJugada(tipo)
+            ? '<span class="pv-esc">' + escudoDe(escudoDeLaJugada(tipo), 26) + '</span>' : '') +
+          '<span class="stat ' + (esAtk ? 'atk' : 'def') + '"><span class="n">' + val + '</span></span>' +
           '<span class="p-vs">VS</span>' +
-          filaValor(esAtk ? 'atk' : 'def', mio,
-                    esAtk ? 'ATAQUE' : 'DEFENSA', 'el tuyo') +
+          '<span class="stat ' + (esAtk ? 'atk' : 'def') + '"><span class="n">' + mio + '</span></span>' +
+          '<span class="pv-esc">' + miEscudo(26) + '</span>' +
         '</div>' +
         '<div class="t">' + M.tit + '</div>' +
         escenaDuelo(!M.adivinar) +

@@ -11814,3 +11814,74 @@ opacidad del primer cuadro. Lo que sí se puede comparar es que el pie del mini
 juego y el «TOCÁ PARA JUGARLA» del cartel anterior corren **la misma animación con
 los mismos parámetros**: `blink / 1.1s / steps(2, start) / infinite`, las dos en
 estado `running`.
+
+## v223 · el choque del mini juego se cuenta con escudos
+
+El renglón que enfrenta los dos números decía de quién era cada uno **con
+palabras** —VALOR / de la carta a la izquierda, ATAQUE / el tuyo a la derecha—,
+en un juego que a los equipos los nombra con escudos en todas las demás
+pantallas.
+
+Y había un desbalance: el escudo del rival aparecía **dos veces en el mismo
+cartel** —en la cinta de arriba y sobre la foto— mientras que **el tuyo no
+aparecía ninguna**, aunque uno de los dos números es tuyo.
+
+### Cómo queda
+
+    escudo del club de la carta · número · VS · número · escudo tuyo
+
+Los rótulos se van, el escudo de cada club ocupa su hueco y el que estaba sobre
+la foto se saca: con el del renglón, el mismo escudo salía **tres veces** en un
+cartel de 580px.
+
+Va en `manoAMano`, así que lo tienen **los cuatro mini juegos** sin repetir una
+línea.
+
+**El VS deja el dorado y pasa a gris** —`var(--dim)`, el mismo tono que el juego
+usa para lo secundario—. Con los escudos al lado, el dorado era lo más brillante
+del renglón y se llevaba la mirada al separador en vez de a los dos que se
+enfrentan. Va scopeado al mini juego: el cartel de la jugada, que todavía lleva
+los rótulos, se queda con el suyo.
+
+### Lo que se pierde
+
+La palabra **ATAQUE** o **DEFENSA**, que decía qué eje se está midiendo. Sigue
+dicho por el color del recuadro —rojo el ataque, azul la defensa—, que es el
+mismo código que usan la chapita de la carta y el panel de stats. Si alguna vez
+hace falta escribirlo, el lugar es debajo del VS, y ahí sí cuesta píxeles.
+
+### Verificado
+
+Los cuatro mini juegos, en el juego andando, con la v222 servida en la misma
+pestaña para que las dos midan en la misma escala. Los números son los del peor
+de los cuatro, que siempre es el del delantero:
+
+| pantalla | v222 | v223 |
+|---|---|---|
+| 320 × 568 | 487 | **487** |
+| 360 × 640 | 510 | **510** |
+| 390 × 844 | 579 | **579** |
+| 768 × 1024 | 660 | **660** |
+| 1280 × 768 | 632 | **632** |
+
+**Ni un píxel de diferencia en ninguna.** El renglón también mide lo mismo —34 en
+el teléfono, 38 en escritorio—: los escudos entran exactamente en el hueco que
+dejaron las dos columnas de texto.
+
+Los escudos van a 34px en el teléfono y 40 en escritorio, que es el alto del
+recuadro del número en cada uno. Las cuatro cartas de mini juego son **siempre
+del rival**, así que los dos escudos nunca son el mismo.
+
+El cartel de la jugada —el de un toque antes— se midió después del cambio y está
+igual: sus dos rótulos, su VS dorado y su escudo sobre la foto.
+
+### Una trampa de medición, anotada
+
+Las primeras mediciones daban **+24px** y eran falsas. Estaban tomadas en dos
+pestañas distintas del panel, y el panel **escala una pestaña y no la otra**
+cuando el viewport emulado no entra: `innerWidth` dice 390 en las dos, pero
+`devicePixelRatio` no, y todo el cartel sale un 4% más grande de un lado. La
+pista fue que crecían **todas** las piezas a la vez —cinta, foto, cancha,
+renglón, título—, que es lo que no puede pasar cuando se toca una sola.
+
+Medidas las dos versiones en la misma pestaña, la diferencia es cero.
