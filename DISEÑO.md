@@ -12043,3 +12043,62 @@ nuevo en cada carga. El alto de la foto depende de si el nombre entró en uno o 
 dos renglones, así que el número cambiaba con la carta que había tocado.
 
 Medido sobre las 16 a la vez, el rango aparece solo y con él la causa.
+
+## v226 · el cartel del gol vuelve a cerrarse tocándolo
+
+El cartel de GOL y GOL RIVAL dice **TOCÁ PARA SEGUIR** y no seguía: tocando la
+tarjeta no pasaba nada, y había que tocar **afuera** del cartel para avanzar.
+
+### Dónde estaba
+
+No en el cartel del gol. En `montarPop`, que es lo que monta todos los pop-ups.
+
+De un cartel al siguiente **la caja no se cambia: se reusa**. Es el mismo
+elemento del DOM, al que se le cambia la clase y se le reemplazan los hijos. Eso
+es a propósito —es lo que hace que el cambio sea a oscuras y no un salto—, pero
+tiene una consecuencia: **cualquier manejador que le haya puesto el cartel
+anterior viaja con ella**.
+
+Y dos carteles le ponen uno: la ficha de **la posibilidad de gol** y la del
+**ítem**, las dos con la misma línea:
+
+```js
+caja.onclick = (ev) => ev.stopPropagation();   // tocar la tarjeta no es tocar el velo
+```
+
+Después de abrir cualquiera de las dos, ese `stopPropagation` se quedaba pegado a
+la caja compartida. El cartel del gol escucha el toque **en el velo**
+—`esperarOClick`—, así que el toque moría en la caja y no llegaba nunca. Tocando
+afuera sí, porque ahí el velo es el destino directo.
+
+Eso es lo que lo hacía parecer un problema del cartel del gol y no de la caja.
+
+`montarPop` ya limpiaba el `onclick` **del velo**, dos líneas más arriba, por
+exactamente esta razón. Faltaba la otra mitad.
+
+### El arreglo
+
+```js
+if(caja){ caja.onclick = null; caja.style.cursor = ''; }
+```
+
+Una línea, al lado de la que ya limpiaba el velo. No toca ninguno de los dos
+carteles que sí quieren cortar la burbuja: ésos ponen su manejador **después** de
+montar, así que se lo siguen quedando mientras están en pantalla.
+
+### Verificado
+
+Reproducido primero y arreglado después, en el emulador de teléfono:
+
+| | antes | ahora |
+|---|---|---|
+| tocar la tarjeta de GOL | **no cerraba** | cierra |
+| tocar la tarjeta de GOL RIVAL | **no cerraba** | cierra |
+| tocar afuera | cerraba | cierra |
+| el manejador heredado en la caja | **presente** | no queda |
+
+Y los dos carteles que sí lo usan siguen igual: en la ficha de la posibilidad de
+gol, tocar la tarjeta **no** la cierra y tocar el velo sí.
+
+La última comprobación es con un toque de verdad del navegador —no un evento
+sintético— sobre GOL RIVAL en un teléfono de 375 × 812.

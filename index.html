@@ -9846,6 +9846,22 @@ function montarPop(wrap){
   vivo.onclick = null;
   vivo.style.cursor = '';
   vivo.style.pointerEvents = '';
+  /* **Y la caja también se limpia, no sólo el velo.**
+
+     La caja se reusa de un cartel al siguiente —es el mismo elemento, le cambia
+     la clase y el contenido— así que cualquier manejador que le haya puesto el
+     cartel anterior **viaja con ella**. Dos carteles le ponen uno: la ficha de
+     la posibilidad de gol y la del ítem, las dos con un `stopPropagation` para
+     que tocar la tarjeta no cuente como tocar el velo.
+
+     Ese `stopPropagation` heredado dejaba **al cartel del gol sin cerrarse al
+     tocarlo**: el toque moría en la caja y no llegaba al velo, que es donde
+     `esperarOClick` escucha. Tocando afuera funcionaba, que es lo que lo hacía
+     parecer un problema del cartel del gol y no de la caja.
+
+     El velo ya se limpiaba dos líneas más arriba por esta misma razón; faltaba
+     la otra mitad. */
+  if(caja){ caja.onclick = null; caja.style.cursor = ''; }
   /* **De un cartel al siguiente, el mismo cambio a oscuras que entre pantallas.**
      Antes la caja se estiraba hasta la medida del cartel nuevo mientras el viejo
      se disolvía por encima. Se veía bien, pero era el único gesto propio que
@@ -10174,7 +10190,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 225;
+const VERSION = 226;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
