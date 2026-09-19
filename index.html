@@ -7883,9 +7883,10 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .rm-cuerpo .copas{margin-top:10px}
 }
 
-/* ---- PASASTE DE RONDA ----
+/* ---- GANASTE DE RONDA ----
    Mismo molde que el remate del campeonato, en verde: es la tercera pantalla
-   de fin de partido y no había razón para que se leyera distinto. */
+   de fin de partido y no había razón para que se leyera distinto. Desde v220
+   también comparte el marcador con escudos, que es lo último que la separaba. */
 .card-remate.pasa .rm-banner{border-bottom-color:var(--green)}
 .card-remate.pasa .rm-banner .final-tit{font-size:clamp(34px,9vw,50px)}
 .final-tit.pasa{color:var(--green);text-shadow:0 0 30px rgba(61,220,107,.5)}
@@ -7969,7 +7970,6 @@ html.html-menu, html.html-menu body{overflow:hidden}
   border-top:1px solid rgba(147,174,222,.2);
   display:flex;align-items:baseline;justify-content:center;gap:6px;
 }
-.pd-caja.viene .pd-pie{border-top-color:rgba(245,200,66,.3)}
 .pd-caja.viene{border-color:var(--gold);background:rgba(245,200,66,.09)}
 .pd-lb{font-family:var(--txt);font-size:9px;letter-spacing:2px;color:var(--dim2);text-transform:uppercase}
 .pd-caja.viene .pd-lb{color:var(--gold)}
@@ -7980,7 +7980,28 @@ html.html-menu, html.html-menu body{overflow:hidden}
    puede estar al 85%. */
 .pd-nm{font-family:var(--txt);font-weight:600;font-size:11px;letter-spacing:.4px;
   color:var(--white);text-align:center;line-height:1.2;margin-top:1px}
-.pd-pen{font-family:var(--txt);font-size:9px;color:var(--gold);letter-spacing:.6px}
+/* Acá vivía `.pd-pen`, el «en penales» chiquito que colgaba del marcador de la
+   caja. Lo dice el marcador de verdad, con todas las letras: DEFINIDO EN LOS
+   PENALES. El hilo dorado del pie tampoco está: la caja acostada no tiene pie. */
+
+/* **Cuando queda una sola caja, va acostada.**
+   Arriba está el marcador del partido que se cerró, así que abajo queda una sola
+   caja: la del que viene. Puesta en columna como la otra desperdiciaba la mitad
+   del ancho y agregaba 100px de alto para decir tres cosas. Acostada, la etiqueta,
+   el escudo, el nombre y la ronda entran en un renglón de 61px.
+
+   El pie pierde su hilo y su relleno: era el separador entre el arriba y el abajo
+   de una caja en columna, y acá no hay arriba ni abajo. */
+.pr-dos.una{grid-template-columns:1fr}
+.pd-caja.ancha{
+  flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;
+  gap:10px;padding:9px 10px;
+}
+.pd-caja.ancha .pd-pie{width:auto;margin-top:0;padding:0;border-top:none}
+.pd-caja.ancha .pd-nm{margin-top:0}
+/* El escudo baja de los 58 de la caja en columna a 34: al lado del nombre y de
+   la ronda, en un renglón, es lo que lo deja a la altura del texto. */
+.card-remate .pd-caja.ancha .pd-esc .escudo{width:34px;height:41px}
 
 /* El cuadro en cinco tramos, en vez de cinco chips que se partían en dos
    renglones. Es el mismo lenguaje que el camino del remate. */
@@ -9956,7 +9977,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 219;
+const VERSION = 220;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -13887,11 +13908,23 @@ function matchWon(byPens){
     return;
   }
 
-  /* **Dos cajas: lo que cerraste y lo que se abre.** La pantalla decía
-     PASASTE DE RONDA, mostraba el cuadro y el marcador, y usaba 339 de los
-     768px que tenía. No decía **contra quién jugás ahora** —el dato que
-     decide el refuerzo que vas a elegir dos toques después— ni **con qué
-     llegás**, que también viaja entre partidos.
+  /* **Lo que cerraste, arriba; lo que se abre, abajo.**
+
+     La pantalla decía PASASTE y el resultado vivía chico adentro de una caja:
+     el escudo del rival, su nombre y un 1-1 debajo. **Tu escudo no aparecía en
+     ninguna parte** —era la única de las tres pantallas de fin de partido donde
+     no estaba—, así que el partido que acabás de ganar se leía como una ficha
+     del rival y no como un marcador.
+
+     Ahora arriba va el mismo `marcadorFinal` que usan ELIMINADO y CAMPEÓN: los
+     dos escudos a 42px, el número grande en el medio y DEFINIDO EN LOS PENALES
+     abajo cuando corresponde. Las tres pantallas de fin de partido dicen el
+     resultado igual.
+
+     Y el que viene **no se achica para hacerle lugar: crece**. Pasaba media fila
+     y ahora se queda con la fila entera, en horizontal —etiqueta, escudo, nombre
+     y ronda en un renglón—. Medido a 390: la tarjeta pasa de 472 a 499 de alto,
+     27px en una pantalla donde sobran 345.
 
      El escudo del que viene se sortea acá y se guarda: es el que va a estar
      en la cancha. */
@@ -13902,20 +13935,12 @@ function matchWon(byPens){
   G.escudoProx = eqProx ? escudoDeEquipo(eqProx) : escudoRivalNuevo(G.escudoRival);
 
   openCard(
-    '<div class="rm-banner"><div class="final-tit pasa">PASASTE</div>' +
+    '<div class="rm-banner"><div class="final-tit pasa">GANASTE</div>' +
       '<div class="rm-sub">de ' + R.name + ' a ' + Sig.name + '</div></div>' +
     '<div class="rm-cuerpo">' +
-      '<div class="pr-dos">' +
-        '<div class="pd-caja">' +
-          '<span class="pd-lb">GANASTE</span>' +
-          '<span class="pd-esc">' + escudoDe(G.escudoRival, 40) + '</span>' +
-          '<span class="pd-nm">' + R.rival + '</span>' +
-          '<span class="pd-pie">' +
-            '<b class="pd-m">' + G.gU + '-' + G.gC + '</b>' +
-            (byPens ? '<span class="pd-pen">en penales</span>' : '') +
-          '</span>' +
-        '</div>' +
-        '<div class="pd-caja viene">' +
+      marcadorFinal(R.rival, byPens) +
+      '<div class="pr-dos una">' +
+        '<div class="pd-caja viene ancha">' +
           '<span class="pd-lb">AHORA VA</span>' +
           '<span class="pd-esc">' + escudoDe(G.escudoProx, 40) + '</span>' +
           '<span class="pd-nm">' + Sig.rival + '</span>' +

@@ -11569,3 +11569,86 @@ que sirve—.
 A 375 el resto de la pantalla también da igual: la marquesina, el cartel, el
 `wrap` y el alto del documento dan los mismos cuatro números en las dos
 versiones.
+
+## v220 · pasar de ronda dice GANASTE y muestra el marcador
+
+La pantalla se llamaba **PASASTE** y era la única de las tres de fin de partido
+donde **tu escudo no aparecía en ninguna parte**.
+
+### Lo que pasaba
+
+El resultado existía, pero vivía chico adentro de una caja: el escudo del rival,
+su nombre y un `1-1` colgando de un hilo abajo. Leído así, el partido que
+acababas de ganar era una ficha del rival, no un marcador.
+
+En ELIMINADO y en CAMPEÓN el resultado es otra cosa: una fila de **escudo ·
+número · escudo** con los dos equipos nombrados, y DEFINIDO EN LOS PENALES abajo
+cuando corresponde. Es la misma función, `marcadorFinal`, que las dos comparten.
+
+### Qué se hizo
+
+**El título pasa a GANASTE** y arriba del cuerpo va ese mismo `marcadorFinal`,
+sin una línea nueva: los dos escudos a 42px, el número grande en el medio.
+
+La caja del partido ganado se va —el marcador la reemplaza— y la del rival que
+viene, que quedaba sola, **no se achica: crece**. Pasaba media fila y ahora se
+queda con la fila entera, **acostada**: etiqueta, escudo, nombre y ronda en un
+renglón de 61px. En columna habría desperdiciado la mitad del ancho y sumado
+100px de alto para decir tres cosas.
+
+La escalera de cinco rondas y la franja de corazón, racha y plata **se quedan
+donde estaban**. Son lo que venís a mirar antes de entrar al vestuario.
+
+### Lo que se descartó
+
+- **Copiar ELIMINADO entero** —cinta, marcador, EL CAMINO y dos chapas—. Es la
+  lectura más literal del pedido y por eso mismo la que más pierde: ELIMINADO es
+  el **final** de la corrida y esta pantalla es el **medio**. Se llevaba puestas
+  la escalera, la racha y la plata, y dejaba al próximo rival como texto en una
+  chapa sin escudo. Medido con INDEPENDIENTE adelante, esa chapa pasa a dos
+  renglones.
+- **Meter el marcador adentro de la caja**, dejando las dos donde estaban. Era la
+  más barata y la única que no crecía, pero los escudos entraban a 36px contra
+  los 42 del marcador de verdad y los dos nombres compartían un renglón de 11px:
+  con nombres largos se parte en dos líneas.
+
+### Verificado
+
+Medido con la v219 servida al lado de la v220, en el juego andando —no en una
+maqueta—, llegando a la pantalla por el camino de siempre y con las transiciones
+apagadas:
+
+| pantalla | v219 | v220 con penales | v220 sin penales |
+|---|---|---|---|
+| 390 × 844 | 472 | **499** | 481 |
+| 320 × 568 | 425 | **484** | — |
+| 768 × 1024 | 485 | **513** | — |
+| 1280 × 768 | 485 | **513** | — |
+| 844 × 390 | 362 · rueda | **362 · rueda** | 362 · rueda |
+
+Cuesta **27px** en un teléfono de 390, donde sobran 345, y **59** en uno de 320
+—ahí la caja acostada se parte en dos renglones y suma alto—. En ninguna de las
+cinco pantallas se recorta un texto, y **ninguna rueda que no rodara antes**: en
+844 × 390 el tope de alto es 362 y ahí no entra ninguna de las dos versiones, que
+es algo que ya pasaba.
+
+Probado además con los nombres más largos de la tabla —INDEPENDIENTE contra
+ESTUDIANTES, e INDEPENDIENTE como próximo rival—: a 390 la tarjeta queda en 515 y
+a 320 en 500, sin recortes y sin rodar.
+
+ELIMINADO y CAMPEÓN se midieron después del cambio y siguen igual: 561 y 605 a
+390, con su marcador y sin recortes.
+
+### Lo que se fue
+
+Con la caja del partido se van dos reglas que solo ella usaba: `.pd-pen` —el «en
+penales» chiquito, que ahora lo dice el marcador con todas las letras— y el hilo
+dorado del pie, porque la caja acostada no tiene pie.
+
+### Una cosa que queda como estaba
+
+A 320, con nombres de 13 letras, el marcador los parte **a mitad de palabra**
+—INDEPENDI / ENTE—. No es nuevo ni es de esta pantalla: es cómo se comporta
+`marcadorFinal` desde siempre, igual en ELIMINADO y en CAMPEÓN. Traerlo acá
+trajo también eso, que es justamente de lo que se trataba: que las tres digan el
+resultado igual.
