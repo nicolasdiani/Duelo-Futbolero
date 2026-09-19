@@ -11715,3 +11715,102 @@ título, y mientras está abierto el botón se esconde, que es lo que ya hacía.
 
 En escritorio y en teléfono acostado no cambia nada: ahí el relato no es un botón
 flotante sino el panel fijo de la columna, y el botón ya estaba apagado.
+
+## v222 · el mini juego abre con la misma cabecera que el cartel anterior
+
+Tocás una carta, se abre el cartel de la jugada con la foto del jugador, tocás
+otra vez y se abre el mini juego con **la misma foto recortada a una banda de
+piernas**. Dos pantallas seguidas, la misma imagen, dos encuadres distintos.
+
+### Por qué se veía distinta
+
+Es literalmente el mismo archivo: mide **248 × 164**, apaisado. El cartel de la
+jugada le da `max-height:190px` y a lo ancho de su pop-up eso alcanza para
+mostrarlo entero. El del mini juego le daba **118px fijos**, así que
+`object-fit:cover` se comía **el 45%** —arriba y abajo— y lo que quedaba era la
+franja del medio.
+
+Medido: la foto necesita **216px** de alto para entrar completa en los 326 de
+ancho que tiene el pop-up a 390. Tenía 118.
+
+### Qué se hizo
+
+**La foto, entera.** El tope pasa a `min(216px, 27vh)`: 216 es lo que la imagen
+necesita, y el `27vh` es el que la achica en las pantallas bajas, donde el cartel
+no tiene de dónde sacar el alto. El degradado del pie baja de 58 a 42%, que es el
+del cartel anterior.
+
+**La misma cabecera.** Arriba va `cintaDelClub` —escudo, nombre del club y
+minuto—, la misma función que usa el cartel de la jugada, y sobre la foto van sus
+dos chapas: el escudo abajo a la derecha y el valor de la carta arriba, con el
+mismo vidrio esmerilado y el mismo borde del color del eje. No se parecen: **son
+la misma pieza**.
+
+Va en `manoAMano`, que es por donde pasan **los cuatro mini juegos** —la marca,
+el cruce, el mano a mano y defender—, así que los cuatro lo tienen sin repetir
+una línea.
+
+**Aire entre los valores y el nombre del juego.** Pegados se leían como un bloque
+solo y son dos cosas distintas: cuánto vale la carta y a qué vas a jugar. El
+nombre baja 12px en el teléfono y 9 en escritorio.
+
+**El pie parpadea.** «TOCÁ UN LADO» lleva ahora la misma animación que el «TOCÁ
+PARA JUGARLA» del cartel anterior —`blink 1.1s steps(2,start)`, la misma
+declaración—: es la misma frase en las dos pantallas y ahora se comporta igual.
+Con movimiento reducido se apaga, como el resto.
+
+### Los tres enredos que aparecieron midiendo
+
+**La cinta no llegaba al borde derecho.** El `*{max-width:100%}` global le pone
+de techo el ancho del contenido, la caja queda sobredeterminada y el navegador
+**descarta el margen derecho** en silencio: la cinta se corría a la izquierda y no
+se estiraba. Es el mismo enredo que ya estaba anotado en `.play .p-cinta`. Se
+arregla con `max-width:none` y, además, con el ancho explícito
+—`width:calc(100% + 48px)`— para que si aparece la barra de scroll del cartel la
+cinta la siga y quede simétrica igual.
+
+**En escritorio no entraba.** El cartel ya estaba al límite de su `max-height` y
+la cinta lo pasaba: aparecía la barra de scroll, que se come 15px de ancho y
+volvía a torcer la cinta. Los huecos verticales ceden unos píxeles y **la cancha
+del duelo se topa en 410px** —de 249 de alto pasa a 228, un 8% que no se nota—. El
+cartel queda en 632 contra los 646 de antes: entra sin barra.
+
+**La pregunta más larga manda.** Los cuatro mini juegos preguntan distinto, y
+«¿PARA QUÉ LADO LO MARCÁS?» —la del delantero— se parte en dos renglones donde las
+otras tres entran en uno. Con el tope de 27vh el cartel entraba en tres de los
+cuatro y se pasaba 6px en ése. En los teléfonos parados de 640 para abajo la foto
+cede un poco más. El escalón lleva `orientation:portrait` a propósito: sin eso,
+acostado el 24vh daba 94px y la foto se recortaba un 66%.
+
+### Verificado
+
+Los cuatro mini juegos, en el juego andando, en siete pantallas:
+
+| pantalla | alto del cartel | sobra | recorte de la foto |
+|---|---|---|---|
+| 320 × 568 | 487 | 31 | 23% (antes 34%) |
+| 360 × 640 | 510 | 80 | 24% |
+| 375 × 667 | 543 | 74 | 15% |
+| 390 × 844 | 579 | 189 | **0%** (antes 45%) |
+| 412 × 915 | 593 | 246 | 6% |
+| 768 × 1024 | 660 | 288 | 17% |
+| 1280 × 768 | 632 | 60 | 54% |
+
+Los números son los del **peor** de los cuatro, que es siempre el del delantero.
+En ninguna se corta el cartel por arriba, en ninguna se rueda, la cinta llega a
+los dos bordes y el pie parpadea.
+
+En **844 × 390** —el teléfono acostado— el cartel se rueda, como ya se rodaba
+antes: 636px de contenido contra 620, en un hueco de 343. Ahí no entra ni con la
+cinta ni sin ella.
+
+El cartel de **situación de gol** comparte la clase de la foto y se midió también:
+gana la foto entera —de 34% de recorte a 14% en 320— y no cambia nada más. A 390
+mide 385 en un hueco de 768.
+
+El parpadeo se verificó por la declaración y no por el color: el panel **congela
+el reloj de las animaciones**, así que `getComputedStyle` devuelve siempre la
+opacidad del primer cuadro. Lo que sí se puede comparar es que el pie del mini
+juego y el «TOCÁ PARA JUGARLA» del cartel anterior corren **la misma animación con
+los mismos parámetros**: `blink / 1.1s / steps(2, start) / infinite`, las dos en
+estado `running`.

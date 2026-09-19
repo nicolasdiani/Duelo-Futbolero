@@ -3979,15 +3979,102 @@ body{padding-bottom:36px}
 .sit.resuelta .sit-ico{font-size:clamp(52px,12vw,72px);line-height:1;margin:4px 0}
 
 
-/* La ilustración de la carta, como cabecera. */
+/* ---- LA FOTO, ENTERA ----
+   Es **la misma imagen** que muestra el cartel de la jugada un toque antes, y
+   se veía distinta: el archivo mide 248 x 164 —apaisado— y acá tenía el alto
+   clavado en 118px, así que `object-fit:cover` le comía **el 45%** y lo que
+   quedaba era una banda a la altura de las piernas.
+
+   El tope pasa a `min(216px, 27vh)`: 216 es lo que la foto necesita para entrar
+   completa al ancho del pop-up, y el `27vh` es el que la achica en las pantallas
+   bajas, donde el cartel no tiene de dónde sacar el alto. Medido: a 390 x 844 se
+   ve entera; a 320 x 568 se recorta 14%, contra el 34% de antes.
+
+   El degradado del pie baja de 58 a 42%, que es el del cartel anterior. */
 .mam-art{
   position:relative;margin:-10px -14px 12px;border-radius:7px;overflow:hidden;
   border:1px solid var(--line);
 }
-.mam-art img{display:block;width:100%;height:auto;max-height:118px;object-fit:cover}
+.mam-art img{display:block;width:100%;height:auto;max-height:min(216px, 27vh);object-fit:cover}
 .mam-art::after{
-  content:'';position:absolute;inset:auto 0 0;height:58%;
+  content:'';position:absolute;inset:auto 0 0;height:42%;
   background:linear-gradient(180deg,transparent,rgba(0,8,31,.93));
+}
+
+/* ---- LA MISMA CABECERA QUE EL CARTEL ANTERIOR ----
+   La cinta del club, el escudo sobre la foto y la chapa del valor son **las
+   mismas piezas** de `.play`, con los mismos números. No se parecen: son la
+   misma carta vista dos veces, que es lo que son.
+
+   El `width` va explícito y no en `auto`: con `auto` el `*{max-width:100%}`
+   global le pone de techo el ancho del contenido, la caja queda sobredeterminada
+   y el navegador **descarta el margen derecho** en silencio —la cinta se corre a
+   la izquierda y no se estira—. Es el mismo enredo que ya está anotado en
+   `.play .p-cinta`, y acá además, si aparece la barra de scroll del cartel, el
+   ancho explícito la sigue y la cinta queda simétrica igual. */
+.sit.mam .p-cinta{
+  display:flex;align-items:center;gap:9px;
+  margin:-22px -24px 14px;width:calc(100% + 48px);padding:8px 18px;
+  border-bottom:1px solid var(--line);background:rgba(0,0,0,.28);
+  max-width:none;font-family:var(--txt);font-weight:400;
+  text-transform:none;text-align:left;
+}
+.sit.mam .pc-esc{flex:0 0 auto;display:flex}
+.sit.mam .p-cinta b{
+  font-family:var(--tit);font-weight:800;font-size:16px;letter-spacing:1.4px;
+  color:var(--white);line-height:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.sit.mam .p-cinta i{
+  margin-left:auto;font-style:normal;font-family:var(--txt);font-weight:400;
+  font-size:11px;letter-spacing:2px;color:var(--dim2);white-space:nowrap;
+}
+.sit.mam .p-cinta.riv{background:rgba(74,10,22,.34);border-bottom-color:rgba(255,59,82,.26)}
+/* Con la cinta arriba, la foto ya no tiene que subirse al relleno. */
+.sit.mam .p-cinta + .mam-art{margin-top:0}
+.sit.mam .p-esc{
+  position:absolute;right:8px;bottom:8px;z-index:2;
+  display:flex;pointer-events:none;
+  padding:4px 5px;border-radius:10px;
+  background:rgba(22,44,86,.5);
+  backdrop-filter:blur(5px) saturate(1.3);
+  -webkit-backdrop-filter:blur(5px) saturate(1.3);
+  border:1px solid rgba(255,255,255,.34);
+  box-shadow:0 3px 10px rgba(0,0,0,.65);
+}
+.sit.mam .p-esc svg{height:34px;width:auto;display:block}
+.sit.mam .p-vnum{
+  position:absolute;top:8px;right:8px;z-index:3;
+  display:flex;align-items:center;justify-content:center;pointer-events:none;
+  min-width:40px;padding:3px 10px;border:2px solid;border-radius:8px;
+  font-family:var(--tit);font-weight:800;font-size:34px;line-height:1;
+  background:rgba(22,44,86,.5);
+  backdrop-filter:blur(5px) saturate(1.3);
+  -webkit-backdrop-filter:blur(5px) saturate(1.3);
+  box-shadow:0 3px 10px rgba(0,0,0,.65);
+}
+.sit.mam .p-vnum.r{border-color:var(--red);color:var(--red)}
+.sit.mam .p-vnum.b{border-color:var(--blue);color:var(--blue)}
+/* El nombre del mini juego se despega del renglón de los valores: pegados se
+   leían como un bloque solo, y son dos cosas distintas —cuánto vale la carta y
+   a qué vas a jugar—. */
+.sit.mam .t{margin-top:12px}
+
+/* **La pantalla baja manda, y la manda la pregunta más larga.** Los cuatro mini
+   juegos preguntan distinto, y «¿PARA QUÉ LADO LO MARCÁS?» —la del delantero—
+   se parte en dos renglones donde las otras tres entran en uno: catorce píxeles
+   que solo aparecen en ese. Con el tope de 27vh el cartel entraba en tres de los
+   cuatro y se pasaba 6px en el del delantero.
+
+   Así que en los teléfonos parados de 640 para abajo la foto cede un poco más.
+   Va atada al **alto** y no al ancho, que es de donde viene el problema, y lleva
+    porque acostado el cartel tiene su propia regla: sin eso,
+   en 844 x 390 el 24vh daba 94px y la foto se recortaba un 66%.
+
+   Y solo alcanza a la foto que tiene cinta arriba: el cartel de la situación de
+   gol comparte la clase y no comparte el apretón. */
+@media (max-height:640px) and (orientation:portrait){
+  .sit.mam .p-cinta + .mam-art img{max-height:min(216px, 24vh)}
 }
 
 /* Los botones, como las opciones del menú. */
@@ -5320,6 +5407,18 @@ body{padding-bottom:36px}
   .sit.mam .s, .sit.penal .s{font-size:14px;letter-spacing:3px;margin-top:14px}
   .mam-art{margin:-12px -16px 16px}
   .mam-art img{max-height:clamp(150px, 19vh, 250px)}
+  /* Acá el cartel ya estaba al límite de su `max-height` y la cinta lo pasaba:
+     aparecía la barra de scroll, que se come 15px del ancho y **dejaba la cinta
+     corrida a la derecha**. Los huecos verticales ceden y la cancha del duelo se
+     topa en 410px —de 249 de alto pasa a 228, un 8% que no se nota—, y con eso
+     el cartel queda en 626 contra los 646 de antes: entra sin barra. */
+  .sit.mam{padding:20px 36px 16px}
+  .sit.mam .p-cinta{margin:-20px -36px 10px;width:calc(100% + 72px);padding:7px 24px}
+  .sit.mam .sit-tag{margin-bottom:8px}
+  .sit.mam .p-cinta + .mam-art{margin-bottom:8px}
+  .sit.mam .t{margin:9px 0 6px}
+  .sit.mam .s{margin-top:8px}
+  .sit.mam .duelo{max-width:410px;margin-left:auto;margin-right:auto}
   .sit.mam .palo{padding:18px 12px}
   .sit.mam .palo .pn{font-size:16px;letter-spacing:1px}
 
@@ -6834,9 +6933,12 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   100%{opacity:0;transform:scale(1.7)}
 }
 
+/* **Parpadea como el TOCÁ PARA JUGARLA del cartel anterior.** Misma animación,
+   mismo ritmo: es la misma frase —«esto se toca»— en las dos pantallas. */
 .dl-hint{
   font-family:var(--txt);font-weight:600;font-size:10px;letter-spacing:2px;
   text-transform:uppercase;color:var(--dim2);margin-top:4px;
+  animation:blink 1.1s steps(2,start) infinite;
 }
 
 /* ---- LA PREGUNTA, MÁS GRANDE ----
@@ -6856,9 +6958,19 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 @media (max-width:440px){
   .sit.mam .s{font-size:12.5px;letter-spacing:2px;margin-top:10px}
   .dl-hint{font-size:9px;letter-spacing:1.6px}
+  /* Con la cinta arriba el cartel crece ~50px y en un teléfono de 568 de alto
+     no entra: se salía 36px por arriba y la cinta quedaba cortada. Los huecos
+     ceden un par de píxeles cada uno —relleno de abajo, cinta, foto, rótulo— y
+     vuelve a entrar con 28 de sobra. Medido a 320 x 568. */
+  .sit.mam{padding-bottom:10px}
+  .sit.mam .p-cinta{padding:6px 14px;margin-bottom:10px}
+  .sit.mam .p-cinta b{font-size:14px}
+  .sit.mam .p-cinta + .mam-art{margin-bottom:8px}
+  .sit.mam .sit-tag{margin-bottom:8px}
+  .sit.mam .t{margin-top:8px}
 }
 @media (prefers-reduced-motion:reduce){
-  .dl-z,.dl-fig.vaiven,.dl-fig.vaiven2{animation:none}
+  .dl-z,.dl-fig.vaiven,.dl-fig.vaiven2,.dl-hint{animation:none}
   .dl-z{stroke-opacity:.8;fill-opacity:.12}
 }
 
@@ -10001,7 +10113,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 221;
+const VERSION = 222;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12586,7 +12698,22 @@ function manoAMano(tipo, mio, val){
          arquero, naranja el cruce del delantero, dorado los otros dos. Así el
          cartel que leíste en la mesa y el que se abre son la misma cosa. */
       '<div class="sit mam tono-' + (tipo === 'delantero' ? 'hot' : 'risk') + '">' +
-        (artCarta(tipo) ? '<div class="mam-art"><img src="' + artCarta(tipo) + '" alt=""></div>' : '') +
+        /* **La misma cabecera que el cartel de la jugada.** Sale de la misma
+           función —`cintaDelClub`— así que dice de quién es la jugada y en qué
+           minuto pasa, igual que un toque antes. Y sobre la foto van las dos
+           chapas de allá: el escudo abajo y el valor de la carta arriba.
+
+           Va en `manoAMano`, que es por donde pasan **los cuatro mini juegos**
+           —la marca, el cruce, el uno contra uno y la salida—, así que los cuatro
+           lo tienen sin repetir una línea. */
+        cintaDelClub(tipo) +
+        (artCarta(tipo)
+          ? '<div class="mam-art"><img src="' + artCarta(tipo) + '" alt="">' +
+            (escudoDeLaJugada(tipo)
+              ? '<span class="p-esc">' + escudoDe(escudoDeLaJugada(tipo), 28) + '</span>' : '') +
+            '<span class="p-vnum ' + (esAtk ? 'r' : 'b') + '">' + val + '</span>' +
+            '</div>'
+          : '') +
         '<div class="sit-tag">' + TYPES[tipo].nm + '</div>' +
         /* El mismo renglón que el cartel de la jugada, armado con la misma
            función: los dos números en su recuadro del color del eje y el VS
