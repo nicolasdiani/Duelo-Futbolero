@@ -12486,3 +12486,72 @@ de 1,9s está separado del barrido de 1,8 del cartel.
 
 Sin tocar: el reposo del latido, el reemplazo de movimiento reducido, y el
 cartel entero.
+
+## v231 · el escudo y el número del plantel, en escritorio
+
+Los dos venían del teléfono sin crecer nunca. En una pantalla de 1440 el escudo
+del marcador medía **26 × 31** al lado de un «0 - 0» de 44px, y el número del
+plantel **30 × 36** dentro de un panel de 215 de ancho: los dos se leían como si
+todavía estuvieran peleando por los 390px de un teléfono.
+
+### Los dos al mismo alto
+
+```css
+@media (min-width:1025px) and (min-height:600px){
+  .mq-esc .escudo{width:37.5px;height:45px}
+  #panelPlantel .stat .n{font-size:44px;min-width:38px}
+}
+```
+
+| | antes | ahora |
+|---|---|---|
+| el escudo del marcador | 26 × 31 | **38 × 45** |
+| el número del plantel | 30 × 36 | **38 × 45** |
+
+La misma caja, exacta. No están nunca uno al lado del otro —el escudo vive en la
+marquesina y el número en el panel de la derecha— pero son las dos cifras duras
+del HUD de escritorio, y que midan lo mismo es lo que las hace leerse como una
+familia en vez de dos tamaños sueltos.
+
+El escudo va **37.5 y no un número redondo**: el `viewBox` es `0 0 100 120`, así
+que 45 de alto son exactamente 37.5 de ancho. Con 38 la silueta se achata.
+Redondeando, mide 38 en pantalla, que es de dónde sale el `min-width:38px` del
+número: se eligió **para igualar al escudo**, no al revés.
+
+### La condición es propia, y por qué
+
+El bloque de escritorio que ya existía es
+`(min-width:1025px), (min-width:821px) and (orientation:landscape)`, y por la
+segunda rama **se come también al teléfono acostado**: 844 × 390 entra ahí. Con
+45px de escudo, eso es media marquesina en un teléfono.
+
+Así que esto va en su propio bloque, `(min-width:1025px) and (min-height:600px)`,
+al final de la hoja. Entra un portátil de 1280 × 720 y no entra ningún teléfono,
+ni parado ni acostado.
+
+### La explicación del stat pasa a tres renglones, y no cuesta nada
+
+Con el número más ancho, «vs. defensores y arqueros» ya no entra en un renglón y
+ATAQUE queda en tres mientras DEFENSA sigue en dos. Probado a 34, 36, 38 y 42 de
+ancho de chip, y con el `gap` y el relleno recortados: **se parte en todos**. El
+umbral está entre 116 y 121px de texto, y el chip original dejaba 121.
+
+No importa: **las dos cajas del plantel miden 68 en todos los casos**, porque el
+alto lo manda el número de 45 y no el texto. El renglón de más cae en espacio que
+ya estaba vacío.
+
+### Medido
+
+| | escudo | número | ¿misma caja? |
+|---|---|---|---|
+| 1280 × 800 | 38 × 45 | 38 × 45 | sí |
+| 1440 × 900 | 38 × 45 | 38 × 45 | sí |
+| 1920 × 1080 | 38 × 45 | 38 × 45 | sí |
+| 390 × 844 | 17 × 17 | 31 × 20 | **sin tocar** |
+| 844 × 390 acostado | 26 × 31 | 30 × 36 | **sin tocar** |
+
+En los tres de escritorio: el escudo entra entero en la marquesina, las dos
+cajas del plantel miden igual, ningún nombre de club se corta y la página no
+scrollea de costado. Y los dos tamaños de teléfono devuelven exactamente los
+valores de antes del cambio, que es la comprobación de que el bloque nuevo no
+los alcanza.

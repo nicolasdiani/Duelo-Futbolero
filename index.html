@@ -8605,6 +8605,29 @@ html.html-menu, html.html-menu body{overflow:hidden}
 @media (max-width:820px) and (max-height:580px){
   .cell .c-out .efe{display:none}
 }
+
+/* ---------- EL ESCUDO Y EL NÚMERO DEL PLANTEL, EN ESCRITORIO ----------
+   Los dos venían del teléfono sin crecer. En una pantalla de 1440 el escudo
+   del marcador medía **26 x 31** al lado de un «0 - 0» de 44px, y el número
+   del plantel **30 x 36** dentro de un panel de 215 de ancho: los dos se leían
+   como si todavía estuvieran peleando por los 390px de un teléfono.
+
+   **Los dos al mismo alto, 45px.** No están nunca uno al lado del otro —el
+   escudo vive en la marquesina y el número en el panel de la derecha— pero son
+   las dos cifras duras del HUD de escritorio, y que midan lo mismo es lo que
+   las hace leerse como una sola familia en vez de dos tamaños sueltos.
+
+   El escudo va **37.5 x 45** y no un redondo: el `viewBox` es `0 0 100 120`,
+   así que 45 de alto son exactamente 37.5 de ancho. Con un ancho entero la
+   silueta se achata.
+
+   La condición es propia y no la del bloque de escritorio de más arriba
+   —`(min-width:1025px), (min-width:821px) and (orientation:landscape)`—
+   porque ésa incluye el teléfono acostado por la segunda rama. */
+@media (min-width:1025px) and (min-height:600px){
+  .mq-esc .escudo{width:37.5px;height:45px}
+  #panelPlantel .stat .n{font-size:44px;min-width:38px}
+}
 </style>
 </head>
 <body>
@@ -10337,7 +10360,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 230;
+const VERSION = 231;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
