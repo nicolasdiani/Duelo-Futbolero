@@ -329,13 +329,20 @@ img{height:auto}
    antes que el brillo— le ganaban la mirada al cartel, que es el que decide el
    partido.
 
-   Ahora el pico es **10px al 22%**, por debajo del halo quieto del cartel, y el
-   anillo ya no engorda: se queda en 1px y sólo cambia de opacidad. El ciclo
-   pasa de 1,5 a 1,9s para que además lata más lento que el barrido del cartel,
-   que va en 1,8. */
+   Ahora el pico es **10px al 30%** y el anillo ya no engorda: se queda en 1px y
+   sólo cambia de opacidad. El ciclo pasa de 1,5 a 1,9s para que además lata más
+   lento que el barrido del cartel, que va en 1,8.
+
+   **El 30 no es «por debajo del cartel» en opacidad, y está bien así.** El
+   primer intento fue 22%, elegido para quedar por debajo del 28% del cartel
+   también en ese número; mirado en el teléfono quedaba apagado de más y la
+   columna dejaba de leerse como disponible. Contra los `0 0 18px 1px` del
+   cartel, estos `0 0 10px` al 30% son **apenas más opacos en el filo pero con
+   poco más de la mitad del radio y sin expansión**: reparten bastante menos
+   luz, que es lo que define cuál de los dos te lleva el ojo. */
 @keyframes titilarsuave{
   0%,100%{box-shadow:0 0 0 1px rgba(245,200,66,.30)}
-  50%    {box-shadow:0 0 0 1px rgba(245,200,66,.55), 0 0 10px rgba(245,200,66,.22)}
+  50%    {box-shadow:0 0 0 1px rgba(245,200,66,.55), 0 0 10px rgba(245,200,66,.30)}
 }
 
 /* La fila **ensaya el gesto**: asoma hacia la mesa y vuelve, que es
@@ -10330,7 +10337,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 229;
+const VERSION = 230;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

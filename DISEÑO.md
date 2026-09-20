@@ -12451,3 +12451,38 @@ navegador **congela el reloj**, así que el pico se compara contra el
 | halo del cartel | 18px al 28% | **sin tocar** |
 | barrido del cartel | 1,8s | **sin tocar** |
 | `titilarBorde` en el archivo | 3 menciones | ninguna |
+
+## v230 · el pico de las columnas, de 22 a 30%
+
+Un solo número, corregido mirándolo andar en el teléfono.
+
+El 22% de v229 se eligió para que el pico de la columna quedara por debajo del
+28% del cartel **también en opacidad**, no sólo en radio. Visto en movimiento
+quedaba apagado de más: la columna dejaba de leerse como disponible, que es
+justo lo que el resaltado tiene que decir.
+
+```css
+50% {box-shadow:0 0 0 1px rgba(245,200,66,.55), 0 0 10px rgba(245,200,66,.30)}
+```
+
+### Por qué 30 sigue estando bien
+
+Ahora el pico es **más opaco en el filo** que el halo del cartel —30 contra 28—
+y eso podría sonar a que volvimos al problema. No es lo mismo:
+
+| | radio | opacidad | expansión |
+|---|---|---|---|
+| el cartel | **18px** | 28% | 1px |
+| las columnas, antes de v229 | 30px | **75%** | hasta 2,5px |
+| las columnas, ahora | 10px | 30% | ninguna |
+
+Con **poco más de la mitad del radio y sin expansión**, la columna reparte
+bastante menos luz aunque arranque con un punto más de opacidad en el borde. Lo
+que define cuál te lleva el ojo es cuánta luz hay, no cuán fuerte empieza.
+
+Y lo demás de v229 sigue igual, que es de donde sale la mayor parte de la
+diferencia: el anillo no engorda —la columna ya no cambia de grosor— y el ciclo
+de 1,9s está separado del barrido de 1,8 del cartel.
+
+Sin tocar: el reposo del latido, el reemplazo de movimiento reducido, y el
+cartel entero.
