@@ -5922,6 +5922,9 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 .fx .fn{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 /* La pelota maciza y el decorado en línea: el ojo sigue a la pelota. */
 .fx .pe{fill:currentColor;stroke:none}
+/* El balon trae sus propios rellenos, asi que lo de arriba no lo pinta; lo
+   unico que necesita es despegarse del trazo que tiene detras. */
+.fx .pe-balon{filter:drop-shadow(0 1px 2px rgba(0,0,0,.55))}
 .fx .ten{opacity:.42}
 .fx .red{opacity:.28}
 /* Tres vueltas y recién ahí se congela: una sola pasaba demasiado rápido
@@ -6221,7 +6224,16 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
    Y lo que costó la jugada —el aguante que perdés, la racha que ganás— sale
    del renglón gris y pasa a su propia chapa: es el dato por el que mirás el
    cartel, y estaba escrito más chico que todo lo demás. */
-.gf.fallo .fi{font-size:58px;margin-bottom:6px}
+/* **Y con el balon de verdad adentro, el dibujo pasa de 58 a 76.** Con el
+   disco macizo del mismo color que el resto, crecer no pagaba: era una mancha
+   mas grande. El balon blanco con el pentagono y las costuras si tiene algo
+   que mirar adentro.
+
+   Este es el `font-size` que manda en el telefono: el de la declaracion de mas
+   arriba lo pisa esta, que viene despues en la hoja. Y abajo de 440 habia un
+   tercer valor, 50, que ademas iba al reves —mas chico en la pantalla mas
+   grande—; se fue, asi que ahora es un solo numero para toda la franja. */
+.gf.fallo .fi{font-size:76px;margin-bottom:6px}
 .sit.resuelta .sit-ico{font-size:clamp(66px,15vw,88px);margin:6px 0 2px}
 
 .ef-fin{
@@ -6278,7 +6290,6 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   .sit .sit-extra{font-size:20px;padding:6px 17px;margin-top:14px}
 }
 @media (max-width:440px){
-  .gf.fallo .fi{font-size:50px}
   .ef-fin{font-size:15px;padding:5px 12px;letter-spacing:1.6px}
   .sit .sit-extra{font-size:14.5px;padding:4px 11px}
 }
@@ -10360,7 +10371,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 231;
+const VERSION = 232;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -13871,27 +13882,27 @@ const GESTOS = {
       '<path class="fn" d="M34 9.5 36.5 7"/><path class="fn" d="M39 8V4.5"/>' +
       '<path class="fn" d="M43 11.5 45.5 9.5"/>' +
     '</g>' +
-    '<circle class="pe" cx="31.5" cy="16" r="5.4"/>',
+    pelotaSVG(31.5, 16, 5.4, 'pe pe-balon'),
 
   descuelgue:
     '<path class="fl gi" d="M13 40V25.5a3.2 3.2 0 0 1 6.4 0v-3.8a3.2 3.2 0 0 1 6.4 0"/>' +
     '<path class="fl gd" d="M35 40V25.5a3.2 3.2 0 0 0-6.4 0v-3.8a3.2 3.2 0 0 0-6.4 0"/>' +
-    '<circle class="pe" cx="24" cy="15" r="5.6"/>',
+    pelotaSVG(24, 15, 5.6, 'pe pe-balon'),
 
   palo:
     '<path class="fl po" d="M17 6v36"/>' +
     '<path class="fn ten" d="M17 42h9"/>' +
-    '<circle class="pe" cx="23.5" cy="24" r="5.4"/>',
+    pelotaSVG(23.5, 24, 5.4, 'pe pe-balon'),
 
   travesano:
     '<path class="fl br" d="M6 15h36"/>' +
     '<path class="fn ten" d="M8 15v6M40 15v6"/>' +
-    '<circle class="pe" cx="24" cy="22" r="5.4"/>',
+    pelotaSVG(24, 22, 5.4, 'pe pe-balon'),
 
   afuera:
     '<path class="fl" d="M6 42V22h36v20"/>' +
     '<path class="fn red" d="M6 32h36M15 22v20M24 22v20M33 22v20"/>' +
-    '<circle class="pe" cx="39" cy="13" r="5"/>',
+    pelotaSVG(39, 13, 5, 'pe pe-balon'),
 
   barrera:
     '<g class="mu ten">' +
@@ -13902,27 +13913,27 @@ const GESTOS = {
       '<circle class="fn" cx="35" cy="17" r="3.2"/>' +
       '<path class="fn" d="M30.5 41V27a4.6 4.6 0 0 1 9.2 0v14"/>' +
     '</g>' +
-    '<circle class="pe" cx="24" cy="32" r="5.2"/>',
+    pelotaSVG(24, 32, 5.2, 'pe pe-balon'),
 
   despeje:
     '<g class="bo">' +
       '<path class="fl" d="M8 15v14a4 4 0 0 0 4 4h11a3 3 0 0 0 0-6h-5a2.5 2.5 0 0 1-2.5-2.5V15"/>' +
     '</g>' +
-    '<circle class="pe" cx="41" cy="12" r="5"/>' +
+    pelotaSVG(41, 12, 5, 'pe pe-balon') +
     '<path class="fn ten" d="M6 41h34"/>',
 
   tarde:
     '<g class="bo">' +
       '<path class="fl" d="M6 20v10a4 4 0 0 0 4 4h11a3 3 0 0 0 0-6h-5a2.5 2.5 0 0 1-2.5-2.5V20"/>' +
     '</g>' +
-    '<circle class="pe" cx="40" cy="31" r="5"/>' +
+    pelotaSVG(40, 31, 5, 'pe pe-balon') +
     '<path class="fn ten" d="M4 41h40"/>',
 
   pegamal:
     '<g class="bo">' +
       '<path class="fl" d="M7 16v13a4 4 0 0 0 4 4h10a3 3 0 0 0 0-6h-4.5a2.5 2.5 0 0 1-2.5-2.5V16"/>' +
     '</g>' +
-    '<circle class="pe" cx="19" cy="34" r="5"/>' +
+    pelotaSVG(19, 34, 5, 'pe pe-balon') +
     '<path class="fn ten" d="M5 41h38"/>',
 
   cabezazo:
@@ -13931,7 +13942,7 @@ const GESTOS = {
       '<circle class="fl" cx="16" cy="24" r="6"/>' +
       '<path class="fl" d="M6 42v-4a10 10 0 0 1 20 0v4"/>' +
     '</g>' +
-    '<circle class="pe" cx="27" cy="21" r="5"/>',
+    pelotaSVG(27, 21, 5, 'pe pe-balon'),
 
   /* ---- Y LOS QUE USAN LOS OTROS CARTELES DE DESENLACE ----
      GAMBETA y QUITE son **los dos finales de cualquier uno contra uno**, y por
@@ -13944,7 +13955,7 @@ const GESTOS = {
     '<path class="fl" d="M6 40V20h36v20"/>' +
     '<path class="fn red" d="M6 30h36M15 20v20M24 20v20M33 20v20"/>' +
     '<path class="fn rd" d="M12 40q12 7 24 0"/>' +
-    '<circle class="pe" cx="24" cy="32" r="5.4"/>',
+    pelotaSVG(24, 32, 5.4, 'pe pe-balon'),
 
   gambeta:
     '<g class="fg">' +
@@ -13952,7 +13963,7 @@ const GESTOS = {
       '<path class="fn" d="M12 41V24.5a7 7 0 0 1 14 0V41"/>' +
     '</g>' +
     '<path class="fn ten" d="M4 43h40"/>' +
-    '<circle class="pe" cx="40" cy="15" r="5"/>',
+    pelotaSVG(40, 15, 5, 'pe pe-balon'),
 
   quite:
     '<g class="fg">' +
@@ -13963,7 +13974,7 @@ const GESTOS = {
       '<path class="fl" d="M6 19v11a4 4 0 0 0 4 4h9a3 3 0 0 0 0-6h-4a2.5 2.5 0 0 1-2.5-2.5V19"/>' +
     '</g>' +
     '<path class="fn ten" d="M4 43h40"/>' +
-    '<circle class="pe" cx="9" cy="37" r="5"/>',
+    pelotaSVG(9, 37, 5, 'pe pe-balon'),
 
   copa:
     '<g class="cp">' +

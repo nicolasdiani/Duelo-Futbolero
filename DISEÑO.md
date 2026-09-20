@@ -12555,3 +12555,78 @@ cajas del plantel miden igual, ningún nombre de club se corta y la página no
 scrollea de costado. Y los dos tamaños de teléfono devuelven exactamente los
 valores de antes del cambio, que es la comprobación de que el bloque nuevo no
 los alcanza.
+
+## v232 · el dibujo del desenlace lleva el balón de los mini juegos
+
+Los dieciséis dibujos que cierran una jugada tenían la pelota como **un disco
+macizo del mismo color que todo lo demás**: `fill:currentColor`. Siendo lo único
+que se mueve de verdad en la animación, se fundía con el arquero, el palo o la
+defensa que la frenan.
+
+Ahora usa **el balón que ya dibujan la cancha del mini juego y el arco del
+penal**: blanco, con el pentágono negro y las costuras.
+
+```js
+pelotaSVG(31.5, 16, 5.4, 'pe pe-balon')
+```
+
+`pelotaSVG` ya existía y recibe la clase, así que no hubo que dibujar nada
+nuevo. Y el balón entra con la clase **`pe`**, que es a la que están atadas
+todas las animaciones de la pelota: se mueve exactamente igual que el disco que
+reemplaza, sin tocar un solo `@keyframes`.
+
+### Trece, no dieciséis
+
+Tres dibujos quedan afuera y por dos motivos distintos:
+
+| | |
+|---|---|
+| `copa`, `seca` | no tienen pelota |
+| `cara` | **sí tiene un `<circle class="pe">`, y no es una pelota**: es la cara del disco de la moneda, r 8,5 y centrada |
+
+La primera versión de esto la cambiaba también y el sorteo salía con una pelota
+de fútbol adentro de la moneda. El reemplazo se hace por coordenadas y saltea
+esa exacta.
+
+### Y con algo que mirar adentro, el tamaño paga
+
+De **58 a 76px** en toda la franja del teléfono. Con el disco macizo, crecer no
+servía de mucho —era una mancha más grande—; el balón tiene detalle adentro.
+
+### Los tres tamaños que había, y cuál mandaba
+
+El dibujo tenía **tres** declaraciones de `font-size` compitiendo:
+
+| dónde | valor | ¿mandaba? |
+|---|---|---|
+| `.gf.fallo .fi` (arriba de la hoja) | 42px | no — la pisa la de abajo |
+| `.gf.fallo .fi` (más abajo) | **58px** | **sí**, en 441px y para arriba |
+| `@media (max-width:440px)` | 50px | sí, sólo abajo de 440 |
+| `@media` de escritorio | 80px | sí, en escritorio |
+
+Las dos del medio son la misma regla escrita dos veces con la misma
+especificidad: gana la que viene después. Así que el tamaño real en un teléfono
+de 390 era **58**, no los 42 de la primera declaración —que es la que uno
+encuentra buscando—.
+
+Y el 50 de abajo de 440 iba **al revés**: la pantalla más chica mostraba el
+dibujo más grande que la de 390. Se fue. Ahora es un solo número, 76, para toda
+la franja del teléfono, y escritorio se queda en 80 como estaba.
+
+### Medido
+
+| | dibujo | el cartel | ¿entra? |
+|---|---|---|---|
+| 320 × 568 | 76px | 269 × 215 | sí |
+| 390 × 844 | 76px | 336 × 215 | sí |
+| 844 × 390 acostado | 80px | 413 × 256 | sí |
+| 1440 × 900 | 80px | 470 × 266 | sí |
+
+En los cuatro: el cartel entra entero en pantalla, la frase no se corta y no
+rueda por dentro. El cartel sube de 198 a 215 de alto en el teléfono, que es lo
+que costaron los 18px de dibujo.
+
+Comprobado además que los trece salen con balón y con costuras, que la moneda
+conserva su disco, y que **ninguno de los dieciséis se quedó sin animación** —el
+reemplazo podría haber roto el enganche de los `@keyframes` a `.pe`, y no lo
+hizo—.
