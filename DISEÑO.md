@@ -12366,3 +12366,88 @@ decisión.
 Y el verde de la plata sigue siendo **el mismo verde del gol** a propósito:
 antes era un dorado que se confundía con el amarillo de la racha, y las dos
 cosas aparecen juntas en la misma línea.
+
+## v229 · las columnas laten por debajo del cartel de gol
+
+Las dos salidas de la racha se encienden casi juntas y competían por la misma
+mirada. La que ganaba era la equivocada.
+
+### Cuánto pesaba cada una
+
+| | halo | anillo | ¿se mueve? | ¿cuántos? |
+|---|---|---|---|---|
+| el cartel de gol | 18px al **28%** | 1px | lo cruza un barrido de 1,8s | uno |
+| las columnas | 30px al **75%** | de 1 a **2,5px** | **latían, 1,5s sin parar** | **cuatro** |
+
+Casi el triple de opacidad y casi el doble de radio, repetido en cuatro chapas,
+y encima moviéndose. El propio CSS del juego ya tenía escrito por qué eso gana:
+**el ojo detecta el movimiento antes que el brillo**. Sólo que estaba escrito
+como argumento para que las columnas *se vieran*, y terminó haciendo que le
+ganaran al cartel —que es el que decide el partido, y la columna la salida
+barata—.
+
+### Lo que cambia
+
+```css
+@keyframes titilarsuave{
+  0%,100%{box-shadow:0 0 0 1px rgba(245,200,66,.30)}
+  50%    {box-shadow:0 0 0 1px rgba(245,200,66,.55), 0 0 10px rgba(245,200,66,.22)}
+}
+```
+
+Tres cosas, y ninguna toca el cartel:
+
+1. **El pico baja a 10px al 22%**, por debajo del halo *quieto* del cartel.
+2. **El anillo deja de engordar.** Se queda en 1px y sólo cambia de opacidad, de
+   .30 a .55. Antes pasaba de 1 a 2,5px, que es un cambio de grosor y se lee
+   como movimiento aunque el color no cambie.
+3. **El ciclo pasa de 1,5 a 1,9s**, así late más lento que el barrido del
+   cartel, que va en 1,8. Dos ritmos parecidos compitiendo se leen como un solo
+   temblor; separados, el más rápido manda.
+
+Lo que **no** cambia: el borde y el texto siguen dorados y el fondo sigue siendo
+`--panel`. La columna se sigue leyendo como encendida, que es lo que hace falta
+en el tramo donde es la única salida disponible.
+
+### Ese tramo, que es la mitad del asunto
+
+Las dos no se encienden en el mismo momento: las columnas cuestan
+`COSTO_COLUMNA`, **3 rayos**, y el cartel necesita la racha **llena, 4**. Con la
+racha en 3 la fila de columnas es la única salida encendida y no tiene con quién
+competir; ahí el resaltado tiene que seguir alcanzando. Comprobado en los dos
+estados por separado y no sólo en el que molestaba.
+
+### `titilarBorde` se va
+
+Lo usaba una sola regla —la de las columnas— así que con el cambio quedó sin
+nadie y se borró. Con él se actualiza el vocabulario de animaciones que está
+documentado arriba de todo en el CSS, porque **le cambió la premisa**: decía que
+la racha llena y las columnas son «cinco cosas que aparecen juntas y no pueden
+competir entre ellas», tratadas con el mismo pulso. Ahora dice lo contrario para
+este par, y por qué: se encienden juntas y **no pueden pesar igual**.
+
+### El reemplazo quieto, también más bajo
+
+Con movimiento reducido las columnas se quedaban en `0 0 0 2px currentColor` —el
+anillo grueso en el color entero—, que es el fotograma del pico viejo. Quieto
+volvía a gritar más que el cartel, así que ahora se queda en el reposo del
+latido nuevo:
+
+```css
+.col-picks.lista .col-pick{box-shadow:0 0 0 1px rgba(245,200,66,.55)}
+```
+
+### Verificado
+
+Leyendo las declaraciones y no muestreando la animación en vuelo: el panel del
+navegador **congela el reloj**, así que el pico se compara contra el
+`@keyframes`, y para mirarlo se aplica como sombra estática.
+
+| | antes | ahora |
+|---|---|---|
+| animación de la columna | `titilarBorde` 1,5s | `titilarsuave` 1,9s |
+| pico de la columna | 30px al 75% | **10px al 22%** |
+| anillo | 1 → 2,5px | 1px fijo |
+| halo del cartel | 18px al 28% | **sin tocar** |
+| barrido del cartel | 1,8s | **sin tocar** |
+| `titilarBorde` en el archivo | 3 menciones | ninguna |

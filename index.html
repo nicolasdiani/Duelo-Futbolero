@@ -288,9 +288,14 @@ img{height:auto}
    perdían: el ojo detecta el movimiento antes que el brillo. Ahora hay dos
    intensidades, según cuánto tenga que gritar cada una:
 
-     · `titilar` / `titilarBorde` / `rachaviva` — un pulso parejo, con un
-       crecimiento chico. Es la racha llena y las columnas habilitadas: son
-       cinco cosas que aparecen juntas y no pueden competir entre ellas.
+     · `titilar` / `rachaviva` — un pulso parejo, con un crecimiento chico. Es
+       la racha llena en la franja de medidores.
+
+     · `titilarsuave` — **el mismo pulso, pero a media voz**. Es el de las
+       columnas, y está aparte justamente porque las columnas y el cartel de
+       posibilidad de gol se encienden juntos y no pueden pesar igual: el
+       cartel es el que decide el partido y las columnas son la salida barata.
+       Su pico queda **por debajo** del halo quieto del cartel.
 
      · `latido` — **dos golpes seguidos y una pausa**, como un pulso de verdad:
        el primero fuerte, el segundo más chico. Queda para el último corazón,
@@ -314,10 +319,23 @@ img{height:auto}
 
    El parpadeo no lo necesita: lo hace el anillo, que es `box-shadow` y no toca
    el layout. La columna se sigue resaltando y latiendo igual, con el texto
-   quieto. */
-@keyframes titilarBorde{
-  0%,100%{box-shadow:0 0 0 1px currentColor, 0 0 16px rgba(245,200,66,.25)}
-  50%    {box-shadow:0 0 0 2.5px currentColor, 0 0 30px rgba(245,200,66,.75)}
+   quieto.
+
+   **Y late por debajo del cartel.** Antes el pico era `0 0 30px` al 75% con el
+   anillo engordando de 1 a 2,5px, contra los `0 0 18px` al 28% **quietos** del
+   cartel de posibilidad de gol. Las columnas tenían casi el triple de opacidad
+   y casi el doble de radio, repetido en cuatro chapas, y encima se movían: por
+   el mismo motivo que está escrito más arriba —el ojo detecta el movimiento
+   antes que el brillo— le ganaban la mirada al cartel, que es el que decide el
+   partido.
+
+   Ahora el pico es **10px al 22%**, por debajo del halo quieto del cartel, y el
+   anillo ya no engorda: se queda en 1px y sólo cambia de opacidad. El ciclo
+   pasa de 1,5 a 1,9s para que además lata más lento que el barrido del cartel,
+   que va en 1,8. */
+@keyframes titilarsuave{
+  0%,100%{box-shadow:0 0 0 1px rgba(245,200,66,.30)}
+  50%    {box-shadow:0 0 0 1px rgba(245,200,66,.55), 0 0 10px rgba(245,200,66,.22)}
 }
 
 /* La fila **ensaya el gesto**: asoma hacia la mesa y vuelve, que es
@@ -382,7 +400,9 @@ img{height:auto}
   #m-racha.lista{box-shadow:0 0 14px 2px rgba(245,200,66,.35)}
   .gol-banner.lista{box-shadow:0 0 20px 3px rgba(61,220,107,.35)}
   .gol-banner.lista::after{display:none}
-  .col-picks.lista .col-pick{box-shadow:0 0 0 2px currentColor}
+  /* Al mismo volumen que el reposo del latido nuevo, no al del pico: quieto,
+     el anillo de 2px en el color entero volvía a gritar más que el cartel. */
+  .col-picks.lista .col-pick{box-shadow:0 0 0 1px rgba(245,200,66,.55)}
   /* Sin latido, pero la fila tiene que seguir diciendo que se toca: queda el
      anillo quieto, que es el fotograma del pico. */
   .row-pick:not(:disabled){box-shadow:0 0 0 1px rgba(255,255,255,.32)}
@@ -1274,7 +1294,7 @@ img{height:auto}
 /* Encendidas solo cuando la racha está llena */
 .col-picks.lista .col-pick{
   border-color:var(--gold);color:var(--gold);background:var(--panel);cursor:pointer;
-  animation:titilarBorde 1.5s ease-in-out infinite;
+  animation:titilarsuave 1.9s ease-in-out infinite;
 }
 /* al pasar por encima deja de latir: ya la estás mirando */
 .col-picks.lista .col-pick:hover,
@@ -10310,7 +10330,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 228;
+const VERSION = 229;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
