@@ -907,15 +907,83 @@ img{height:auto}
 @media (max-width:420px){ .aviso .a-ops{flex-direction:column} }
 
 /* ---------- RESALTADO DEL RECURSO QUE CAMBIÓ ---------- */
-.pulse-up,.pulse-down,.pulse-coin{animation:pulsehl .95s ease-out;border-radius:3px}
+/* Hacía **dos cosas fuertes a la vez**: una sombra de color a opacidad entera
+   con 5px de expansión —un rectángulo encendido alrededor de la celda, que no
+   tiene la forma de nada de lo que hay adentro— y un salto al **113%**, que en
+   la tira del teléfono es el ancho de media barra de aguante.
+
+   Ahora son dos tratos distintos según lo que el medidor pueda decir:
+
+     · los que se leen de un vistazo —aguante, racha, marcador, reloj— **saltan
+       y vuelven**, la mitad de tiempo y la mitad de salto que antes;
+     · **la plata sube el número que cambió**, que es el único de los cinco
+       donde el cuánto no se puede contar de un vistazo: las barras se cuentan,
+       los goles se leen, pero de €40M a €50M hay que acordarse del anterior. */
+.pulse-up,.pulse-down,.pulse-coin{border-radius:3px}
 .pulse-up{--hl:var(--green)}
 .pulse-down{--hl:var(--red)}
-.pulse-coin{--hl:var(--coin)}
-@keyframes pulsehl{
-  0%{box-shadow:0 0 0 0 var(--hl);transform:scale(1)}
-  18%{box-shadow:0 0 22px 5px var(--hl);transform:scale(1.13)}
-  55%{box-shadow:0 0 14px 2px var(--hl);transform:scale(1.03)}
-  100%{box-shadow:0 0 0 0 transparent;transform:scale(1)}
+/* La plata va en el verde del dinero cuando entra y en rojo cuando sale. El
+   `--hl2` es el mismo color al 15% escrito a mano: `color-mix` haría lo mismo
+   con una línea, pero no lo usa ningún otro lugar del juego y son dos casos. */
+.pulse-coin{--hl:var(--coin);--hl2:rgba(61,220,107,.15)}
+.pulse-coin.baja{--hl:var(--red);--hl2:rgba(255,59,82,.15)}
+
+/* ---- EL SALTO ----
+   `drop-shadow` y no `box-shadow`: la luz sigue el contorno de lo que hay
+   —el corazón, el rayo, el número— en vez de dibujar el rectángulo de la celda.
+   El rebote del final es lo que lo hace un salto y no un inflado. */
+.pulse-up,.pulse-down{animation:pulsesalto .46s cubic-bezier(.2,1.7,.4,1)}
+@keyframes pulsesalto{
+  0%{transform:scale(1);filter:none}
+  32%{transform:scale(1.07);filter:drop-shadow(0 0 6px var(--hl))}
+  100%{transform:scale(1);filter:none}
+}
+
+/* ---- LA PLATA: EL NÚMERO QUE CAMBIÓ ----
+   La celda se tiñe apenas —lo justo para saber cuál de las tres se movió— y el
+   trabajo de decir cuánto lo hace el número que sube. Sin salto: dos
+   movimientos encima del mismo dato es lo que tenía de más el resaltado viejo. */
+.pulse-coin{position:relative;animation:pulsetinte .8s ease-out}
+@keyframes pulsetinte{
+  0%,100%{background-color:transparent}
+  22%{background-color:var(--hl2)}
+}
+/* **Dónde cae el número.** Los dos layouts del panel tienen el hueco en
+   lugares distintos, así que el número va distinto en cada uno.
+
+   Apilado —escritorio y teléfono acostado—: la fila mide 164 de ancho y el
+   `€40M` ocupa 53 alineado a la izquierda, así que **sobran 111 a la derecha**
+   en la misma banda del valor. Ahí no pisa nada. Subiéndolo por encima de la
+   fila, que era lo primero, se metía 12px adentro de la de RACHA —que es justo
+   el otro medidor que se suele mover en la misma jugada—.
+
+   Medido a 1280 x 800: la fila va de 309 a 362, la de RACHA de 246 a 300 y el
+   valor de 332 a 355. */
+.pulse-delta{
+  position:absolute;right:6px;top:50%;z-index:6;
+  transform:translateY(-50%);
+  font-family:var(--tit);font-weight:800;font-size:15px;letter-spacing:.4px;
+  color:var(--hl);text-shadow:0 2px 9px rgba(0,4,16,.92),0 0 3px rgba(0,4,16,.9);
+  pointer-events:none;white-space:nowrap;
+  animation:pulsedelta 1s cubic-bezier(.2,.9,.3,1) forwards;
+}
+@keyframes pulsedelta{
+  0%{opacity:0;transform:translateY(calc(-50% + 7px)) scale(.85)}
+  24%{opacity:1;transform:translateY(calc(-50% - 1px)) scale(1)}
+  68%{opacity:1;transform:translateY(calc(-50% - 5px)) scale(1)}
+  100%{opacity:0;transform:translateY(calc(-50% - 11px)) scale(1)}
+}
+
+/* El resaltado viejo no estaba en ninguno de los diez bloques de movimiento
+   reducido: el salto al 113% le saltaba igual a quien había pedido que las
+   cosas no se muevan. Éste sí. Y como la clase se pone y se saca al segundo,
+   quieto sigue diciendo lo mismo: aparece, se queda, se va. */
+@media (prefers-reduced-motion:reduce){
+  .pulse-up,.pulse-down{animation:none;box-shadow:0 0 0 1px var(--hl);border-radius:4px}
+  .pulse-coin{animation:none;background-color:var(--hl2)}
+  /* Sin animación se queda en su transformación de base, que es la que lo
+     centra donde corresponda según el layout. */
+  .pulse-delta{animation:none;opacity:1}
 }
 
 /* la racha llena se queda marcada hasta que la gastes */
@@ -4726,6 +4794,28 @@ body{padding-bottom:36px}
   #m-aguante,#m-racha,#m-dinero{
     padding:0;border:none;background:none;
     display:flex;align-items:center;flex:0 0 auto;
+  }
+
+  /* **Y acá el número de la plata va arriba.** En la tira el presupuesto es
+     una chapa de 51 x 23 con el número adentro y nada de sobra a los costados:
+     medido a 390, quedan 7px hasta el plantel y 7 hasta la fila de ítems. El
+     único hueco es **arriba**, los 15px que van de la marquesina —que termina
+     en 66— a la chapa, que arranca en 81.
+
+     Entra en cuerpo 12: a 15 el número medía 23 de alto y le tapaba la mitad
+     al `€40M` que uno está tratando de leer, que es exactamente lo que este
+     resaltado viene a evitar. */
+  .pulse-delta{
+    right:auto;left:50%;top:auto;bottom:calc(100% + 1px);
+    font-size:12px;
+    transform:translate(-50%,0);
+    animation-name:pulsedeltatira;
+  }
+  @keyframes pulsedeltatira{
+    0%{opacity:0;transform:translate(-50%,6px) scale(.85)}
+    24%{opacity:1;transform:translate(-50%,0) scale(1)}
+    68%{opacity:1;transform:translate(-50%,-2px) scale(1)}
+    100%{opacity:0;transform:translate(-50%,-7px) scale(1)}
   }
 
   /* ---- LA AMARILLA ACUMULADA, SIN ROBARLE ALTO A LA MESA ----
@@ -10220,7 +10310,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 227;
+const VERSION = 228;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -13093,20 +13183,39 @@ function snapshot(){
 /* Resalta en el HUD lo que cambió con la jugada. Verde si te favoreció, rojo
    si te perjudicó — que el jugador no tenga que buscar el número en pantalla. */
 function pulseCambios(antes){
-  const marcar = (id, cls) => {
+  const marcar = (id, cls, delta) => {
     const el = $(id);
     if(!el) return;
-    el.classList.remove('pulse-up','pulse-down','pulse-coin');
+    el.classList.remove('pulse-up','pulse-down','pulse-coin','baja');
+    /* Si dos jugadas seguidas mueven la plata, el número de la anterior todavía
+       puede estar subiendo. Se va con ella, o quedan dos encimados. */
+    el.querySelectorAll('.pulse-delta').forEach(x => x.remove());
     void el.offsetWidth;            // reinicia la animación si vuelve a pulsar
     el.classList.add(cls);
-    setTimeout(() => el.classList.remove(cls), 1000);
+
+    /* El número que sube. Sólo lo lleva la plata: en los otros cuatro el cuánto
+       ya está a la vista —las barras se cuentan, los goles y el minuto se leen—
+       y repetirlo sería decir dos veces lo mismo. */
+    let n = null;
+    if(delta){
+      if(delta < 0) el.classList.add('baja');
+      n = document.createElement('span');
+      n.className = 'pulse-delta';
+      n.textContent = (delta > 0 ? '+' : '-') + plata(Math.abs(delta));
+      el.appendChild(n);
+    }
+
+    setTimeout(() => {
+      el.classList.remove(cls, 'baja');
+      if(n) n.remove();
+    }, 1000);
   };
 
   // ojo: fundirse RELLENA el aguante, así que el número sube. Eso no es algo
   // bueno — lo que manda es si se fundió, no si el número creció.
   if(G.fundidas > antes.fundidas)          marcar('m-aguante', 'pulse-down');
   else if(G.aguante !== antes.aguante)     marcar('m-aguante', G.aguante > antes.aguante ? 'pulse-up' : 'pulse-down');
-  if(G.dinero !== antes.dinero) marcar('m-dinero', 'pulse-coin');
+  if(G.dinero !== antes.dinero) marcar('m-dinero', 'pulse-coin', G.dinero - antes.dinero);
   if(G.racha !== antes.racha)   marcar('m-racha', G.racha > antes.racha ? 'pulse-up' : 'pulse-down');
   if(G.gU !== antes.gU)         marcar('m-score', 'pulse-up');
   if(G.gC !== antes.gC)         marcar('m-score', 'pulse-down');

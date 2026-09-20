@@ -12247,3 +12247,122 @@ en todo el juego, y es lo que el jugador viene a tocar. El comentario del
 código dice «el único color que **decora** es el número» por eso mismo —la
 primera versión decía «el color queda en un solo lugar», que mirando la
 pantalla es falso—.
+
+## v228 · el resaltado del HUD: el salto corto, y la plata con el número
+
+Cuando volvés al tablero después de una jugada, `pulseCambios()` compara una
+foto de antes con el estado nuevo y le pone una clase al recurso que se movió.
+El resaltado hacía **dos cosas fuertes a la vez**:
+
+```css
+18% { box-shadow: 0 0 22px 5px var(--hl); transform: scale(1.13) }
+```
+
+Una sombra de color **a opacidad entera y con 5px de expansión** —un rectángulo
+encendido alrededor de la celda, que no tiene la forma de nada de lo que hay
+adentro— y un salto al **113%**, que en la tira del teléfono es el ancho de
+media barra de aguante.
+
+### Dos tratos, según lo que el medidor pueda decir
+
+| | qué le pasa |
+|---|---|
+| aguante, racha, marcador, reloj | **saltan y vuelven**: la mitad de tiempo y la mitad de salto que antes |
+| la plata | **sube el número que cambió** |
+
+La división no es estética. En cuatro de los cinco el **cuánto** ya está a la
+vista: las barras de aguante y de racha se cuentan, el marcador y el minuto se
+leen. En la plata no: de €40M a €50M hay que acordarse del anterior. Es el único
+de los cinco donde poner el número agrega algo en vez de repetir lo que ya está.
+
+```css
+.pulse-up,.pulse-down{animation:pulsesalto .46s cubic-bezier(.2,1.7,.4,1)}
+@keyframes pulsesalto{
+  0%{transform:scale(1);filter:none}
+  32%{transform:scale(1.07);filter:drop-shadow(0 0 6px var(--hl))}
+  100%{transform:scale(1);filter:none}
+}
+```
+
+`drop-shadow` y no `box-shadow`: la luz **sigue el contorno** de lo que hay —el
+corazón, el rayo, el número— en vez de dibujar el rectángulo de la celda. El
+rebote del final es lo que lo hace un salto y no un inflado.
+
+La plata, en cambio, no salta: la celda se tiñe apenas —lo justo para saber cuál
+de las tres se movió— y el trabajo de decir cuánto lo hace el número. Dos
+movimientos encima del mismo dato es lo que tenía de más el resaltado viejo.
+
+El número va en el verde del dinero cuando entra y en **rojo cuando sale**, que
+es el caso del mercado. El `--hl2` es el mismo color al 15% escrito a mano:
+`color-mix` haría lo mismo con una línea, pero no lo usa ningún otro lugar del
+juego y son dos casos.
+
+### Dónde cae el número, que no es el mismo lugar en los dos layouts
+
+El primer intento fue el obvio —arriba de la celda, centrado, en cuerpo 15— y
+**medido no servía en ninguno de los dos**:
+
+| | qué pasaba |
+|---|---|
+| apilado (escritorio, teléfono acostado) | se metía **12px adentro de la fila de RACHA**, que es justo el otro medidor que se suele mover en la misma jugada |
+| la tira del teléfono | tapaba **7 de los 17px de alto** del `€40M`, o sea el número que uno está tratando de leer |
+
+El hueco está en lugares distintos, así que el número va distinto en cada uno.
+
+**Apilado.** La fila mide 164 de ancho y el `€40M` ocupa 53 alineado a la
+izquierda: sobran **111 a la derecha**, en la misma banda del valor. Ahí no pisa
+nada. Medido a 1280 × 800: la fila va de 309 a 362, la de RACHA de 246 a 300 y
+el valor de 332 a 355.
+
+**La tira.** El presupuesto es una chapa de 51 × 23 con el número adentro y nada
+de sobra a los costados: medido a 390, quedan 7px hasta el plantel y 7 hasta la
+fila de ítems. El único hueco es **arriba**, los 15px que van de la marquesina
+—que termina en 66— a la chapa, que arranca en 81. Entra en cuerpo 12.
+
+### Medido
+
+El número, en su punto más alto con opacidad entera, en los cuatro tamaños:
+
+| | el número | su celda | ¿tapa el valor? | ¿pisa otro medidor? |
+|---|---|---|---|---|
+| 320 × 568 | 190–221 × 60–79 | 181–229 × 81–104 | no | no |
+| 390 × 844 | 259–290 × 60–79 | 249–299 × 81–104 | no | no |
+| 844 × 390 | 758–796 × 307–330 | 613–802 × 297–350 | no | no |
+| 1280 × 800 | 1194–1232 × 319–342 | 1074–1238 × 309–362 | no | no |
+
+En los dos teléfonos el número se mete 6px en la marquesina. No tapa nada:
+comprobado con `elementFromPoint` sobre esa banda, lo único que hay ahí es el
+**relleno de abajo** de la marquesina —4px— y su contenido de ese lado termina
+en 50, catorce píxeles más arriba.
+
+El punto más alto no se puede muestrear en vuelo: el panel del navegador
+**congela el reloj de animación** y `getComputedStyle` devuelve el fotograma
+cero para siempre. Se mide aplicando el pico como transformación estática, que
+es lo mismo que dice el `@keyframes`.
+
+### Y ahora sí se apaga con movimiento reducido
+
+El resaltado viejo no estaba en ninguno de los diez bloques de
+`prefers-reduced-motion` del juego: el salto al 113% le saltaba igual a quien
+había pedido que las cosas no se muevan. Éste sí, y quieto sigue diciendo lo
+mismo, porque la clase se pone y se saca al segundo: aparece, se queda, se va.
+
+```css
+@media (prefers-reduced-motion:reduce){
+  .pulse-up,.pulse-down{animation:none;box-shadow:0 0 0 1px var(--hl);border-radius:4px}
+  .pulse-coin{animation:none;background-color:var(--hl2)}
+  .pulse-delta{animation:none;opacity:1}
+}
+```
+
+### Lo que no se tocó
+
+**El reloj se sigue poniendo rojo todas las jugadas.** No sale de
+`pulseCambios` sino de `finDeJugada`, que le pega `pulse-down` —el rojo de «te
+perjudicó»— cada vez que corren los 10 minutos. Es el resaltado más frecuente
+del juego y avisa de algo que pasa siempre. Queda anotado; cambiarlo es otra
+decisión.
+
+Y el verde de la plata sigue siendo **el mismo verde del gol** a propósito:
+antes era un dorado que se confundía con el amarillo de la racha, y las dos
+cosas aparecen juntas en la misma línea.
