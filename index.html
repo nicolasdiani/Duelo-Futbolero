@@ -7153,10 +7153,30 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   transition:transform .46s cubic-bezier(.3,1.1,.4,1);
   filter:drop-shadow(0 3px 7px rgba(0,0,0,.55));
 }
-.dl-fig.vaiven{animation:dlVaiven 1.9s ease-in-out infinite}
-.dl-fig.vaiven2{animation:dlVaiven2 1.9s ease-in-out infinite}
-@keyframes dlVaiven{0%,100%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
-@keyframes dlVaiven2{0%,100%{transform:translateX(5px)}50%{transform:translateX(-5px)}}
+/* **El que tiene la pelota se mueve más.** Las dos figuras se hamacaban igual
+   —±5px en 1,9s, una en contrafase de la otra— así que mirando la escena no
+   se sabía quién iba a resolver: había que leer dónde estaba la pelota.
+
+   Ahora el que la tiene se mueve **más rápido y más lejos, y se inclina al
+   desplazarse**; el otro apenas acompaña, como quien espera a ver para dónde
+   sale. La escena cuenta quién ataca antes de que la leas.
+
+   Cuál de los dos es el activo no está escrito acá sino en `escenaDuelo`, que
+   es quien sabe de quién es la pelota: con la tuya sos vos —arquero, defensor—
+   y con la de él es el rival —medio, delantero—. */
+.dl-fig.activo{animation:dlActivo 1.25s ease-in-out infinite}
+.dl-fig.espera{animation:dlEspera 2.4s ease-in-out infinite}
+@keyframes dlActivo{
+  0%,100%{transform:translateX(-7px) rotate(-2.5deg)}
+  50%    {transform:translateX(7px) rotate(2.5deg)}
+}
+@keyframes dlEspera{
+  0%,100%{transform:translateX(-2.5px)}
+  50%    {transform:translateX(2.5px)}
+}
+@media (prefers-reduced-motion:reduce){
+  .dl-fig.activo,.dl-fig.espera{animation:none}
+}
 
 .dl-pel{
   transition:transform .46s cubic-bezier(.25,.7,.4,1);
@@ -7270,6 +7290,25 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 @media (prefers-reduced-motion:reduce){
   .parco.tiembla{animation:none}
   .pp-flash.on{animation:none;opacity:.7}
+}
+
+/* **En el mano a mano el arquero sí se hamaca.** En el penal se quedó quieto
+   —v233— porque el amague del pateador ya anticipa el tiro. Acá no hay amague:
+   tocás un palo y sale, así que el movimiento del arquero es toda la vida que
+   tiene la escena mientras decidís. */
+.sit.mam .pp-arq.idle{animation:mamArq 1.9s ease-in-out infinite}
+@keyframes mamArq{
+  0%,100%{transform:translateX(-8px) rotate(-3deg)}
+  50%    {transform:translateX(8px) rotate(3deg)}
+}
+/* Y la pelota espera respirando, que es lo que la saca de parecer un dibujo. */
+.sit.mam .pp-pel{animation:mamPel 2.4s ease-in-out infinite}
+@keyframes mamPel{0%,100%{translate:0 0}50%{translate:0 -1.5px}}
+/* Sale de la espera en cuanto se dispara: el tiro lo mueve con `transform` y
+   la respiración usa `translate`, que es otra propiedad y no se pisan. */
+.sit.mam .parco{margin:10px 0 2px}
+@media (prefers-reduced-motion:reduce){
+  .sit.mam .pp-arq.idle,.sit.mam .pp-pel{animation:none}
 }
 
 .pp-arq.sacude{animation:ppSacude .4s ease-out .04s}
@@ -10441,7 +10480,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 234;
+const VERSION = 235;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12572,6 +12611,24 @@ function arcoPenalHTML(esc){
   '</svg>';
 }
 
+/* **El mismo arco, con dos palos.** El mano a mano del arquero pregunta «¿al
+   palo izquierdo o al derecho?» y se dibujaba como dos muñecos en una cancha:
+   el texto hablaba de un arco que no estaba. Acá reusa el arco del penal y lo
+   único que cambia son las zonas, que pasan de tres de 52 a **dos de 78** y
+   cubren el arco entero.
+
+   Los `data-z` son **0 y 2** y no 0 y 1: son los índices de `PENAL_Z`, así que
+   el arquero vuela a los dos palos de siempre y no al del medio. Eso deja que
+   la resolución use `animarPenal` sin traducir nada. */
+function arcoManoAMano(esc){
+  const tres = /<rect class="pp-zona" data-z="0"[\s\S]*?data-z="2"[^>]*\/>/;
+  const arco = arcoPenalHTML(esc);
+  if(!tres.test(arco)) throw new Error('el arco cambió de forma');
+  return arco.replace(tres,
+    '<rect class="pp-zona" data-z="0" x="22" y="14" width="78" height="90" rx="3"/>' +
+    '<rect class="pp-zona" data-z="2" x="100" y="14" width="78" height="90" rx="3" style="animation-delay:260ms"/>');
+}
+
 /* La animación del tiro, en tres tiempos: **el amague, el disparo y el golpe.**
 
    Antes eran dos y en el otro orden: salía el arquero y después la pelota. Se
@@ -12589,9 +12646,12 @@ async function animarPenal(wrap, mio, suyo){
   const svg = wrap.querySelector('.parco');
   if(!svg) return;
   const atajado = mio === suyo;
-  svg.querySelectorAll('.pp-zona').forEach((z, i) => {
+  /* Por `data-z` y no por posición: el mano a mano dibuja **dos** zonas con
+     los índices 0 y 2, así que la segunda está en la posición 1 y buscarla
+     por orden marcaba la equivocada. */
+  svg.querySelectorAll('.pp-zona').forEach(z => {
     z.classList.add('off');
-    if(i === mio) z.classList.add('sel');
+    if(+z.dataset.z === mio) z.classList.add('sel');
   });
   const arq = svg.querySelector('.pp-arq'), pel = svg.querySelector('.pp-pel');
   arq.classList.remove('idle');
@@ -13107,8 +13167,12 @@ function escenaDuelo(mia){
     '<path class="dl-cal" d="M8 118 H192"/>' +
     '<path class="dl-cal pt" d="M100 10 V130"/>' +
     '<g transform="translate(0,12)">' +
-      '<g transform="translate(100,44) scale(1.02)">' + figuraDuelo(G.escudoRival, 'dl-fig dl-riv vaiven2') + '</g>' +
-      '<g transform="translate(100,102) scale(1.02)">' + figuraDuelo(G.escudo, 'dl-fig dl-yo vaiven') + '</g>' +
+      /* `mia` dice de quién es la pelota, y con eso alcanza para repartir el
+         movimiento: el que la tiene es el que va a resolver. */
+      '<g transform="translate(100,44) scale(1.02)">' +
+        figuraDuelo(G.escudoRival, 'dl-fig dl-riv ' + (mia ? 'espera' : 'activo')) + '</g>' +
+      '<g transform="translate(100,102) scale(1.02)">' +
+        figuraDuelo(G.escudo, 'dl-fig dl-yo ' + (mia ? 'activo' : 'espera')) + '</g>' +
       (mia ? pelotaDuelo(100, 112) : pelotaDuelo(100, 58)) +
       '<g class="dl-chog"><circle class="dl-choque" cx="100" cy="74" r="20"/></g>' +
       '<circle class="dl-robo" cx="100" cy="74" r="13"/>' +
@@ -13148,6 +13212,10 @@ function efectoDuelo(tipo, val, gana){
 function manoAMano(tipo, mio, val){
   const M = MANOAMANO[tipo];
   const esAtk = TYPES[tipo].stat === 'atk';
+  /* El mano a mano es el único que pasa en un arco: los otros tres son dos
+     jugadores cruzándose en la cancha. */
+  const esArco = tipo === 'arquero';
+  const PALO = { izq:0, der:2 };   // índices de PENAL_Z
 
   return new Promise(resolve => {
     let wrap = document.createElement('div');
@@ -13201,33 +13269,42 @@ function manoAMano(tipo, mio, val){
           '<span class="pv-esc">' + miEscudo(26) + '</span>' +
         '</div>' +
         '<div class="t">' + M.tit + '</div>' +
-        escenaDuelo(!M.adivinar) +
+        (esArco ? arcoManoAMano(G.escudoRival) : escenaDuelo(!M.adivinar)) +
         '<div class="s">' + M.pregunta + '</div>' +
-        '<div class="dl-hint">tocá un lado</div>' +
+        '<div class="dl-hint">' + (esArco ? 'tocá adentro del arco' : 'tocá un lado') + '</div>' +
       '</div>';
     wrap = montarPop(wrap);
 
     let elegido = false;
-    wrap.querySelectorAll('.dl-z').forEach(btn => {
+    wrap.querySelectorAll(esArco ? '.pp-zona' : '.dl-z').forEach(btn => {
       btn.onclick = async () => {
         if(elegido) return; elegido = true;
-        const mio2 = btn.dataset.l;
+        const mio2 = esArco ? (+btn.dataset.z === PALO.izq ? 'izq' : 'der') : btn.dataset.l;
         const suyo = chance(.5) ? 'izq' : 'der';
         // con la pelota del rival ganás adivinando; con la tuya, esquivando
         const gana = M.adivinar ? (mio2 === suyo) : (mio2 !== suyo);
 
+        wrap.querySelector('.s').textContent = M.rival(suyo).toUpperCase() + '…';
+        const hint = wrap.querySelector('.dl-hint'); if(hint) hint.remove();
+
+        /* En el arco resuelve la misma animación que los penales —amague,
+           disparo y golpe— y ella sola apaga las zonas y marca la elegida.
+           La pelota va al palo que elegiste y el arquero vuela al suyo: si
+           coinciden te la ataja, que es exactamente la regla del mano a mano
+           con la pelota tuya. */
+        if(esArco){
+          await animarPenal(wrap, PALO[mio2], PALO[suyo]);
+        } else {
         wrap.querySelectorAll('.dl-z').forEach(z => {
           z.classList.add('off');
           if(z.dataset.l === mio2) z.classList.add('sel');
         });
-        wrap.querySelector('.s').textContent = M.rival(suyo).toUpperCase() + '…';
-        const hint = wrap.querySelector('.dl-hint'); if(hint) hint.remove();
 
         /* Sale primero el rival y después vos: se ve el cruce, no dos figuras
            moviéndose a la vez. La pelota va con el que la tiene. */
         const yo = wrap.querySelector('.dl-yo'), riv = wrap.querySelector('.dl-riv');
         const pel = wrap.querySelector('.dl-pel');
-        yo.classList.remove('vaiven'); riv.classList.remove('vaiven2');
+        yo.classList.remove('activo', 'espera'); riv.classList.remove('activo', 'espera');
         const dxYo = mio2 === 'izq' ? -50 : 50, dxRiv = suyo === 'izq' ? -50 : 50;
 
         /* **El mano a mano no es una carrera: es un remate.** En los otros tres
@@ -13279,6 +13356,7 @@ function manoAMano(tipo, mio, val){
           ro.classList.add('on');
         }
         await wait(460);
+        }
 
         const box = wrap.querySelector('.sit.mam');
         morfarPop(box, 'sit mam resuelta ' + (gana ? 'salvado' : 'gol'),

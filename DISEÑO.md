@@ -12832,3 +12832,99 @@ Ningún nombre de club se corta y la pizarra no se desborda en ninguna.
 v233 y midiéndolo igual: mismo cartel de 461 × 329 y también rueda. Con el
 cambio la pizarra pasa de **104 a 82** de alto ahí, así que rueda 22px menos que
 antes.
+
+## v235 · los mini juegos: quién ataca se ve, y el mano a mano pasa al arco
+
+### El que tiene la pelota se mueve más
+
+Las dos figuras se hamacaban igual —±5px en 1,9s, una en contrafase de la
+otra—, así que mirando la escena no se sabía quién iba a resolver: había que
+buscar dónde estaba la pelota.
+
+| | ciclo | recorrido |
+|---|---|---|
+| el que tiene la pelota | **1,25s** | ±7px **y se inclina 2,5°** |
+| el que espera | 2,4s | ±2,5px |
+
+La escena cuenta quién ataca antes de que leas el texto.
+
+**Cuál de los dos es el activo no está escrito en el CSS sino en
+`escenaDuelo`**, que es la única que sabe de quién es la pelota: con la tuya sos
+vos —arquero, defensor— y con la de él es el rival —medio, delantero—. Es el
+mismo `mia` que ya decidía dónde dibujar la pelota, así que no hay un segundo
+lugar donde acordarse de la regla.
+
+Comprobado en los tres que usan figuras —el del arquero pasó al arco y ya no
+tiene—: en **1 vs 1** el activo es el de abajo, vos, porque la pelota es tuya;
+en **LA MARCA** y en **DEFENDER** es el de arriba, el rival, que es quien la
+lleva. `dlVaiven` y `dlVaiven2` se fueron con el cambio.
+
+### El mano a mano pasa al arco
+
+El mini juego del arquero pregunta **«¿al palo izquierdo o al derecho?»** y se
+dibujaba como dos muñecos en una cancha: el texto hablaba de un arco que no
+estaba en ningún lado.
+
+Ahora usa **el mismo arco de los penales** —red, césped, palos, el arquero con
+los colores del rival— con **dos zonas de 78 en vez de tres de 52**, que cubren
+el arco entero. La elección sigue siendo izquierda o derecha y **la
+probabilidad no se toca**: sigue siendo 50/50.
+
+```js
+function arcoManoAMano(esc){ /* el arco del penal, con dos palos */ }
+```
+
+#### Los `data-z` son 0 y 2, no 0 y 1
+
+Son los índices de `PENAL_Z`, así que el arquero vuela **a los dos palos** y no
+al del medio. Eso deja que la resolución use `animarPenal` tal cual, sin
+traducir coordenadas: la pelota va al palo que elegiste, el arquero al suyo, y
+si coinciden te la ataja —que es exactamente la regla del mano a mano con la
+pelota tuya—.
+
+Tuvo un costo: `animarPenal` marcaba la zona elegida **por posición**.
+
+```js
+svg.querySelectorAll('.pp-zona').forEach(z => {
+  z.classList.add('off');
+  if(+z.dataset.z === mio) z.classList.add('sel');   // antes: (z, i) => i === mio
+});
+```
+
+Con tres zonas da igual —los índices coinciden con el orden—; con dos, el palo
+derecho es `data-z="2"` y está en la **posición 1**, así que por orden se
+marcaba el equivocado. Comprobado eligiendo la derecha: queda seleccionada la
+de `data-z="2"`.
+
+### El arquero se hamaca, y sólo acá
+
+```css
+.sit.mam .pp-arq.idle{animation:mamArq 1.9s ease-in-out infinite}
+```
+
+En el penal el arquero se quedó quieto en v233, porque el amague del pateador
+ya anticipa el tiro. Acá no hay amague —tocás un palo y sale— así que el
+movimiento del arquero es toda la vida que tiene la escena mientras decidís.
+Va **scopeado a `.sit.mam`**: el penal sigue con su arquero quieto, verificado
+aparte.
+
+La pelota además respira. Usa `translate` y no `transform`, que es lo que mueve
+el disparo: son dos propiedades distintas y no se pisan.
+
+### Medido
+
+| | el cartel | ¿entra? | ¿rueda? |
+|---|---|---|---|
+| 320 × 568 | 283 × 478 | sí | no |
+| 390 × 844 | 336 × 606 | sí | no |
+| 1440 × 900 | 581 × 760 | sí | no |
+
+Con el arco el cartel mide **606 contra los 613** de la cancha: siete píxeles
+menos, no más.
+
+Y los cuatro mini juegos resuelven: ¡GOLAZO! y ATAJADÓN en el del arquero,
+¡LO PASÁS! en el defensor, TE PASÓ en el medio y SE VA SOLO en el delantero,
+los cuatro con su dibujo de desenlace.
+
+El penal quedó intacto: tres zonas con `data-z` 0, 1 y 2, y su arquero sin
+animación de espera.
