@@ -13073,3 +13073,82 @@ botón EJECUTAR: córner 35%, jugada clara ENTRA SOLA.
 de valer 0,50 goles a valer 0,67, y un PENAL RIVAL de costar 0,50 a costar
 0,67. Las dos cartas se volvieron más caras en lo que hacen sin que cambie cada
 cuánto aparecen. Es un número aparte y quedó anotado a propósito, no olvidado.
+
+## v238 · el resaltado del tablero salta tres veces
+
+Al cerrar un pop-up y volver a las cartas, los medidores que cambiaron se
+resaltan: salta el marcador, el aguante, la racha y el reloj, y a la plata se le
+enciende el fondo con el número que subió o bajó flotando al lado.
+
+El problema no era el efecto, era **cuándo pasaba**. Arrancaba en el mismo
+instante en que el tablero volvía a aparecer, y duraba 460ms. En esos 460ms el
+ojo todavía está donde estaba el pop-up, no en la fila de medidores de arriba:
+cuando llegabas, ya había terminado. El resaltado se mostraba y no se veía.
+
+### Se repite, no se alarga
+
+Estirar una sola pasada lo hubiese convertido en otra cosa —una celda inflada
+que baja despacio—. Repetirla la deja igual y le da tres oportunidades: si
+llegaste tarde a la primera, agarrás la segunda o la tercera.
+
+| | antes | ahora |
+|---|---|---|
+| ciclo | .46s | **.58s** |
+| pasadas | 1 | **3** |
+| total | 460ms | **1,74s** |
+
+Lo que se estira del ciclo es **el descanso**, no el salto. El pico del
+`@keyframes` está en el 32%, que a .58s cae a los **186ms**, y de ahí al final
+la celda ya está quieta en su tamaño normal. Tres saltos cortos separados por
+un respiro, no tres saltos lentos.
+
+El keyframe no se tocó: sigue siendo `scale(1.07)` con su sombra. Lo único que
+cambió es cuántas veces corre.
+
+### La plata va dos, no tres
+
+El tinte del fondo hace **dos pasadas de .8s — 1,6s**, que a ojo es lo mismo que
+los 1,74 del salto. Tres no: el número que flota al lado —que es lo que de
+verdad se lee ahí— hace una sola pasada y termina en `forwards`, y tres tintes
+debajo de un número que aparece una vez se leían como dos cosas distintas
+pasando al mismo tiempo.
+
+El número flotante no se tocó: sigue siendo 1s y ya está invisible mucho antes
+de que se limpie la clase.
+
+### El número que no está en el CSS
+
+Las clases las saca un `setTimeout`, y ése era el que de verdad mandaba. En
+1000ms la tercera pasada no existía: la clase se iba **en la mitad de la
+segunda** y el salto se cortaba al aire. Subió a **2100** —1,74s más margen—.
+
+Y hay **dos** de esos timeouts, no uno. El reloj no pasa por `pulseCambios`: lo
+marca `finDeJugada`, que tenía su propia espera de 1000ms. Es además el
+resaltado **más frecuente del juego**, porque suena en todas las jugadas. Salió
+en la verificación, no de leer el código: el reloj era el único medidor que
+reportaba `animationName: none` cuando los otros cuatro ya corrían de a tres.
+
+### Medido en el juego andando
+
+Disparando `pulseCambios` con los cinco medidores movidos, y `finDeJugada`
+aparte para el reloj:
+
+| medidor | animación |
+|---|---|
+| m-score | `pulsesalto 0.58s x3` |
+| m-aguante | `pulsesalto 0.58s x3` |
+| m-racha | `pulsesalto 0.58s x3` |
+| m-reloj | `pulsesalto 0.58s x3` |
+| m-dinero | `pulsetinte 0.8s x2` |
+
+Y la clase, sobre el reloj, en cuatro momentos: **presente a los 60ms, presente
+a los 1160** —donde con el timeout viejo ya no hubiese estado—, **presente a los
+1560**, dentro de la tercera pasada, y **ausente a los 2460**. La animación
+llega hasta el final y después se limpia.
+
+### Movimiento reducido
+
+Quien pidió que las cosas no se muevan sigue viendo un recuadro quieto en lugar
+del salto, y el fondo tinte en lugar del parpadeo. Ahí el cambio se nota más que
+en el salto: sin animación no hay tres pasadas que contar, hay un recuadro que
+**dura el doble**, 2,1s en vez de 1. Que es exactamente lo que se buscaba.

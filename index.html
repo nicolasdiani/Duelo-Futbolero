@@ -959,7 +959,19 @@ img{height:auto}
    `drop-shadow` y no `box-shadow`: la luz sigue el contorno de lo que hay
    —el corazón, el rayo, el número— en vez de dibujar el rectángulo de la celda.
    El rebote del final es lo que lo hace un salto y no un inflado. */
-.pulse-up,.pulse-down{animation:pulsesalto .46s cubic-bezier(.2,1.7,.4,1)}
+/* **Y salta tres veces.** Uno solo duraba 460ms, que es menos de lo que tarda
+   el ojo en llegar al medidor después de cerrar el pop-up: el resaltado se
+   mostraba pero no se alcanzaba a ver. Repetido, si llegaste tarde al primero
+   agarrás el segundo o el tercero.
+
+   El ciclo sube de .46 a .58s y lo que se estira es **el descanso**, no el
+   salto: el pico sigue cayendo en el 32%, o sea a los 186ms, y el resto del
+   ciclo la celda está quieta. Tres pasadas dan **1,74s**.
+
+   Y hay un segundo número que no está acá: el `setTimeout` que le saca la
+   clase. Si se queda en 1000ms la tercera pasada no llega a correr, así que
+   sube junto con esto. Está en `pulseCambios`. */
+.pulse-up,.pulse-down{animation:pulsesalto .58s cubic-bezier(.2,1.7,.4,1) 3}
 @keyframes pulsesalto{
   0%{transform:scale(1);filter:none}
   32%{transform:scale(1.07);filter:drop-shadow(0 0 6px var(--hl))}
@@ -970,7 +982,11 @@ img{height:auto}
    La celda se tiñe apenas —lo justo para saber cuál de las tres se movió— y el
    trabajo de decir cuánto lo hace el número que sube. Sin salto: dos
    movimientos encima del mismo dato es lo que tenía de más el resaltado viejo. */
-.pulse-coin{position:relative;animation:pulsetinte .8s ease-out}
+/* El tinte de la plata va dos veces y no tres: son 1,6s contra los 1,74 del
+   salto, que es lo mismo a ojo, y el número que sube —que es lo que de verdad
+   se lee acá— sigue haciendo una sola pasada. Tres tintes debajo de un número
+   que sube una vez se leían como dos cosas distintas. */
+.pulse-coin{position:relative;animation:pulsetinte .8s ease-out 2}
 @keyframes pulsetinte{
   0%,100%{background-color:transparent}
   22%{background-color:var(--hl2)}
@@ -1003,8 +1019,11 @@ img{height:auto}
 
 /* El resaltado viejo no estaba en ninguno de los diez bloques de movimiento
    reducido: el salto al 113% le saltaba igual a quien había pedido que las
-   cosas no se muevan. Éste sí. Y como la clase se pone y se saca al segundo,
-   quieto sigue diciendo lo mismo: aparece, se queda, se va. */
+   cosas no se muevan. Éste sí. Y como la clase se pone y se saca sola —a los
+   2,1s, lo que dura el salto de tres—, quieto sigue diciendo lo mismo:
+   aparece, se queda, se va. Acá el estirón se nota más que en el salto: sin
+   animación no hay tres pasadas que contar, hay un recuadro que ahora dura
+   el doble. */
 @media (prefers-reduced-motion:reduce){
   .pulse-up,.pulse-down{animation:none;box-shadow:0 0 0 1px var(--hl);border-radius:4px}
   .pulse-coin{animation:none;background-color:var(--hl2)}
@@ -10501,7 +10520,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 237;
+const VERSION = 238;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12310,7 +12329,10 @@ async function finDeJugada(){
   trabarUna();
   render();
   const rel = $('m-reloj');
-  if(rel){ rel.classList.add('pulse-down'); setTimeout(() => rel.classList.remove('pulse-down'), 1000); }
+  /* Los mismos 2.100 que usa `pulseCambios`: el reloj no pasa por ahi —lo
+     marca esta funcion— pero le corre la misma animacion, asi que si se
+     quedara en 1.000 se cortaria en la mitad de la segunda pasada. */
+  if(rel){ rel.classList.add('pulse-down'); setTimeout(() => rel.classList.remove('pulse-down'), 2100); }
   await wait(400);
 
   if(G.reloj <= 0){
@@ -13515,10 +13537,16 @@ function pulseCambios(antes){
       el.appendChild(n);
     }
 
+    /* **2.100 y no 1.000.** Es lo que tarda la última de las tres pasadas del
+       salto —1,74s— más un margen. Con el segundo de antes la clase se iba en
+       la mitad de la segunda pasada y el resaltado se cortaba al aire.
+
+       El número de la plata hace una sola pasada y termina en `forwards`, así
+       que ya está invisible mucho antes: esperar de más no lo deja colgado. */
     setTimeout(() => {
       el.classList.remove(cls, 'baja');
       if(n) n.remove();
-    }, 1000);
+    }, 2100);
   };
 
   // ojo: fundirse RELLENA el aguante, así que el número sube. Eso no es algo
