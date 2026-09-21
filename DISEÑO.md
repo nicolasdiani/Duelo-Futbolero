@@ -12727,3 +12727,108 @@ destello, los dos lo encienden y los dos resuelven en `sit penal resuelta`.
 
 No tiembla nada y el destello se queda quieto un instante en vez de expandirse:
 el impacto se sigue marcando.
+
+## v234 · la tanda: el marcador manda
+
+La pizarra eran **dos filas** —nombre, cinco huecos, y un número de 17px al
+final de cada una—. Ese número es el dato que define la tanda y era lo más chico
+del cartel: para saber cómo iba había que leer dos renglones separados y
+restarlos de cabeza, justo en el momento de más tensión del juego.
+
+Ahora es **un solo bloque**: escudo y nombre de cada lado, sus puntos debajo, y
+el `3 · 2` grande en el medio —que es como el juego cuenta un marcador en todas
+las demás pantallas—.
+
+### Los puntos siguen siendo puntos
+
+Verde el que entró, rojo el que erró, vacío el que falta, dorado latiendo el que
+se va a patear. **Y la rayita oscura sobre el rojo se queda**: es la única
+diferencia que no depende del color, y sin ella un daltonismo rojo-verde deja la
+tanda ilegible.
+
+Lo que sí cambió es cómo se centra esa rayita. El punto viejo era un contenedor
+flex y la rayita se centraba sola; el nuevo no lo es, así que va posicionada:
+
+```css
+.pz-punto{position:relative}
+.pz-punto.fallo::after{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%) rotate(-45deg);
+}
+```
+
+### Qué se juega en este tiro
+
+Un renglón que antes no estaba y que había que sacar contando los puntos de las
+dos filas:
+
+| | cuándo |
+|---|---|
+| **si la mete, define** | metiéndola, al que patea no lo alcanzan ni metiendo el rival todos los que le quedan |
+| **si la erra, se acabó** | errándola, no llega ni a lo que el rival **ya tiene** |
+| último de la serie | le queda uno |
+| penal N de 5 | el resto |
+| muerte súbita | pasados los cinco |
+
+Las dos primeras van en rojo. Y las dos cuentas son **sobre el máximo
+alcanzable**, no sobre la diferencia: la diferencia sola no alcanza porque
+depende de cuántos tiros le quedan a cada uno, que en una tanda casi nunca es lo
+mismo.
+
+### Se cae el ancho fijo de la columna del nombre
+
+Había un `width:11ch` en el nombre con un comentario de veinte líneas que
+explicaba por qué: cada fila era su propia grilla, así que con BOCA arriba y
+RIVER abajo las dos hileras de círculos arrancaban en x distintos y quedaban
+corridas una respecto de la otra.
+
+**Con los puntos colgando de su propio equipo el problema no existe**: las dos
+hileras ya no tienen que alinearse entre sí. El `11ch` se fue, y con él la
+restricción de que ningún nombre de club pudiera pasar de once caracteres sin
+recortarse.
+
+El `▸` del turno también se fue —tenía su propio lugar reservado para no mover
+el nombre al aparecer—. Ahora el que patea se marca **en el color del nombre**.
+
+### Lo que no cambió
+
+La muerte súbita sigue igual: las casillas son las de **esa** serie y arrancan
+de cero, mientras el marcador del medio sigue contando la tanda entera. Es el
+mismo `cols` / `base` de antes.
+
+Y los dos llamadores siguen siendo los mismos: el penal de la tanda, con turno,
+y el resumen final, que pasa `-1` y ahí no se dibuja ni el punto que late ni el
+renglón de qué se juega.
+
+### Medido
+
+Los seis estados, armando la pizarra a mano:
+
+| | marcador | renglón |
+|---|---|---|
+| media tanda | 2 · 2 | penal 4 de 5 |
+| 4-1 con dos por patear | 4 · 1 | **si la mete, define** |
+| 1-4 con dos por patear | 1 · 4 | **si la erra, se acabó** |
+| 4-4 con uno cada uno | 4 · 4 | último de la serie |
+| muerte súbita | 6 · 5 | muerte súbita |
+| resumen final | 5 · 4 | *(sin renglón)* |
+
+En muerte súbita se dibujan **4 puntos** —las dos rondas jugadas— y el marcador
+sigue en 6 · 5, que es la tanda entera. En el resumen no hay punto latiendo ni
+equipo marcado.
+
+Y el cartel entero, en cuatro pantallas:
+
+| | el cartel | la pizarra | ¿entra? |
+|---|---|---|---|
+| 320 × 568 | 283 × 382 | 242 × 56 | sí |
+| 390 × 844 | 336 × 419 | 298 × 56 | sí |
+| 1440 × 900 | 581 × 659 | 529 × 82 | sí |
+| 844 × 390 acostado | 461 × 329 | 389 × 82 | rueda por dentro |
+
+Ningún nombre de club se corta y la pizarra no se desborda en ninguna.
+
+**El scroll del acostado es de antes.** Comprobado sirviendo el `index.html` de
+v233 y midiéndolo igual: mismo cartel de 461 × 329 y también rueda. Con el
+cambio la pizarra pasa de **104 a 82** de alto ahí, así que rueda 22px menos que
+antes.
