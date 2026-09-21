@@ -12630,3 +12630,100 @@ Comprobado además que los trece salen con balón y con costuras, que la moneda
 conserva su disco, y que **ninguno de los dieciséis se quedó sin animación** —el
 reemplazo podría haber roto el enganche de los `@keyframes` a `.pe`, y no lo
 hizo—.
+
+## v233 · el penal: amague, disparo y golpe
+
+El tiro tenía **dos tiempos y en el orden equivocado**: salía el arquero
+—130ms— y después volaba la pelota —520ms—. Está comentado en el código que el
+orden es a propósito, para que se vea el duelo, pero tiene una consecuencia que
+no estaba anotada: **cuando la pelota arranca, ya sabés si entra**. Los últimos
+520ms son confirmación, no suspenso.
+
+Ahora son tres tiempos:
+
+| | qué pasa | cuánto |
+|---|---|---|
+| **el amague** | la pelota retrocede un toque, el arquero quieto | 180ms |
+| **el disparo** | salen los dos a la vez; la pelota gira 520° | 350ms |
+| **el golpe** | tiembla el arco y revienta el destello donde pegó | 430ms |
+
+El arquero tarda `.3s` y la pelota `.34s`, así que **la decisión y el tiro se
+resuelven juntos**. El total queda en 960ms contra los 990 de antes: no es más
+largo, está repartido distinto.
+
+### El tiro, más rápido y al revés
+
+```css
+.pp-pel{transition:transform .34s cubic-bezier(.35,.05,.4,1)}
+.pp-pel.atras{transition:transform .17s ease-out}
+```
+
+De `.46s` a `.34s`, y con la curva dada vuelta: antes arrancaba rápido y
+frenaba al llegar —lo que hace que se lea como un desplazamiento—, ahora
+arranca lenta y termina de golpe. El amague lleva su propia transición porque
+el retroceso tiene que ser más corto que el tiro.
+
+El giro de 520° es lo que lo termina de hacer un tiro: sin él la pelota se
+traslada, no vuela.
+
+### El golpe
+
+Hasta acá la pelota llegaba y **no pasaba nada con el resto del dibujo**: el
+arco quedaba tan quieto como antes del tiro. Cuatro sacudones de menos de 3px
+alcanzan para que se sienta.
+
+Va en el `<svg>` entero y no en el arco solo, así se mueven también la red, el
+césped y el arquero: es un temblor de la cámara, no una pieza suelta.
+
+Y el destello se escala con `transform` y no animando el `r` del círculo, igual
+que `pp-atajo`: el radio como propiedad animable de CSS no está en todos los
+navegadores, y la escala sí.
+
+### El arquero deja de hamacarse
+
+`arqVaiven` lo movía de lado a lado mientras elegías. Con el amague del
+pateador hay **dos cosas moviéndose para decir lo mismo**, y la que importa es
+la de la pelota, que es la que anticipa el disparo. El arquero esperando quieto
+es, además, lo que pasa de verdad en un penal.
+
+Lo usaba una sola regla, así que el keyframe se fue con él.
+
+### Los tres penales, de una
+
+El juego tiene tres lugares donde se patea y **los tres pasan por
+`animarPenal`**:
+
+| | por dónde llega |
+|---|---|
+| el penal definitorio | `tirarPenal` |
+| la tanda de la final | `penalShootout` → `serieDePenales` → `penalUno` |
+| el modo penales suelto | `showPenalesSolos` → `serieDePenales` → `penalUno` |
+
+Así que el cambio es una sola función y un solo bloque de CSS, no tres.
+
+### Verificado, tirando de verdad
+
+Muestreando el tiro mientras corre, en el juego andando:
+
+| a los | la pelota | el arquero | el arco |
+|---|---|---|---|
+| 60ms | `translate(0,9) scale(.94)` — atrás | quieto | — |
+| 120ms | atrás todavía | quieto | — |
+| 200ms | `translate(-52,-52) rotate(520deg)` | movido | — |
+| 620ms | en el palo | movido | **tiembla** |
+
+Y después del tiro el temblor se saca, así que un segundo penal arranca limpio.
+Comprobado en el definitorio y en el de la tanda: los dos montan el círculo del
+destello, los dos lo encienden y los dos resuelven en `sit penal resuelta`.
+
+### Movimiento reducido
+
+```css
+@media (prefers-reduced-motion:reduce){
+  .parco.tiembla{animation:none}
+  .pp-flash.on{animation:none;opacity:.7}
+}
+```
+
+No tiembla nada y el destello se queda quieto un instante en vez de expandirse:
+el impacto se sigue marcando.

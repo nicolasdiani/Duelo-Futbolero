@@ -6936,30 +6936,39 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   fill:var(--gold);fill-opacity:.16;
 }
 
-/* El arquero: vaivén mientras decidís, vuelo cuando disparás. */
+/* El arquero: **quieto** mientras decidís, vuelo cuando disparás.
+
+   Se hamacaba de lado a lado con `arqVaiven` mientras elegías. Con el amague
+   del pateador —el retroceso de la pelota justo antes del tiro— hay dos cosas
+   moviéndose para decir lo mismo, y la que importa es la de la pelota: es la
+   que anticipa el disparo. El arquero esperando quieto, además, es lo que
+   pasa de verdad en un penal. */
 /* Mismo caso que la pelota: sin `fill-box` el `rotate` del vuelo pivotea
    sobre el (0,0) del viewBox y le corre la figura entera, así que los guantes
    no quedaban donde decían las cuentas. */
 .pp-arq{
-  transition:transform .44s cubic-bezier(.3,1.1,.4,1);
+  transition:transform .3s cubic-bezier(.3,1.4,.5,1);
   filter:drop-shadow(0 3px 7px rgba(0,0,0,.55));
   transform-box:fill-box;transform-origin:center;
 }
-.pp-arq.idle{animation:arqVaiven 1.8s ease-in-out infinite}
-@keyframes arqVaiven{
-  0%,100%{transform:translateX(-7px) rotate(-3deg)}
-  50%    {transform:translateX(7px) rotate(3deg)}
-}
+/* `arqVaiven` se fue con el vaivén: no lo usaba nadie más. */
 
 /* `transform-box:fill-box` es obligatorio para escalar en SVG: sin eso el
    `transform-origin` es el (0,0) del viewBox y no el centro de la pelota, así
    que el `scale` de la atajada la corría hacia el ángulo superior izquierdo.
    Terminaba afuera del arco en vez de en el guante. */
 .pp-pel{
-  transition:transform .46s cubic-bezier(.25,.7,.4,1);
+  /* **El tiro pasa de .46 a .34s.** Antes el vuelo duraba más que la decisión
+     y se leía como un desplazamiento; ahora sale disparada. La curva de
+     entrada arranca lenta y termina de golpe, que es al revés de la que
+     tenía. */
+  transition:transform .34s cubic-bezier(.35,.05,.4,1);
   filter:drop-shadow(0 2px 5px rgba(0,0,0,.6));
   transform-box:fill-box;transform-origin:center;
 }
+/* El amague: la pelota retrocede un toque antes de salir. Va con su propia
+   transición porque el retroceso tiene que ser más corto que el tiro. */
+.pp-pel.atras{transition:transform .17s ease-out}
 
 /* La red se infla en verde cuando entra. */
 .pp-gol{fill:none;stroke:var(--green);stroke-width:4;opacity:0}
@@ -7202,6 +7211,42 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   0%  {opacity:1;transform:scale(.35)}
   100%{opacity:0;transform:scale(2)}
 }
+/* **El arco tiembla con el impacto.** Hasta acá la pelota llegaba y no pasaba
+   nada con el resto del dibujo: el arco quedaba tan quieto como antes del
+   tiro. Cuatro sacudones de menos de 3px alcanzan para que se sienta el golpe
+   sin marear.
+
+   Va en el `<svg>` entero y no en el arco solo, así se mueven también la red,
+   el césped y el arquero: un temblor de la cámara, no una pieza suelta. */
+.parco.tiembla{animation:penTiembla .42s cubic-bezier(.36,.07,.19,.97)}
+@keyframes penTiembla{
+  0%,100%{transform:translate(0,0)}
+  15%    {transform:translate(-3px,1px)}
+  35%    {transform:translate(3px,-2px)}
+  55%    {transform:translate(-2px,2px)}
+  78%    {transform:translate(2px,-1px)}
+}
+
+/* Y el destello en el punto exacto del impacto. Se escala con `transform` y
+   no animando el `r`, igual que `pp-atajo`: el radio como propiedad animable
+   de CSS no está en todos lados, y la escala sí. */
+.pp-flash{
+  fill:none;stroke:#fff;stroke-width:3;opacity:0;
+  transform-box:fill-box;transform-origin:center;
+}
+.pp-flash.on{animation:penFlash .44s ease-out forwards}
+@keyframes penFlash{
+  0%  {opacity:.95;transform:scale(.3);stroke-width:4}
+  100%{opacity:0;transform:scale(3.2);stroke-width:.6}
+}
+
+/* Con movimiento reducido no tiembla nada y el destello se queda quieto un
+   instante en vez de expandirse: el impacto se sigue marcando. */
+@media (prefers-reduced-motion:reduce){
+  .parco.tiembla{animation:none}
+  .pp-flash.on{animation:none;opacity:.7}
+}
+
 .pp-arq.sacude{animation:ppSacude .4s ease-out .04s}
 @keyframes ppSacude{
   0%,100%{filter:drop-shadow(0 3px 7px rgba(0,0,0,.55))}
@@ -10371,7 +10416,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 232;
+const VERSION = 233;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12496,12 +12541,25 @@ function arcoPenalHTML(esc){
     pelotaSVG(100, 112, 7, 'pp-pel') +
     /* El anillo del impacto cuando la ataja. */
     '<circle class="pp-atajo" cx="100" cy="112" r="11"/>' +
+    /* Y el destello del golpe, entre o no entre. */
+    '<circle class="pp-flash" cx="100" cy="112" r="11"/>' +
     zonas +
   '</svg>';
 }
 
-/* La animación del tiro: sale el arquero, después la pelota. En ese orden a
-   propósito —se ve el duelo— y no al revés. */
+/* La animación del tiro, en tres tiempos: **el amague, el disparo y el golpe.**
+
+   Antes eran dos y en el otro orden: salía el arquero y después la pelota. Se
+   veía el duelo, sí, pero también se veía **el resultado antes que el tiro**:
+   cuando la pelota arrancaba ya sabías si iba a entrar, y los 520ms del vuelo
+   eran confirmación y no suspenso.
+
+   Ahora la pelota retrocede primero —el amague del pateador, 180ms— y recién
+   ahí salen los dos juntos. El arquero tarda .3s y la pelota .34s, así que la
+   decisión y el tiro se resuelven a la vez.
+
+   Lo comparten los tres penales del juego: el definitorio, los de la tanda de
+   la final y los del modo suelto. Los tres pasan por acá. */
 async function animarPenal(wrap, mio, suyo){
   const svg = wrap.querySelector('.parco');
   if(!svg) return;
@@ -12512,10 +12570,16 @@ async function animarPenal(wrap, mio, suyo){
   });
   const arq = svg.querySelector('.pp-arq'), pel = svg.querySelector('.pp-pel');
   arq.classList.remove('idle');
+
+  /* 1 · el amague. */
+  pel.classList.add('atras');
+  pel.style.transform = 'translate(0px,9px) scale(.94)';
+  await wait(180);
+  pel.classList.remove('atras');
+
   const ca = PENAL_Z[suyo], cp = PENAL_Z[mio];
   arq.style.transform = 'translate(' + (ca.x - 100) + 'px,' + (ca.y - 62) + 'px)' +
                         ' rotate(' + ((ca.x - 100) * .17) + 'deg)';
-  await wait(130);
 
   /* **Atajada: la pelota frena en el guante, no en el medio del arco.** Antes
      los dos terminaban en el centro de la misma zona y la pelota quedaba sobre
@@ -12527,9 +12591,19 @@ async function animarPenal(wrap, mio, suyo){
      Tirándose al medio atrapa contra el cuerpo, un poco más abajo. */
   const dx = atajado ? (suyo === 0 ? -16 : suyo === 2 ? 16 : 0) : 0;
   const dy = atajado ? (suyo === 1 ? 5 : -1) : 0;
+  /* 2 · el disparo. El giro es lo que lo hace un tiro y no un arrastre. */
   pel.style.transform = 'translate(' + (cp.x - 100 + dx) + 'px,' + (cp.y - 112 + dy) + 'px)' +
-                        (atajado ? ' scale(.82)' : '');
-  await wait(520);
+                        (atajado ? ' scale(.82)' : '') + ' rotate(520deg)';
+  await wait(350);
+
+  /* 3 · el golpe: tiembla el arco y revienta el destello donde pegó. */
+  svg.classList.add('tiembla');
+  const fl = svg.querySelector('.pp-flash');
+  if(fl){
+    fl.setAttribute('cx', cp.x + dx);
+    fl.setAttribute('cy', cp.y + dy);
+    fl.classList.add('on');
+  }
 
   if(atajado){
     /* El anillo sale del guante, no del centro. */
@@ -12541,7 +12615,8 @@ async function animarPenal(wrap, mio, suyo){
   } else {
     svg.querySelector('.pp-gol').classList.add('on');
   }
-  await wait(340);
+  await wait(430);
+  svg.classList.remove('tiembla');
 }
 
 /* Cinco por equipo, como en la cancha. En muerte súbita la pizarra sigue
