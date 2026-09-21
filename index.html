@@ -10346,7 +10346,11 @@ const SIT_RIVAL = [
   { key:'jugada',  ico:'⚽', nm:'JUGADA CLARA', p:1, peso:1,
     gol:'💥 Jugada perfecta del rival. La define de primera y no hay nada que hacer.',
     no: '' },
-  { key:'penal',   ico:'🎯', nm:'PENAL',      p:.50, peso:1,
+  /* **2/3 y no 50%.** El penal no se tira con esta `p`: se juega, y con tres
+     palos el arquero acierta uno de cada tres. La `p` se quedó en .50 cuando
+     el penal pasó a mini juego, y como es la que alimenta el porcentaje del
+     cartel, éste prometía 51% cuando de verdad pagaba 54%. */
+  { key:'penal',   ico:'🎯', nm:'PENAL',      p:2/3, peso:1,
     gol:'💀 Penal. Cambia el palo y la clava.',
     no: '💀 ¡PENAL ATAJADO! Tu arquero adivina el palo.' },
   { key:'pasegol', ico:'🤝', nm:'PASE GOL',   p:.40, peso:1,
@@ -10366,7 +10370,8 @@ const SIT_FAVOR = [
   { key:'jugada',  ico:'⚽', nm:'JUGADA CLARA', p:1, peso:1,
     gol:'⚽ ¡Jugada perfecta! La define de primera y no hay nada que hacer.',
     no: '' },
-  { key:'penal',   ico:'🎯', nm:'PENAL',      p:.50, peso:1,
+  /* Lo mismo del otro lado: se juega, no se tira. */
+  { key:'penal',   ico:'🎯', nm:'PENAL',      p:2/3, peso:1,
     gol:'🎯 Penal. Le cambiás el palo al arquero.',
     no: '🎯 Penal errado. Se te fue arriba del travesaño.' },
   { key:'pasegol', ico:'🤝', nm:'PASE GOL',   p:.40, peso:1,
@@ -10496,7 +10501,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 236;
+const VERSION = 237;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -11340,11 +11345,11 @@ function predict(cell){
   if(t === 'autogol')   return { label:'GOL' + R, tone:'good' };
   if(t === 'contra')    return { label:'GOL RIVAL<span class="efe"><b>-1 <i class="ir"></i></b></span>', tone:'bad' };
   if(t === 'encontra')  return { label:'GOL RIVAL<span class="efe"><b>-1 <i class="ir"></i></b></span>', tone:'bad' };
-  if(t === 'penal')     return { label:'50% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
+  if(t === 'penal')     return { label:'67% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
   if(t === 'pasegol')   return { label:'40% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
   if(t === 'libre')     return { label:'35% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
   if(t === 'corner')    return { label:'30% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
-  if(t === 'penalC')    return { label:'50% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
+  if(t === 'penalC')    return { label:'67% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
   if(t === 'pasegolC')  return { label:'40% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
   if(t === 'cornerC')   return { label:'30% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
   if(t === 'libreC')    return { label:'35% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
@@ -12724,7 +12729,11 @@ async function animarPenal(wrap, mio, suyo){
    mostrando cinco huecos: lo que importa ahí es el tiro en curso. */
 const TANDA_TIROS = 5;
 
-function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo){
+/* `rot` es el rótulo del penal suelto: de qué jugada viene y de qué lado se
+   juega. Lo manda quien lo abre, porque el penal suelto ya sale de tres
+   lados distintos —la carta PENAL, la carta PENAL RIVAL y la situación— y
+   escribir «POSIBILIDAD DE GOL» en los tres sería mentir en dos. */
+function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo, rot){
   return new Promise(resolve => {
     /* `ronda: 0` es un penal **suelto** —el de la posibilidad de gol dentro del
        partido—, no uno de la tanda. Ahí no va ni el «1 DE 5» ni el tablero de
@@ -12735,11 +12744,11 @@ function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo){
     wrap.innerHTML =
       '<div class="sit penal">' +
         '<div class="sit-tag">' +
-          (suelto ? 'POSIBILIDAD DE GOL'
+          (suelto ? ((rot && rot.tag) || 'POSIBILIDAD DE GOL')
            : muerte ? 'MUERTE SÚBITA · PENAL ' + (ronda - TANDA_TIROS)
            : 'PENAL ' + ronda + ' DE 5') +
         '</div>' +
-        '<div class="t">' + (suelto ? 'PENAL'
+        '<div class="t">' + (suelto ? ((rot && rot.t) || 'PENAL')
                                     : yoPateo ? 'PATEA ' + eqs[quien].club : 'ATAJÁS VOS') + '</div>' +
         (suelto ? '' : tandaHTML(eqs, tiros, primero, quien, muerte)) +
         arcoPenalHTML(eqs[1 - quien].escudo) +
@@ -12869,6 +12878,21 @@ function tandaHTML(eqs, tiros, primero, turnoDe, muerte){
       '<span class="pz-marc"><b>' + goles(0) + '</b><i>·</i><b>' + goles(1) + '</b></span>' +
       lado(1, true) +
     '</div>' + linea();
+}
+
+/* **Un penal suelto, el de las cartas y el de la situación.**
+
+   `ronda: 0` es la marca de penal suelto: sin «1 DE 5» y sin pizarra, porque
+   no hay serie detrás. `yoPateo` decide de qué lado se juega —pateás vos o
+   atajás vos— y es lo único que cambia entre PENAL y PENAL RIVAL.
+
+   Devuelve si **entró la pelota**, no si te fue bien: pateando vos las dos
+   cosas coinciden, atajando son opuestas. Quien llama decide qué hacer con
+   eso. */
+function penalSuelto(yoPateo, rot){
+  const eqs = [ { club:G.club, escudo:G.escudo },
+                { club:(RONDA(G.ronda) || {}).rival || 'EL RIVAL', escudo:G.escudoRival } ];
+  return penalUno(eqs, 0, [[],[]], 0, false, 0, yoPateo, rot);
 }
 
 /* El resumen final de la tanda, antes de volver al resultado del partido. */
@@ -13607,9 +13631,19 @@ async function resolveCell(r, c, rowIdx){
   else if(t === 'autogol') await scoreU('🎁 El zaguero rival se la manda a su propio arco.');
   else if(t === 'contra')   await scoreC('💥 Contraataque letal: te agarran mal parado y definen.');
   else if(t === 'encontra') await scoreC('🙈 Tu zaguero quiso despejar y se la mandó a su propio arco.');
+  /* **El penal se patea, no se sortea.** Era `chance(.50)` y ahora es el mismo
+     mini juego que la tanda y el definitorio: elegís palo y el arquero vuela.
+     Con tres palos y el arquero eligiendo al azar entra **2 de cada 3**, así
+     que la carta pasó de prometer 50% a prometer 67%.
+
+     El dibujo del desenlace no se repite: el mini juego ya cerró con su propia
+     tarjeta —¡GOL! o ATAJADO, con el arco o el guante—, así que acá sólo queda
+     la consecuencia. El cartel con foto del gol sí sale, como en cualquier
+     otro tanto del partido. */
   else if(t === 'penal'){
-    if(chance(.50))await scoreU('🎯 Penal. Le cambiás el palo al arquero.');
-    else { await flashFallo('penal', true); await hurt('🎯 Penal errado. El equipo se viene abajo.'); }
+    if(await penalSuelto(true, { tag:'PENAL', t:'LO PATEÁS VOS' }))
+      await scoreU('🎯 Penal. Le cambiás el palo al arquero.');
+    else await hurt('🎯 Penal errado. El equipo se viene abajo.');
   }
   else if(t === 'pasegol'){
     if(chance(.40))await scoreU('🤝 Pase gol: se la dejan servida y la empuja.');
@@ -13623,9 +13657,13 @@ async function resolveCell(r, c, rowIdx){
     if(chance(.30))await scoreU('🚩 Córner, cabezazo y adentro.');
     else { await flashFallo('corner', true); await hurt('🚩 El córner se pierde y te agarran mal parado.'); }
   }
+  /* El mismo mini juego del otro lado: acá **atajás vos**. El palo que tocás
+     es adonde vuela tu arquero y la pelota la manda el rival, así que se gana
+     adivinando —al revés del penal a favor, donde se gana esquivando—. */
   else if(t === 'penalC'){
-    if(chance(.50)) await scoreC('💀 Penal en contra. No la puede sacar tu arquero.');
-    else { await flashFallo('penalC', false); say('💀 ¡PENAL ATAJADO! El equipo se levanta con eso. +1 racha.', 'good'); await sumarRacha(1); }
+    if(await penalSuelto(false, { tag:'PENAL RIVAL', t:'ATAJÁS VOS' }))
+      await scoreC('💀 Penal en contra. No la puede sacar tu arquero.');
+    else { say('💀 ¡PENAL ATAJADO! El equipo se levanta con eso. +1 racha.', 'good'); await sumarRacha(1); }
   }
   else if(t === 'pasegolC'){
     if(chance(.40)) await scoreC('🕳 Pase gol del rival: se la dejan servida y la empujan.');
@@ -13931,11 +13969,15 @@ function situacionGol(lado, yaElegida){
         (art ? '' : '<div class="sit-ico">' + S.ico + '</div>') +
         '<div class="t">' + S.nm + '</div>' +
         '<div class="s">' +
-          (favor && S.key === 'penal' ? 'LO PATEÁS VOS · ELEGÍ EL PALO'
+          /* El penal ya no se sortea de ningun lado, asi que el cartel no puede
+             prometer un porcentaje: avisa que lo vas a jugar. A favor lo pateas
+             vos y en contra lo atajas vos. */
+          (S.key === 'penal'
+             ? (favor ? 'LO PATEÁS VOS · ELEGÍ EL PALO' : 'LO ATAJÁS VOS · ELEGÍ EL PALO')
            : favor && S.key === 'jugada' ? 'ENTRA SOLA'
            : Math.round(S.p * 100) + '% DE GOL ' + (favor ? 'A FAVOR' : 'PARA EL RIVAL')) + '</div>' +
         '<button class="cta llama n-verde" id="sitBtn">' + ICO('arco') +
-          (favor && S.key === 'penal' ? 'IR AL PENAL' : 'EJECUTAR') + '</button>' +
+          (S.key === 'penal' ? 'IR AL PENAL' : 'EJECUTAR') + '</button>' +
       '</div>';
     wrap = montarPop(wrap);
 
@@ -13946,17 +13988,34 @@ function situacionGol(lado, yaElegida){
          la tanda —elegís palo, el arquero vuela— y su probabilidad es la misma
          que tenía la tirada (2 de 3), así que no cambia el balance: cambia que
          ahora lo jugás. */
-      if(favor && S.key === 'penal'){
+      /* **El penal se patea de los dos lados.** A favor lo pateás vos; cuando
+         sale en la fundida lo patea el rival y lo atajás vos. Antes sólo se
+         jugaba el de a favor y el del rival volvía a ser una moneda: la misma
+         jugada se resolvía de dos maneras según a quién le tocara. */
+      if(S.key === 'penal'){
         cerrarPop();
-        const eqs = [ { club:G.club, escudo:G.escudo },
-                      { club:(RONDA(G.ronda) || {}).rival || 'EL RIVAL', escudo:G.escudoRival } ];
-        const conv = await penalUno(eqs, 0, [[],[]], 0, false, 0, true);
-        if(conv){
+        /* A favor viene de la racha llena; en contra, de que se te fundió el
+           equipo. Son los mismos rótulos que traía el cartel que lo abrió. */
+        const conv = await penalSuelto(favor, favor
+          ? { tag:'POSIBILIDAD DE GOL', t:'PENAL' }
+          : { tag:'SE TERMINÓ EL AGUANTE', t:'ATAJÁS VOS' });
+        if(favor && conv){
           G.gU++;
           say(S.gol + ' ¡GOL! ' + G.gU + '-' + G.gC, 'big');
           await flashGol('favor');
-        } else {
+        } else if(favor){
           say('🎯 Penal atajado. Voló y la sacó.', 'bad');
+        } else if(conv){
+          G.gC++;
+          say(S.gol + ' Gol del rival. ' + G.gU + '-' + G.gC, 'big');
+          G.racha = clamp(G.racha - 1, 0, G.rachaMax);
+          await flashGol('contra');
+        } else {
+          /* Atajarlo levanta al equipo, igual que fallar cualquier otra
+             situación en contra: es la misma regla, no una excepción. */
+          say(S.no + ' Te salvaste. +1 racha.', 'good');
+          render();
+          await sumarRacha(1);
         }
         render();
         resolve();

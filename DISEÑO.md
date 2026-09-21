@@ -12980,3 +12980,96 @@ sigue midiendo **320 × 44** —el botón— y no la ventana entera: el ancla qu
 arregló eso en su momento no se tocó.
 
 Los dos apagados por movimiento reducido siguen en pie, cada uno en su bloque.
+
+## v237 · todo penal se patea
+
+El juego tenía **seis** penales y sólo tres se jugaban. Los otros tres se
+resolvían con una moneda, así que la misma jugada terminaba de dos maneras
+distintas según de dónde saliera.
+
+| dónde | quién patea | antes | ahora |
+|---|---|---|---|
+| penal definitorio | vos | mini juego | igual |
+| tanda de penales | los dos | mini juego | igual |
+| situación de gol → PENAL | vos | mini juego | igual |
+| **carta PENAL** | vos | `chance(.50)` | **mini juego** |
+| **carta PENAL RIVAL** | el rival | `chance(.50)` | **mini juego** |
+| **fundida → PENAL** | el rival | `chance(.50)` | **mini juego** |
+
+Los tres que faltaban ahora usan el mismo pop-up: elegís palo y el arquero
+vuela. A favor lo pateás vos; en contra **lo atajás vos**, que es el lado que
+antes no existía en ningún lado del juego salvo en la tanda.
+
+### Un solo lugar donde se abre
+
+```js
+function penalSuelto(yoPateo, rot){ /* penalUno con ronda 0 */ }
+```
+
+Devuelve **si entró la pelota**, no si te fue bien: pateando vos las dos cosas
+coinciden, atajando son opuestas. Quien llama decide qué hacer con eso, y así
+el mismo pop-up sirve para los dos lados sin una rama adentro.
+
+### El rótulo lo manda quien lo abre
+
+El penal suelto escribía **«POSIBILIDAD DE GOL»** siempre, porque cuando se
+escribió salía de un solo lado. Ahora sale de tres, y en dos de ellos esa línea
+era falsa: una carta de penal no tiene nada que ver con la racha llena.
+
+| de dónde viene | qué dice |
+|---|---|
+| carta PENAL | PENAL · LO PATEÁS VOS |
+| carta PENAL RIVAL | PENAL RIVAL · ATAJÁS VOS |
+| la racha llena | POSIBILIDAD DE GOL · PENAL |
+| la fundida | SE TERMINÓ EL AGUANTE · ATAJÁS VOS |
+
+Y el cartel de la situación dejó de prometer un porcentaje cuando lo que sale
+es un penal: de los dos lados dice **IR AL PENAL**, y abajo «LO PATEÁS VOS» o
+«LO ATAJÁS VOS». Antes esa línea sólo estaba del lado de a favor.
+
+### El 50% pasa a 67%, y el cartel deja de mentir
+
+Con tres palos y el arquero eligiendo al azar, el penal entra **2 de cada 3**.
+Las dos cartas decían 50% y ahora dicen **67%**.
+
+Eso destapó una diferencia que ya estaba. Cuando la situación de gol pasó a
+mini juego, su `p` se quedó en `.50` — y esa `p` es la que alimenta el
+porcentaje del cartel de la racha llena. Con el penal jugándose al 67%:
+
+| | prometía | pagaba |
+|---|---|---|
+| antes | **51%** | 54% |
+| ahora | **54%** | 54% |
+
+El comentario del código decía que la tirada era «2 de 3». No lo era: era 50%.
+Con `p:2/3` en las dos listas —la de a favor y la del rival— el número del
+cartel y el que sale son el mismo, comprobado sumando la tabla.
+
+### El dibujo no se repite
+
+Las cartas de penal llamaban a `flashFallo` al errar, que es la tarjeta con el
+dibujo animado. El mini juego ya cierra con su propia tarjeta —¡GOL! o ATAJADO,
+con el arco o el guante—, así que esa llamada se fue: eran dos carteles
+seguidos diciendo lo mismo. El cartel con foto del gol sí se queda, como en
+cualquier otro tanto.
+
+### Verificado de punta a punta
+
+Jugando cada uno en el juego andando y mirando qué se movió:
+
+| | rótulo | resultado | efecto |
+|---|---|---|---|
+| carta PENAL | PENAL · LO PATEÁS VOS | entró | **gU +1, racha +1** |
+| carta PENAL RIVAL | PENAL RIVAL · ATAJÁS VOS | gol del rival | **gC +1** |
+| situación a favor | POSIBILIDAD DE GOL | entró | **gU +1** |
+| fundida | SE TERMINÓ EL AGUANTE · ATAJÁS VOS | gol del rival | **gC +1, racha −1** |
+
+Y los carteles de las otras cuatro situaciones siguen con su porcentaje y su
+botón EJECUTAR: córner 35%, jugada clara ENTRA SOLA.
+
+### Lo que queda por decidir
+
+**El peso de las cartas de penal en la mesa no se tocó.** Un PENAL a favor pasó
+de valer 0,50 goles a valer 0,67, y un PENAL RIVAL de costar 0,50 a costar
+0,67. Las dos cartas se volvieron más caras en lo que hacen sin que cambie cada
+cuánto aparecen. Es un número aparte y quedó anotado a propósito, no olvidado.
