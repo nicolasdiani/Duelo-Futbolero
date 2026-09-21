@@ -12928,3 +12928,55 @@ los cuatro con su dibujo de desenlace.
 
 El penal quedó intacto: tres zonas con `data-z` 0, 1 y 2, y su arquero sin
 animación de espera.
+
+## v236 · el reflejo de los botones, más seguido
+
+El reflejo que cruza los botones pasaba cada 2,2s en los ítems y cada 3,6s en
+los dos botones grandes. Ahora pasa cada **1,5s** y cada **2,4s**.
+
+| | ciclo | pasadas por minuto |
+|---|---|---|
+| los ítems | 2,2s → **1,5s** | 27 → **40** |
+| CAMPEONATO y EMPEZAR LA COPA | 3,6s → **2,4s** | 17 → **25** |
+
+### Lo que se recorta es el descanso, no el barrido
+
+El ciclo son dos cosas: el barrido y la pausa hasta el siguiente. Bajar el
+ciclo a secas aceleraría el barrido en la misma proporción, y eso es
+exactamente lo que el código ya tenía escrito que no hay que hacer: **a unos
+1.700 px/s el reflejo deja de leerse como luz y pasa a ser un parpadeo**.
+
+Así que el porcentaje del barrido sube junto con el ciclo, para que el tiempo
+absoluto casi no cambie:
+
+| | barrido | descanso | la luz |
+|---|---|---|---|
+| ítems, antes | 440ms (20%) | 1.760ms | 398 px/s |
+| ítems, ahora | **375ms (25%)** | **1.125ms** | **454 px/s** |
+| botones, antes | 936ms (26%) | 2.664ms | ~900 px/s |
+| botones, ahora | **792ms (33%)** | **1.608ms** | **970 px/s** |
+
+El descanso baja un 36% y un 40%; la luz sube un 14% y un 8%. Sigue **muy por
+debajo** del techo de 1.700.
+
+### Los retardos de la cadena bajan con el ciclo
+
+Los cuatro ítems salen escalonados para que no parezca un parpadeo de la
+pantalla. Los retardos pasan de `.28 / .56 / .84` a `.19 / .38 / .57`, un tercio
+menos, igual que el ciclo: escalonar 280ms sobre un ciclo de 1,5s dejaría al
+cuarto ítem saliendo cuando el primero ya volvió, y la cadena se leería al
+revés.
+
+### Verificado en los tres lugares donde vive
+
+| | ancho | animación | la luz |
+|---|---|---|---|
+| CAMPEONATO (`.mm-grande`) | 354 | `btnBrillo` 2,4s | — |
+| EMPEZAR LA COPA (`.cta`) | 320 | `btnBrillo` 2,4s | 970 px/s |
+| cada ítem | 71 | `itemBrillo` 1,5s | 454 px/s |
+
+Los ítems salen escalonados `0 / .19 / .38`, y el reflejo de EMPEZAR LA COPA
+sigue midiendo **320 × 44** —el botón— y no la ventana entera: el ancla que
+arregló eso en su momento no se tocó.
+
+Los dos apagados por movimiento reducido siguen en pie, cada uno en su bloque.

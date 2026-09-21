@@ -1890,17 +1890,28 @@ img{height:auto}
     transparent 38%, rgba(255,255,255,.16) 47%, rgba(255,255,255,.28) 50%,
     rgba(255,255,255,.16) 53%, transparent 62%);
   transform:translateX(-120%);
-  animation:itemBrillo 2.2s ease-in-out infinite;
+  animation:itemBrillo 1.5s ease-in-out infinite;
 }
 /* Escalonados: cuatro reflejos saliendo juntos parecen un parpadeo de la
-   pantalla; saliendo en fila se leen como cuatro objetos distintos. */
-.item:nth-of-type(2) .i-brillo::after{animation-delay:.28s}
-.item:nth-of-type(3) .i-brillo::after{animation-delay:.56s}
-.item:nth-of-type(4) .i-brillo::after{animation-delay:.84s}
-/* El barrido se lleva el 20% del ciclo —440ms— y el resto descansa. */
+   pantalla; saliendo en fila se leen como cuatro objetos distintos.
+
+   Los retardos bajan con el ciclo —un tercio menos, igual que él— para que
+   la cadena quede en la misma fase relativa: escalonar 280ms sobre 1,5s
+   dejaría al cuarto ítem saliendo cuando el primero ya volvió. */
+.item:nth-of-type(2) .i-brillo::after{animation-delay:.19s}
+.item:nth-of-type(3) .i-brillo::after{animation-delay:.38s}
+.item:nth-of-type(4) .i-brillo::after{animation-delay:.57s}
+/* **Pasa más seguido, y apenas más rápido.** El ciclo baja de 2,2 a 1,5s: de
+   27 pasadas por minuto a 40. Lo que se recorta es **el descanso** —de 1.760
+   a 1.125ms—, no el barrido, que baja de 440 a 375ms.
+
+   Esos 65ms menos suben la luz de 398 a 467 px/s. Es a propósito que sea
+   poco: más arriba está escrito que a unos 1.700 px/s el reflejo deja de
+   leerse como luz y pasa a ser un parpadeo, y ése es el techo que no hay que
+   tocar. */
 @keyframes itemBrillo{
   0%      {transform:translateX(-120%)}
-  20%,100%{transform:translateX(120%)}
+  25%,100%{transform:translateX(120%)}
 }
 @media (prefers-reduced-motion:reduce){
   /* Sin movimiento queda un filo quieto, que dice lo mismo sin insistir. */
@@ -1923,9 +1934,14 @@ img{height:auto}
    **El reloj no se puede reusar tal cual.** Un ítem mide 73px de ancho y estos
    botones 354 y 350: con el ciclo de los ítems el reflejo cruza casi cinco
    veces más distancia en el mismo tiempo —de unos 390 px/s a unos 1.700— y a
-   esa velocidad deja de leerse como luz y pasa a ser un parpadeo. Así que el
-   ciclo sube de 2,2s a 3,6s y el barrido se lleva el 26% en vez del 20%; la
-   banda también se ensancha, para que sea un reflejo y no una raya.
+   esa velocidad deja de leerse como luz y pasa a ser un parpadeo. Así que
+   tienen su propio ciclo, más largo, y el barrido se lleva un porcentaje más
+   grande; la banda también se ensancha, para que sea un reflejo y no una raya.
+
+   **Y también pasan más seguido.** El ciclo baja de 3,6 a 2,4s —de 17 pasadas
+   por minuto a 25— recortando el descanso, de 2.664 a 1.608ms. El barrido se
+   acorta poco, de 936 a 792ms, así que la luz sube de 897 a 1.061 px/s: más
+   viva, y todavía lejos de los 1.700 donde se rompe.
 
    El apagado por movimiento reducido necesita su propio bloque, acá abajo: el
    de los ítems no llega. El porqué está en el comentario que lo acompaña. */
@@ -1935,11 +1951,11 @@ img{height:auto}
     transparent 30%, rgba(255,255,255,.14) 42%, rgba(255,255,255,.3) 50%,
     rgba(255,255,255,.14) 58%, transparent 70%);
   animation-name:btnBrillo;
-  animation-duration:3.6s;
+  animation-duration:2.4s;
 }
 @keyframes btnBrillo{
   0%      {transform:translateX(-120%)}
-  26%,100%{transform:translateX(120%)}
+  33%,100%{transform:translateX(120%)}
 }
 /* El apagado va acá abajo y no arriba con el de los ítems: `.mm-grande
    .i-brillo::after` pesa (0,2,1) igual que la regla que anima, y una media
@@ -10480,7 +10496,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 235;
+const VERSION = 236;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
