@@ -8806,6 +8806,119 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .mq-esc .escudo{width:37.5px;height:45px}
   #panelPlantel .stat .n{font-size:44px;min-width:38px}
 }
+
+/* ================= LA CARTA CON LA FOTO ENTERA (v240) =================
+   Va al final a propósito, como el bloque del mini juego: pisa lo de arriba sin
+   tener que desarmarlo, y así lo viejo se sigue leyendo como lo que era.
+
+   **La ilustración pasa a ser la carta.** Antes vivía en una caja en el medio,
+   con aire arriba y abajo; ahora ocupa los 83 x 146 enteros y el texto se apoya
+   encima. Medido en un iPhone 17 Pro: la foto pasa de 68-86px de alto a **146**.
+
+   **Y no se movió nada de lugar.** El primer intento sacaba `.c-ico` del flujo
+   para estirarlo, y ahí el escudo —que vive adentro y se cuelga de su esquina—
+   se iba al borde de arriba, donde ya están el nombre y el número: 8 choques de
+   8 cartas, medido. Acá la foto la pinta la carta misma en su `::before` y la
+   imagen original se queda donde está, invisible pero ocupando su lugar, así
+   `.c-ico` conserva su caja exacta y el escudo no se entera.
+
+   Lo único que se corre son 5px del escudo, que es el relleno que le ponía la
+   chapita: su esquina pasa de 53,42 a 58,38. */
+.cell{position:relative;overflow:hidden}
+/* El velo, en una variable: lo usan tres reglas y tiene que ser el mismo. */
+.cell{
+  --velo:linear-gradient(180deg,
+    rgba(0,8,31,.92) 0%, rgba(0,8,31,.34) 26%, rgba(0,8,31,.12) 46%,
+    rgba(0,8,31,.7) 68%, rgba(0,8,31,.96) 88%, rgba(0,8,31,.99) 100%);
+}
+/* **Las tres que tienen el asunto arriba de todo** —las dos tarjetas levantadas
+   y la bandera del offside— llevan el velo más flojo. Con el de siempre entraban
+   en cuadro y salían apagadas: el arranque en .92 está justo donde está la
+   tarjeta. Probados seis tratamientos en la carta de verdad —el zoom la perdía
+   del todo—, lo que la destapa es bajar ese arranque a .58. El nombre se sigue
+   leyendo porque ahora tiene su propia sombra. */
+.cell.arriba{
+  --velo:linear-gradient(180deg,
+    rgba(0,8,31,.58) 0%, rgba(0,8,31,.16) 24%, rgba(0,8,31,.1) 46%,
+    rgba(0,8,31,.7) 68%, rgba(0,8,31,.96) 88%, rgba(0,8,31,.99) 100%);
+}
+.cell::before{
+  content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:var(--art);background-size:cover;
+  /* `--enc` es el encuadre que le toca a cada ilustración; sale de `ENCUADRE`. */
+  background-position:var(--enc, 50%) 50%;
+  opacity:.92;
+}
+.cell::after{
+  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:var(--velo);
+}
+/* La imagen original no se saca: se vuelve invisible **sin dejar su lugar**, que
+   es lo que mantiene la caja de `.c-ico` y con ella la posición del escudo. */
+.cell .c-art{visibility:hidden}
+.cell .c-top{position:relative;z-index:2}
+.cell .c-ico{position:relative;z-index:2;overflow:visible}
+.cell .c-out{position:relative;z-index:2;border-top:0;
+  text-shadow:0 1px 6px #00081f, 0 0 3px #00081f}
+/* Sobre la chapa lisa de antes el nombre no necesitaba sombra; sobre la foto sí,
+   o se pierde en las ilustraciones claras. Chica y pegada a propósito: a cuerpo
+   11 un halo ancho le come el filo a las letras. */
+.cell .c-nm{text-shadow:0 1px 2px rgba(0,4,16,.95), 0 0 6px rgba(0,4,16,.75)}
+/* El número del duelo se apoya en su propio fondo oscuro: el tinte de 10% que
+   traía no alcanza contra una foto. El borde y el color de la cifra no cambian. */
+.cell .c-val.r,.cell .c-val.b{background:rgba(0,8,31,.72)}
+
+/* ---- EL ESCUDO, CON SU VIDRIO ----
+   Se va la chapita: el fondo azul, el borde blanco y el relleno. Lo que queda es
+   el desenfoque, recortado contra la silueta del escudo con una máscara redonda.
+   No hay chapa ni borde, pero el fondo que le toca se vuelve borroso y más
+   oscuro, y el escudo se despega igual —que es lo único que la chapita hacía—. */
+.cell .c-esc{
+  z-index:3;padding:0;background:none;border:0;box-shadow:none;border-radius:0;
+  backdrop-filter:none;-webkit-backdrop-filter:none;max-height:none;overflow:visible;
+}
+.cell .c-esc::before{
+  content:'';position:absolute;inset:-2px;z-index:-1;border-radius:5px;
+  backdrop-filter:blur(4px) saturate(1.15) brightness(.72);
+  -webkit-backdrop-filter:blur(4px) saturate(1.15) brightness(.72);
+  -webkit-mask:radial-gradient(circle at 50% 45%, #000 58%, transparent 82%);
+  mask:radial-gradient(circle at 50% 45%, #000 58%, transparent 82%);
+}
+.cell .c-esc svg{filter:drop-shadow(0 1px 3px rgba(0,4,16,.9))}
+
+/* ---- EL RESALTADO ----
+   El brillo diagonal vivía en `.c-ico::after`, que ahora es una caja chica en el
+   medio: pasa al velo, como una segunda capa por encima. La foto sigue subiendo
+   de 92 a 100% al tomar la fila, igual que antes. */
+.cell .c-ico::after{display:none}
+.cell:hover::before,.row.hl .cell::before,.cell.colhl::before{opacity:1}
+.row.hl .cell:not(.empty):not(.lock)::after,
+.cell.colhl:not(.empty):not(.lock)::after{
+  background:
+    linear-gradient(118deg,rgba(255,255,255,0) 38%,rgba(255,255,255,.16) 50%,rgba(255,255,255,0) 62%),
+    var(--velo);
+}
+
+/* ---- LA TRABADA ----
+   Mismo trato que tenía, en la capa nueva: 26% de foto, sin color y fuera de
+   foco. El candado se muda de `.cell::after` —que ahora es el velo— al `::before`
+   de la ilustración, que sigue estando en el medio de la carta. */
+.cell.lock::after,.cell.destrabable::after{
+  content:'';top:0;left:0;transform:none;font-size:0;background:var(--velo);opacity:1;
+}
+.cell.lock::before{opacity:.26;filter:grayscale(1) blur(4px) brightness(.9)}
+.cell.lock.destrabable::before{opacity:.75;filter:grayscale(.15)}
+.cell.lock .c-ico::before{
+  content:'🔒';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);font-size:22px;opacity:.9;z-index:4;
+}
+.cell.destrabable .c-ico::before{content:'🔓';opacity:1}
+/* El desenfoque se mide en píxeles y la carta no: 4px son el 2% de una carta de
+   escritorio y el 5% de una de teléfono. Mismo escalón que tenía la imagen. */
+@media (max-width:440px){
+  .cell.lock::before{filter:grayscale(1) blur(1.6px) brightness(.9)}
+}
+
 </style>
 </head>
 <body>
@@ -9249,6 +9362,34 @@ const ART_RIVAL = {
 };
 const artSituacion = (key, favor) =>
   (favor ? null : artCarta(ART_RIVAL[key])) || artCarta(key);
+
+/* **Dónde mirar cada ilustración.** La carta es angosta y alta, así que de una
+   foto apaisada entra una franja: recortada al medio, la mitad de las cartas
+   mostraba césped y el asunto quedaba afuera —el banderín del córner, la
+   bandera del offside, la tarjeta del árbitro—.
+
+   El número es el `background-position` horizontal, y salió de mirar las
+   treinta recortadas al alto de la carta en cinco posiciones (15, 32, 50, 68 y
+   85%) y quedarse con la que deja adentro lo que la carta cuenta. El vertical
+   no hace falta: el recorte usa el alto entero.
+
+   El segundo campo marca las que tienen el asunto **arriba de todo**, donde el
+   velo arranca más oscuro para que se lea el nombre. Esas tres llevan el velo
+   flojo, que es lo único que las destapa —el zoom las perdía del todo—.
+
+   AUTOGOL RIVAL y AUTOGOL PROPIO comparten la foto (`autogol` es alias de
+   `encontra`): con el encuadre se vuelven dos, una muestra el festejo y la otra
+   las manos en la cabeza. */
+const ENCUADRE = {
+  pasegol:[30], penal:[22], corner:[15], libre:[38], jugada:[25],
+  pasegolC:[82], penalC:[26], cornerC:[15], libreC:[50], jugadaC:[26],
+  defensor:[26], arquero:[32], medio:[40], delantero:[38], contra:[62],
+  roja:[28, 'arriba'], amarilla:[30, 'arriba'], offside:[66, 'arriba'],
+  calambre:[32], lesion:[45],
+  noche:[60], ola:[25], hinchada:[40], cano:[42], cooling:[62],
+  fama:[50], publicidad:[72], sponsor:[50],
+  encontra:[30], autogol:[78]
+};
 
 /* Devuelve la imagen si existe, y si no el emoji. Así se puede ir migrando de a
    poco: la carta que todavía no tiene arte sigue mostrando su emoji. */
@@ -10543,7 +10684,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 239;
+const VERSION = 240;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -11335,6 +11476,11 @@ function duelo(cell, mio, gana, pierde, empate, premio, golGana){
   return { label: etiqueta + '<span class="efe">' + empate + '</span>', tone: caro ? 'hot' : 'risk' };
 }
 
+/* La chapa de MINI JUEGO, escrita una sola vez: la usan los duelos, las dos
+   cartas de penal y las dos listas de situación de gol. */
+const CHAPA_MJ = '<span class="mj-lb"><svg class="mj-ico" viewBox="0 0 24 24"'
+  + ' aria-hidden="true"><use href="#i-dos"/></svg>MINI JUEGO</span>';
+
 function predict(cell){
   if(!cell) return { label:'', tone:'neutral' };
   const t = cell.type;
@@ -11387,11 +11533,18 @@ function predict(cell){
   if(t === 'autogol')   return { label:'GOL' + R, tone:'good' };
   if(t === 'contra')    return { label:'GOL RIVAL<span class="efe"><b>-1 <i class="ir"></i></b></span>', tone:'bad' };
   if(t === 'encontra')  return { label:'GOL RIVAL<span class="efe"><b>-1 <i class="ir"></i></b></span>', tone:'bad' };
-  if(t === 'penal')     return { label:'67% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
+  /* **El penal no es un porcentaje, es un mini juego.** Desde v237 se patea
+     siempre, así que el 67% del frente era la chance de una moneda que ya no se
+     tira: lo que pasa depende de a dónde le pegues. El renglón de abajo —lo que
+     te deja— no cambia.
+
+     El subtítulo va de una palabra por medida: a 320 la carta tiene 62x129 y
+     «LO PATEÁS VOS» se parte en dos renglones y se sale 4px de la caja. */
+  if(t === 'penal')     return { label:CHAPA_MJ + '<span class="mj">PATEÁS</span><span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
   if(t === 'pasegol')   return { label:'40% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
   if(t === 'libre')     return { label:'35% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
   if(t === 'corner')    return { label:'30% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
-  if(t === 'penalC')    return { label:'67% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
+  if(t === 'penalC')    return { label:CHAPA_MJ + '<span class="mj">ATAJÁS</span><span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
   if(t === 'pasegolC')  return { label:'40% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
   if(t === 'cornerC')   return { label:'30% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
   if(t === 'libreC')    return { label:'35% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
@@ -11725,6 +11878,21 @@ function makeCellEl(cell, r, c){
      stats —ganás verde, perdés rojo, empatás amarillo—, así que el resaltado
      también te dice cómo venís. */
   el.classList.add('tono-' + (p.tone === 'coin' ? 'good' : p.tone));
+
+  /* **La ilustración la pinta la carta.** Desde v240 la foto ocupa los 83x146
+     enteros y se dibuja en el `::before` de la celda, así que acá viajan su URL
+     y su encuadre. La `<img>` de abajo se queda igual, invisible: es lo que
+     mantiene la caja de `.c-ico` y con ella la posición del escudo. */
+  const art = artCarta(cell.type);
+  if(art){
+    el.style.setProperty('--art', 'url(' + art + ')');
+    const enc = ENCUADRE[cell.type];
+    if(enc){
+      el.style.setProperty('--enc', enc[0] + '%');
+      if(enc[1]) el.classList.add('arriba');
+    }
+  }
+
   el.innerHTML =
     '<div class="c-top">' +
       '<span class="c-nm">' + T.nm + '</span>' +
@@ -11907,15 +12075,20 @@ const esperadoDe = lista => Math.round(
 function minisGol(lista, favor){
   return '<div class="fg-minis">' +
     lista.map(x => {
-      const mj = favor && x.key === 'penal';   // el penal se patea, no se sortea
+      /* El penal se patea **de los dos lados**: a favor lo pateás vos, en contra
+         lo atajás vos. Estaba marcado sólo del lado de a favor, de cuando el del
+         rival se sorteaba solo. */
+      const mj = x.key === 'penal';
       const art = artCarta(x.key);
-      const chapa = mj ? '<span class="mj-lb"><svg class="mj-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-dos"/></svg>MINI JUEGO</span>' : '';
+      const chapa = mj ? CHAPA_MJ : '';
       return '<div class="fg-mini' + (favor && x.p === 1 ? ' seguro' : '') + (mj ? ' mj' : '') + '">' +
         (art
           ? '<span class="fg-art"><img src="' + art + '" alt="">' + chapa + '</span>'
           : '<span class="fg-ico">' + x.ico + '</span>' + chapa) +
         '<span class="fg-cnm">' + x.nm + '</span>' +
-        '<span class="fg-pct">' + (x.p === 1 ? 'GOL' : Math.round(x.p * 100) + '% GOL') + '</span>' +
+        /* Y el porcentaje se va con él: donde hay mini juego el número no es lo
+           que decide. */
+        '<span class="fg-pct">' + (mj ? 'MINI JUEGO' : x.p === 1 ? 'GOL' : Math.round(x.p * 100) + '% GOL') + '</span>' +
       '</div>';
     }).join('') +
   '</div>';

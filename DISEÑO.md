@@ -13245,3 +13245,140 @@ ningún ancho. En escritorio la ficha entera queda en 284 × 255.
 
 Usado con el techo en 3: `aguanteMax` 3 → **4**, `aguante` 1 → **3**, el ítem
 gastado. Reabierta la ficha con el techo ya entero, la chapa **no está**.
+
+## v240 · la carta con la foto entera
+
+La ilustración deja de ser un recuadro en el medio de la carta y pasa a **ser la
+carta**: ocupa los 83 × 146 enteros y el texto se apoya encima, con un velo que
+se cierra arriba y abajo y se abre en el medio. Medido en un iPhone 17 Pro, la
+foto pasa de **68–86px de alto a 146**.
+
+### Y no se movió nada de lugar
+
+El nombre sigue arriba con el número del duelo a su derecha, el escudo colgado
+de la esquina de la ilustración y el resultado abajo. Esa era la condición, y
+casi no se cumple.
+
+El primer intento sacaba `.c-ico` del flujo para estirarlo a la carta. Ahí el
+escudo —que vive adentro y se cuelga de su esquina— se iba al borde de arriba,
+donde ya están el nombre y el número: medido, **8 choques de 8 cartas**.
+
+Lo que funciona es al revés:
+
+```css
+.cell::before{ background-image:var(--art); ... }   /* la foto la pinta la carta */
+.cell .c-art{ visibility:hidden }                   /* la <img> se queda en su lugar */
+```
+
+`visibility` y no `display`: la imagen original **sigue ocupando su caja**, así
+`.c-ico` conserva la suya y el escudo no se entera de nada. El único
+desplazamiento es de **5px** —su esquina pasa de 53,42 a 58,38—, que es el
+relleno que le ponía la chapita al irse.
+
+### El escudo, con su vidrio
+
+Se va la chapita: el fondo azul al 50%, el borde blanco y el relleno. Lo que
+queda es el desenfoque, **recortado contra la silueta del escudo** con una
+máscara redonda. No hay chapa ni borde, pero el fondo que le toca se vuelve
+borroso y más oscuro y el escudo se despega igual — que es lo único que la
+chapita hacía.
+
+### El nombre, con sombra
+
+Sobre la chapa lisa de antes no la necesitaba. Sobre la foto sí, o se pierde en
+las ilustraciones claras. Va **chica y pegada** —`0 1px 2px` más un halo de 6
+apenas visible—, no el resplandor grande del resultado: a cuerpo 11 un halo
+ancho le come el filo a las letras.
+
+### Dónde mirar cada ilustración
+
+La carta es angosta y alta, así que de una foto apaisada entra una franja.
+Recortada al medio, la mitad de las cartas mostraba césped y el asunto quedaba
+afuera: el banderín del córner, la bandera del offside, la tarjeta del árbitro.
+
+Salieron las 33 imágenes del juego a archivos y se miraron una por una,
+recortadas al alto de la carta en cinco posiciones. La tabla vive en `ENCUADRE`
+y son **treinta encuadres**: sólo tres se quedaron en el 50 del medio —el
+tiro libre del rival, la camiseta de FAMA y la de SPONSOR—. Los otros
+veintisiete se movieron; los que más:
+
+| ilustración | de | a | qué entra ahora |
+|---|---|---|---|
+| `pasegolC` | 50 | **82** | el que llega a recibir, que es la amenaza |
+| `publicidad` | 50 | **72** | los carteles con marca, no el césped vacío |
+| `offside` | 50 | **66** | la bandera levantada del asistente |
+| `cooling` | 50 | **62** | el técnico y el cartel de COOLING BREAK |
+| `corner` · `cornerC` | 50 | **15** | el banderín y la pelota |
+| `penal` | 50 | **22** | el árbitro señalando el punto y el caído |
+
+**AUTOGOL RIVAL y AUTOGOL PROPIO son la misma foto** —`autogol` es alias de
+`encontra` en `ART`—. Con el encuadre se vuelven dos cartas distintas: una
+muestra el festejo (78%) y la otra las manos en la cabeza (30%).
+
+### Las tres que el velo tapaba
+
+La roja, la amarilla y el offside tienen su asunto **arriba de todo**, justo
+donde el velo arranca en .92 para que se lea el nombre. Corregir el encuadre no
+alcanzaba: entraban en cuadro y salían apagadas.
+
+Probados seis tratamientos en la carta de verdad —el zoom las perdía del todo—,
+lo único que las destapa es **bajar ese arranque a .58**. Esas tres llevan la
+clase `arriba` y su propio `--velo`. El nombre se sigue leyendo porque ahora
+tiene su sombra.
+
+Y el offside necesitó una segunda pasada: en la hoja de recortes sueltos el 58%
+alcanzaba, pero **puesto dentro de la carta, con el nombre encima, la bandera
+quedaba partida contra el borde**. A 66 entra entera.
+
+### El penal no es un porcentaje
+
+Desde la v237 todo penal se patea, así que el **67%** del frente era la chance de
+una moneda que ya no se tira: lo que pasa depende de a dónde le pegues. Las dos
+cartas y los dos pop-ups pasan a decir **MINI JUEGO**, con la misma chapa que
+usan los duelos, y el renglón de abajo —lo que te deja— no cambia.
+
+| | antes | ahora |
+|---|---|---|
+| carta PENAL | 67% GOL | **MINI JUEGO · PATEÁS** |
+| carta PENAL RIVAL | 67% RIVAL | **MINI JUEGO · ATAJÁS** |
+| POSIBILIDAD DE GOL | 67% GOL | **MINI JUEGO** |
+| SE TERMINÓ EL AGUANTE | 67% GOL | **MINI JUEGO** |
+
+En el pop-up del rival la chapa **no estaba**: `minisGol` la ponía sólo del lado
+de a favor, de cuando el penal del rival se sorteaba solo. Ahora va de los dos
+lados, porque de los dos lados se juega.
+
+El subtítulo es de una palabra **por medida**: a 320 la carta tiene 62 × 129 y
+«LO PATEÁS VOS» se parte en dos renglones y se sale 4px de la caja. «PATEÁS»
+entra con 5px de sobra.
+
+### Lo que se movió de lugar en el CSS
+
+Dos piezas tuvieron que mudarse porque su casa cambió de dueño:
+
+- **el candado de la trabada** vivía en `.cell::after`, que ahora es el velo;
+  pasa al `::before` de la ilustración, que sigue estando en el medio;
+- **el brillo diagonal del resaltado** vivía en `.c-ico::after`, que ahora es una
+  caja chica; pasa a ser una segunda capa del mismo velo.
+
+La trabada conserva su trato: 26% de foto, sin color y fuera de foco, con el
+desenfoque escalado por ancho de carta. Y no se enciende al tomar la fila, como
+siempre.
+
+### Medido
+
+Con un tablero armado a mano con las dieciséis cartas más exigentes —las tres
+del velo flojo, los dos penales, una trabada, un duelo, la del nombre más
+largo—, en cuatro anchos:
+
+| pantalla | carta | desbordes |
+|---|---|---|
+| 320 × 800 | 62 × 129 | **ninguno** |
+| 402 × 874 | 83 × 146 | **ninguno** |
+| 1280 × 860 | 189 × 224 | **ninguno** |
+| 874 × 402 (apaisado) | 68 × 189 | **ninguno** |
+
+Comprobado elemento por elemento —nombre, número, resultado, escudo y chapa—
+contra el borde de la carta, no a ojo. Las dieciséis con su foto y su encuadre,
+el escudo de 18 / 19 / 21 / 33px según pantalla, y el juego jugándose de punta a
+punta sin un error en consola.
