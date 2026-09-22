@@ -13384,3 +13384,27 @@ Comprobado elemento por elemento —nombre, número, resultado, escudo y chapa�
 contra el borde de la carta, no a ojo. Las dieciséis con su foto y su encuadre,
 el escudo de 18 / 19 / 21 / 33px según pantalla, y el juego jugándose de punta a
 punta sin un error en consola.
+
+### Lo que se deja como está
+
+**El nombre partido de las cuatro de duelo.** DELANTERO, DEFENSOR, ARQUERO y
+MEDIO llevan el número del duelo arriba a la derecha, y ese número le come el
+ancho al nombre: le quedan **47px** de los 72 que usa cualquier otra carta. Con
+`overflow-wrap:break-word` una palabra que no entra sola se parte donde sea, así
+que sale `DELANTER / O` a 390 y tres partidas a 320 —las cartas sin número no se
+parten nunca—.
+
+Es de antes de v240: la caja del nombre no cambió. Se probaron tres arreglos, los
+tres sobre `.cell:not(.sin-val)`, y los tres funcionan —cero nombres partidos,
+6 de 6 cartas en su medida, nada fuera de la caja—:
+
+| | partidos a 320 | foto libre 320 / 390 / 402 |
+|---|---|---|
+| como está | **3** | 48 / 72 / 80 |
+| el número arriba, el nombre abajo | 0 | 36 / 49 / 56 |
+| el nombre arriba, el número abajo | 0 | **60 / 73 / 80** |
+| el número flotado | 0 | **60 / 73 / 80** |
+
+Dos de los tres dejan **más** foto que hoy, no menos: el renglón de más ya se
+estaba pagando con el nombre partido, sólo que mal. Aun así queda sin aplicar
+**a propósito**: es una decisión tomada, no un olvido.
