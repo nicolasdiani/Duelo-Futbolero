@@ -10735,7 +10735,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 243;
+const VERSION = 244;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -11614,7 +11614,7 @@ function predict(cell){
   if(t === 'libre')     return { label:'35% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
   if(t === 'corner')    return { label:'30% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
   /* El del rival ya era rojo y sigue siéndolo: lo único que cambia es la chapa. */
-  if(t === 'penalC')    return { label:CHAPA_MJ_GOL + '<span class="mj">ATAJÁS</span><span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
+  if(t === 'penalC')    return { label:CHAPA_MJ_GOL + '<span class="mj">ATAJÁS</span><span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+2 <i class="ir"></i></span></span>', tone:'bad' };
   if(t === 'pasegolC')  return { label:'40% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
   if(t === 'cornerC')   return { label:'30% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
   if(t === 'libreC')    return { label:'35% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
@@ -13981,11 +13981,20 @@ async function resolveCell(r, c, rowIdx){
   }
   /* El mismo mini juego del otro lado: acá **atajás vos**. El palo que tocás
      es adonde vuela tu arquero y la pelota la manda el rival, así que se gana
-     adivinando —al revés del penal a favor, donde se gana esquivando—. */
+     adivinando —al revés del penal a favor, donde se gana esquivando—.
+
+     **Y atajarlo paga 2, no 1.** Es la única de las cuatro cartas del rival
+     donde el que patea tiene la ventaja: se salva 1 de cada 3, contra el 60 a
+     70% de las otras. Con +1 la carta valía −0,33 ⚡ por jugada mientras que
+     el córner rival valía +0,40; con +2 queda en **cero**, que es lo que
+     corresponde a la más peligrosa de las cuatro: la única que no te regala
+     racha en promedio. Con +3 pasaría a +0,33 y un penal en contra sería tan
+     bueno para la racha como un córner en contra, que te hace el gol menos de
+     la mitad de las veces. */
   else if(t === 'penalC'){
     if(await penalSuelto(false, { tag:'PENAL RIVAL', t:'ATAJÁS VOS' }))
       await scoreC('💀 Penal en contra. No la puede sacar tu arquero.');
-    else { say('💀 ¡PENAL ATAJADO! El equipo se levanta con eso. +1 racha.', 'good'); await sumarRacha(1); }
+    else { say('💀 ¡PENAL ATAJADO! El equipo se levanta con eso. +2 racha.', 'good'); await sumarRacha(2); }
   }
   else if(t === 'pasegolC'){
     if(chance(.40)) await scoreC('🕳 Pase gol del rival: se la dejan servida y la empujan.');
@@ -14334,10 +14343,13 @@ function situacionGol(lado, yaElegida){
           await flashGol('contra');
         } else {
           /* Atajarlo levanta al equipo, igual que fallar cualquier otra
-             situación en contra: es la misma regla, no una excepción. */
-          say(S.no + ' Te salvaste. +1 racha.', 'good');
+             situación en contra. **Paga 2 como la carta**: es el mismo penal y
+             la misma atajada de 1 en 3, así que cobrarlo distinto según de
+             dónde salió sería una asimetría sin motivo. Las otras situaciones
+             en contra siguen pagando 1, porque fallan mucho más seguido. */
+          say(S.no + ' Te salvaste. +2 racha.', 'good');
           render();
-          await sumarRacha(1);
+          await sumarRacha(2);
         }
         render();
         resolve();

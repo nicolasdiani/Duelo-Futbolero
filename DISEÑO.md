@@ -13622,3 +13622,53 @@ lado, a 402 y a 320:
 
 Nada cortado y nada fuera de la carta en ninguno de los dos anchos, con la chapa
 en 47/47 a 320 y 64/64 a 402.
+
+## v244 · atajar el penal del rival paga 2
+
+Atajarlo daba **+1 ⚡**, lo mismo que despejar un córner en contra. Pero no es lo
+mismo: es la única de las cuatro cartas del rival donde **el que patea tiene la
+ventaja**.
+
+| carta del rival | te hace el gol | te salvás | ⚡ al salvarte | ⚡ por jugada |
+|---|---|---|---|---|
+| CÓRNER RIVAL | 30% | 70% | +1 | **+0,40** |
+| LIBRE RIVAL | 35% | 65% | +1 | **+0,30** |
+| PASE GOL RIVAL | 40% | 60% | +1 | **+0,20** |
+| PENAL RIVAL | **67%** | **33%** | +1 | **−0,33** |
+
+Las otras tres **te regalan racha en promedio** y el penal era el único que te la
+sacaba. Con +2 queda en **cero**: deja de restar y sigue siendo la más dura de
+las cuatro, que es lo que corresponde a la que te hace el gol dos de cada tres
+veces.
+
+### Por qué 2 y no 3
+
+Con 3 la carta pasaría a **+0,33 ⚡ por jugada**: más que el pase gol y el libre
+del rival, y prácticamente lo mismo que el córner, que te hace el gol **menos de
+la mitad de las veces** que el penal. Un penal en contra sería tan bueno para tu
+racha como un córner en contra, y eso ya no se sostiene.
+
+```
+premio al atajar    ⚡ por jugada
+   +1                  −0,33      el de antes
+   +2                   0,00      el punto exacto de equilibrio
+   +3                  +0,33      mejor que tres cartas menos peligrosas
+```
+
+El 2 no es un número al ojo: es donde `(1/3)·premio − (2/3)·1` da cero.
+
+### Y paga igual venga de donde venga
+
+El penal del rival sale de dos lados —la carta y la fundida— y los dos pagan 2.
+Es el mismo mini juego y la misma atajada de 1 en 3, así que cobrarlo distinto
+según el origen sería una asimetría sin motivo. Las otras situaciones en contra
+siguen pagando 1, porque fallan mucho más seguido.
+
+El penal **a favor** no se tocó: convertirlo sigue dando +1 ⚡ y el gol, que es
+donde está el premio de verdad.
+
+### Medido
+
+Con la racha en 0: atajar suma **2**, las otras tres del rival suman **1**. Desde
+3 el tope sigue recortando —queda en 4 de 4— y ahí se dispara el aviso de racha
+llena, como con cualquier otra carta. La carta lo dice: **−1 ⚡ o +2 ⚡**.
