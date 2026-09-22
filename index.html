@@ -6994,13 +6994,21 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   fill:var(--gold);fill-opacity:.16;
 }
 
-/* El arquero: **quieto** mientras decidís, vuelo cuando disparás.
+/* El arquero: **se mueve apenas** mientras decidís, vuelo cuando disparás.
 
-   Se hamacaba de lado a lado con `arqVaiven` mientras elegías. Con el amague
-   del pateador —el retroceso de la pelota justo antes del tiro— hay dos cosas
-   moviéndose para decir lo mismo, y la que importa es la de la pelota: es la
-   que anticipa el disparo. El arquero esperando quieto, además, es lo que
-   pasa de verdad en un penal. */
+   Se hamacaba con `arqVaiven`, se le sacó el vaivén, y ahora vuelve más chico.
+   El argumento por el que se había ido sigue en pie y es justamente el que
+   define cuánto se mueve: con el amague del pateador —el retroceso de la pelota
+   justo antes del tiro— hay dos cosas moviéndose, y la que importa es la de la
+   pelota, que es la que anticipa el disparo.
+
+   Por eso éste es **la mitad y va más lento**: ±4px contra los ±8 del mano a
+   mano, 2,6s contra 1,9. A esa velocidad no compite con el amague —que dura
+   180ms— y alcanza para que la escena no parezca un dibujo.
+
+   Y se apaga solo: vive en `.idle`, que `animarPenal` saca antes del vuelo, así
+   que nada le pisa la atajada. Lo heredan los tres penales del juego —el
+   definitorio, la tanda de la final y el modo suelto—, que comparten este arco. */
 /* Mismo caso que la pelota: sin `fill-box` el `rotate` del vuelo pivotea
    sobre el (0,0) del viewBox y le corre la figura entera, así que los guantes
    no quedaban donde decían las cuentas. */
@@ -7009,7 +7017,11 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   filter:drop-shadow(0 3px 7px rgba(0,0,0,.55));
   transform-box:fill-box;transform-origin:center;
 }
-/* `arqVaiven` se fue con el vaivén: no lo usaba nadie más. */
+.pp-arq.idle{animation:arqPeso 2.6s ease-in-out infinite}
+@keyframes arqPeso{
+  0%,100%{transform:translateX(-4px) rotate(-1.2deg)}
+  50%    {transform:translateX(4px) rotate(1.2deg)}
+}
 
 /* `transform-box:fill-box` es obligatorio para escalar en SVG: sin eso el
    `transform-origin` es el (0,0) del viewBox y no el centro de la pelota, así
@@ -10684,7 +10696,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 240;
+const VERSION = 241;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

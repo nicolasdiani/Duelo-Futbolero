@@ -13408,3 +13408,73 @@ tres sobre `.cell:not(.sin-val)`, y los tres funcionan —cero nombres partidos,
 Dos de los tres dejan **más** foto que hoy, no menos: el renglón de más ya se
 estaba pagando con el nombre partido, sólo que mal. Aun así queda sin aplicar
 **a propósito**: es una decisión tomada, no un olvido.
+
+## v241 · el arquero del penal, moviéndose apenas
+
+Mientras elegís el palo, el arquero esperaba **inmóvil** y lo único que se movía
+en la escena eran los tres palos titilando. Ahora se hamaca:
+
+```css
+.pp-arq.idle{animation:arqPeso 2.6s ease-in-out infinite}
+@keyframes arqPeso{
+  0%,100%{transform:translateX(-4px) rotate(-1.2deg)}
+  50%    {transform:translateX(4px) rotate(1.2deg)}
+}
+```
+
+### Esto ya se había sacado, y por buenos motivos
+
+El arquero se hamacaba con `arqVaiven` y el vaivén se quitó con este argumento,
+que estaba escrito en el CSS: con el **amague del pateador** —el retroceso de la
+pelota justo antes del tiro— hay dos cosas moviéndose para decir lo mismo, y la
+que importa es la de la pelota, que es la que anticipa el disparo.
+
+Ese argumento sigue en pie, y es justamente el que define **cuánto** se mueve el
+que vuelve:
+
+| | mano a mano | penal, antes | penal, ahora |
+|---|---|---|---|
+| recorrido | ±8px | — | **±4px** |
+| giro | ±3° | — | **±1,2°** |
+| ciclo | 1,9s | — | **2,6s** |
+
+La mitad de recorrido y un 37% más lento. A esa velocidad no compite con el
+amague, que dura 180ms, y alcanza para que la escena no parezca un dibujo.
+
+### Por qué el de costado y no otro
+
+Se probaron tres en la carta de verdad: el paso de costado, un agacharse y
+estirarse —cargando el salto, sin moverse para los lados— y los dos guantes
+subiendo y bajando en contrafase con el cuerpo quieto.
+
+Los dos últimos tienen una ventaja real: **no dicen nada sobre a qué palo va a
+volar**, que es la única objeción seria contra el movimiento lateral. Ganó el de
+costado igual, por parecerse más a un arquero, y el riesgo queda acotado por la
+velocidad: a 2,6s por ciclo, en el instante del amague el arquero está donde
+estaba hace medio segundo.
+
+### Se apaga solo
+
+Vive en `.idle`, que es la clase que `animarPenal` saca **antes** del vuelo:
+
+```js
+arq.classList.remove('idle');   // y recién después el amague y el disparo
+```
+
+Comprobado en un penal de verdad: antes del tiro el arquero tiene
+`pp-arq idle` con `arqPeso 2.6s`; apenas se elige el palo queda en `pp-arq`,
+con `animation:none` y la matriz del vuelo puesta. Nada le pisa la atajada.
+
+### Y vale para los tres
+
+El definitorio, la tanda de la final y el modo suelto comparten `arcoPenalHTML`
+y `animarPenal`, así que la regla se escribe una vez y la heredan los tres.
+
+El **mano a mano** del arquero conserva el suyo —`mamArq`, ±8px y ±3°— y no se
+tocó: ahí el movimiento del arquero es toda la vida que tiene la escena, porque
+no hay amague que lo acompañe. Quedan dos vaivenes para el mismo dibujo, a
+propósito y por distinto motivo.
+
+Movimiento reducido apaga los dos: las dos reglas que ya existían
+—`.pp-zona, .pp-arq.idle` y `.sit.mam .pp-arq.idle`— ponen `animation:none`, y
+la nueva cae adentro de la primera sin tocar nada.
