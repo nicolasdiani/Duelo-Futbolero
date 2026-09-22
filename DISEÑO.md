@@ -13306,7 +13306,7 @@ veintisiete se movieron; los que más:
 |---|---|---|---|
 | `pasegolC` | 50 | **82** | el que llega a recibir, que es la amenaza |
 | `publicidad` | 50 | **72** | los carteles con marca, no el césped vacío |
-| `offside` | 50 | **66** | la bandera levantada del asistente |
+| `offside` | 50 | **58** | la bandera levantada del asistente |
 | `cooling` | 50 | **62** | el técnico y el cartel de COOLING BREAK |
 | `corner` · `cornerC` | 50 | **15** | el banderín y la pelota |
 | `penal` | 50 | **22** | el árbitro señalando el punto y el caído |
@@ -13326,9 +13326,11 @@ lo único que las destapa es **bajar ese arranque a .58**. Esas tres llevan la
 clase `arriba` y su propio `--velo`. El nombre se sigue leyendo porque ahora
 tiene su sombra.
 
-Y el offside necesitó una segunda pasada: en la hoja de recortes sueltos el 58%
-alcanzaba, pero **puesto dentro de la carta, con el nombre encima, la bandera
-quedaba partida contra el borde**. A 66 entra entera.
+Y el offside necesitó tres pasadas. En la hoja de recortes sueltos el 58%
+alcanzaba; puesto en la carta pareció que la bandera quedaba partida y se probó
+el 66. Comparadas las ocho posiciones **una al lado de la otra en el tablero**,
+el 66 la corta más, no menos: a 58 la bandera es la más grande y la más entera,
+con el brazo levantado debajo. Volvió a 58.
 
 ### El penal no es un porcentaje
 
