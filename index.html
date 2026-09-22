@@ -10735,7 +10735,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 244;
+const VERSION = 245;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -10745,8 +10745,28 @@ const AGUANTE_PISO = 2;
 const RACHA_MAX    = 4;
 /* La racha es una moneda con dos precios: la COLUMNA cuesta 2 y está
    disponible a mitad de camino; la SITUACIÓN DE GOL exige la racha llena y la
-   consume entera. Guardar hasta 4 o gastar de a 2 es la decisión. */
-const COSTO_COLUMNA = 3;
+   consume entera. Guardar hasta 4 o gastar de a 2 es la decisión.
+
+   **Este comentario decía esto desde siempre y la constante decía 3.** No
+   quedó viejo: nació en 3 en la v113 y describe un diseño que nunca se aplicó.
+   Con 3 la columna costaba tres de los cuatro rayos que pide la situación, o
+   sea que gastarla era renunciar a la llegada, y nadie hacía ese cambio.
+
+   Medido sobre 8.000 campeonatos con el mazo del juego:
+
+     regla                    columnas    situaciones   boton habilitado
+     puerta 3, cuesta 3           3,9          1,4            11,8%
+     solo el precio a 2           4,8          1,6            14,3%
+     solo la puerta a 2           4,0          1,4            35,3%
+     puerta 2, cuesta 2           7,7          0,9            19,1%
+
+   Hay que bajar las dos: sola, cada mitad no mueve nada. Y lo que de verdad
+   cambia es el tipo de cambio —cuántas columnas compra cada situación que
+   resignás—: pasa de **1,7 a 2,8**, un 60% mejor. Por 1,7 nadie entregaba la
+   llegada.
+
+   La puerta sale sola: `colReady` se compara contra esta misma constante. */
+const COSTO_COLUMNA = 2;
 
 /* Cuántas cartas puede haber trabadas a la vez. Cuatro es lo normal —una por
    fila— y la quinta se reserva al castigo por repetirse de fila. */
@@ -11853,9 +11873,15 @@ function renderBoard(){
   if(G.armed && G.armed.kind === 'col') markCol(G.armed.idx, true);
 
   // mientras la racha esté cargada, la línea de ayuda lo recuerda
+  /* Tres estados y no dos. Con la columna abriéndose a mitad de camino hay un
+     tramo —racha 2 o 3— en el que los botones se encienden y antes la línea no
+     decía nada: el jugador veía cuatro botones dorados sin que nada le
+     explicara qué hacían ni cuánto costaban. */
   if(!G.busy && !G.targeting && !G.armed && G.phase === 'match'){
     $('hint').innerHTML = rachaReady
       ? '<i class="ir"></i> <b>Racha llena.</b> Seguí con una FILA, o gastala en la <b>situación de gol</b> o una <b>columna</b>.'
+      : colReady
+      ? '<i class="ir"></i> Podés gastar ' + COSTO_COLUMNA + ' en una <b>COLUMNA</b>, o guardarla para la <b>situación de gol</b>.'
       : 'Elegí una FILA. El azar decide qué carta te toca.';
   }
 }

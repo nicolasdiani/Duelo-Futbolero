@@ -13672,3 +13672,94 @@ donde está el premio de verdad.
 Con la racha en 0: atajar suma **2**, las otras tres del rival suman **1**. Desde
 3 el tope sigue recortando —queda en 4 de 4— y ahí se dispara el aviso de racha
 llena, como con cualquier otra carta. La carta lo dice: **−1 ⚡ o +2 ⚡**.
+
+## v245 · la columna cuesta 2 y se abre a mitad de camino
+
+`COSTO_COLUMNA` pasa de **3 a 2**. La puerta baja sola: `colReady` se compara
+contra esa misma constante, así que el botón que se habilitaba con 3 rayos ahora
+se habilita con 2.
+
+### El problema, medido
+
+La columna casi no se usaba, y el precio era la razón: **costaba 3 de los 4
+rayos que pide la situación de gol**, o sea que gastarla era renunciar a la
+llegada.
+
+Antes del ingreso hay que mirar la entrada. Por cada carta que sale, la racha se
+mueve **+0,26 en promedio**: el 57,6% de las cartas no la toca, el 26,5% da +1,
+el 4,7% da +2, el 10,1% la baja y el 1,1% la llena de golpe. A ese ritmo hacen
+falta **casi 4 jugadas para ganar un rayo y unas 16 para llenar la barra** — más
+de un partido y medio. El jugador no guardaba por avaricia: guardaba porque el
+ingreso es lento.
+
+En un campeonato entero —45 jugadas, con la racha arrastrándose de un partido al
+siguiente— y guardándola siempre, la racha vive así:
+
+| 0 ⚡ | 1 ⚡ | 2 ⚡ | 3 ⚡ | 4 ⚡ |
+|---|---|---|---|---|
+| 31,6% | 23,6% | 20,6% | 15,9% | **8,3%** |
+
+Con la puerta en 3 el botón se habilitaba el **24,2%** de las jugadas. Con la
+puerta en 2, el **44,7%**.
+
+### Por qué las dos cosas y no una
+
+Simulados 8.000 campeonatos con el mazo del juego y los efectos de racha leídos
+de cada rama del código, con un jugador que gasta en columna cada vez que puede:
+
+| regla | columnas | situaciones | botón habilitado |
+|---|---|---|---|
+| puerta 3, cuesta 3 | 3,9 | 1,4 | 11,8% |
+| sólo el precio a 2 | 4,8 | 1,6 | 14,3% |
+| sólo la puerta a 2 | 4,0 | 1,4 | 35,3% |
+| **puerta 2, cuesta 2** | **7,7** | 0,9 | 19,1% |
+
+Cada mitad sola no mueve nada: bajar el precio deja la columna encerrada detrás
+de una puerta que se abre poco, y bajar la puerta abre un botón que no podés
+pagar. Juntas dan **el doble de columnas**.
+
+Y lo que de verdad cambia es el **tipo de cambio** — cuántas columnas compra
+cada situación de gol que resignás:
+
+```
+hoy     3,9 ÷ (3,7 − 1,4) = 1,7 columnas
+nuevo   7,7 ÷ (3,7 − 0,9) = 2,8 columnas
+```
+
+Un 60% mejor. Por 1,7 columnas nadie entregaba la llegada.
+
+### El comentario ya decía 2
+
+Arriba de la constante estaba escrito, palabra por palabra, el diseño de este
+cambio: «la COLUMNA cuesta 2 y está disponible a mitad de camino… Guardar hasta
+4 o gastar de a 2 es la decisión». Revisado el historial, **la constante nació en
+3 en la v113 y nunca cambió**: el comentario no había quedado viejo, describía un
+diseño que nunca se aplicó. Ahora coinciden.
+
+### La línea de ayuda estrena un tercer estado
+
+Tenía dos —racha llena o nada— y con la columna abriéndose a mitad de camino
+quedaba un tramo, racha 2 o 3, donde se encendían cuatro botones dorados sin que
+nada explicara qué hacían ni cuánto costaban. Ahora dice: «Podés gastar 2 en una
+COLUMNA, o guardarla para la situación de gol».
+
+### Medido en el juego
+
+| racha | botones | costo | ayuda |
+|---|---|---|---|
+| 0 y 1 | apagados | −2 | «Elegí una FILA» |
+| **2 y 3** | **encendidos** | −2 | «Podés gastar 2 en una COLUMNA…» |
+| 4 | encendidos | −2 | «Racha llena…» |
+
+Gastar una columna con 2 deja la racha en **0**, y `cobrarRacha` con 3 no hace
+nada: la situación de gol sigue pidiendo la barra entera.
+
+### Lo que queda para mirar
+
+Gastando siempre, **la situación de gol cae de 3,7 a 0,9 por campeonato**. No es
+un error del cambio: es la decisión funcionando, y el jugador real va a mezclar.
+Pero la llegada es la jugada más vistosa del juego y 0,9 por campeonato es poco,
+así que conviene volver a este número después de unas partidas.
+
+Y si la columna sigue sin usarse, el número a mirar ya no es el precio: es el
+**+0,26 de racha por carta**, que es lo que hace que la barra tarde 16 jugadas.
