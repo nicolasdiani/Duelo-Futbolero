@@ -10732,7 +10732,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 246;
+const VERSION = 247;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -15300,29 +15300,57 @@ function copasHTML(){
    mudarse se cambia en un lado. */
 const URL_JUEGO = 'https://nicolasdiani.github.io/Duelo-Futbolero/';
 
-/* El texto que se comparte: legible en WhatsApp, sin depender de formato. */
+/* El texto que se comparte: legible en WhatsApp, sin depender de formato.
+
+   **Ahora dice de qué club sos y contra quién jugaste.** Antes eran cinco
+   resultados sueltos —«COPA 1: • CUARTOS  3-2»— que podían ser contra
+   cualquiera: el club y el rival **ya estaban guardados** en cada partido del
+   historial desde siempre, sólo que no se escribían. No hizo falta guardar
+   nada nuevo.
+
+   El formato del chat es el que hay: `*negrita*` y poco más. Se gasta en el
+   nombre del club, en el de cada rival y en los títulos, que es lo que hace
+   que la lista se lea como lista. La sangría no sirve —WhatsApp la muestra
+   pero no separa—, y por eso los bullets se fueron: el tilde, la cruz y la
+   copa del final hacen ese trabajo y además dicen cómo salió el partido.
+
+   Medido en una burbuja de 308px, que es el ancho de un teléfono común:
+
+     mensaje                  antes   ahora   renglones que se cortan
+     CAMPEÓN con dos copas     338     485           1 de 15
+     ELIMINADO con una copa    279     393           0 de 13
+
+   Nombrar a diez rivales cuesta letras y ese es el precio. El único renglón
+   que se parte en dos es el de un nombre largo con penales encima
+   —«CLASIFICATORIA · 0-0 a *SARMIENTO* (en penales)»—, y parte después del
+   resultado, así que la línea sigue leyéndose. */
 function textoCompartir(campeon){
+  /* El ícono de adelante dice **siempre** si se ganó o se perdió, y el
+     resultado se lee como en la cancha: «2-1 a Riestra», «1-3 con Vélez». Los
+     penales van al final entre paréntesis y no reemplazan al tilde: si lo
+     hicieran, un 0-0 ganado en penales y uno perdido se leerían igual. */
+  const linea = p => {
+    const ico = p.gano ? (p.ronda === 'LA FINAL' ? '🏆' : '✅') : '❌';
+    return ico + ' ' + p.ronda + ' · ' + p.gU + '-' + p.gC +
+      (p.gano ? ' a *' : ' con *') + p.rival + '*' +
+      (p.pens ? ' (en penales)' : '');
+  };
   const L = [];
-  L.push(campeon ? '⚽ DUELO FUTBOLERO — ¡CAMPEÓN!' : '⚽ DUELO FUTBOLERO');
-  L.push('');
-  if(G.copas) L.push('🏆 ' + G.copas + (G.copas === 1 ? ' copa ganada' : ' copas ganadas'));
-  /* **Un bullet por partido.** Antes cada uno arrancaba con dos espacios: en
-     WhatsApp la sangría se ve pero no separa, y los cinco se leían como un
-     bloque. Con el punto cada partido es un ítem y el mensaje no se alarga. */
+  L.push(campeon ? '🏆 *¡CAMPEÓN!* · DUELO FUTBOLERO' : '⚽ *DUELO FUTBOLERO*');
+  L.push('👕 *' + G.club + '*');
+  if(G.copas) L.push('🥇 ' + G.copas + (G.copas === 1 ? ' copa ganada' : ' copas ganadas'));
   G.campeonatos.forEach(c => {
     L.push('');
-    L.push('COPA ' + c.n + ':');
-    c.partidos.forEach(p => L.push('• ' + p.ronda + '  ' + p.gU + '-' + p.gC +
-      (p.pens ? (p.gano ? ' (ganado en penales)' : ' (perdido en penales)') : '')));
+    L.push('*COPA ' + c.n + '*');
+    c.partidos.forEach(p => L.push(linea(p)));
   });
   if(!campeon && G.historial.length){
     L.push('');
-    L.push('ÚLTIMO INTENTO:');
-    G.historial.forEach(p => L.push('• ' + p.ronda + '  ' + p.gU + '-' + p.gC +
-      (p.pens ? (p.gano ? ' (ganado en penales)' : ' (perdido en penales)') : '')));
+    L.push('*ÚLTIMO INTENTO*');
+    G.historial.forEach(p => L.push(linea(p)));
   }
   L.push('');
-  L.push('Jugalo vos: ' + URL_JUEGO);
+  L.push('🎮 Jugalo vos: ' + URL_JUEGO);
   return L.join('\n');
 }
 

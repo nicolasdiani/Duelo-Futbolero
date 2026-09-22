@@ -13838,3 +13838,92 @@ ELIMINADO y CAMPEÓN dan **el mismo número en los tres anchos**. El botón mide
 155 en los tres —el `min-width` manda— con 106px de contenido adentro, así que
 no se corta ni siquiera a 320, y no aparece scroll horizontal en ninguno. El
 píxel de diferencia a 402 es el redondeo de una caja impar.
+
+## v247 · el texto que se comparte dice el club y los rivales
+
+El mensaje que sale del botón COMPARTIR nombra ahora **de qué club sos** y
+**contra quién jugaste cada partido**.
+
+### Lo que no había que hacer
+
+El club y el rival **ya estaban guardados**: `matchWon` y `matchLost` empujan
+`{ ronda, rival, gU, gC, pens, gano }` al historial desde siempre, y el nombre
+del club vive en `G.club`. El texto simplemente no los escribía. No hizo falta
+guardar un dato nuevo ni migrar nada —el juego no persiste partidas, así que
+tampoco hay guardados viejos a los que les falte el rival—.
+
+### Antes y ahora
+
+```
+⚽ DUELO FUTBOLERO              🏆 *¡CAMPEÓN!* · DUELO FUTBOLERO
+                                👕 *RACING*
+🏆 2 copas ganadas              🥇 2 copas ganadas
+
+COPA 1:                         *COPA 1*
+• CLASIFICATORIA  2-1           ✅ CLASIFICATORIA · 2-1 a *RIESTRA*
+• OCTAVOS  1-0                  ✅ OCTAVOS · 1-0 a *BANFIELD*
+• SEMIFINAL  1-1 (ganado…)      ✅ SEMIFINAL · 1-1 a *TALLERES* (en penales)
+• LA FINAL  2-0                 🏆 LA FINAL · 2-0 a *BOCA*
+```
+
+Cuatro decisiones, cada una con su motivo:
+
+1. **El club va solo, sin preámbulo.** La primera versión decía «Dirijo a
+   *RACING*». El verbo no agrega nada que la camiseta no diga ya, y es la línea
+   que más se mira.
+2. **El rival en negrita.** Es el dato nuevo del mensaje; en redonda se perdía
+   dentro de un renglón que ya tiene ronda, resultado y a veces un paréntesis.
+3. **Se fueron los bullets.** El `•` sólo decía «esto es una lista». El tilde,
+   la cruz y la copa de la final ocupan el mismo lugar y además dicen **cómo
+   salió** el partido. La sangría no era opción: WhatsApp la muestra pero no
+   separa.
+4. **El resultado se lee como en la cancha:** «2-1 a Riestra» cuando ganaste,
+   «1-3 con Vélez» cuando perdiste.
+
+Los penales van al final entre paréntesis y **no reemplazan al tilde**: si lo
+hicieran, un 0-0 ganado en penales y uno perdido se leerían igual.
+
+### El formato del chat es el que hay
+
+WhatsApp da `*negrita*`, `_cursiva_`, `~tachado~` y el bloque
+monoespaciado, y nada más: no hay títulos, ni tablas, ni colores. La negrita se
+gasta donde rinde —el club, cada rival y los títulos `*COPA 1*` y
+`*ÚLTIMO INTENTO*`—, que es lo que hace que la lista se lea como lista.
+
+Se descartaron dos formatos, los dos medidos:
+
+- **El cruce**, con los dos equipos en cada renglón —`RACING 3-2 TIGRE`—.
+  Es la lectura más futbolera, pero repite el club diez veces y **parte 3 de 14
+  renglones** en un teléfono; cuando un renglón se corta, la lista deja de
+  leerse como lista.
+- **La tabla alineada** dentro del bloque monoespaciado, que es lo único del
+  chat que respeta los espacios. Alinea bien —el renglón más largo mide 209px
+  de los 286 que hay— pero obliga a abreviar las rondas a `8VOS`/`4TOS` y
+  **adentro no entra ni un emoji**: no ocupan un caracter y corren toda la
+  columna, así que el tilde tiene que quedar afuera del bloque.
+
+### Medido
+
+En una burbuja de 308px, que es el ancho de un teléfono común:
+
+| mensaje | antes | ahora | renglones que se cortan |
+|---|---|---|---|
+| CAMPEÓN con dos copas | 338 | **485** | 1 de 15 |
+| ELIMINADO con una copa | 279 | **393** | 0 de 13 |
+
+Nombrar a diez rivales cuesta letras y ese es el precio. El único renglón que
+se parte en dos es el de un nombre largo con penales encima —«CLASIFICATORIA ·
+0-0 a *SARMIENTO* (en penales)»— y se parte **después del resultado**, así que
+la línea sigue leyéndose.
+
+Probado además con el sorteo real: `armarCopa()` reparte los rivales de la
+tabla de equipos y el texto sale bien con los nombres largos de verdad
+—`GIMNASIA MZA`, `INDEPENDIENTE`—, con las negritas pares en los dos
+estados.
+
+### Lo que falta mirar en un teléfono
+
+Dos cosas que dependen de cómo dibuje WhatsApp y no se pueden medir acá: que la
+negrita se vea como negrita en las dos plataformas, y **dónde aparece la
+tarjeta de vista previa del link**, que probablemente va arriba de todo el
+mensaje y no donde está escrito el link.
