@@ -3833,6 +3833,18 @@ img{height:auto}
   box-shadow:0 2px 8px rgba(0,0,0,.6);
 }
 
+/* **La chapa del penal toma el color de la carta.** El dorado fijo sirve para
+   los duelos, que son amarillos de riesgo; en el penal contradice lo que la
+   carta dice —verde el tuyo, rojo el del rival— y el cartel terminaba con dos
+   colores peleando en tres centímetros. Se queda el vidrio esmerilado y sólo
+   cambian el filo y la tinta. */
+.cell.tono-good .c-out .mj-lb.gol{
+  background:rgba(61,220,107,.16);border-color:rgba(61,220,107,.5);color:#8df0ab;
+}
+.cell.tono-bad .c-out .mj-lb.gol{
+  background:rgba(255,59,82,.16);border-color:rgba(255,59,82,.5);color:#ff9aa6;
+}
+
 /* El nombre del mini juego, debajo de la etiqueta. */
 .c-out .mj, .p-out .mj{
   display:block;font-family:var(--tit);font-weight:800;
@@ -10723,7 +10735,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 242;
+const VERSION = 243;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -11515,10 +11527,21 @@ function duelo(cell, mio, gana, pierde, empate, premio, golGana){
   return { label: etiqueta + '<span class="efe">' + empate + '</span>', tone: caro ? 'hot' : 'risk' };
 }
 
-/* La chapa de MINI JUEGO, escrita una sola vez: la usan los duelos, las dos
-   cartas de penal y las dos listas de situación de gol. */
+/* La chapa de MINI JUEGO, escrita una sola vez: la usan los duelos y las dos
+   listas de situación de gol. */
 const CHAPA_MJ = '<span class="mj-lb"><svg class="mj-ico" viewBox="0 0 24 24"'
   + ' aria-hidden="true"><use href="#i-dos"/></svg>MINI JUEGO</span>';
+
+/* **La misma chapa, con la pelota.** Los dos muñecos de `#i-dos` dicen «acá se
+   juega contra alguien», que es lo que pasa en un duelo. En un penal lo que se
+   juega es **un gol**, y decirlo con letras no entra: «MINI JUEGO DE GOL» pide
+   78px y la chapa tiene 71 a 402 —y 58 contra 50 a 320—, así que se corta en
+   los dos anchos. El dibujo lo dice sin gastar una letra.
+
+   Y lleva `gol` de clase para que la chapa tome el color de la carta en vez del
+   dorado fijo: verde en la tuya, rojo en la del rival. */
+const CHAPA_MJ_GOL = '<span class="mj-lb gol"><svg class="mj-ico" viewBox="0 0 24 24"'
+  + ' aria-hidden="true"><use href="#i-pelota"/></svg>MINI JUEGO</span>';
 
 function predict(cell){
   if(!cell) return { label:'', tone:'neutral' };
@@ -11578,12 +11601,20 @@ function predict(cell){
      te deja— no cambia.
 
      El subtítulo va de una palabra por medida: a 320 la carta tiene 62x129 y
-     «LO PATEÁS VOS» se parte en dos renglones y se sale 4px de la caja. */
-  if(t === 'penal')     return { label:CHAPA_MJ + '<span class="mj">PATEÁS</span><span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
+     «LO PATEÁS VOS» se parte en dos renglones y se sale 4px de la caja.
+
+     **Y va en verde, no en celeste.** El celeste es la familia de las llegadas
+     —pase gol, córner, tiro libre— y significa «hay un porcentaje de gol en
+     juego». El penal deja esa familia a propósito: los otros son una tirada y
+     éste es un mini juego que jugás vos, así que se pinta con el verde de lo
+     que te conviene. El tono no es sólo el texto: también el filo cuando tomás
+     la fila, la barra del pie de la carta y el pop-up que se abre. */
+  if(t === 'penal')     return { label:CHAPA_MJ_GOL + '<span class="mj">PATEÁS</span><span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'good' };
   if(t === 'pasegol')   return { label:'40% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
   if(t === 'libre')     return { label:'35% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
   if(t === 'corner')    return { label:'30% GOL<span class="efe"><span class="ra">+1 <i class="ir"></i></span> o <b>-1 <i class="ih"></i></b></span>', tone:'gol' };
-  if(t === 'penalC')    return { label:CHAPA_MJ + '<span class="mj">ATAJÁS</span><span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
+  /* El del rival ya era rojo y sigue siéndolo: lo único que cambia es la chapa. */
+  if(t === 'penalC')    return { label:CHAPA_MJ_GOL + '<span class="mj">ATAJÁS</span><span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
   if(t === 'pasegolC')  return { label:'40% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
   if(t === 'cornerC')   return { label:'30% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
   if(t === 'libreC')    return { label:'35% RIVAL<span class="efe"><b>-1 <i class="ir"></i></b> o <span class="ra">+1 <i class="ir"></i></span></span>', tone:'bad' };
@@ -12122,7 +12153,11 @@ function minisGol(lista, favor){
          rival se sorteaba solo. */
       const mj = x.key === 'penal';
       const art = artCarta(x.key);
-      const chapa = mj ? CHAPA_MJ : '';
+      /* La misma chapa que la carta: la de la pelota. Es el mismo penal, y si
+         el dibujo es el que dice «de gol», tiene que decirlo en los dos lados.
+         Acá se queda dorada —no hay tono de carta del que colgarse— y así
+         mantiene la pinta de las otras cuatro filas de la lista. */
+      const chapa = mj ? CHAPA_MJ_GOL : '';
       return '<div class="fg-mini' + (favor && x.p === 1 ? ' seguro' : '') + (mj ? ' mj' : '') + '">' +
         (art
           ? '<span class="fg-art"><img src="' + art + '" alt="">' + chapa + '</span>'

@@ -13538,3 +13538,87 @@ latido `titilarsuave` de 1,9s que ya tenía. Son dos períodos distintos —1,5 
 El ítem, que es el modelo que se copió, **tiene sólo el reflejo**. Si se quiere
 que digan lo mismo del todo, lo que sobra es el latido. Queda sin tocar porque
 no se pidió, pero es la pregunta que abre este cambio.
+
+## v243 · los dos penales, en verde y en rojo
+
+La carta de **PENAL** pasa de celeste a **verde** y la de **PENAL RIVAL** se
+queda en rojo, que ya lo era. Y las dos cambian la chapa del mini juego: los dos
+muñecos de `#i-dos` dejan lugar a **la pelota**.
+
+### Por qué el penal deja la familia del celeste
+
+El celeste no es un color suelto: lo llevan PASE GOL, CÓRNER, TIRO LIBRE y sus
+versiones del rival, y quiere decir «acá hay un porcentaje de gol en juego».
+Pasar el penal a verde **rompe esa familia a propósito**: los otros son una
+tirada que se resuelve sola, y el penal es un mini juego que jugás vos. Es la
+misma razón por la que en v240 dejó de decir 67%.
+
+Y el tono no es sólo el texto: pinta también el filo cuando tomás la fila, la
+barra del pie de la carta y el pop-up que se abre al jugarla. Los tres cambian
+juntos.
+
+| | antes | ahora |
+|---|---|---|
+| PENAL | `tone:'gol'` · celeste | **`tone:'good'` · verde** |
+| PENAL RIVAL | `tone:'bad'` · rojo | igual |
+
+`isSafe` mira `tone !== 'bad'`, así que el penal a favor sigue contando como
+carta segura: el cambio es de color, no de reglas.
+
+### La pelota, porque las letras no entran
+
+Decir «de gol» con letras no era posible. Medido en la chapa de la carta:
+
+| | pide | hay |
+|---|---|---|
+| `MINI JUEGO DE GOL` a 402 | 78px | **71px** |
+| `MINI JUEGO DE GOL` a 320 | 58px | **50px** |
+
+Se corta en los dos anchos. Y el renglón de abajo tampoco alcanza: a 320 tiene
+52px, y «GOL · PATEÁS» se parte en dos renglones y se sale 4px de la carta. Ahí
+abajo entra **una palabra sola**.
+
+Así que lo dice el dibujo. La chapa nueva —`CHAPA_MJ_GOL`— es la misma de
+siempre con `#i-pelota` en lugar de `#i-dos`, y no gasta una letra: sigue
+midiendo 64px a 402 y 47 a 320, igual que la de los duelos.
+
+### Y la chapa toma el color de la carta
+
+El dorado fijo sirve para los duelos, que son amarillos de riesgo. En el penal
+contradecía lo que la carta dice, y el cartel terminaba con dos colores peleando
+en tres centímetros. Ahora la chapa lleva la clase `gol` y hereda el tono:
+
+```css
+.cell.tono-good .c-out .mj-lb.gol{ ... verde ... }
+.cell.tono-bad  .c-out .mj-lb.gol{ ... rojo ... }
+```
+
+Se queda el vidrio esmerilado; sólo cambian el filo y la tinta.
+
+### Dónde sí y dónde no
+
+La pelota va en las dos cartas **y en los dos pop-ups** —POSIBILIDAD DE GOL y SE
+TERMINÓ EL AGUANTE—, porque es el mismo penal y si el dibujo es lo que dice «de
+gol», tiene que decirlo en los dos lados. Ahí la chapa se queda dorada: no hay
+tono de carta del que colgarse, y así mantiene la pinta de las otras cuatro
+filas de la lista.
+
+Los **duelos no se tocan**: DEFENSOR, ARQUERO, MEDIO y DELANTERO siguen con los
+dos muñecos y la chapa dorada, que es lo que corresponde a «acá se juega contra
+alguien».
+
+### Medido
+
+Con un tablero armado con los dos penales repetidos y la familia del celeste al
+lado, a 402 y a 320:
+
+| carta | tono | texto | chapa | ícono |
+|---|---|---|---|---|
+| PENAL | `tono-good` | verde | verde | `#i-pelota` |
+| PENAL RIVAL | `tono-bad` | rojo | rojo | `#i-pelota` |
+| PASE GOL · CÓRNER | `tono-gol` | celeste | — | — |
+| JUGADA CLARA | `tono-good` | verde | — | — |
+| DEFENSOR | `tono-risk` | dorado | dorada | `#i-dos` |
+
+Nada cortado y nada fuera de la carta en ninguno de los dos anchos, con la chapa
+en 47/47 a 320 y 64/64 a 402.
