@@ -1322,9 +1322,36 @@ img{height:auto}
   border-color:var(--gold);color:var(--gold);background:var(--panel);cursor:pointer;
   animation:titilarsuave 1.9s ease-in-out infinite;
 }
+/* ---- EL MISMO REFLEJO DE LOS ÍTEMS ----
+   Una columna encendida y un ítem usable dicen lo mismo —esto se puede
+   gastar— y lo decían distinto: el ítem con el reflejo que lo cruza, la
+   columna latiendo. Ahora las dos llevan el reflejo.
+
+   **Y con el reloj de los ítems, sin tocarlo.** Un botón de columna mide 84px
+   y un ítem 76, medido a 402: con el mismo ciclo de 1,5s la luz va a 538 px/s
+   contra los 486 del ítem —un 10% de diferencia, que es la que hay entre los
+   dos anchos— y las dos quedan lejísimos de los 1.700 px/s donde el reflejo
+   deja de leerse como luz. Por eso acá no hace falta el ciclo largo que sí
+   necesitan los botones grandes.
+
+   El botón tiene que ser el marco: `.i-brillo` va en absoluto y `.col-pick`
+   era `static`, así que sin esto el reflejo se ancla a la ventana y cruza la
+   pantalla entera. El `overflow:hidden` ya lo tenía de antes —está ahí para
+   que un texto largo no rompa la mesa— y de paso recorta el reflejo. */
+.col-picks.lista .col-pick{position:relative}
+/* Escalonados como los ítems, con los mismos retardos: son cuatro botones en
+   fila y saliendo juntos parecerían un parpadeo de la pantalla. */
+.col-pick:nth-of-type(2) .i-brillo::after{animation-delay:.19s}
+.col-pick:nth-of-type(3) .i-brillo::after{animation-delay:.38s}
+.col-pick:nth-of-type(4) .i-brillo::after{animation-delay:.57s}
+
 /* al pasar por encima deja de latir: ya la estás mirando */
 .col-picks.lista .col-pick:hover,
 .col-picks.lista .col-pick.activo{animation:none}
+/* Y el reflejo se apaga con ella, por el mismo motivo: es lo que te trae acá,
+   no algo para mirar una vez que llegaste. */
+.col-picks.lista .col-pick:hover .i-brillo::after,
+.col-picks.lista .col-pick.activo .i-brillo::after{animation:none;opacity:0}
 .col-picks.lista .col-pick:hover:not(:disabled),
 .col-picks.lista .col-pick.activo:not(:disabled){
   border-color:var(--white);color:var(--white);
@@ -10696,7 +10723,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 241;
+const VERSION = 242;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -11782,7 +11809,10 @@ function renderBoard(){
       b.innerHTML =
         '<span class="ck">C' + (c+1) + '</span>' +
         (alive ? '<span class="cs">' + Math.round(100/alive) + '%</span>' : '') +
-        '<span class="cc">−' + COSTO_COLUMNA + '<i class="ir"></i></span>';
+        '<span class="cc">−' + COSTO_COLUMNA + '<i class="ir"></i></span>' +
+        /* El reflejo sólo en las que se pueden gastar, igual que en los ítems:
+           si lo llevaran todas dejaría de significar «ésta sí». */
+        (usable ? '<span class="i-brillo"></span>' : '');
       b.onmouseenter = () => { if(usable && !G.armed) markCol(c, true); };
       b.onmouseleave = () => { if(!isArmed('col', c)) markCol(c, false); };
       b.onclick = () => tapLine('col', c);

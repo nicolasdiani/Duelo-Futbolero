@@ -13478,3 +13478,63 @@ propósito y por distinto motivo.
 Movimiento reducido apaga los dos: las dos reglas que ya existían
 —`.pp-zona, .pp-arq.idle` y `.sit.mam .pp-arq.idle`— ponen `animation:none`, y
 la nueva cae adentro de la primera sin tocar nada.
+
+## v242 · el reflejo de los ítems, también en las columnas
+
+Una columna encendida y un ítem usable dicen lo mismo —**esto se puede gastar**—
+y lo decían de dos maneras distintas: el ítem con el reflejo que lo cruza, la
+columna latiendo. Ahora las dos llevan el reflejo, con el mismo enganche:
+
+```js
+(usable ? '<span class="i-brillo"></span>' : '')
+```
+
+Sólo en las que se pueden gastar. Si lo llevaran todas dejaría de significar
+«ésta sí», que es exactamente para lo que está.
+
+### El reloj de los ítems sirve tal cual
+
+Los botones grandes del menú necesitaron su propio ciclo porque miden 350px y
+con el de los ítems la luz se iba a 1.700 px/s, que es donde deja de leerse como
+luz. Acá no hace falta: **un botón de columna mide casi lo mismo que un ítem**.
+
+| | ancho | luz |
+|---|---|---|
+| ítem, a 402 | 76px | 486 px/s |
+| columna, a 402 | **84px** | **538 px/s** |
+| ítem, a 320 | 55px | 354 px/s |
+| columna, a 320 | **63px** | **403 px/s** |
+
+Un 10% de diferencia, que es la que hay entre los dos anchos, y las cuatro
+medidas lejísimos del techo. Así que la columna usa `itemBrillo 1.5s` sin tocar
+nada, y los retardos son los mismos —.19, .38 y .57— porque también son cuatro
+botones en fila: saliendo juntos parecerían un parpadeo de la pantalla.
+
+### Dos cosas que ya estaban y hacían falta
+
+`.col-pick` tenía `overflow:hidden` desde que se arregló el texto largo que
+rompía la mesa, así que el reflejo ya venía recortado. Lo que le faltaba era ser
+el marco: era `position:static`, y `.i-brillo` va en absoluto, así que sin
+`position:relative` el reflejo se ancla a la ventana y cruza la pantalla entera
+en lugar del botón.
+
+### Y se apaga donde ya se apagaba
+
+Al pasar por encima o al armar la columna, el latido se cortaba con el argumento
+de que «ya la estás mirando». El reflejo se corta con ella, por lo mismo: es lo
+que te trae hasta acá, no algo para mirar una vez que llegaste. Comprobado:
+con `.activo` puesta, `animation:none` y `opacity:0`.
+
+Movimiento reducido ya lo cubría sin escribir nada: la regla general
+`.i-brillo::after{animation:none;opacity:0}` alcanza a la columna igual que al
+ítem, y le deja el mismo filo quieto.
+
+### Lo que queda para decidir
+
+**La columna encendida ahora tiene dos movimientos**: el reflejo nuevo y el
+latido `titilarsuave` de 1,9s que ya tenía. Son dos períodos distintos —1,5 y
+1,9— así que entran y salen de fase cada 7,1s.
+
+El ítem, que es el modelo que se copió, **tiene sólo el reflejo**. Si se quiere
+que digan lo mismo del todo, lo que sobra es el latido. Queda sin tocar porque
+no se pidió, pero es la pregunta que abre este cambio.
