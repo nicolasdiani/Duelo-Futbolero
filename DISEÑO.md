@@ -13763,3 +13763,78 @@ así que conviene volver a este número después de unas partidas.
 
 Y si la columna sigue sin usarse, el número a mirar ya no es el precio: es el
 **+0,26 de racha por carta**, que es lo que hace que la barra tarde 16 jugadas.
+
+## v246 · ELIMINADO se queda con COMPARTIR solo
+
+El pie de **ELIMINADO** pierde el botón **COPIAR**. Queda COMPARTIR solo y
+centrado, exactamente como ya estaba CAMPEÓN.
+
+### Por qué se va
+
+El argumento que tenía escrito en el código era que en ELIMINADO «COPIAR es la
+única salida al portapapeles». No lo era: COMPARTIR abre el menú nativo del
+sistema —que en el celular ya ofrece copiar entre sus opciones— y donde no hay
+menú abre WhatsApp Web con el texto puesto. COPIAR repetía eso con un botón más.
+
+Y lo que costaba no era el espacio sino la atención. Las dos pantallas son el
+remate de la corrida y tienen un solo botón que importa —el verde de arriba,
+JUGAR OTRO CAMPEONATO o EMPEZAR DE NUEVO—. Con dos botones abajo, el pie pesaba
+lo mismo que la acción principal. Con uno, no compite:
+
+| | ancho |
+|---|---|
+| el verde de arriba | 328px |
+| COMPARTIR | **155px** |
+
+Es el mismo razonamiento por el que CAMPEÓN se había quedado con uno solo, y no
+había razón para que la pantalla gemela se leyera distinto: misma banda, mismo
+marcador, mismo cuerpo, mismo pie.
+
+### Lo que se fue con él
+
+`botonesFinal(campeon)` ya no decide nada, así que **pierde el parámetro** y
+las dos pantallas la llaman igual. Quien sí necesita saber de dónde viene es
+`engancharCompartir`, que lo lee de `G.phase` para armar el texto.
+
+Con un solo `data-share` el `modo` es siempre `'wsp'`, así que las dos
+líneas del portapapeles —`navigator.clipboard.writeText` y el «COPIADO ✓»—
+**no se alcanzaban nunca**. Se fueron, junto con el símbolo `#i-copiar` del
+sprite y las tres reglas de `.cta.chica.alt`, que era el contorno dorado del
+botón que ya no existe.
+
+La salida a mano se queda: si el sistema niega el menú —o lo devuelve
+cancelado— sigue apareciendo el `textarea` con el texto seleccionado.
+
+### El centrado deja de ser un modificador
+
+Centrar era `.cta-fila.solo`, el caso especial de CAMPEÓN. Ahora no hay otro
+caso, así que vive en `.cta-fila` y se fueron con él dos cosas que existían
+sólo para la fila de dos: el `gap:8px` —no hay qué separar— y el `flex:1`
+de `.cta.chica`, que partía la fila en mitades.
+
+```css
+.cta-fila{display:flex;justify-content:center;margin-top:16px}
+.cta-fila .cta{width:auto;min-width:155px}
+```
+
+El `width:auto` sigue haciendo falta: sin él, el `width:100%` de `.cta`
+estira el botón a toda la caja aunque la fila lo centre.
+
+Ojo con el orden al tocar esto: `.cta-fila .cta` y `.cta.chica` tienen la
+**misma especificidad**. Mientras `.cta.chica` conservaba `flex:1` había que
+cuidar cuál iba después; sacándoselo, el problema desaparece.
+
+### Medido
+
+Las dos pantallas, en el mismo tab, forzando `matchLost` y `matchWon`:
+
+| ancho | botones | COMPARTIR | izq / der | verde |
+|---|---|---|---|---|
+| 320 | 1 y 1 | 155 × 44 | 54 / 54 | 262 |
+| 402 | 1 y 1 | 155 × 44 | 87 / 86 | 328 |
+| 430 | 1 y 1 | 155 × 44 | 101 / 101 | 356 |
+
+ELIMINADO y CAMPEÓN dan **el mismo número en los tres anchos**. El botón mide
+155 en los tres —el `min-width` manda— con 106px de contenido adentro, así que
+no se corta ni siquiera a 320, y no aparece scroll horizontal en ninguno. El
+píxel de diferencia a 402 es el redondeo de una caja impar.

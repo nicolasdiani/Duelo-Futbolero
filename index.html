@@ -2880,18 +2880,20 @@ img{height:auto}
 .copas-c .cc-p{font-family:var(--txt);font-size:11px;color:var(--dim);letter-spacing:.5px}
 
 /* ---------- COMPARTIR ---------- */
-.cta-fila{display:flex;gap:8px;margin-top:16px}
+/* **Uno solo, centrado.** Sin un segundo botón al lado, el `width:100%` de
+   `.cta` estira COMPARTIR a toda la caja y pasa a pesar lo mismo que JUGAR OTRO
+   CAMPEONATO o EMPEZAR DE NUEVO, que es el botón que importa. Por eso se centra
+   y conserva los 155px que medía cuando eran dos.
+
+   Era el modificador `.solo` de CAMPEÓN. Desde que ELIMINADO también dejó uno
+   solo no hay otro caso, así que vive en `.cta-fila`, y se fueron con él el
+   `gap` —no hay qué separar— y el `flex:1` de `.cta.chica`, que estaba para
+   partir la fila en dos mitades. */
+.cta-fila{display:flex;justify-content:center;margin-top:16px}
+.cta-fila .cta{width:auto;min-width:155px}
 .cta.chica{
-  flex:1;font-size:14px;padding:11px 8px;letter-spacing:1.5px;margin-top:0;
+  font-size:14px;padding:11px 8px;letter-spacing:1.5px;margin-top:0;
 }
-.cta.chica.alt{background:transparent;color:var(--gold);border:1px solid var(--gold)}
-.cta.chica.alt:hover{background:rgba(245,200,66,.12)}
-/* **Cuando queda uno solo.** Sin el segundo botón, el `flex:1` de `.cta.chica`
-   —y el `width:100%` de `.cta`— lo estiran a toda la caja y compartir pasa a
-   pesar lo mismo que JUGAR OTRO CAMPEONATO, que es el botón que importa. Acá
-   se centra y se le devuelve el ancho que tenía cuando eran dos. */
-.cta-fila.solo{justify-content:center}
-.cta-fila.solo .cta{flex:0 0 auto;width:auto;min-width:155px}
 .share-txt{
   width:100%;height:120px;margin-top:10px;
   font-family:var(--txt);font-size:11px;line-height:1.5;
@@ -5823,7 +5825,6 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
      hay mouse. */
   .cta.alt:hover{border-color:var(--line);color:var(--dim)}
   .cta.ghost:hover{color:var(--dim);border-color:var(--line)}
-  .cta.chica.alt:hover{background:transparent}
   .menu-op:hover:not(.principal){border-color:var(--line)}
   .shop-item:hover:not(:disabled){border-color:var(--line)}
   .pick-stat.atk:hover,.pick-stat.def:hover{border-color:var(--line);background:var(--panel2)}
@@ -9074,16 +9075,12 @@ html.html-menu, html.html-menu body{overflow:hidden}
     <symbol id="i-check" viewBox="0 0 24 24">
       <path d="M4.6 12.6l4.8 4.8L19.4 7.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
     </symbol>
-    <!-- COMPARTIR y COPIAR, al final del campeonato. -->
+    <!-- COMPARTIR, al final del campeonato. -->
     <symbol id="i-compartir" viewBox="0 0 24 24">
       <circle cx="18" cy="5.6" r="2.6" fill="none" stroke="currentColor" stroke-width="1.7"/>
       <circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.7"/>
       <circle cx="18" cy="18.4" r="2.6" fill="none" stroke="currentColor" stroke-width="1.7"/>
       <path d="M8.3 10.7l7.4-3.8M8.3 13.3l7.4 3.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-    </symbol>
-    <symbol id="i-copiar" viewBox="0 0 24 24">
-      <rect x="8.4" y="3.6" width="12" height="13.6" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/>
-      <path d="M15.6 20.4H5.6a2 2 0 0 1-2-2V8.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
     </symbol>
     <!-- CRÉDITOS: una firma. Dice quién lo hizo, que es de lo que se trata. -->
     <symbol id="i-firma" viewBox="0 0 24 24">
@@ -10735,7 +10732,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 245;
+const VERSION = 246;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -15057,7 +15054,7 @@ function matchWon(byPens){
             : 'El equipo ya no baja más de <b class="ef-ag">' + AGUANTE_PISO + ' <i class="ih"></i></b>.') +
         '</div>' +
         '<button class="cta jugar" id="againBtn">' + ICO('copa') + 'JUGAR OTRO CAMPEONATO</button>' +
-        botonesFinal(true) +
+        botonesFinal() +
       '</div>',
       'card-final card-remate'
     );
@@ -15271,7 +15268,7 @@ function matchLost(byPens){
         '</b></div>' +
       '</div>' +
       '<button class="cta jugar" id="retryBtn">' + ICO('pelota') + 'EMPEZAR DE NUEVO</button>' +
-      botonesFinal(false) +
+      botonesFinal() +
     '</div>',
     'card-final card-remate cae'
   );
@@ -15329,43 +15326,44 @@ function textoCompartir(campeon){
   return L.join('\n');
 }
 
-function botonesFinal(campeon){
-  /* Ninguno manda, así que los dos van contorneados: es el único par del juego
-     donde el relleno sobraría.
+function botonesFinal(){
+  /* **Un botón y no dos.** CAMPEÓN se había quedado con COMPARTIR solo y
+     ELIMINADO seguía con el par, con el argumento de que ahí COPIAR era la
+     única salida al portapapeles. No lo era: COMPARTIR abre el menú nativo
+     —que en el celular ya ofrece copiar— y donde no hay menú abre WhatsApp
+     Web con el texto puesto. COPIAR duplicaba eso y, peor, partía en dos la
+     atención de la pantalla que remata la corrida, donde lo único que importa
+     es el verde de arriba.
 
-     **En CAMPEÓN queda uno solo.** Es la pantalla que remata el campeonato: lo
-     que hay que hacer es el verde de arriba y compartir es un extra, así que va
-     solo y centrado con el ancho que tenía. En ELIMINADO siguen los dos, porque
-     ahí COPIAR es la única salida al portapapeles. */
-  return '<div class="cta-fila' + (campeon ? ' solo' : '') + '">' +
+     Las dos pantallas son el mismo molde —misma banda, mismo marcador, mismo
+     cuerpo—, así que tampoco había razón para que el pie se leyera distinto.
+     Sin el parámetro `campeon` esto ya no decide nada: el que sí sabe de qué
+     pantalla viene es `engancharCompartir`, que lo lee de `G.phase`. */
+  return '<div class="cta-fila">' +
     '<button class="cta chica n-linea" data-share="wsp">' + ICO('compartir') + 'COMPARTIR</button>' +
-    (campeon ? '' :
-      '<button class="cta chica alt n-linea" data-share="copiar">' + ICO('copiar') + 'COPIAR</button>') +
   '</div>';
 }
 
 /* Compartir: usa el menú nativo del sistema si existe —en el celular abre
-   WhatsApp, Telegram, lo que tengas— y si no, cae al portapapeles. */
+   WhatsApp, Telegram, lo que tengas— y si no, abre WhatsApp Web con el texto
+   puesto. Sin el botón COPIAR no queda rama de portapapeles: el `modo` era
+   siempre 'wsp' y las dos líneas de abajo no se alcanzaban nunca. El
+   `data-share` se queda porque es el gancho del `querySelectorAll`. */
 function engancharCompartir(){
   const campeon = G.phase === 'won';
   document.querySelectorAll('[data-share]').forEach(btn => {
     btn.onclick = async () => {
       const txt = textoCompartir(campeon);
-      const modo = btn.dataset.share;
       try {
-        if(modo === 'wsp' && navigator.share){
+        if(navigator.share){
           await navigator.share({ title:'Duelo Futbolero', text:txt });
           return;
         }
-        if(modo === 'wsp'){
-          window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
-          return;
-        }
-        await navigator.clipboard.writeText(txt);
-        btn.textContent = 'COPIADO ✓';
-        setTimeout(() => { btn.textContent = 'COPIAR'; }, 1800);
+        window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
       } catch(e){
-        // el navegador puede negar el portapapeles: se muestra para copiar a mano
+        /* El sistema puede negar el menú —o devolverlo cancelado—: ahí aparece
+           el texto en un cuadro para copiarlo a mano, que es lo que queda en
+           lugar del botón que se fue. */
         const ta = document.createElement('textarea');
         ta.className = 'share-txt';
         ta.value = txt;
