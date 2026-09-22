@@ -3400,6 +3400,33 @@ img{height:auto}
 }
 .item-ficha:not(.ficha-gol) .if-paso i{font-style:normal;opacity:.6}
 .item-ficha:not(.ficha-gol) .if-paso .hay{color:var(--dim)}
+/* **La chapa de lo que el ítem hace además.** El SEGUNDO AIRE mueve dos cosas
+   —el aguante y el techo del aguante— y la ficha mostraba una: el techo venía
+   como «de 4 máx» en cuerpo 9,6 adentro del paso, y como la última frase del
+   texto de color. Ninguna de las dos se leía, y la segunda además se imprimía
+   siempre, también con el techo entero, donde no hay nada que recuperar.
+
+   Va en chapa y no en número para que no compita con el +2: es más chica que
+   el nombre del ítem y el único borde redondo de la ficha, así que se lee como
+   una etiqueta —algo que además viene con esto— y no como un segundo efecto.
+   El rojo es el del aguante, que es el medidor del que habla.
+
+   Medido: la chapa mide 113 x 25 y la fila entera 150 de los 228 que tiene
+   para usar, igual a 320 que a 390 —la ficha vale 284 en los dos—, asi que no
+   se parte en ningun ancho. En escritorio la ficha entera queda en 284 x 255. */
+.item-ficha:not(.ficha-gol) .if-extra{display:flex;align-items:center;gap:8px;padding:9px 14px 0}
+.item-ficha:not(.ficha-gol) .if-chapa{
+  display:inline-flex;align-items:center;gap:2px;
+  font-family:var(--tit);font-weight:800;font-size:10.5px;letter-spacing:1.6px;
+  color:var(--red);border:1px solid rgba(255,59,82,.38);border-radius:999px;
+  padding:3px 10px;background:rgba(255,59,82,.09);white-space:nowrap;
+}
+/* El corazón acá va del tamaño de la chapa y no del 1,7em de siempre: en una
+   etiqueta de cuerpo 10,5 ese tamaño la hacía crecer y perdía la forma. */
+.item-ficha:not(.ficha-gol) .if-chapa .ih{width:1.3em;height:1.3em;vertical-align:-.32em;margin:0 .12em}
+.item-ficha:not(.ficha-gol) .if-extra-n{
+  font-family:var(--tit);font-weight:700;font-size:11.5px;letter-spacing:.8px;color:var(--dim2);
+}
 .item-ficha:not(.ficha-gol) .if-desc{
   padding:8px 14px 0;font-family:var(--txt);font-size:11.5px;line-height:1.45;color:var(--dim2);
   margin:0;
@@ -3485,10 +3512,6 @@ img{height:auto}
 .if-paso.tono-ra b.hay{color:var(--gold)}
 .if-paso.tono-var b.hay{color:var(--blue)}
 .if-paso .ih,.if-paso .ir{vertical-align:-.22em}
-.if-paso em{
-  font-family:var(--txt);font-style:normal;font-weight:400;font-size:9.6px;
-  letter-spacing:0;color:var(--dim2);
-}
 
 .if-txt{min-width:0}
 .if-nm{
@@ -10500,7 +10523,7 @@ const ITEMS = {
 const MEDIDOR = {
   suplentes: { n:'+1', med:'AGUANTE', i:'<i class="ih"></i>' },
   grito:     { n:'+1', med:'RACHA',   i:'<i class="ir"></i>' },
-  refuerzo:  { n:'+2', med:'AGUANTE', i:'<i class="ih"></i>', mas:'También recuperás un máximo.' },
+  refuerzo:  { n:'+2', med:'AGUANTE', i:'<i class="ih"></i>' },
   revision:  { n:'',   med:'DESTRABA', i:'' }
 };
 
@@ -10520,7 +10543,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 238;
+const VERSION = 239;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -11813,12 +11836,29 @@ function pasoItem(k){
   if(k === 'suplentes') return [cor(G.aguante), cor(Math.min(G.aguante + 1, G.aguanteMax))];
   if(k === 'grito')     return [ray(G.racha),   ray(Math.min(G.racha + 1, G.rachaMax))];
   if(k === 'refuerzo'){
+    /* El techo lo dice la chapa de al lado —`extraItem`—, así que acá va sólo
+       el aguante. `maxNuevo` se queda igual: el ítem sube el techo **antes**
+       de repartir los dos corazones, así que con el techo en 2 el paso es
+       «1 → 3» y no «1 → 2». */
     const maxNuevo = Math.min(G.aguanteMax + 1, AGUANTE_BASE);
-    return [cor(G.aguante),
-            cor(Math.min(G.aguante + 2, maxNuevo)) +
-              (maxNuevo > G.aguanteMax ? '<em>de ' + maxNuevo + ' máx</em>' : '')];
+    return [cor(G.aguante), cor(Math.min(G.aguante + 2, maxNuevo))];
   }
   return ['🔒 TRABADA', 'JUGABLE'];
+}
+
+/* **Lo que el ítem hace además de mover su medidor.** Hoy hay uno solo: el
+   SEGUNDO AIRE devuelve un corazón de máximo, y **sólo si hay máximo que
+   devolver** —`usarItem` lo sube nada más cuando `G.aguanteMax < AGUANTE_BASE`—.
+   Esa condición es la que la ficha no miraba: la frase vieja se imprimía
+   siempre, así que con el techo entero prometía algo que no iba a pasar.
+
+   Devuelve markup vacío y no null para poder concatenarlo sin preguntar. */
+function extraItem(k){
+  if(k !== 'refuerzo' || G.aguanteMax >= AGUANTE_BASE) return '';
+  return '<div class="if-extra">' +
+           '<span class="if-chapa">+1 <i class="ih"></i> DE MÁXIMO</span>' +
+           '<span class="if-extra-n">' + G.aguanteMax + ' → ' + (G.aguanteMax + 1) + '</span>' +
+         '</div>';
 }
 
 /* ¿Este ítem hace algo ahora mismo? Devuelve null si sirve, o el motivo por el
@@ -12053,7 +12093,11 @@ function abrirFicha(k, btn){
       (paso ? '<span class="if-paso"><b>' + paso[0] + '</b><i>→</i>' +
         '<b class="hay">' + paso[1] + '</b></span>' : '') +
     '</div>' +
-    '<div class="if-desc">' + (porQueNo || I.desc + (Q.mas ? ' ' + Q.mas : '')) + '</div>' +
+    /* La chapa va **entre** el efecto y el texto de color: es parte de lo que
+       el ítem hace, no parte del color. Y si el ítem no sirve ahora no va,
+       igual que el paso: la ficha está explicando por qué no, no qué daría. */
+    (porQueNo ? '' : extraItem(k)) +
+    '<div class="if-desc">' + (porQueNo || I.desc) + '</div>' +
     '<div class="if-btns">' +
       /* Si el ítem no se puede usar, USAR no existe y ENTENDIDO queda solo:
          entonces es el único botón de la ficha y no hay nada que jerarquizar. */

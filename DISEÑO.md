@@ -13152,3 +13152,96 @@ Quien pidió que las cosas no se muevan sigue viendo un recuadro quieto en lugar
 del salto, y el fondo tinte en lugar del parpadeo. Ahí el cambio se nota más que
 en el salto: sin animación no hay tres pasadas que contar, hay un recuadro que
 **dura el doble**, 2,1s en vez de 1. Que es exactamente lo que se buscaba.
+
+## v239 · la chapa de máximo del SEGUNDO AIRE
+
+El ítem hace **dos cosas** y la ficha mostraba una. Los +2 de aguante estaban en
+el número grande; el corazón de **máximo** que devuelve —que es lo que hace que
+este ítem valga 30 y SUPLENTES valga 10— aparecía dos veces y no se veía en
+ninguna:
+
+- como `<em>de 4 máx</em>` en cuerpo 9,6 **adentro** del número del paso, que
+  además empujaba el renglón del efecto a partirse en dos;
+- como la última frase del texto de color, en el mismo cuerpo 11,5 gris que la
+  frase de ambiente que la precede.
+
+### Y la frase no siempre era cierta
+
+```js
+const recupera = G.aguanteMax < AGUANTE_BASE;   // o sea, < 4
+if(recupera) G.aguanteMax++;
+G.aguante = clamp(G.aguante + 2, 0, G.aguanteMax);
+```
+
+Esa primera línea es la que la ficha no miraba. **«También recuperás un máximo»
+se imprimía siempre**, con el techo bajo y con el techo entero. Con el techo en
+4 no hay nada que recuperar y la ficha prometía algo que `usarItem` no iba a
+hacer.
+
+### Una chapa, y sólo cuando corresponde
+
+```js
+function extraItem(k){
+  if(k !== 'refuerzo' || G.aguanteMax >= AGUANTE_BASE) return '';
+  ...
+}
+```
+
+Va **entre** el efecto y el texto de color: es parte de lo que el ítem hace, no
+parte del color. Y va en chapa y no en número para que no le compita al **+2**:
+es más chica que el nombre del ítem y el único borde redondo de la ficha, así
+que se lee como una etiqueta —algo que **además** viene con esto— y no como un
+segundo efecto. El rojo es el del aguante, que es el medidor del que habla.
+
+Al lado, el paso propio del techo: `3 → 4`, con los números que hay, igual que
+el paso del aguante.
+
+### Qué se fue
+
+| | antes | ahora |
+|---|---|---|
+| `de N máx` dentro del paso | sí | **no** |
+| «También recuperás un máximo» | siempre | **nunca** — la dice la chapa |
+| `MEDIDOR.refuerzo.mas` | el dato | **borrado**, no lo usaba nadie más |
+| `.if-paso em` | la regla CSS | **borrada**, era su único `<em>` |
+
+El texto de color vuelve a ser sólo color: «El equipo saca fuerzas de donde no
+hay».
+
+**La barra de ítems y la tienda no se tocaron.** Ahí `I.efecto` sigue diciendo
+«y recuperás un ❤ de máximo» siempre, y ahí está bien: describen el ítem, no la
+partida que estás jugando. La ficha es la única de las tres que muestra el paso
+con los números de ahora, así que es la única que tenía que mirar la condición.
+
+### Medido en el juego andando
+
+Cinco estados del ítem, abriendo la ficha en el juego y leyendo lo que quedó:
+
+| `aguanteMax` | chapa | paso | ficha |
+|---|---|---|---|
+| 1 | +1 ❤ DE MÁXIMO · `1 → 2` | 0 ❤ → 2 ❤ | 284 × 305 |
+| 2 | +1 ❤ DE MÁXIMO · `2 → 3` | 0 ❤ → 2 ❤ | 284 × 305 |
+| 3 | +1 ❤ DE MÁXIMO · `3 → 4` | 1 ❤ → 3 ❤ | 284 × 305 |
+| 4 | **no hay** | 2 ❤ → 4 ❤ | 284 × **262** |
+| 4, aguante lleno | no hay | — | 284 × 232 |
+
+El paso vuelve a **un solo renglón** en los cinco. Y `maxNuevo` se quedó donde
+estaba: el ítem sube el techo **antes** de repartir los dos corazones, así que
+con el techo en 2 el paso es «0 → 2» y no «0 → 1».
+
+Con el techo bajo la ficha queda en **305 contra los 310 de antes**: lo que gana
+al desarmar el paso partido lo gasta en la fila nueva, o sea que el máximo pasó
+a verse **sin costar alto**. Con el techo entero baja de 279 a **262**, que es
+exactamente lo que medía la frase que no era cierta —y la deja igual de corta
+que la de SUPLENTES, que mide 262—.
+
+### Los anchos
+
+La chapa mide **113 × 25** y la fila entera usa **150 de los 228** que tiene,
+igual a 320 que a 390 —la ficha vale 284 en los dos—, así que no se parte en
+ningún ancho. En escritorio la ficha entera queda en 284 × 255.
+
+### Y el ítem sigue haciendo lo que dice
+
+Usado con el techo en 3: `aguanteMax` 3 → **4**, `aguante` 1 → **3**, el ítem
+gastado. Reabierta la ficha con el techo ya entero, la chapa **no está**.
