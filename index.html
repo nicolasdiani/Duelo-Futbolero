@@ -3065,8 +3065,10 @@ img{height:auto}
 
 /* Las tarjetas de pop-up nunca pasan del alto de la ventana: si el contenido no
    entra, scrollea la tarjeta y no la página. */
-.card{max-height:calc(100vh - 40px);overflow-y:auto}
-@media (max-width:700px){ .card{max-height:calc(100vh - 20px)} }
+/* Mismo motivo que el body: con la barra puesta, `100vh` mide más que la
+   pantalla y la tarjeta se pasa por abajo del borde. */
+.card{max-height:calc(100dvh - 40px);overflow-y:auto}
+@media (max-width:700px){ .card{max-height:calc(100dvh - 20px)} }
 
 /* ---- TABLET PORTRAIT: mesa arriba, paneles abajo en dos columnas ---- */
 
@@ -4407,7 +4409,7 @@ body{padding-bottom:36px}
   .play{
     max-width:clamp(430px, 44vw, 720px);
     padding:26px 30px;
-    max-height:88vh;overflow-y:auto;
+    max-height:88dvh;overflow-y:auto;
   }
   .play .p-art{margin:-10px -14px 16px}
   .play .p-art img{max-height:clamp(190px, 24vh, 320px)}
@@ -4426,7 +4428,7 @@ body{padding-bottom:36px}
   .sit{
     max-width:clamp(460px, 44vw, 740px);
     padding:34px 42px;
-    max-height:88vh;overflow-y:auto;
+    max-height:88dvh;overflow-y:auto;
   }
   .sit .sit-tag{font-size:13px;margin-bottom:17px}
   .sit .sit-ico{font-size:66px;margin-bottom:11px}
@@ -4791,6 +4793,22 @@ body{padding-bottom:36px}
 
        Los menús no dependen de esto: son overlays fijos con scroll propio. */
     height:100dvh;
+    /* **Y el mínimo también en `dvh`.** Acá estaba el agujero: el `height` ya
+       usaba `dvh`, pero el `min-height:100vh` de la regla base seguía vivo y
+       **un mínimo le gana a una altura**. En el teléfono, recién cargado y con
+       la barra del navegador puesta, `dvh` daba 784 y `vh` daba 874: el body
+       se quedaba con 874 adentro de una pantalla de 784.
+
+       Eso es lo que se veía: la mesa arrancaba 90px más larga que la pantalla,
+       la última fila quedaba 41px abajo del borde y la línea de ayuda 62. Y
+       después de un par de jugadas «se acomodaba solo» — porque al rodar la
+       página el navegador esconde su barra, lo visible pasa a medir 874 y las
+       dos medidas se ponen de acuerdo.
+
+       No se puede ver en un emulador: redimensionando la ventana `vh` y `dvh`
+       valen siempre lo mismo. Se reprodujo forzando el `min-height` al valor
+       que da `100vh` en el teléfono. */
+    min-height:100dvh;
     display:flex;flex-direction:column;
     padding:5px;gap:5px;overflow-x:hidden;overflow-y:auto;
   }
@@ -5375,7 +5393,7 @@ body{padding-bottom:36px}
      vertical.
 
      Los que sí se clavaban —el aviso, la fundida, el empate— lo hacían por el
-     `max-height:88vh` del bloque de 821+ de ancho. Acá se les da el tope a
+     `max-height:88dvh` del bloque de 821+ de ancho. Acá se les da el tope a
      todos, atado al alto real de la pantalla: se ruedan adentro en vez de
      perderse afuera.
 
@@ -5573,7 +5591,7 @@ body{padding-bottom:36px}
    Mercado, refuerzo, tutorial y creación de club: todo entra sin scroll de
    página. Si el contenido es más alto que la ventana, scrollea **la tarjeta**,
    nunca el fondo. */
-.card{max-height:calc(100vh - 28px);overflow-y:auto}
+.card{max-height:calc(100dvh - 28px);overflow-y:auto}
 
 @media (max-width:700px){
   .card{
@@ -5701,7 +5719,7 @@ body{padding-bottom:36px}
   .sit.mam, .sit.penal, .sit.con-art{
     max-width:clamp(480px, 42vw, 700px);width:100%;
     padding:32px 36px 30px;border-radius:12px;
-    max-height:88vh;overflow-y:auto;
+    max-height:88dvh;overflow-y:auto;
   }
   .sit.mam .sit-tag, .sit.penal .sit-tag{font-size:12.5px;letter-spacing:3.5px}
   .sit.mam .t, .sit.penal .t{font-size:clamp(34px, 3.2vw, 50px);margin:4px 0 6px}
@@ -5736,7 +5754,7 @@ body{padding-bottom:36px}
   .aviso{
     max-width:clamp(480px, 42vw, 700px);
     --apx:40px; --apy:34px;
-    max-height:88vh;overflow-y:auto;
+    max-height:88dvh;overflow-y:auto;
   }
   .aviso .a-ico{font-size:66px}
   .aviso .a-t{font-size:clamp(38px, 3.6vw, 58px);letter-spacing:2.5px}
@@ -6544,7 +6562,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
    avisos: trae marcador y dos opciones. En un 360x640 se pasaba 36px del hueco
    que deja el overlay, y como `.sit-flash` centra sin scrollear, lo que sobra
    no se corta: **queda fuera de alcance**. En desktop no pasaba porque ahí el
-   aviso ya tenía su `max-height:88vh`.
+   aviso ya tenía su `max-height:88dvh`.
 
    Van las dos cosas: un tope de alto también en mobile —la red de contención,
    por si algún texto crece— y una compactación por alto de pantalla, que es la
@@ -10971,7 +10989,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 251;
+const VERSION = 252;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

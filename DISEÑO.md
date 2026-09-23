@@ -14240,3 +14240,82 @@ sus precios no se tocan**, que es con lo que se decide.
 **El botón está a la vista en las cinco, en las dos pantallas**, y el pie llega
 de borde a borde en todas. Donde todavía rueda, lo que rueda es la lista, no la
 acción.
+
+## v252 · el tablero entra desde el primer cuadro
+
+El síntoma era raro y muy específico: en el teléfono el tablero **no entraba al
+cargar** —había que rodar para ver la última fila— y después de un par de
+jugadas, de abrir y cerrar carteles, **se acomodaba solo** y quedaba perfecto.
+
+### Un mínimo le gana a una altura
+
+El bloque de mobile ya usaba `dvh` para el alto del body, y tiene un comentario
+explicando por qué: «en el celular la barra del navegador se suma y resta al
+alto de la ventana». Lo que no se había mirado es que la **regla base** sigue
+diciendo `min-height:100vh`, y el bloque de mobile nunca la pisaba. Un mínimo
+le gana a una altura.
+
+```
+recién cargado, con la barra del navegador puesta:
+  height:100dvh      = 784   ← lo que se ve
+  min-height:100vh   = 874   ← la pantalla entera, barra incluida
+  gana el mínimo     → body de 874 adentro de una pantalla de 784
+```
+
+Y el «se acomoda solo» es la otra mitad: al rodar la página el navegador
+**esconde su barra**, lo visible pasa a medir 874 y las dos medidas se ponen de
+acuerdo. No era que algo se recalculaba: era que la pantalla crecía hasta la
+medida equivocada.
+
+### Por qué no se veía probando
+
+**En un emulador esto no existe.** Redimensionando la ventana, `vh` y `dvh`
+valen siempre lo mismo, así que el tablero entraba en todas las resoluciones que
+se probaron. Se reprodujo forzándole al body el `min-height` que daría `100vh`
+en el teléfono real —874px con la ventana en 784— y ahí apareció, exacto:
+
+| | medido |
+|---|---|
+| la página rueda | **90px** |
+| la última carta se va | **41px** por abajo |
+| la línea de ayuda se va | **62px** por abajo |
+
+Noventa píxeles: exactamente la barra de Safari.
+
+### El arreglo
+
+`min-height:100dvh` en el bloque de mobile, al lado del `height` que ya lo
+usaba. Y de paso las tarjetas y los carteles, que tenían el mismo enredo:
+`calc(100vh - 40px)`, `calc(100vh - 20px)`, `calc(100vh - 28px)` y cuatro
+`88vh` pasan a `dvh`. Con la barra puesta esos topes medían más que la
+pantalla, así que una tarjeta podía terminar por debajo del borde.
+
+La regla base y el bloque de escritorio **se quedan en `vh`**: ahí no hay
+ninguna barra que se esconda.
+
+### Medido, con la barra puesta
+
+Cada modelo con su alto reducido, que es como carga. Ahora que el body sigue a
+lo visible, achicar la ventana **sí** simula la barra:
+
+| modelo | pantalla útil | carta | entra todo |
+|---|---|---|---|
+| iPhone SE 1 | 320 × 508 | 56 | sí |
+| iPhone SE 2/3 | 375 × 577 | 72 | sí |
+| Galaxy S21–S24 | 360 × 710 | 106 | sí |
+| iPhone 12–16 | 390 × 754 | 116 | sí |
+| iPhone 17 Pro | 402 × 784 | 124 | sí |
+| Pixel 7/8/9 | 412 × 825 | 134 | sí |
+| iPhone Pro Max | 430 × 842 | 138 | sí |
+
+En las siete: **sin scroll de página**, el marcador arrancando a 5px del borde
+de arriba y la última carta y la línea de ayuda adentro. De punta a punta, sin
+tocar nada.
+
+### Lo que queda en `vh` a propósito
+
+El resto de los `vh` son topes de contenido —el logo, la foto de los mini
+juegos, el panel del relato— donde quedar 10% corto no empuja nada afuera de la
+pantalla. El `--carta` también sigue en `vh`, pero **no mide el tablero**: la
+mesa es `grid-template-rows:repeat(4,1fr)`, así que las cuatro filas se reparten
+el alto real y ese valor sólo termina escalando el escudo de la carta.
