@@ -14377,3 +14377,55 @@ nota del pie del cartel queda fuera de la vista. **Es anterior a esto**:
 medido escondiendo las minis, el cartel rueda igual 29px sin ellas. Las minis
 lo llevan de 29 a 93. Las cinco y el botón que hay que tocar se siguen viendo
 enteros; lo que queda abajo es el renglón explicativo.
+
+## v254 · en pantalla baja la nota del descuento sube
+
+Quedaba de la vuelta anterior: en el piso de **320 × 508** —un iPhone SE 1 con
+la barra del navegador puesta— el cartel del descuento pedía 547px de alto y
+tenía 448, y la nota del pie quedaba afuera. Es la que explica por qué hay una
+sola carta, o por qué empatando conviene jugarla.
+
+### Sube, no se achica
+
+Recortarle el cuerpo a un renglón que ya está en 11px no arregla nada, y
+acortar el texto le saca justo lo que tiene que decir. **Puesta arriba de las
+cartas se lee antes de decidir**, que es cuando sirve, y deja de depender de
+cuánto midan las cartas: con una o con dos, la nota está.
+
+```css
+@media (max-height:700px){
+  .aviso.dc{display:flex;flex-direction:column}
+  .aviso.dc .dc-nota{order:1}
+  .aviso.dc .dc-ops{order:2}
+}
+```
+
+El `order` necesita que el cartel sea una columna de flex; el resto de las
+piezas se quedan en `0` y conservan su orden de siempre. Y con eso van unos
+milímetros de aire entre bloques, que en 508px de alto son la diferencia.
+
+### Medido
+
+| pantalla | la nota | JUGARLA | el cartel rueda |
+|---|---|---|---|
+| 320 × 508 · perdiendo | **entra** (antes no) | entra | **0** (antes 99px) |
+| 320 × 508 · empatado | **entra** | entra | 7px |
+| 375 × 577 · perdiendo | entra | entra | **0** (antes 12px) |
+| 375 × 577 · empatado | entra | entra | 0 |
+| 402 × 874 | entra | entra | 0 |
+| 844 × 390 acostado | **entra** (antes no) | no | 87px |
+
+El cartel **dejó de rodar** en las dos pantallas bajas verticales: la columna de
+flex lo deja medirse bien y los márgenes recortados hacen el resto. En 320 × 508
+pasó de 99px de sobra a cero.
+
+### Lo que sigue quedando afuera acostado
+
+En 844 × 390 la carta JUGARLA queda abajo del borde. **Es anterior a esto**:
+medido deshaciendo el `order` a mano, el botón ya quedaba afuera con el orden
+viejo —y encima la nota también—. O sea que acostado este cambio sólo suma: la
+nota entra y el botón queda como estaba.
+
+El arreglo de fondo ahí es el mismo pie pegado de la v251, que en esa vuelta se
+le puso a las tarjetas del mercado y de las reglas. Este cartel es un
+`.aviso` adentro de un `.sit-flash`, no una `.card`, así que no lo heredó.

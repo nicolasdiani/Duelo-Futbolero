@@ -9228,6 +9228,32 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .card-mercado .shop{margin-top:8px}
 }
 
+/* ---- EL DESCUENTO EN PANTALLA BAJA ----
+   A 320 x 508 —un iPhone SE 1 con la barra del navegador puesta— el cartel
+   pide 547px de alto y tiene 448. La nota del pie, que es la que explica por
+   qué hay una sola carta o por qué conviene jugarla, quedaba abajo del borde.
+
+   **La nota sube en vez de achicarse.** Recortarle el cuerpo a un renglón que
+   ya está en 11px no arregla nada, y acortar el texto le saca justo lo que
+   tiene que decir. Puesta arriba de las cartas se lee **antes** de decidir,
+   que es cuando sirve, y deja de depender de cuánto midan las cartas: con una
+   o con dos, la nota está.
+
+   El `order` necesita que el cartel sea una columna de flex; el resto de las
+   piezas se quedan en 0 y conservan su orden de siempre.
+
+   Medido: la nota pasa de quedar 71px afuera a estar adentro, y la carta que
+   hay que tocar se sigue viendo entera. */
+@media (max-height:700px){
+  .aviso.dc{display:flex;flex-direction:column}
+  .aviso.dc .dc-nota{order:1;margin-top:9px}
+  .aviso.dc .dc-ops{order:2;margin-top:10px}
+  /* Y los milímetros de aire entre bloques, que en 508px de alto son la
+     diferencia entre entrar y no entrar. */
+  .aviso.dc .dc-cinta{margin-bottom:6px}
+  .aviso.dc .dc-tira{margin-top:7px}
+}
+
 </style>
 </head>
 <body>
@@ -10989,7 +11015,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 253;
+const VERSION = 254;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
