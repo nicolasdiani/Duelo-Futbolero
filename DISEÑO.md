@@ -14018,3 +14018,74 @@ Todo cuelga de `.con-foto`, que se pone **sólo si la carta tiene
 ilustración**. Hoy las 29 la tienen, así que la rama del emoji —`.p-ico`, para
 una carta que todavía no tenga arte— no la usa nadie; la clase es lo que la deja
 funcionando sin una foto de fondo que sostener.
+
+## v249 · en pantallas bajas el pie de la carta deja de recortarse
+
+En un **iPhone SE 2/3** —375 × 667— las dieciséis cartas del tablero perdían el
+renglón del efecto: DEFENSOR mostraba «LA PERDÉS» sin su «−1 ❤», PASE GOL
+mostraba «40% GOL» sin su «+1 ⚡». En el piso de 320 × 568 pasaba lo mismo.
+
+### Por qué
+
+La carta es una columna de flex con tres partes —título, hueco de la
+ilustración y pie— y el hueco del medio **no se encogía**. Un item de flex en
+columna no baja de lo que mide su contenido; eso es el `min-height:auto` que
+trae de fábrica. Así que el hueco se plantaba en los 44px de la ilustración
+aunque la carta midiera 95, y los píxeles que faltaban salían del último
+renglón, que es el pie, comido por el `overflow:hidden` de la carta.
+
+Medido en el SE 2/3, con la carta en 95px:
+
+```
+título   24
+hueco    44   ← no se encogía
+pie      34
+huecos    8
+        ────
+        110   contra 86 de caja
+```
+
+### El arreglo
+
+```css
+.cell .c-ico{flex:1; min-height:0; …}
+```
+
+**Soltarlo no cuesta nada, porque la ilustración ya no vive ahí.** Desde la
+v240 la pinta el fondo de la carta a sangre, y este hueco sólo guarda el
+escudo, que va en absoluto y con `overflow:visible` —así que se sigue viendo
+entero aunque el hueco se achique—. Donde hay lugar de sobra, de 390 para
+arriba, el `flex:1` lo estira igual que siempre y no cambia absolutamente
+nada.
+
+Abajo de 639px de alto no alcanzaba ni con el hueco en cero —título 24 + pie 34
++ huecos 8 = 66 contra 62 de caja—, así que en ese tramo, que ya tenía su
+bloque, se recortan además los milímetros que sobran: el título deja de
+reservar 24px de alto, la carta baja un punto de relleno y el efecto junta su
+interlínea. **El cuerpo de las letras no se toca**: lo que se saca es aire.
+
+### Medido
+
+Las 16 cartas del tablero, antes y después, con la animación de entrada ya
+terminada —los rects mienten mientras corre—:
+
+| pantalla | carta | recortadas antes | después |
+|---|---|---|---|
+| 320 × 568 · SE 1 | 62 × 71 | **16 de 16** | 0 |
+| 360 × 640 · Android viejo | 72 × 88 | 16 de 16 | 0 |
+| 375 × 667 · SE 2/3 | 76 × 95 | **16 de 16** | 0 |
+| 360 × 800 · Galaxy | 72 × 128 | 1 de 16 | 0 |
+| 390 × 844 · iPhone 12–16 | 80 × 139 | 0 | 0 |
+| 402 × 874 · iPhone 17 Pro | 83 × 146 | 0 | 0 |
+| 430 × 932 · Pro Max | 90 × 161 | 0 | 0 |
+| 844 × 390 · acostado | 114 × 203 | 0 | 0 |
+| 1280 × 800 | 185 × 226 | 0 | 0 |
+
+**La carta mide exactamente lo mismo que antes en las nueve.** El escudo no se
+sale de la carta en ninguna, y no aparece scroll horizontal en ninguna.
+
+### Lo que sigue igual
+
+El **corte del nombre a mitad de palabra** —DEFENSO/R, DELANTE/RO— se sigue
+viendo, y se sigue dejando así a propósito: está documentado en la v240 con las
+tres soluciones medidas.

@@ -1410,8 +1410,25 @@ img{height:auto}
 .cell .c-val.b{border-color:var(--blue);color:var(--blue);background:rgba(77,155,240,.1)}
 
 /* ---- medio: el ícono ---- */
+/* **El `min-height:0` es lo que evita que se recorte el pie.**
+
+   Un item de flex en columna no baja de lo que mide su contenido —eso es el
+   `min-height:auto` que trae de fábrica—, así que este hueco se plantaba en
+   los 44px de la ilustración aunque la carta midiera 95. Con `flex:1` crecía,
+   pero encogerse no se encogía: los 24px que faltaban salían del último
+   renglón, que es el pie, y el `overflow:hidden` de la carta se lo comía.
+
+   Medido en un iPhone SE 2/3 —375 x 667, carta de 95px—: título 24 + ícono 44
+   + pie 34 + los dos huecos de 4 = 110 contra 86 de caja. Las 16 cartas
+   perdían el renglón del efecto.
+
+   Soltarlo no cuesta nada: **la ilustración ya no vive acá**. Desde la v240 la
+   pinta el fondo de la carta a sangre y este hueco sólo guarda el escudo, que
+   va en absoluto y con `overflow:visible`, así que se sigue viendo entero
+   aunque el hueco se achique. Donde hay lugar de sobra —390 para arriba— el
+   `flex:1` sigue estirándolo igual que antes y no cambia nada. */
 .cell .c-ico{
-  flex:1;display:flex;align-items:center;justify-content:center;
+  flex:1;min-height:0;display:flex;align-items:center;justify-content:center;
   font-size:32px;line-height:1;
 }
 
@@ -4001,8 +4018,17 @@ img{height:auto}
   .cell .c-esc{padding:1.5px 2.5px;border-radius:6px;max-height:none;overflow:visible}
   .cell .c-esc svg{height:clamp(11px, calc(var(--carta) * .17), 22px)}
 }
+/* Abajo de 639px de alto la carta queda en 71px y no alcanza ni con el hueco
+   del ícono en cero: título 24 + pie 34 + huecos 8 = 66 contra 62 de caja. Se
+   recortan los milímetros que sobran —el título deja de reservar 24px de alto
+   y el pie junta su interlínea— y el renglón del efecto entra. El cuerpo de
+   las letras no se toca: lo que se saca es aire. */
 @media (max-width:820px) and (max-height:639px){
   .cell .c-esc{display:none}
+  .cell{padding:7px 8px 6px;gap:3px}
+  .cell .c-top{min-height:0}
+  .cell .c-out{padding-top:3px}
+  .cell .c-out .efe{margin-top:2px;padding-top:2px;line-height:1.2}
 }
 .c-art{
   width:100%;height:100%;object-fit:cover;display:block;
@@ -10849,7 +10875,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 248;
+const VERSION = 249;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
