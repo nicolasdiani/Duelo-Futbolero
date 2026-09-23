@@ -14429,3 +14429,65 @@ nota entra y el botón queda como estaba.
 El arreglo de fondo ahí es el mismo pie pegado de la v251, que en esa vuelta se
 le puso a las tarjetas del mercado y de las reglas. Este cartel es un
 `.aviso` adentro de un `.sit-flash`, no una `.card`, así que no lo heredó.
+
+## v255 · el gol del rival no encadena otro, y la cadena respira
+
+Te hacían un gol y **al instante** se abría la posibilidad de gol del rival, que
+metía otro. Una sola carta, dos goles en contra, sin tocar nada en el medio.
+
+### Sólo pasaba por una carta
+
+El gol del rival hace rato que **no cuesta aguante**: cuesta racha. Hay un
+comentario en `scoreC` que lo dice y explica por qué se cambió — «el -1 podía
+fundirte, fundirte reparte una situación, y la situación metía un segundo gol en
+la misma jugada».
+
+**El DELANTERO se quedó afuera de ese arreglo.** Es la única carta que le pasa
+`desgaste` al gol del rival, porque su costo no se cobra por ser gol sino por
+ser **duelo perdido**, la misma regla que DEFENSOR, ARQUERO y MEDIO. Pero es el
+único duelo que además es gol, así que las dos cosas caían en la misma jugada.
+
+Medido antes de tocar nada, con el aguante en 1:
+
+| carta | gol | ¿se encadena situación? |
+|---|---|---|
+| **DELANTERO perdido** | a los 606ms | **sí, a los 937ms** |
+| CÓRNER RIVAL con gol | a los 612ms | no — el aguante ni se toca |
+
+Y la situación que se llevaba el rival vale **54% de gol esperado**. El costo del
+duelo es `clamp(valor − tu defensa, 1, 3)`: contra un DELANTERO de 6 son **3
+casi siempre**, así que con el aguante en 3 o menos —lo normal a esa altura— lo
+vaciaba.
+
+### Los dos arreglos
+
+**1. El gol no reparte llegada.** `hurt` aprende un cuarto argumento,
+`sinSituacion`, que usa sólo el gol del DELANTERO: el desgaste se cobra igual
+—el aguante se rellena, el máximo baja, la fundida se cuenta— pero el rival no
+se gana además una situación. Ya se llevó el gol con esa misma carta.
+
+**2. La cadena respira.** Los pop-ups encadenan a propósito: el velo se queda
+puesto y la caja se transforma, para que una cadena no parpadee. Está bien para
+dos carteles que cuentan lo mismo, pero cuando lo que viene atrás es **otra
+cosa** los dos momentos se leen como uno. Ahora hay una pausa con nombre
+—`PAUSA_CADENA = 650`— antes del cartel de la fundida.
+
+650 y no 300: el velo tarda 300ms en irse, así que con menos el jugador ve el
+fundido pero no llega a ver la mesa, que es lo que separa un momento del otro.
+
+### Medido después
+
+| caso | marcador | ¿reparte situación? | hueco | la mesa a la vista |
+|---|---|---|---|---|
+| DELANTERO perdido · gol + desgaste | 0-1 | **no** | — | — |
+| ARQUERO perdido · sólo desgaste | 0-0 | sí | 673ms | **299ms** |
+| ROJA · expulsión | 0-0 | sí | 696ms | **325ms** |
+| CÓRNER RIVAL · gol de porcentaje | 0-0 | no | — | — |
+
+Las cadenas legítimas —perdés un duelo, te fundís, el rival tiene su llegada—
+siguen existiendo, que es como tiene que ser. Lo que cambió es que ahora se ven
+**300ms de mesa** entre una noticia y la otra: antes el segundo cartel salía
+montado sobre el velo del primero y nunca se volvía a ver el tablero.
+
+Y el DELANTERO sigue costando lo mismo: el gol, hasta tres corazones y el
+máximo. Lo único que perdió es el segundo gol gratis.

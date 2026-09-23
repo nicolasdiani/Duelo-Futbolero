@@ -11015,7 +11015,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 254;
+const VERSION = 255;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -11166,6 +11166,21 @@ const ESPERA_SIT = 2500;   // lo que queda un cartel de situación
    segunda. Se puede saltear con un toque, como todos. */
 const ESPERA_FIN = 3500;
 const DURA_GOL   = 1500;
+/* **El respiro entre un cartel y el que viene atrás.** Los pop-ups encadenan
+   a propósito —el velo se queda puesto y la caja se transforma— para que una
+   cadena no parpadee. Eso está bien para dos carteles que cuentan lo mismo,
+   pero cuando lo que viene atrás es **otra cosa** —te hicieron un gol y
+   encima el equipo se fundió— los dos momentos se leen como uno solo.
+
+   Medido: entre el gol del rival y el cartel de la fundida pasaban 331ms, y
+   el segundo salía montado sobre el velo del primero. Con esta pausa el velo
+   se cae, la mesa vuelve a verse, y el cartel que sigue entra con su propia
+   entrada. Son dos noticias y ahora se cuentan como dos.
+
+   650 y no 300: el velo tarda 300 en irse, así que con menos el jugador ve
+   el fundido pero no llega a ver la mesa, que es lo que separa un momento
+   del otro. */
+const PAUSA_CADENA = 650;
 const ESPERA_GOL = DURA_GOL + 120;
 
 const BASE_ATK = 2, BASE_DEF = 1;
@@ -14509,8 +14524,14 @@ function avisoRacha(){
 
 /* `maxYaBajo` lo pasa la expulsión, que ya se cobró su corazón de máximo: sin
    eso, una roja que además te funde bajaba el máximo dos o tres veces por una
-   sola carta. */
-async function hurt(msg, amount, maxYaBajo){
+   sola carta.
+
+   `sinSituacion` lo pasa el **gol del DELANTERO**. El desgaste se cobra igual
+   —es un duelo perdido, y esa regla vale para los cuatro duelos— pero el
+   rival **no se gana además una llegada**: ya se llevó el gol con esta misma
+   carta. Sin esto, una sola carta podía terminar en dos goles en contra sin
+   que el jugador tocara nada en el medio. */
+async function hurt(msg, amount, maxYaBajo, sinSituacion){
   const n = amount || 1;
   if(msg) say(msg + ' -' + n + ' aguante.', 'bad');
   let bajoMax = !!maxYaBajo;
@@ -14547,9 +14568,23 @@ async function hurt(msg, amount, maxYaBajo){
     }
 
     yaSeFundio = true;
+
+    /* Fundirse **después de que te hicieron el gol** se cobra igual —el
+       aguante se rellena, el máximo baja— pero sin repartir llegada: el gol
+       ya fue el castigo de esta carta. */
+    if(sinSituacion){
+      say('😮‍💨 Y encima el equipo se cae: quedan ' + G.aguanteMax +
+          ' <i class="ih"></i> de máximo.', 'bad');
+      render();
+      continue;
+    }
+
     say('😮‍💨 Se te funde el equipo: quedan ' + G.aguanteMax +
         ' <i class="ih"></i> de máximo y el rival se gana una situación.', 'big');
     render();
+    /* El respiro: sin esto el cartel de la fundida sale montado sobre el que
+       venga de antes y las dos noticias se leen como una. */
+    await wait(PAUSA_CADENA);
     /* El cartel muestra el castigo y sortea la llegada a la vista; después se
        juega **esa misma**, que es lo que hace `yaElegida`. */
     const elegida = await fundidaRival(cayoMax);
@@ -15122,7 +15157,9 @@ async function scoreC(msg, desgaste, sinRacha){
   if(!sinRacha) G.racha = clamp(G.racha - 1, 0, G.rachaMax);
   render();
   await espera;
-  if(desgaste) await hurt(null, desgaste);
+  /* El cuarto argumento es el que corta la cadena: el desgaste se cobra, la
+     llegada no se reparte. */
+  if(desgaste) await hurt(null, desgaste, false, true);
 }
 
 /* Quedarte con diez: el golpe de -3 ❤ **y** un corazón menos de máximo el resto
