@@ -14089,3 +14089,86 @@ sale de la carta en ninguna, y no aparece scroll horizontal en ninguna.
 El **corte del nombre a mitad de palabra** —DEFENSO/R, DELANTE/RO— se sigue
 viendo, y se sigue dejando así a propósito: está documentado en la v240 con las
 tres soluciones medidas.
+
+## v250 · la foto del cartel deja de recortarse
+
+La ilustración del cartel de la jugada se veía pixelada. No era el filtro ni el
+navegador: era que **le estábamos tirando más de la mitad de los píxeles**.
+
+### La cuenta
+
+Las 29 ilustraciones miden **248 × 164** —apaisadas, 8 KB cada una, 230 KB en
+total— y desde la v248 el cartel las muestra en una caja **parada** de 370 × 554.
+Tapándola con `cover`, la imagen se escala 3,38× hasta 838 × 554, de los cuales
+se ven 370: **se recorta el 56% del ancho**. Lo que se veía a pantalla completa
+era un pedazo de **110 × 164** estirado.
+
+| dónde | caja | 1x | 2x | 3x |
+|---|---|---|---|---|
+| carta del tablero | 83 × 146 | 0,89× | 1,78× | 2,67× |
+| cartel viejo, la tira de 190px | 370 × 190 | 1,49× | 2,98× | 4,48× |
+| **cartel de la v248** | 370 × 554 | 3,38× | 6,76× | **10,13×** |
+
+En un iPhone de 3x el cartel pide 1110 × 1662 píxeles reales. Por eso saltó
+ahora y no antes: v248 no rompió nada, pasó de agrandar 4,5× a agrandar 10×.
+
+### Lo que se probó y lo que quedó
+
+Se compararon tres arreglos sin arte nuevo, sobre el cartel real:
+
+- **desenfoque parejo** y **desenfoque con grano**: no agregan detalle, cambian
+  «pixelada» por «fuera de foco». Honestos como parche, pero no arreglan nada.
+- **la foto entera**: dejar de recortarla. Esta es la que quedó.
+
+Y después, tres formas de acomodarla: apoyada arriba, **centrada y fundida**, y
+centrada con filo. Quedó la del medio.
+
+### Cómo funciona
+
+Dos capas de la **misma** imagen dentro de `.p-art`:
+
+```
+.p-fondo            cover, con su encuadre, blur(16px) y scale(1.14)
+img:not(.p-fondo)   entera, ancho completo, centrada y fundida arriba y abajo
+```
+
+La de adelante va a `width:100%` con el alto que le toca, así que se agranda
+**1,5× en vez de 3,4×** — la misma cuenta que tenía la tira del cartel viejo—.
+Como es apaisada no llega a tapar el alto, y lo que falta lo tapa la de atrás,
+desenfocada hasta que deja de leerse como imagen y pasa a ser color. La nítida
+se funde en ella por los dos bordes con una máscara, así que **no hay filo en
+ninguna parte**.
+
+Las dos capas comparten el `src`, así que el navegador decodifica una sola
+imagen: la segunda sale de su caché.
+
+**El `ENCUADRE` de cada carta ya no encuadra la foto**, sólo la capa borrosa.
+La nítida va entera y no hay nada que recortar.
+
+### Una trampa que costó encontrar
+
+Probando una variante que agrandaba la foto un 28%, el `width:128%` **no hacía
+nada**: la regla global de `max-width:100%` le ponía de techo el ancho del
+contenedor. Hay que decirle `max-width:none`. Es el mismo enredo que en la v176
+dejó torcida la cabecera del vestuario y en la v170 la cinta del club.
+
+### Medido
+
+Las **29 cartas**, en el juego andando:
+
+| pantalla | alto del cartel | franja nítida | cruces | ruedan |
+|---|---|---|---|---|
+| 360 × 800 | 507 | — | 0 | 0 |
+| 402 × 874 | 554 | 225–226 | 0 | 0 |
+| 844 × 390 acostado | 317–326 | — | 0 | 1 (ARQUERO, 9px) |
+
+En las 29 hay dos capas, con el mismo `src`, la nítida a ancho completo y
+centrada a menos de 3px del centro del cartel. Los topes de tamaño no se
+tocaron.
+
+### Esto es un parche
+
+Con 248 × 164 no hay forma de llenar un teléfono de 3x sin agrandar. Lo que
+sigue es **arte nuevo, parado**: con una fuente de 720 × 1010 el cartel
+agrandaría 1,66× y la carta del tablero pasaría a **achicar**. Cuando llegue,
+esto vuelve a ser un `cover` cambiando estas dos reglas por la de antes.
