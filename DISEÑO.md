@@ -14172,3 +14172,71 @@ Con 248 × 164 no hay forma de llenar un teléfono de 3x sin agrandar. Lo que
 sigue es **arte nuevo, parado**: con una fuente de 720 × 1010 el cartel
 agrandaría 1,66× y la carta del tablero pasaría a **achicar**. Cuando llegue,
 esto vuelve a ser un `cover` cambiando estas dos reglas por la de antes.
+
+## v251 · el botón de abajo deja de cortarse
+
+En el **MERCADO** y en **CÓMO SE JUEGA**, en pantallas bajas, el botón de abajo
+aparecía cortado por la mitad. No estaba roto: la tarjeta rueda —`overflow-y:
+auto`— y el botón estaba ahí abajo, había que bajar a buscarlo. Pero nada lo
+decía.
+
+### Dónde fallaba, medido
+
+| pantalla | contenido | caja | el botón quedaba |
+|---|---|---|---|
+| 320 × 568 · SE 1 | 526 | 526 | adentro |
+| **360 × 640** | 654 | 586 | **57px abajo** |
+| **375 × 667 · SE 2/3** | 657 | 613 | **33px abajo** |
+| 390 × 844 y para arriba | — | — | adentro |
+| **844 × 390 acostado** | 586 | 358 | **197px abajo** |
+
+CÓMO SE JUEGA sólo fallaba acostado, donde se iba **300px**.
+
+**El 320 se salvaba de casualidad.** Hay un bloque de pantalla baja que aprieta
+todo con `max-height:639px`, y **640 y 667 se lo pierden por un píxel y por
+veintiocho**. Justo los dos que fallaban.
+
+### Las dos mitades del arreglo
+
+**1. Un pie que se queda pegado.** El botón va ahora en un `.card-pie` con
+`position:sticky; bottom:0`, a sangre y con fondo propio: la lista rueda por
+detrás y la acción se queda. Con eso **no se puede cortar nunca**, en ninguna
+pantalla ni orientación. Es lo único que arregla también el acostado, donde
+faltan 228px y ningún ajuste de espaciado alcanza.
+
+**2. Y el mercado se aprieta en pantalla baja.** El pie resuelve que el botón se
+vea; esto resuelve que no haga falta rodar. Es lo mismo que ya hacían las
+pantallas de fin de partido a `max-height:700px`, donde el historial se
+comprime «porque en una pantalla corta el botón es lo que tiene que entrar»; el
+mercado nunca lo tuvo. Se va el párrafo de arriba —39px con sus márgenes, un
+consejo que se lee una vez— y se juntan los huecos entre bloques. **Los ítems y
+sus precios no se tocan**, que es con lo que se decide.
+
+### Dos enredos en el camino
+
+1. **El pie colgaba por debajo del borde.** El `--cpx` de la tarjeta se
+   mantiene en los cinco breakpoints, pero el de abajo no existía: el pie usaba
+   30px fijos contra un relleno real de 10, y quedaba 20px más abajo, dejando
+   ver la lista al costado del botón. Ahora hay `--cpy` al lado de cada
+   `--cpx`, y una sombra de 26px como red por si algún día aparece un relleno
+   nuevo sin el suyo.
+2. **Y el pie salía angosto.** Los márgenes negativos son los que lo estiran
+   hasta los bordes, pero la regla global de `max-width:100%` le ponía de techo
+   el ancho de la caja de adentro: **52px más angosto**, con la lista asomando a
+   los costados. `max-width:none`. Es el **tercer** lugar donde muerde esa
+   regla — la cinta del club en la v176, la foto del cartel en la v250, y ahora
+   esto.
+
+### Medido después
+
+| pantalla | CÓMO SE JUEGA | MERCADO |
+|---|---|---|
+| 320 × 568 | visible, no rueda | visible, no rueda |
+| 360 × 640 | visible, no rueda | visible, rueda 46 |
+| 375 × 667 | visible, rueda 2 | visible, rueda 22 |
+| 390 × 844 | visible, no rueda | visible, no rueda |
+| 844 × 390 | visible, rueda 341 | visible, rueda 149 |
+
+**El botón está a la vista en las cinco, en las dos pantallas**, y el pie llega
+de borde a borde en todas. Donde todavía rueda, lo que rueda es la lista, no la
+acción.

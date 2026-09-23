@@ -1641,7 +1641,7 @@ img{height:auto}
              background-color 150ms ease, backdrop-filter 150ms ease;
 }
 .card{
-  --cpx:26px;
+  --cpx:26px;--cpy:30px;
   border:1px solid var(--line);border-top:3px solid var(--gold);padding:30px 26px;
   max-width:520px;width:100%;text-align:center;
   box-shadow:0 20px 70px rgba(0,0,0,.7);
@@ -5578,7 +5578,7 @@ body{padding-bottom:36px}
 @media (max-width:700px){
   .card{
     max-height:calc(100dvh - 20px);
-    --cpx:15px;padding:16px 15px 15px;
+    --cpx:15px;--cpy:15px;padding:16px 15px 15px;
     border-radius:10px;
   }
   .card h1{font-size:clamp(21px,6.4vw,30px);line-height:1.02;margin-bottom:6px}
@@ -5662,7 +5662,7 @@ body{padding-bottom:36px}
 }
 
 @media (max-width:420px){
-  .card{--cpx:12px;padding:13px 12px 12px}
+  .card{--cpx:12px;--cpy:12px;padding:13px 12px 12px}
   .club-prev .escudo{width:66px !important;height:79px !important}
   .card-club .op-esc .escudo{width:25px !important;height:30px !important}
   .col-fila{gap:4px}
@@ -5884,7 +5884,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 
 @media (max-width:820px) and (max-height:740px){
   .overlay{padding:10px 12px 40px}
-  .card{--cpx:13px;padding:13px 13px 12px}
+  .card{--cpx:13px;--cpy:12px;padding:13px 13px 12px}
   .card h1{font-size:clamp(19px,5.6vw,26px);margin-bottom:4px}
   .card .tag{font-size:8.6px;letter-spacing:2.5px;margin-bottom:4px}
   .card p{font-size:11.8px;line-height:1.36;margin-bottom:7px;margin-top:7px}
@@ -5944,7 +5944,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
    donde con lo de arriba todavía sobran unos 40px en la pantalla de reglas,
    que es la más larga del juego. */
 @media (max-width:820px) and (max-height:680px){
-  .card{--cpx:11px;padding:10px 11px 10px}
+  .card{--cpx:11px;--cpy:10px;padding:10px 11px 10px}
   .card h1{font-size:clamp(17px,5vw,22px)}
   .card p{font-size:11px;line-height:1.3;margin-bottom:5px;margin-top:5px}
   .cta{font-size:12.5px;padding:7px;margin-top:5px}
@@ -5983,7 +5983,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
    la pantalla de reglas se pasaba 25px y el vestuario 21. */
 @media (max-width:820px) and (max-height:580px){
   .overlay{padding:6px 8px 32px}
-  .card{--cpx:10px;padding:9px 10px 9px}
+  .card{--cpx:10px;--cpy:9px;padding:9px 10px 9px}
   .card h1{font-size:clamp(16px,4.6vw,20px)}
   .card .tag{font-size:8px;margin-bottom:3px}
   .card p{font-size:10.4px;line-height:1.26;margin:4px 0}
@@ -9146,6 +9146,70 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .play.con-foto .p-esc svg{height:26px}
 }
 
+/* ═══════════ EL PIE QUE NO SE CORTA ═══════════
+   La tarjeta rueda cuando no entra —`overflow-y:auto`— así que el botón de
+   abajo nunca se perdía del todo: estaba, abajo, y había que bajar a buscarlo.
+   Pero nada lo decía, y lo que se ve es una tarjeta que termina en un botón
+   cortado por la mitad.
+
+   Medido antes de tocar nada, en el MERCADO:
+
+     pantalla              contenido   caja    el boton quedaba
+     320 x 568 SE 1           526      526          adentro
+     360 x 640                654      586        57px abajo
+     375 x 667 SE 2/3         657      613        33px abajo
+     390 x 844 y para arriba   —        —           adentro
+     844 x 390 acostado       586      358       197px abajo
+
+   El 320 se salvaba **de casualidad**: hay un bloque de pantalla baja que
+   aprieta todo con `max-height:639px`, y 640 y 667 se lo pierden por un pixel
+   y por veintiocho. Justo los dos que fallaban.
+
+   Con el pie pegado abajo el botón **no se puede cortar nunca**, en ninguna
+   pantalla ni orientación: la lista rueda por detrás y la acción se queda. Es
+   lo único que arregla también el acostado, donde faltan 228px y ningún
+   ajuste de espaciado alcanza.
+
+   Va a sangre —los márgenes negativos son el mismo truco de la cinta del
+   cartel— y lleva fondo propio, porque lo que pasa por detrás tiene que dejar
+   de verse. El `-30px` de abajo es el relleno de la tarjeta: sin eso el pie
+   flotaría con un escalón de tarjeta debajo. */
+.card-pie{
+  position:sticky;bottom:0;z-index:4;
+  /* **El max-width:none otra vez.** Los márgenes negativos son los que lo
+     estiran hasta los bordes de la tarjeta, pero la regla global de
+     max-width:100% le ponía de techo el ancho de la caja de adentro y el pie
+     quedaba 52px más angosto, con la lista asomando a los costados del botón.
+     Es el tercer lugar donde muerde: la cinta del club, la foto del cartel y
+     ahora esto. */
+  max-width:none;
+  margin:14px calc(var(--cpx) * -1) calc(var(--cpy, 30px) * -1);
+  padding:11px var(--cpx) 13px;
+  background:rgba(0,8,31,.97);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border-top:1px solid var(--line);
+  box-shadow:0 26px 0 rgba(0,8,31,.97);
+}
+.card-pie .cta{margin-top:0}
+.card-pie .cta + .cta{margin-top:8px}
+
+/* ---- Y EL MERCADO SE APRIETA EN PANTALLA BAJA ----
+   El pie resuelve que el botón se vea; esto resuelve que no haga falta rodar.
+   Es lo mismo que ya hacen las pantallas de fin de partido a esta altura,
+   donde el historial se comprime «porque en una pantalla corta el botón es lo
+   que tiene que entrar».
+
+   Lo primero que se va es el párrafo de arriba —«gastá ahora o guardá…»—, que
+   son 39px con sus márgenes y es un consejo que se lee una vez; los ítems y
+   sus precios, que es con lo que se decide, no se tocan. Con eso y los huecos
+   entre bloques se recuperan 53px, contra los 44 que faltaban a 375 x 667. */
+@media (max-height:700px){
+  .card-mercado .mk-p{display:none}
+  .card-mercado .franja{margin-top:8px}
+  .card-mercado .mochila{margin-top:6px}
+  .card-mercado .shop{margin-top:8px}
+}
+
 </style>
 </head>
 <body>
@@ -10160,7 +10224,7 @@ function comoSeJuega(alEmpezar){
         '', 'sola', 'pasegol') +
 
     '</div>' +
-    '<div class="rg-botones">' +
+    '<div class="rg-botones card-pie">' +
       /* Entrando desde el menú es **empezar**; entrando desde el partido es
          **volver**. Mismo botón, dos sentidos, dos tratamientos. */
       '<button class="cta ' + (alEmpezar ? 'n-verde' : 'n-linea') + '" id="reglasGo">' +
@@ -10907,7 +10971,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 250;
+const VERSION = 251;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -15759,8 +15823,13 @@ function showMarket(primeraVez){
     (Object.keys(G.compras).length
       ? '<div class="mk-nota">Lo que compraste ahora se puede devolver con la ✕. Al pasar de ronda queda firme.</div>'
       : '') +
-    '<button class="cta llama n-verde" id="nextBtn">' + ICO('pelota') +
-      'JUGAR ' + RONDA(G.ronda + 1).name + '</button>';
+    /* El botón va en un pie que se queda pegado abajo mientras la lista rueda
+       por detrás: es la acción de la pantalla y no puede depender de que el
+       jugador adivine que hay que bajar. */
+    '<div class="card-pie">' +
+      '<button class="cta llama n-verde" id="nextBtn">' + ICO('pelota') +
+        'JUGAR ' + RONDA(G.ronda + 1).name + '</button>' +
+    '</div>';
   openCard(html, 'card-mercado');
   engancharTienda();
   $('nextBtn').onclick = () => { closeCard(); G.ronda++; startMatch(); };
