@@ -10989,7 +10989,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 252;
+const VERSION = 253;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -13612,6 +13612,16 @@ function descuento(){
         '<div class="dc-cinta">' + rayosLlenos() + '<b>RACHA LLENA</b></div>' +
         (pierde ? '<div class="a-s">Se acabaron los 90 · te queda una sola salida</div>' : '') +
         tiraDelMarcador() +
+        /* **Las cinco, acá también.** Sin ellas este cartel era el único de
+           los tres que llegan a la situación de gol donde la carta aparecía
+           ya elegida: el sorteo pasaba en silencio adentro de `situacionGol`
+           y el jugador veía el resultado sin ver el azar. Los otros dos —el
+           cartel de la mesa y la fundida del rival— lo muestran, y hasta
+           tienen escrito que va «a la vista».
+
+           Y en el cartel de dos opciones sirve dos veces: ver qué puede salir
+           es parte de decidir si la jugás o te la guardás. */
+        minisGol(SIT_FAVOR, true) +
         (pierde ? '' : '<div class="dc-elegi">ELEGÍ UNA</div>') +
         '<div class="a-ops dc-ops' + (pierde ? ' sola' : '') + '">' +
           dcCarta('dJugar', 'gol', 'jugada', 'JUGARLA',
@@ -13624,11 +13634,21 @@ function descuento(){
     wrap = montarPop(wrap);
 
     wrap.querySelector('#dJugar').onclick = async () => {
+      const caja = wrap.querySelector('.aviso');
+      /* Las dos cartas se apagan a mano: son `.a-op`, no `.cta` ni `.if-btn`,
+         así que el barrido que hace `sorteoGol` no las alcanza y GUARDARLA
+         seguiría viva mientras el cursor corre. */
+      caja.querySelectorAll('.a-op').forEach(b => b.disabled = true);
+      /* El mismo cursor que la mesa. Devuelve la elegida y se juega **esa**,
+         que es lo que hace el `yaElegida` de `situacionGol`: si el sorteo se
+         viera acá y la carta se sorteara de nuevo adentro, el cartel podría
+         mostrar una y ejecutarse otra. */
+      const elegida = await sorteoGol(caja);
       cerrarPop();
       G.racha = 0;
       say('⏱ Última pelota del partido.', 'big');
       render();
-      await situacionGol('favor');
+      await situacionGol('favor', elegida);
       resolve();
     };
     /* Yendo abajo esta tarjeta no se dibuja, así que el enganche es opcional. */

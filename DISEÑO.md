@@ -14319,3 +14319,61 @@ juegos, el panel del relato— donde quedar 10% corto no empuja nada afuera de l
 pantalla. El `--carta` también sigue en `vh`, pero **no mide el tablero**: la
 mesa es `grid-template-rows:repeat(4,1fr)`, así que las cuatro filas se reparten
 el alto real y ese valor sólo termina escalando el escudo de la carta.
+
+## v253 · el descuento también sortea a la vista
+
+En el **tiempo de descuento** —la última pelota del partido, con la racha
+llena— al tocar JUGARLA aparecía la situación **ya elegida**. El sorteo pasaba
+en silencio y el jugador veía el resultado sin ver el azar.
+
+### El único de los tres
+
+Hay tres caminos que llegan a `situacionGol`, y dos ya mostraban el sorteo:
+
+| desde dónde | pasa la elegida | se veía el sorteo |
+|---|---|---|
+| el cartel de gol de la mesa | sí, `sorteoGol(caja)` | sí |
+| la fundida del rival | sí, `fundidaRival()` | sí |
+| **el descuento** | **no** | **no** |
+
+Los otros dos hasta lo tienen escrito —«el sorteo, a la vista», «sortea la
+llegada a la vista; después se juega esa misma»—. El descuento llamaba a
+`situacionGol('favor')` pelado, así que la carta se sorteaba adentro de la
+función y salía decidida. No era una decisión: era el que se lo perdió.
+
+### El arreglo
+
+Las mismas cinco minis del cartel de la mesa, y el mismo cursor antes de
+resolver. Dos cuidados:
+
+1. **Se juega la que ganó.** El sorteo devuelve la elegida y se la pasa a
+   `situacionGol` como `yaElegida`. Si no, el cartel mostraría una y se
+   ejecutaría otra, porque la función vuelve a sortear si no le dan ninguna.
+2. **Las dos cartas se apagan a mano.** `sorteoGol` deshabilita los `.cta` y
+   los `.if-btn` de la ficha; las del descuento son `.a-op`, así que
+   GUARDARLA seguiría viva mientras el cursor corre.
+
+Y en el cartel de dos opciones las minis sirven dos veces: ver qué puede salir
+es parte de decidir si la jugás o te la guardás.
+
+### Medido
+
+| pantalla | minis a la vista | JUGARLA a la vista | el cartel rueda |
+|---|---|---|---|
+| 402 × 874 | 5 de 5 | sí | no |
+| 375 × 577 · perdiendo | 5 de 5 | sí | 12px |
+| 375 × 577 · empatado | 5 de 5 | sí | no |
+| 320 × 508 · el piso | 5 de 5 | sí | 93px |
+
+Y el sorteo, seguido cuadro a cuadro: el cursor recorre **las cinco**, frena en
+una, y la que se ejecuta es **esa misma** —comprobado comparando el nombre de
+la mini ganadora con el título del pop-up que sigue—. Las dos cartas quedan
+apagadas mientras corre.
+
+### Lo que ya venía cortado
+
+En el piso de 320 × 508 —un iPhone SE 1 con la barra del navegador puesta— la
+nota del pie del cartel queda fuera de la vista. **Es anterior a esto**:
+medido escondiendo las minis, el cartel rueda igual 29px sin ellas. Las minis
+lo llevan de 29 a 93. Las cinco y el botón que hay que tocar se siguen viendo
+enteros; lo que queda abajo es el renglón explicativo.
