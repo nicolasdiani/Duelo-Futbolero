@@ -8971,6 +8971,123 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .cell.lock::before{filter:grayscale(1) blur(1.6px) brightness(.9)}
 }
 
+/* ═══════════ EL CARTEL DE LA JUGADA, CON LA FOTO A SANGRE ═══════════
+   El cartel repetía la receta vieja de la carta: la ilustración recortada en
+   una tira de 190px con margen y esquinas redondeadas, y el nombre debajo,
+   sobre el panel. La carta de la mesa dejó esa receta en la v240 —foto a
+   sangre, velo encima, nombre sobre la imagen— así que tocabas una carta y el
+   cartel que se abría estaba hecho de otra cosa.
+
+   Ahora es la carta, en grande y con el mismo orden: dos tercios de imagen
+   limpia arriba, el escudo y el nombre, y abajo los números. Probadas cuatro
+   formas sobre el cartel real —la foto de fondo con bandas, la cabecera a
+   sangre, ésta, y la foto sola sin paneles— en seis cartas por cinco anchos.
+
+   Va colgada de `.con-foto` y no de `.play` a secas porque la rama del emoji
+   —`.p-ico`, para una carta que todavía no tenga ilustración— no tiene foto de
+   fondo que sostener y tiene que seguir viéndose como antes. Hoy las 29 tienen
+   arte, así que esa rama no la toca nadie; la clase es lo que la deja viva. */
+.play.con-foto{
+  position:relative;overflow:hidden;padding:0;
+  min-height:clamp(440px, 66vh, 580px);
+  display:flex;flex-direction:column;justify-content:flex-end;
+  /* El mismo velo de la carta, palabra por palabra. */
+  --velo:linear-gradient(180deg,
+    rgba(0,8,31,.92) 0%, rgba(0,8,31,.34) 26%, rgba(0,8,31,.12) 46%,
+    rgba(0,8,31,.7) 68%, rgba(0,8,31,.96) 88%, rgba(0,8,31,.99) 100%);
+}
+/* Y el velo flojo de las tres que llevan el asunto arriba de todo: las dos
+   tarjetas levantadas y la bandera del offside. */
+.play.con-foto.arriba{
+  --velo:linear-gradient(180deg,
+    rgba(0,8,31,.58) 0%, rgba(0,8,31,.16) 24%, rgba(0,8,31,.1) 46%,
+    rgba(0,8,31,.7) 68%, rgba(0,8,31,.96) 88%, rgba(0,8,31,.99) 100%);
+}
+/* La tira pasa a ser el fondo. La imagen ya estaba en un `img`, así que se
+   estira con `object-fit` y se encuadra con `object-position`, que es el
+   equivalente del `background-position` que usa la carta. */
+.play.con-foto .p-art{
+  position:absolute;inset:0;z-index:0;
+  margin:0;border:0;border-radius:0;max-width:none;
+}
+.play.con-foto .p-art img{
+  width:100%;height:100%;max-height:none;
+  object-fit:cover;object-position:var(--enc, 50%) 50%;
+}
+.play.con-foto .p-art::after{inset:0;height:auto;background:var(--velo)}
+/* La cinta del club se despega del flujo y flota sobre la foto: si siguiera
+   ocupando lugar, empujaría la imagen y el cartel dejaría de ser una carta.
+   El degradado la sostiene sin cerrarla con una línea. */
+.play.con-foto .p-cinta{
+  position:absolute;top:0;left:0;right:0;z-index:3;
+  margin:0;padding:9px 16px;border-bottom:0;
+  background:linear-gradient(180deg, rgba(0,4,16,.82), rgba(0,4,16,0));
+}
+/* ---- EL ESCUDO Y EL NOMBRE, EN UN RENGLÓN ----
+   Los dos centrados como un bloque, no el nombre centrado y el escudo colgado
+   de un costado: lo que se lee es «este club, esta carta».
+
+   El `min-width:0` del nombre es lo que le permite achicarse dentro del flex;
+   sin él, un nombre largo empuja al escudo fuera de la caja en vez de partirse.
+   Probado con PENAL RIVAL y PASE GOL a 320. */
+.p-fila-nm{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin:0 16px 8px;
+}
+.play.con-foto .p-fila-nm,.play.con-foto .p-pie{position:relative;z-index:2}
+.play.con-foto .p-nm{
+  margin:0;min-width:0;
+  text-shadow:0 2px 5px rgba(0,4,16,.95), 0 0 16px rgba(0,4,16,.85);
+}
+/* El escudo vuelve al flujo: acá no está anclado a una esquina sino al
+   nombre. Se queda con su vidrio esmerilado, que es lo que lo despega de la
+   foto igual que en la carta. */
+.play.con-foto .p-esc{
+  position:static;flex:0 0 auto;
+  padding:3px 4px;border-radius:8px;
+}
+.play.con-foto .p-esc svg{height:32px}
+/* El pie: lo que antes flotaba suelto sobre el panel ahora se apoya junto,
+   abajo, sobre el tramo oscuro del velo. */
+.play.con-foto .p-pie{padding:0 16px 16px}
+.play.con-foto .p-val,.play.con-foto .p-out,.play.con-foto .p-go{
+  text-shadow:0 1px 4px rgba(0,4,16,.9);
+}
+.play.con-foto .p-out{
+  margin-top:10px;background:rgba(0,4,16,.42);
+  border-top:1px solid rgba(255,255,255,.12);
+}
+/* La chapa del valor baja lo que mide la cinta, que ahora le pasa por encima. */
+.play.con-foto .p-vnum{top:60px;right:12px;bottom:auto}
+/* ---- ACOSTADO ----
+   Ahí el alto escasea y el cartel ya tiene su propio tope, así que el
+   `min-height` deja de mandar y pasa a mandar la ventana. **No se suelta a
+   cero, se recorta**: soltarlo dejaba el cartel en 141px, con la foto
+   convertida en una tirita. Y la chapa del valor sube y se achica, que a la
+   altura de siempre le rozaba el nombre. */
+@media (max-height:560px){
+  /* **Y un techo de relleno.** La cinta va en absoluto arriba de todo, y
+     acostado el bloque de texto llega a medir casi lo que el cartel: en
+     ARQUERO —la de renglón de valor y resultado largo— el nombre terminaba
+     pasando por debajo de la cinta. Con el relleno, el contenido no puede
+     arrancar más arriba que ella; si no entra, rueda, que es lo que el
+     cartel ya hacía acostado desde antes.
+
+     **52 y no 44**: a 844 manda el bloque de escritorio, que le sube el cuerpo
+     al renglón del club, y la cinta pasa a medir 47px. Con 44 el nombre de
+     ARQUERO —la carta de renglón de valor y resultado largo— le entraba 6px
+     por abajo. */
+  /* **Y el contenido se apoya arriba.** Acá está la trampa: con el texto
+     pegado abajo, cuando no entra el sobrante se va para ARRIBA —así funciona
+     un `justify-content:flex-end`— y se mete debajo de la cinta, que el
+     relleno no lo puede frenar porque el desbordado ignora el relleno.
+     Apoyándolo arriba, el sobrante se va para abajo, que es donde el cartel
+     tiene su barra para rodar. Acostado ya rodaba antes de todo esto. */
+  .play.con-foto{min-height:calc(100dvh - 60px);padding-top:52px;justify-content:flex-start}
+  .play.con-foto .p-vnum{top:48px;font-size:24px;min-width:32px;padding:2px 8px}
+  .play.con-foto .p-esc svg{height:26px}
+}
+
 </style>
 </head>
 <body>
@@ -10732,7 +10849,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 247;
+const VERSION = 248;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -13775,26 +13892,49 @@ function mostrarJugada(cell){
   return new Promise(resolve => {
     let wrap = document.createElement('div');
     wrap.className = 'play-flash';
+    /* **El cartel se arma como la carta de la mesa.** La ilustración deja de
+       ser una tira apaisada arriba del panel y pasa a ser el fondo de toda la
+       caja, con el encuadre que le toca y el mismo velo —por eso viajan acá la
+       clase `con-foto`, la variable `--enc` y, en las tres que llevan el asunto
+       arriba de todo, la clase `arriba`—.
+
+       Y el contenido se agrupa en dos bloques que antes no existían:
+
+         `.p-fila-nm`  el escudo y el nombre en el mismo renglón, centrados
+         `.p-pie`      los números, el resultado y el «tocá», apoyados abajo
+
+       El escudo **sale de la foto**: estaba pegado abajo a la derecha de la
+       tira y con la foto a sangre quedaba suelto en una esquina, a 60px del
+       otro escudo, el de la cinta. Al lado del nombre dice lo mismo y no
+       disputa ninguna esquina. La chapa del valor se queda arriba a la
+       derecha, que ahora es la única que hay ahí. */
+    const art = artCarta(cell.type);
+    const enc = ENCUADRE[cell.type] || [50];
     wrap.innerHTML =
-      '<div class="play ' + p.tone + '">' +
+      '<div class="play ' + p.tone + (art ? ' con-foto' : '') +
+        (enc[1] === 'arriba' ? ' arriba' : '') + '" style="--enc:' + enc[0] + '%">' +
         cintaDelClub(cell.type) +
-        (artCarta(cell.type)
-          ? '<div class="p-art"><img src="' + artCarta(cell.type) + '" alt="">' +
-            (esc ? '<span class="p-esc">' + escudoDe(esc, 28) + '</span>' : '') +
+        (art
+          ? '<div class="p-art"><img src="' + art + '" alt="">' +
             (cell.val ? '<span class="p-vnum ' + (esAtk ? 'r' : 'b') + '">' + cell.val + '</span>' : '') +
             '</div>'
           : '<div class="p-ico">' + T.ico + '</div>') +
-        '<div class="p-nm">' + T.nm + '</div>' +
-        (cell.val
-          ? '<div class="p-val">' +
-            filaValor(esAtk ? 'atk' : 'def', cell.val, 'VALOR', 'de la carta') +
-            '<span class="p-vs">VS</span>' +
-            filaValor(esAtk ? 'atk' : 'def', esAtk ? ATK() : DEF(),
-                      esAtk ? 'ATAQUE' : 'DEFENSA', 'el tuyo') +
-            '</div>'
-          : '') +
-        (p.label ? '<div class="p-out">' + p.label + '</div>' : '') +
-        '<div class="p-go">TOCÁ PARA JUGARLA</div>' +
+        '<div class="p-fila-nm">' +
+          (esc ? '<span class="p-esc">' + escudoDe(esc, 28) + '</span>' : '') +
+          '<div class="p-nm">' + T.nm + '</div>' +
+        '</div>' +
+        '<div class="p-pie">' +
+          (cell.val
+            ? '<div class="p-val">' +
+              filaValor(esAtk ? 'atk' : 'def', cell.val, 'VALOR', 'de la carta') +
+              '<span class="p-vs">VS</span>' +
+              filaValor(esAtk ? 'atk' : 'def', esAtk ? ATK() : DEF(),
+                        esAtk ? 'ATAQUE' : 'DEFENSA', 'el tuyo') +
+              '</div>'
+            : '') +
+          (p.label ? '<div class="p-out">' + p.label + '</div>' : '') +
+          '<div class="p-go">TOCÁ PARA JUGARLA</div>' +
+        '</div>' +
       '</div>';
     wrap = montarPop(wrap);
     wrap.onclick = () => { cerrarPop(); resolve(); };

@@ -13927,3 +13927,94 @@ Dos cosas que dependen de cómo dibuje WhatsApp y no se pueden medir acá: que l
 negrita se vea como negrita en las dos plataformas, y **dónde aparece la
 tarjeta de vista previa del link**, que probablemente va arriba de todo el
 mensaje y no donde está escrito el link.
+
+## v248 · el cartel de la jugada es la carta, en grande
+
+El pop-up que salta al tocar una fila deja la receta vieja y toma la de la
+carta de la mesa: **la foto a sangre**, con su encuadre y su velo, el escudo y
+el nombre encima, y los números apoyados abajo.
+
+### El desfasaje
+
+La carta dejó la tira de foto en la v240 —foto a sangre, velo, nombre sobre la
+imagen— y el cartel se quedó con la receta anterior: la ilustración recortada
+en **una tira apaisada de 190px** con margen y esquinas redondeadas, y el
+nombre debajo, sobre el panel. Tocabas una carta y el cartel que se abría
+estaba hecho de otra cosa.
+
+### Cuatro probadas, una elegida
+
+Se armaron cuatro sobre el cartel real —el `.play` que devuelve
+`mostrarJugada`, capturado del juego andando— y se midieron las seis familias
+de carta por cinco anchos:
+
+| | qué hacía | alto |
+|---|---|---|
+| **P1** la carta grande | foto de fondo, cinta arriba y banda oscura abajo | 317–520 |
+| **P2** la cabecera a sangre | la tira crece y llega a los bordes, el panel se queda | 326–525 |
+| **P3** la carta entera | dos tercios de imagen limpia, todo el texto abajo | **317–557** |
+| **P4** la foto y nada más | sin bandas ni paneles, el texto flotando | 317–520 |
+
+Ganó **P3**: es la única que copia el *orden* de la carta y no sólo su foto.
+
+Y una diferencia que sólo apareció midiendo: **acostado, el cartel de hoy
+rueda** —las seis cartas, medido— y P2 rueda igual, porque las dos atan la foto
+a una altura fija. P1, P3 y P4 no: al soltar esa tira, el cartel se acomoda al
+alto que hay.
+
+### El escudo, al lado del nombre
+
+El cartel tiene **dos escudos**: el chico de la cinta y el grande de la foto. El
+código tenía escrito por qué —«el de la cinta acompaña al nombre del club y dice
+de quién es la jugada; el de la foto es el que se ve de lejos y ata el cartel a
+la carta que acabás de tocar»— pero eso se escribió **cuando la foto era una
+tira aparte**. Con la foto a sangre los dos quedaban sobre la misma imagen, a
+60px uno del otro.
+
+Probados tres lugares abajo a la izquierda —arriba del nombre, al lado del
+nombre, y clavado en la esquina—, quedó **al lado del nombre, los dos centrados
+como un bloque**: lo que se lee es «este club, esta carta». Se descartó dejarlo
+en la esquina de abajo: el escudo se montaba encima del bloque del resultado
+—que ocupa todo el ancho y tiene fondo propio— en las seis cartas y en los cinco
+anchos, y para arreglarlo había que correr el pie entero 58px.
+
+El nombre lleva `min-width:0`, que es lo que le permite achicarse dentro del
+flex; sin eso un nombre largo empuja al escudo fuera de la caja en vez de
+partirse.
+
+### Dos trampas del flex
+
+1. **La cinta va en absoluto** sobre la foto. Si siguiera ocupando lugar
+   empujaría la imagen hacia abajo y el cartel dejaría de ser una carta.
+2. **Acostado, el sobrante se iba para arriba.** Con el texto pegado abajo
+   —`justify-content:flex-end`— lo que no entra desborda **hacia arriba**, y se
+   metía debajo de la cinta; el relleno no lo frena, porque el desbordado
+   ignora el relleno. En ARQUERO —renglón de valor más resultado largo— el
+   nombre entraba 6px por abajo de la cinta. Se arregla apoyando el contenido
+   **arriba** en pantallas bajas: el sobrante se va hacia abajo, que es donde el
+   cartel tiene su barra para rodar.
+
+### Medido en el juego
+
+Las **29 cartas** por cinco anchos, 145 casos, mirando alto, si rueda, si se
+sale del velo y si se cruzan la cinta, el escudo, la chapa del valor y el
+nombre:
+
+| pantalla | alto | cruces | ruedan |
+|---|---|---|---|
+| 320 × 690 | 437 | 0 | 0 |
+| 402 × 874 | 554 | 0 | 0 |
+| 430 × 932 | 557 | 0 | 0 |
+| 844 × 390 acostado | 317–326 | 0 | **1** (ARQUERO, 9px) |
+| 1280 × 800 | 507 (541 de ancho) | 0 | 0 |
+
+Acostado quedó **una sola carta rodando 9px**, donde antes rodaban las seis
+medidas. Los topes de tamaño no se tocaron: sigue el `max-width:400px` de
+celular y el `clamp(430px, 44vw, 720px)` de 1025 para arriba.
+
+### La rama del emoji sigue viva
+
+Todo cuelga de `.con-foto`, que se pone **sólo si la carta tiene
+ilustración**. Hoy las 29 la tienen, así que la rama del emoji —`.p-ico`, para
+una carta que todavía no tenga arte— no la usa nadie; la clase es lo que la deja
+funcionando sin una foto de fondo que sostener.
