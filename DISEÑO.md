@@ -14491,3 +14491,60 @@ montado sobre el velo del primero y nunca se volvía a ver el tablero.
 
 Y el DELANTERO sigue costando lo mismo: el gol, hasta tres corazones y el
 máximo. Lo único que perdió es el segundo gol gratis.
+
+## v256 · 16AVOS, y el intento perdido entra en la serie
+
+Dos cambios de palabras, los dos en la misma dirección: decir el dato en vez de
+describirlo.
+
+### La primera ronda se llama 16AVOS
+
+Se llamaba **CLASIFICATORIA**. Medido en la marquesina del tablero a 320px:
+
+| | px |
+|---|---|
+| CLASIFICATORIA | **65** |
+| OCTAVOS, la más larga de las otras cuatro | 36 |
+| 16AVOS | **30** |
+
+Casi el doble que cualquier hermana — tanto, que la escalera de la pantalla de
+ELIMINADO tenía un parche que la abreviaba a mano a `CLASIF.`. Ese parche se
+fue con el nombre.
+
+Y no es sólo más corto: **completa la escalera de una copa de verdad**.
+
+```
+16AVOS · OCTAVOS · CUARTOS · SEMIFINAL · LA FINAL
+```
+
+Antes eran una ronda suelta y cuatro con nombre de copa; ahora las cinco se leen
+como un torneo. El nombre viaja solo: todas las pantallas lo sacan de
+`R.name` —marquesina, relato, cinta del gol, escalera, botón del mercado, texto
+compartido— y el historial guarda el texto en el momento de jugarse. Como el
+juego no persiste partidas, no hay guardados viejos que digan lo otro.
+
+Comprobado en el juego andando: las cinco rondas, la marquesina, la escalera, el
+botón «JUGAR 16AVOS» y el relato dicen todos lo mismo.
+
+### El intento perdido entra en la serie
+
+El bloque de abajo del texto compartido decía **ÚLTIMO INTENTO**, que no dice
+nada: el que lee ya ve que es el último porque está al final, y no sabe cuál
+fue. Ahora lleva su número, y **la misma palabra que las ganadas**:
+
+```
+*COPA 1*
+🏆 LA FINAL · 2-0 a *BOCA*
+
+*COPA 2*
+🏆 LA FINAL · 1-0 a *RIVER*
+
+*COPA 3*
+✅ 16AVOS · 2-1 a *RIESTRA*
+❌ CUARTOS · 1-3 con *VÉLEZ*
+```
+
+Son la misma serie, una atrás de otra, así que se numeran igual. Lo que las
+distingue no es el título: **la ganada cierra con la copa en LA FINAL y ésta con
+una cruz**, y arriba de todo está el conteo de copas. El número sale de las
+ganadas: si tenés dos, ésta es la tercera.

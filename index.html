@@ -2966,7 +2966,7 @@ img{height:auto}
   color:var(--dim);margin-bottom:8px;
 }
 /* **Cada fila era su propia grilla**, así que `auto` valía lo que medía *esa*
-   fila: la columna de la derecha arrancaba en 216px en CLASIFICATORIA y en
+   fila: la columna de la derecha arrancaba en 216px en la primera ronda y en
    252 en OCTAVOS. Los nombres quedaban pegados al borde derecho y con el
    costado izquierdo hecho una escalera.
 
@@ -10491,8 +10491,20 @@ const EQUIPOS = [
 
 /* Las rondas ya no traen rival: lo sortea `armarCopa()` de la tabla de
    arriba, uno por nivel. */
+/* **16AVOS y no CLASIFICATORIA.** Medido en la marquesina a 320px, el nombre
+   viejo ocupaba 65px contra los 36 de OCTAVOS, que es la más larga de las
+   otras cuatro: casi el doble que cualquier hermana, y por eso la pantalla de
+   ELIMINADO tenía que abreviarlo a mano.
+
+   Y no es sólo más corto: completa la escalera de una copa de verdad —16avos,
+   octavos, cuartos, semifinal, final— así que las cinco rondas se leen como un
+   torneo en vez de como una ronda suelta y cuatro con nombre de copa.
+
+   El nombre viaja solo: todas las pantallas lo sacan de `R.name`, y el
+   historial guarda el texto en el momento de jugarse. Como el juego no
+   persiste partidas, no hay guardados viejos que digan lo otro. */
 const RONDAS = [
-  { name:'CLASIFICATORIA',  reloj:9, lvl:1 },
+  { name:'16AVOS',          reloj:9, lvl:1 },
   { name:'OCTAVOS',         reloj:9, lvl:2 },
   { name:'CUARTOS',         reloj:9, lvl:3 },
   { name:'SEMIFINAL',       reloj:9, lvl:4 },
@@ -11015,7 +11027,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 255;
+const VERSION = 256;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -15689,7 +15701,7 @@ const URL_JUEGO = 'https://nicolasdiani.github.io/Duelo-Futbolero/';
 
    Nombrar a diez rivales cuesta letras y ese es el precio. El único renglón
    que se parte en dos es el de un nombre largo con penales encima
-   —«CLASIFICATORIA · 0-0 a *SARMIENTO* (en penales)»—, y parte después del
+   —«16AVOS · 0-0 a *SARMIENTO* (en penales)»—, y parte después del
    resultado, así que la línea sigue leyéndose. */
 function textoCompartir(campeon){
   /* El ícono de adelante dice **siempre** si se ganó o se perdió, y el
@@ -15713,7 +15725,16 @@ function textoCompartir(campeon){
   });
   if(!campeon && G.historial.length){
     L.push('');
-    L.push('*ÚLTIMO INTENTO*');
+    /* **El número, no «el último».** Decía ÚLTIMO INTENTO, que no dice nada:
+       el que lee ya ve que es el bloque de abajo y no sabe cuál fue. Con el
+       número se entiende de una que ganaste dos copas y caíste en la tercera.
+
+       Y lleva **la misma palabra que las ganadas**: son la misma serie, una
+       atrás de otra. Lo que las distingue no es el título sino cómo terminan
+       —la ganada cierra con la copa en LA FINAL y ésta con una cruz—, y
+       arriba de todo está el conteo de copas. El número sale de las ganadas:
+       si tenés dos, ésta es la tercera. */
+    L.push('*COPA ' + (G.copas + 1) + '*');
     G.historial.forEach(p => L.push(linea(p)));
   }
   L.push('');
@@ -15795,7 +15816,10 @@ function escaleraHTML(hechas){
   return '<div class="pr-esc">' + RONDAS.map((r, i) => {
     const cls = i < hechas ? 'ok' : i === hechas ? 'va' : '';
     return '<div class="pe-t ' + cls + '">' +
-      '<span class="pe-r">' + (r.name === 'CLASIFICATORIA' ? 'CLASIF.' : r.name) + '</span>' +
+      /* Se fue la abreviatura que tenía la primera ronda: con 16AVOS el
+         nombre entra entero y las cinco chapas dicen lo mismo que el resto
+         del juego. */
+      '<span class="pe-r">' + r.name + '</span>' +
       '<span class="pe-p">' + (i < hechas ? '✓' : i === hechas ? 'VA' : '·') + '</span>' +
     '</div>';
   }).join('') + '</div>';
