@@ -14742,3 +14742,27 @@ Sin errores en la consola en ningún caso.
 La ✕ mide **20x20px**. En el teléfono un toque que cae unos píxeles abajo le
 pega al renglón y compra otro en vez de devolver. Se puede agrandar la zona
 de toque sin cambiar el dibujo.
+
+## v261 · OLA EN LA TRIBUNA pasa a llamarse ¡OLÉ, OLÉ!
+
+El nombre viejo no gustaba y era largo: 17 letras, la carta buena de nombre más
+largo, y en un teléfono se partía en tres renglones. La ola, además, es cosa de
+mundial y no de la popular.
+
+**¡OLÉ, OLÉ!** es lo que canta la tribuna cuando el equipo la toca y el rival no
+la ve, y eso es racha, que es justo lo que da la carta (+2 ⚡). Se descartaron
+AGUANTE —en el juego «aguante» son los corazones, y esta carta no da
+corazones—, HINCHADA —ya es otra carta, la de +1 corazón— y se compararon
+ALIENTO, BANDERAZO y PAPELITOS.
+
+- Nombre: `¡OLÉ, OLÉ!`. El espacio es duro: acostado cada carta toma el
+  ancho de su nombre, y con un espacio común la carta se achicaba a 52px y el
+  canto se partía en «¡OLÉ, / OLÉ!».
+- Ícono de respaldo: 🙌 en vez de 🌊.
+- Texto de la jugada: «🙌 ¡Olé, olé! La tribuna canta y el equipo la empieza a
+  tocar. +2 racha.»
+- La clave interna sigue siendo `ola`: el arte, el encuadre y los pesos de la
+  mesa no se tocan.
+
+Medido con la carta en la mesa: un solo renglón en 320, 360, 402, 440, 844x390
+y 1440x900, sin scroll lateral.

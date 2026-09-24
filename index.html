@@ -9578,7 +9578,16 @@ const TYPES = {
   cornerC:   { ico:'🌪', nm:'CÓRNER RIVAL', riv:true },
   hinchada:  { ico:'📣', nm:'HINCHADA' },
   cano:      { ico:'🪄', nm:'CAÑO' },
-  ola:       { ico:'🌊', nm:'OLA EN LA TRIBUNA' },
+  /* **¡OLÉ, OLÉ! y no OLA EN LA TRIBUNA.** El nombre viejo era el más largo
+     de las cartas buenas —17 letras, tres renglones en un teléfono— y la ola
+     es cosa de mundial, no de la popular. El «olé» es lo que canta la tribuna
+     cuando el equipo la toca y el rival no la ve: eso es racha, que es lo que
+     da la carta. La clave interna sigue siendo `ola`.
+
+     El espacio es duro (`\u00a0`): acostado, cada carta toma el ancho de su
+     nombre, y con un espacio común la carta se achicaba a 52px y el canto se
+     partía en «¡OLÉ, / OLÉ!». Entero se lee como lo que es. */
+  ola:       { ico:'🙌', nm:'¡OLÉ,\u00a0OLÉ!' },
   noche:     { ico:'✨', nm:'RACHA FULL' },
   fama:      { ico:'🌟', nm:'FAMA' },
   publicidad:{ ico:'🪧', nm:'PUBLICIDAD' },
@@ -11071,7 +11080,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 260;
+const VERSION = 261;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -11670,7 +11679,7 @@ function buildGrid(lvl){
   });
 
   /* ---- Un solo CAÑO por mesa ----
-     Da +2 de racha sin condiciones, que es lo mismo que la OLA: dos en la misma
+     Da +2 de racha sin condiciones, que es lo mismo que el ¡OLÉ, OLÉ!: dos en la misma
      mesa te regalan la posibilidad de gol sin haber ganado un duelo. */
   const canos = posDe(c => c.type === 'cano');
   if(canos.length > 1){
@@ -14438,7 +14447,7 @@ async function resolveCell(r, c, rowIdx){
     await sumarRacha(2);
   }
   else if(t === 'ola'){
-    say('🌊 La ola recorre la tribuna y el equipo se enciende. +2 racha.', 'good');
+    say('🙌 ¡Olé, olé! La tribuna canta y el equipo la empieza a tocar. +2 racha.', 'good');
     await sumarRacha(2);
   }
   else if(t === 'noche'){
