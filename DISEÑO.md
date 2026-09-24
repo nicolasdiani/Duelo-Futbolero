@@ -14882,3 +14882,64 @@ apuntando—, recargando la página:
 Sin scroll en ninguno. **Sin ítems** (al arrancar el partido) el plantel mide
 57 en vez de 59: los 2px van para la mesa. En el 1v1 esta franja no se
 muestra —cada jugador tiene su panel— y no cambia nada.
+
+## v264 · las columnas bajan abajo de la mesa, como pestañas, y laten como las filas
+
+Las columnas C1–C4 iban entre LA POSIBILIDAD DE GOL y la mesa: 39px de botones
+entre el anuncio más importante del partido y las cartas. El pedido fue
+llevarlas abajo, dejar el cartel de gol limpio, y darles el latido que ya
+tienen las filas.
+
+Se compararon seis sobre la mesa real —tres ubicaciones (abajo como están,
+abajo como pestañas, abajo con el costo aparte) y tres estilos de filas y
+columnas con el lenguaje de la franja (figuritas, cinta de capitán,
+pastillas)—. Quedó **abajo, como pestañas**.
+
+### Qué cambió
+
+- **Las columnas van abajo** (`order:2` adentro de `.board-zona`, que es una
+  columna flex). Miden lo mismo; sólo cambian de lado. El cartel de gol queda a
+  **5px** de las cartas, como el resto de los huecos, en vez de 39.
+- **Forma de pestaña**: planas arriba (3px) y redondeadas abajo (12px), con un
+  filo de 2px arriba que las cuelga de su columna de cartas —gris apagado,
+  dorado cuando se pueden usar—. El filo es una capa del fondo, no un borde: un
+  borde más grueso le sumaba 1px a la columna y se lo sacaba a las cartas.
+- **Laten como las filas**: `colEmpuja` es `filaEmpuja` hecho columna —dos
+  golpes y una pausa en los mismos 2,4s, así filas y columnas van al compás—,
+  hacia arriba (donde está la mesa) y en dorado (la racha que cuestan).
+  Reemplaza al titileo suave, sólo en las que se pueden usar. Se apaga al
+  pasar el mouse, en la elegida, con la pantalla yendo atrás y con
+  «reducir movimiento».
+
+Ubicación y forma sólo en teléfono y tablet vertical, donde la mesa entra sin
+scroll. En escritorio y en el teléfono acostado grande la página ya se
+desplaza: abajo las columnas quedarían fuera de la pantalla al cargar, así que
+se quedan arriba como estaban. El latido va en todos lados.
+
+### Medido en el juego, contra v263
+
+Partida nueva recargando en cada equipo, con racha y sin racha. «Huella» es una
+suma de las medidas de las 16 cartas: igual quiere decir que ninguna cambió.
+
+| equipo | huella de las cartas | columnas | cartel de gol → cartas |
+|---|---|---|---|
+| 320x568 · SE 1 | igual | abajo, 493–519 | 36 → 5 |
+| 360x740 | igual | abajo, 663–691 | 37,7 → 5 |
+| 375x667 · SE | igual | abajo, 590–618 | 38,4 → 5 |
+| 390x754 · iPhone 15 | — | abajo, 676–705 | 5 |
+| 393x852 · iPhone 16 | — | abajo, 774–803 | 5 |
+| 402x784 / 402x874 · 17 Pro | igual | abajo, 706–735 / 796–825 | 39,2 → 5 |
+| 412x915 · Pixel | — | abajo, 837–866 | 5 |
+| 440x956 · 17 Pro Max | — | abajo, 878–907 | 5 |
+| 768x1024 · tablet | igual | abajo, 946–975 | 39,2 → 5 |
+| 740x360 · acostado | igual | abajo, 309–338 | — |
+| 844x390 · acostado grande | — | arriba (sin cambios) | 51,3 |
+| 1440x900 · escritorio | — | arriba (sin cambios) | 51,3 |
+
+La mesa y las columnas terminan en el mismo píxel que antes y no hay scroll en
+ningún teléfono ni en la tablet. El banner (62), la franja (29/29/63), el
+tamaño de filas y columnas: iguales. El «100%» entra en todos menos en 320,
+que ya no entraba en v263. En 844x390 y 1440x900 la huella no se puede
+comparar —ahí cada carta toma el ancho de su nombre y cada partida reparte
+distinto—, pero el bloque no aplica (`matchMedia` da falso) y las columnas
+quedan con su orden y su radio de siempre.

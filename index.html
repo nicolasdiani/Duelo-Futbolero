@@ -9452,6 +9452,61 @@ html.html-menu, html.html-menu body{overflow:hidden}
   #m-dinero .rec-val{font-size:19px}
   .item .ief .ef-var{font-size:7.2px}
 }
+
+/* ================= LAS COLUMNAS, ABAJO Y COMO PESTAÑAS (v264) =================
+   Las columnas iban entre LA POSIBILIDAD DE GOL y la mesa, y le robaban al
+   cartel su lugar: 39px de botones entre el anuncio más importante del partido
+   y las cartas. Ahora bajan **abajo de la mesa** y el cartel queda pegado a
+   las cartas, a 5px como el resto de los huecos.
+
+   **Miden lo mismo; sólo cambian de lado.** Viven adentro de `.board-zona`,
+   que es una columna flex, así que alcanza con el `order`: las cartas no
+   cambian ni un píxel y la mesa termina donde terminaba.
+
+   Sólo en el teléfono y la tablet vertical, que es donde la mesa entra entera
+   sin scroll. En escritorio y en el teléfono acostado grande la página ya se
+   desplaza, y abajo las columnas quedarían fuera de la pantalla al cargar: ahí
+   se quedan arriba, como estaban.
+
+   Se compararon seis —tres ubicaciones y tres estilos—. Quedó la de las
+   **pestañas**. */
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){
+  .col-picks{order:2}
+  /* Planas arriba y redondeadas abajo: cuelgan de su columna de cartas, y el
+     filo de arriba es el que las une —dorado cuando se pueden usar—. El filo
+     va como capa del fondo y no como borde: un borde más grueso le sumaba
+     1px a la columna y se lo sacaba a las cartas. */
+  .col-pick{
+    border-radius:3px 3px 12px 12px;
+    background:linear-gradient(180deg,rgba(147,174,222,.4) 0 2px,transparent 2px),
+               linear-gradient(180deg,rgba(0,20,64,.92),rgba(0,8,31,.95));
+  }
+  .col-picks.lista .col-pick{
+    background:linear-gradient(180deg,var(--gold) 0 2px,transparent 2px),var(--panel);
+  }
+}
+
+/* **Y laten como las filas.** El mismo gesto que `filaEmpuja` —dos golpes y
+   una pausa, en los mismos 2,4s, así filas y columnas van al compás—, pero
+   hacia arriba, que es donde está la mesa, y en dorado, que es la racha que
+   cuestan. Reemplaza al titileo suave que tenían: sólo en las que se pueden
+   usar, igual que las filas. */
+@keyframes colEmpuja{
+  0%,100%{transform:translateY(0);box-shadow:0 0 0 0 rgba(245,200,66,0)}
+  16%    {transform:translateY(-2px);box-shadow:0 0 0 1.5px rgba(245,200,66,.75), 0 -3px 14px rgba(245,200,66,.28)}
+  35%    {transform:translateY(0);box-shadow:0 0 0 1px rgba(245,200,66,.4)}
+  51%    {transform:translateY(-1.5px);box-shadow:0 0 0 1.5px rgba(245,200,66,.6)}
+  73%    {transform:translateY(0);box-shadow:0 0 0 0 rgba(245,200,66,0)}
+}
+.col-picks.lista .col-pick:not(:disabled){animation:colEmpuja 2.4s ease-in-out infinite}
+.col-picks.lista .col-pick.activo:not(:disabled){animation:none}
+@media (hover:hover){
+  .col-picks.lista .col-pick:hover:not(:disabled){animation:none}
+}
+.wrap.atras .col-pick{animation:none}
+@media (prefers-reduced-motion:reduce){
+  .col-picks.lista .col-pick:not(:disabled){animation:none;box-shadow:0 0 0 1px rgba(245,200,66,.55)}
+}
 </style>
 </head>
 <body>
@@ -11238,7 +11293,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 263;
+const VERSION = 264;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
