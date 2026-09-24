@@ -5328,8 +5328,23 @@ body{padding-bottom:36px}
 
 /* ══════════ MOBILE CHICO ══════════ */
 @media (max-width:440px){
-  :root{--gap:5px; --carta:clamp(80px, 13vh, 128px); --cro:50px; --fpick:38px}
-  body{padding:5px;gap:5px}
+  /* **La columna de filas cede 6px y se van al margen.** Con 38px de botón y
+     5px de borde, la carta de la derecha quedaba justa contra la pantalla, y
+     en el sorteo —cuando el cursor la elige se agranda un 6% y le sale un
+     anillo de 3px— **el anillo se pasaba del borde**: 0,5px en el iPhone 17
+     Pro, hasta 0,7 en un Pro Max. El brillo quedaba cortado y, con las
+     esquinas redondeadas del teléfono, se leía como una carta cortada.
+
+     Ahora el botón mide 32 —«100%», lo más ancho que muestra, sigue entrando— y
+     el margen de los costados pasa a 8. Las cartas quedan **exactamente del
+     mismo ancho**: los 6px que pierde la columna son los 3+3 que gana el
+     borde. Y como el margen es del body, el marcador y los medidores se
+     corren igual y todo queda alineado a la misma línea.
+
+     Se probaron otras dos: bajar a 28 con 10 de margen, y que las cartas de
+     los costados crecieran hacia el centro. Ésta es la que menos toca. */
+  :root{--gap:5px; --carta:clamp(80px, 13vh, 128px); --cro:50px; --fpick:32px}
+  body{padding:5px;gap:5px;padding-left:8px;padding-right:8px}
   .mq-nom{max-width:18ch;font-size:8.6px}
   .mq-n{font-size:21px}
   .med-art{width:22px;height:22px}
@@ -11031,7 +11046,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 257;
+const VERSION = 258;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

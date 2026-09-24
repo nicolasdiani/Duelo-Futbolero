@@ -14566,3 +14566,62 @@ afirmaba que las columnas se habilitaban «solo con la racha llena» y otro «a 
 3 de racha». No cambiaban nada de lo que se ve, pero eran falsos desde la v245.
 
 Comprobado en el juego: la ficha dice **«Con 2 ⚡ atacás por columna.»**
+
+## v258 · la columna de filas cede 6px y el tablero se despega del borde
+
+Probado en un iPhone 17 Pro: las cartas de la derecha del tablero se veían
+cortadas contra el borde de la pantalla.
+
+### Lo que pasaba de verdad
+
+**Quieto, no se cortaba nada**: el tablero quedaba a 5px de cada costado. El
+problema era **el sorteo**. Cuando el cursor elige una carta, la carta se agranda
+un 6% (`scale(1.06)`) y le sale un anillo de 3px; en la columna de la derecha,
+con 5px de margen, ese anillo **se pasaba del borde de la pantalla**:
+
+| teléfono | el anillo, respecto del borde |
+|---|---|
+| 360 · Galaxy | −0,2px |
+| 375 · SE 2/3 | −0,3px |
+| 402 · iPhone 17 Pro | **−0,5px** |
+| 430 · Pro Max | −0,7px |
+
+El brillo quedaba recortado por la pantalla y, con las esquinas redondeadas del
+teléfono, se leía como una carta cortada.
+
+### El arreglo
+
+El botón de la fila baja de **38 a 32px** —«100%», lo más ancho que puede
+mostrar, sigue entrando— y el margen de los costados sube de **5 a 8px**. Las
+cartas quedan **exactamente del mismo ancho**: los 6px que pierde la columna son
+los 3+3 que gana el borde. Y como el margen es del body, el marcador y los
+medidores se corren igual y todo queda alineado a la misma línea.
+
+Se compararon tres, sobre el tablero real:
+
+| | columna | margen | cartas | anillo en el 17 Pro |
+|---|---|---|---|---|
+| **A · la elegida** | 32 | 8 | igual | 2,5px |
+| B · angosta y con aire | 28 | 10 | igual | 4,5px |
+| C · la carta crece hacia adentro | 28 | 8 | +1px | 5,0px |
+
+Quedó la A: es la que menos toca.
+
+### Medido en el juego
+
+Con la carta de la derecha elegida, y la transición apagada para medirla ya
+agrandada —en el panel del navegador el reloj de las transiciones no corre, y sin
+esto la medición la agarra quieta—:
+
+| teléfono | margen | carta | el anillo, al borde | «100%» | scroll lateral |
+|---|---|---|---|---|---|
+| 320 | 8 | 62,3 | 3,1px | entra | no |
+| 360 | 8 | 72,3 | 2,8px | entra | no |
+| 375 | 8 | 76 | 2,7px | entra | no |
+| 402 | 8 | 82,8 | 2,5px | entra | no |
+| 430 | 8 | 89,8 | 2,3px | entra | no |
+
+El anillo quedó **adentro de la pantalla en los cinco**, las cartas miden lo
+mismo que antes y la fila de columnas sigue alineada con la primera carta. El
+cambio vive en el bloque de los teléfonos (`max-width:440px`): acostado y
+escritorio no se tocan.
