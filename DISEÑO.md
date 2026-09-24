@@ -14548,3 +14548,21 @@ Son la misma serie, una atrás de otra, así que se numeran igual. Lo que las
 distingue no es el título: **la ganada cierra con la copa en LA FINAL y ésta con
 una cruz**, y arriba de todo está el conteo de copas. El número sale de las
 ganadas: si tenés dos, ésta es la tercera.
+
+## v257 · CÓMO SE JUEGA dice el precio real de la columna
+
+La ficha de LA RACHA en la pantalla de reglas decía **«Con 3 ⚡ atacás por
+columna»**. La v245 bajó la columna a 2, y el texto quedó escrito a mano con el
+número viejo: la pantalla que explica el juego enseñaba una regla que ya no
+existía.
+
+Ahora el número sale de `COSTO_COLUMNA`, la misma constante que habilita los
+botones y descuenta la racha. Si el precio vuelve a cambiar, la ficha cambia
+sola. Se lee en tiempo de llamada —`comoSeJuega` corre mucho después de que
+la constante existe—, así que no hay problema de orden.
+
+De paso, dos comentarios del código que decían lo mismo quedaron corregidos: uno
+afirmaba que las columnas se habilitaban «solo con la racha llena» y otro «a los
+3 de racha». No cambiaban nada de lo que se ve, pero eran falsos desde la v245.
+
+Comprobado en el juego: la ficha dice **«Con 2 ⚡ atacás por columna.»**

@@ -10251,7 +10251,11 @@ function comoSeJuega(alEmpezar){
 
       tutoFicha(tutoMed('ico_racha', 4, 4, 'ray'), 'LA RACHA',
         'El envión. Si se <b>llena</b>, es <b>posibilidad de gol</b> para vos.',
-        'Con 3 <i class="ir"></i> atacás por columna.', '', 'hinchada') +
+        /* **El número sale de la constante, no del texto.** Decía «Con 3» desde
+           antes de la v245, que bajó la columna a 2: la pantalla que explica el
+           juego enseñaba una regla que ya no existía. Colgado de
+           `COSTO_COLUMNA`, la próxima vez que cambie el precio cambia acá solo. */
+        'Con ' + COSTO_COLUMNA + ' <i class="ir"></i> atacás por columna.', '', 'hinchada') +
 
       /* La foto es **el delantero definiendo**, no la del mano a mano: ésa
          trae el rótulo UNO CONTRA UNO quemado en la imagen y a 54px de alto
@@ -11027,7 +11031,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 256;
+const VERSION = 257;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12118,7 +12122,7 @@ function renderBoard(){
     board.appendChild(rowEl);
   });
 
-  // selección por columna: solo con la racha llena
+  // selección por columna: se habilita con COSTO_COLUMNA de racha, no con la racha llena
   const colBar = $('colPicks');
   const rachaReady = G.racha >= G.rachaMax;          // habilita la situación de gol
   const colReady   = G.racha >= COSTO_COLUMNA;      // habilita las columnas
@@ -14514,7 +14518,7 @@ function avisoRacha(){
     wrap.className = 'sit-flash';
     wrap.innerHTML =
       /* Solo se anuncia la SITUACIÓN DE GOL: es lo único que aparece recién
-         ahora. La columna se habilita antes, a los 3 de racha, así que a esta
+         ahora. La columna se habilita antes, a los 2 de racha, así que a esta
          altura el jugador ya la viene usando y repetirla acá sería ruido. */
       '<div class="aviso con-foto">' +
         fotoRacha('RACHA LLENA') +
