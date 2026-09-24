@@ -9676,6 +9676,16 @@ html.html-menu, html.html-menu body{overflow:hidden}
 @media (prefers-reduced-motion:reduce){
   .aviso.dc .dc-op{animation:none;box-shadow:0 0 0 1px rgba(var(--lc),.6)}
 }
+
+/* ================= EL DESCUENTO YENDO ABAJO: UNA CARTA, CENTRADA (v268) =================
+   Con una sola opción el cartel se armaba distinto al de dos cartas: una frase
+   arriba del marcador, JUGARLA estirada a todo el ancho y una nota de dos
+   renglones. Ahora es el mismo cartel con una carta menos: JUGARLA **del mismo
+   tamaño que en el de dos**, centrada; «TU ÚLTIMA PELOTA» en el lugar de
+   «ELEGÍ UNA»; y la nota en una línea —«Si no entra, quedás eliminado.»—.
+   Se compararon tres —con la carta de GUARDARLA apagada con candado, una
+   carta centrada y a todo o nada en rojo—. */
+.aviso.dc .dc-ops.sola{grid-template-columns:minmax(0, calc(50% - 4px));justify-content:center;margin-top:0}
 </style>
 </head>
 <body>
@@ -11462,7 +11472,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 267;
+const VERSION = 268;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -14082,7 +14092,7 @@ function descuento(){
      Empatando sí se puede: el partido se va a penales y de ahí se puede salir
      ganando, así que la racha guardada sirve. */
   const nota = pierde
-    ? { txt:'Vas perdiendo: si no la jugás ahora no hay próximo partido, así que guardarla no es una opción.', cls:'urge' }
+    ? { txt:'Si no entra, quedás <b>eliminado</b>.', cls:'urge' }
     : empata
       ? { txt:'Están empatados. Si no entra, se define por penales.', cls:'urge' }
       : { txt:'Vas ganando. Guardarla te la deja entera para el próximo partido.', cls:'' };
@@ -14104,7 +14114,6 @@ function descuento(){
       '<div class="aviso con-foto dc">' +
         fotoRacha('TIEMPO DE DESCUENTO') +
         '<div class="dc-cinta">' + rayosLlenos() + '<b>RACHA LLENA</b></div>' +
-        (pierde ? '<div class="a-s">Se acabaron los 90 · te queda una sola salida</div>' : '') +
         tiraDelMarcador() +
         /* **Las cinco, acá también.** Sin ellas este cartel era el único de
            los tres que llegan a la situación de gol donde la carta aparecía
@@ -14116,7 +14125,11 @@ function descuento(){
            Y en el cartel de dos opciones sirve dos veces: ver qué puede salir
            es parte de decidir si la jugás o te la guardás. */
         minisGol(SIT_FAVOR, true) +
-        (pierde ? '' : '<div class="dc-elegi">ELEGÍ UNA</div>') +
+        /* **Yendo abajo, el mismo rótulo en el mismo lugar** (v268). Antes no
+           había ninguno y el cartel de una opción se armaba distinto al de dos:
+           una frase arriba del marcador, la carta estirada y una nota de dos
+           renglones. */
+        '<div class="dc-elegi">' + (pierde ? 'TU ÚLTIMA PELOTA' : 'ELEGÍ UNA') + '</div>' +
         '<div class="a-ops dc-ops' + (pierde ? ' sola' : '') + '">' +
           dcCarta('dJugar', 'gol', 'jugada', 'JUGARLA', esperadoFavor + '% GOL', 'gasta la racha') +
           (pierde ? '' : dcCarta('dGuardar', 'col', 'hinchada', 'GUARDARLA', 'RACHA LLENA', 'al próximo partido')) +

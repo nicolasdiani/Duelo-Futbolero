@@ -15058,3 +15058,29 @@ v254—: ahora termina en 334 de 390.
 Probado con toques reales: GUARDARLA cierra el cartel y la racha queda llena;
 JUGARLA muestra las cinco con el cursor, abre la situación de gol sorteada y
 vacía la racha. Sin errores.
+
+## v268 · el descuento yendo abajo: una carta, centrada
+
+Yendo abajo el tiempo de descuento tiene una sola opción —guardarla no sirve,
+no hay próximo partido—, y ese cartel se armaba distinto al de dos cartas de
+v267: una frase arriba del marcador («Se acabaron los 90 · te queda una sola
+salida»), JUGARLA estirada a todo el ancho y una nota de dos renglones que
+explicaba por qué no se podía guardar.
+
+Se compararon tres sobre el cartel real: la carta de GUARDARLA apagada con
+candado, **una carta centrada**, y a todo o nada en rojo. Quedó la carta
+centrada:
+
+- JUGARLA **del mismo tamaño que en el cartel de dos cartas**, centrada
+  (`grid-template-columns:minmax(0, calc(50% - 4px))` en `.dc-ops.sola`).
+- **«TU ÚLTIMA PELOTA»** en el mismo lugar que «ELEGÍ UNA».
+- La nota en una línea: «Si no entra, quedás **eliminado**.»
+- Se va la frase de arriba del marcador.
+
+### Medido
+
+En 320, 375, 402, 440, 768x1024, 740x360, 844x390 y 1440x900 la carta mide lo
+mismo que cada carta del cartel de dos (138x143 en el 17 Pro), queda centrada
+—desvío 0px— y el cartel entra (441 en el 17 Pro, antes 489). Probado con el
+toque real: JUGARLA muestra el sorteo, abre la situación de gol y vacía la
+racha. Sin errores.
