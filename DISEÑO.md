@@ -14766,3 +14766,57 @@ ALIENTO, BANDERAZO y PAPELITOS.
 
 Medido con la carta en la mesa: un solo renglón en 320, 360, 402, 440, 844x390
 y 1440x900, sin scroll lateral.
+
+## v262 · el banner: instancia, marcador y minuto más grandes
+
+La instancia, el resultado y el minuto son lo que más se mira durante el
+partido, y en el teléfono iban chicos: la instancia en 9px, los goles en 21 y el
+«MIN» del reloj en 4px, que no se leía. El pedido fue agrandarlos **sin cambiar
+el tamaño del banner**, para no romper el encaje de la pantalla.
+
+Se compararon tres sobre el banner real, en el peor caso —INDEPENDIENTE contra
+GIMNASIA MZA, SEMIFINAL, dos copas ganadas, minuto 90—: un escalón parejo, el
+marcador protagonista, y las tres cosas grandes. Quedó **el marcador manda**:
+
+| | hoy | v262 |
+|---|---|---|
+| instancia | 9px | 11,5px |
+| goles (teléfono) | 21px | **32px** |
+| goles (tablet vertical, ≤820) | 24px | 36px |
+| minuto | 25px (`--cro` × .5) | 29px (× .58) |
+| «MIN» | 4,25px (× .085) | 6,5px (× .13) |
+
+En 320 —el SE viejo— los nombres de los equipos ya iban a 3px de la instancia
+y del reloj, así que ahí los goles quedan en 24 y la instancia en 9,5.
+
+**Por qué el alto no cambia:** lo manda el anillo del reloj (`--cro`), que no
+se toca. El minuto crece adentro del mismo anillo —el 90, lo más ancho que
+muestra, entra en el hueco— y los goles, aun en 36, siguen más bajos que él.
+
+Escritorio y el teléfono acostado grande (844x390) quedan fuera: su banner ya
+tiene letra grande.
+
+### El encaje de la pantalla, medido
+
+Partida nueva, recargando en cada tamaño, con el peor banner. v262 contra v261:
+
+| equipo | banner | la mesa termina en | scroll |
+|---|---|---|---|
+| 320x568 · SE 1 | 62 = 62 | 519 = 519 | no |
+| 360x740 | 62 = 62 | 691 = 691 | no |
+| 375x667 · SE | 62 = 62 | 618 = 618 | no |
+| 390x844 / 390x754 | 62 | 795 / 705 | no |
+| 393x852 | 62 | 803 | no |
+| 402x874 / 402x784 · 17 Pro | 62 | 825 / 735 = 735 | no |
+| 412x915 · Pixel | 62 | 866 | no |
+| 430x932 / 440x956 | 62 | 883 / 907 | no |
+| 768x1024 · tablet | 54 = 54 | 975 = 975 | no |
+| 740x360 · acostado | 58 = 58 | 338 = 338 | no |
+
+La mesa termina **en el mismo píxel que antes** en todos: el arreglo de v252
+—la pantalla entra entera al cargar, sin scroll— sigue intacto.
+
+### Visto de paso, sin tocar
+
+En **844x390** y **1440x900** la página tiene scroll vertical, igual en v261 y
+en v262: no viene de este cambio, y ahí el banner no se tocó.

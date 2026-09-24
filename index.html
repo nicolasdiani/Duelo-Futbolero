@@ -5401,6 +5401,43 @@ body{padding-bottom:36px}
   .cell:has(.mj-lb) .c-out .efe{margin-top:2px;padding-top:2px;line-height:1.15}
 }
 
+/* **El banner: lo que más se mira, en letra más grande.** La instancia, el
+   resultado y el minuto son lo que se consulta durante todo el partido, y en
+   el teléfono iban chicos: la instancia en 9px, los goles en 21 y el «MIN» del
+   reloj en 4px, que no se leía.
+
+   Ahora los goles pegan el salto grande —21 → **32px**, un 50%— porque el
+   resultado es lo primero que se busca; la instancia pasa a 11,5, el minuto a
+   29 y el «MIN» a 6,5.
+
+   **El banner no cambia de tamaño.** Lo que manda su alto es el anillo del
+   reloj (`--cro`), y ése no se toca: el minuto crece adentro del mismo
+   anillo, y los goles, aun en 36px, siguen más bajos que él. Medido: 62px en
+   los teléfonos, 54 en tablet vertical y 58 acostado, igual que antes. El 90,
+   el número más ancho que muestra el reloj, entra en el hueco del anillo.
+
+   En 320 —el SE viejo— los nombres de los equipos ya iban a 3px de la
+   instancia y del reloj; ahí los goles bajan a 24 y la instancia a 9,5 para
+   que no se peguen. Escritorio y el teléfono acostado grande quedan fuera:
+   su banner ya tiene letra grande.
+
+   Se compararon tres —un escalón parejo, ésta, y las tres cosas grandes—;
+   quedó la del marcador. */
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){
+  .mq-ronda{font-size:11.5px;letter-spacing:.8px}
+  .mq-n{font-size:36px}
+  .mq-sep{font-size:20px}
+  .cro-min{font-size:calc(var(--cro) * .58)}
+  .cro-lb{font-size:calc(var(--cro) * .13);letter-spacing:1px}
+}
+@media (max-width:440px){
+  .mq-n{font-size:32px}
+}
+@media (max-width:340px){
+  .mq-n{font-size:24px}
+  .mq-ronda{font-size:9.5px}
+}
+
 /* ══════════ MOBILE LANDSCAPE ══════════
    Acostado sobra ancho y falta alto: la mesa va al costado del panel. */
 @media (max-height:560px) and (orientation:landscape){
@@ -11080,7 +11117,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 261;
+const VERSION = 262;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
