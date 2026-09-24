@@ -9609,6 +9609,73 @@ html.html-menu, html.html-menu body{overflow:hidden}
        (prefers-reduced-motion:reduce) and (max-width:820px){
   .row-pick:not(:disabled){animation:none;box-shadow:inset -2px 0 0 rgba(255,255,255,.8)}
 }
+
+/* ================= EL TIEMPO DE DESCUENTO, MÁS SIMPLE (v267) =================
+   El cartel se había llenado: las cinco posibilidades de gol, «ELEGÍ UNA»,
+   dos opciones con foto al costado y dos renglones de texto cada una, bordes
+   de cinco colores y una cinta con franja dorada. 621px en el 17 Pro.
+
+   **Las opciones son dos cartas de la mesa**, lado a lado: la foto a sangre,
+   el nombre arriba, abajo el resultado en el color de siempre —celeste lo que
+   va al gol, dorado la racha— y un filo del mismo color. **Laten** como las
+   columnas de la mesa, cada una en su color y a destiempo, así se ve que se
+   tocan.
+
+   **Las posibilidades no se ven mientras decidís.** Siguen en el cartel
+   porque el sorteo de JUGARLA corre sobre ellas (v253); al tocar, la clase
+   `sorteando` saca las opciones y las pone en su lugar.
+
+   La cinta de la racha pierde la franja dorada: queda el texto. El cartel
+   pasa de 621 a ~457px en el 17 Pro. Se compararon cuatro —pestañas,
+   figuritas, los botones del juego y las cartas— y quedaron las cartas. */
+.aviso.dc .fg-minis{display:none}
+.aviso.dc.sorteando .fg-minis{display:grid;margin-top:12px}
+.aviso.dc.sorteando .dc-ops,.aviso.dc.sorteando .dc-elegi,.aviso.dc.sorteando .dc-nota{display:none}
+.aviso.dc .dc-cinta{background:none;border-bottom:1px solid var(--line)}
+.aviso.dc .dc-nota{font-size:11px;color:var(--dim2)}
+
+/* El latido: el de las columnas, en el color de cada carta. */
+@keyframes dcEmpuja{
+  0%,100%{transform:translateY(0);box-shadow:0 0 0 0 rgba(var(--lc),0)}
+  16%    {transform:translateY(-2px);box-shadow:0 0 0 1.5px rgba(var(--lc),.8), 0 4px 16px rgba(var(--lc),.3)}
+  35%    {transform:translateY(0);box-shadow:0 0 0 1px rgba(var(--lc),.4)}
+  51%    {transform:translateY(-1.5px);box-shadow:0 0 0 1.5px rgba(var(--lc),.65)}
+  73%    {transform:translateY(0);box-shadow:0 0 0 0 rgba(var(--lc),0)}
+}
+.aviso.dc .dc-op.gol{--lc:94,205,242}
+.aviso.dc .dc-op.col{--lc:245,200,66}
+.aviso.dc .dc-ops{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.aviso.dc .dc-ops.sola{grid-template-columns:1fr}
+.aviso.dc .dc-op{
+  position:relative;display:flex;flex-direction:column;justify-content:space-between;align-items:center;
+  min-height:clamp(118px, 19vh, 160px);padding:9px 8px 10px;overflow:hidden;
+  border-radius:7px;border:1px solid rgba(var(--lc),.6);background:#00081f;
+  outline:0;animation:dcEmpuja 2.4s ease-in-out infinite;
+}
+.aviso.dc .dc-op.col{animation-delay:1.2s}
+.aviso.dc .dc-op .dc-art{position:absolute;inset:0;z-index:0}
+.aviso.dc .dc-op .dc-art img{width:100%;height:100%;min-height:0;object-fit:cover}
+.aviso.dc .dc-op .dc-art::after{
+  inset:0;width:auto;height:auto;
+  background:linear-gradient(180deg,rgba(0,8,31,.9) 0%,rgba(0,8,31,.2) 32%,rgba(0,8,31,.25) 55%,rgba(0,8,31,.95) 82%);
+}
+.dc-nm,.dc-pie{position:relative;z-index:1;text-align:center}
+.dc-pie{display:flex;flex-direction:column;align-items:center}
+.dc-nm{
+  font-family:var(--tit);font-weight:800;font-size:18px;letter-spacing:1px;line-height:1;
+  color:var(--white);text-shadow:0 1px 4px #00081f;
+}
+.dc-res{
+  font-family:var(--tit);font-weight:800;font-size:17px;line-height:1;
+  color:rgb(var(--lc));text-shadow:0 1px 6px #00081f;
+}
+.dc-sub{font-family:var(--txt);font-size:9.5px;color:var(--dim);margin-top:3px}
+@media (hover:hover){
+  .aviso.dc .dc-op:hover{animation:none;box-shadow:0 0 0 1.5px rgba(var(--lc),.9)}
+}
+@media (prefers-reduced-motion:reduce){
+  .aviso.dc .dc-op{animation:none;box-shadow:0 0 0 1px rgba(var(--lc),.6)}
+}
 </style>
 </head>
 <body>
@@ -11395,7 +11462,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 266;
+const VERSION = 267;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -13966,13 +14033,19 @@ async function finDeJugadaDuelo(){
 /* Cada opción del descuento es una carta con foto: la ilustración arriba a
    sangre, el nombre y el costo abajo. La foto de la cabecera es RACHA FULL, así
    que las de las cartas son otras dos para que no se repita ninguna. */
-function dcCarta(id, tono, arte, nm, desc){
+/* **Desde v267, como una carta de la mesa.** La foto a sangre, el nombre
+   arriba y abajo el resultado en el color de siempre —el porcentaje de gol en
+   celeste, la racha en dorado— con una línea chica de lo que cuesta. Antes era
+   una fila con la foto al costado y dos renglones de explicación: se leía
+   como un párrafo, no como algo para tocar. */
+function dcCarta(id, tono, arte, nm, res, sub){
   const art = ARTSRC(arte);
   return '<button class="a-op btn dc-op ' + tono + '" id="' + id + '">' +
     (art ? '<span class="dc-art"><img src="' + art + '" alt=""></span>' : '') +
-    '<span class="dc-txt">' +
-      '<span class="on">' + nm + '</span>' +
-      '<span class="od">' + desc + '</span>' +
+    '<span class="dc-nm">' + nm + '</span>' +
+    '<span class="dc-pie">' +
+      '<span class="dc-res">' + res + '</span>' +
+      '<span class="dc-sub">' + sub + '</span>' +
     '</span>' +
   '</button>';
 }
@@ -14045,10 +14118,8 @@ function descuento(){
         minisGol(SIT_FAVOR, true) +
         (pierde ? '' : '<div class="dc-elegi">ELEGÍ UNA</div>') +
         '<div class="a-ops dc-ops' + (pierde ? ' sola' : '') + '">' +
-          dcCarta('dJugar', 'gol', 'jugada', 'JUGARLA',
-            'Una última llegada al ' + esperadoFavor + '%, antes del pitazo. Gasta la racha entera.') +
-          (pierde ? '' : dcCarta('dGuardar', 'col', 'hinchada', 'GUARDARLA',
-            'Te la llevás cargada al próximo partido, lista desde la primera jugada.')) +
+          dcCarta('dJugar', 'gol', 'jugada', 'JUGARLA', esperadoFavor + '% GOL', 'gasta la racha') +
+          (pierde ? '' : dcCarta('dGuardar', 'col', 'hinchada', 'GUARDARLA', 'RACHA LLENA', 'al próximo partido')) +
         '</div>' +
         '<div class="a-s dc-nota ' + nota.cls + '">' + nota.txt + '</div>' +
       '</div>';
@@ -14064,6 +14135,11 @@ function descuento(){
          que es lo que hace el `yaElegida` de `situacionGol`: si el sorteo se
          viera acá y la carta se sorteara de nuevo adentro, el cartel podría
          mostrar una y ejecutarse otra. */
+      /* **Las cinco aparecen recién ahora.** Mientras decidís no se ven —el
+         cartel es sólo las dos cartas—, y al tocar JUGARLA ocupan el lugar de
+         las opciones para que el sorteo corra a la vista, que es para lo que
+         están desde v253. */
+      caja.classList.add('sorteando');
       const elegida = await sorteoGol(caja);
       cerrarPop();
       G.racha = 0;

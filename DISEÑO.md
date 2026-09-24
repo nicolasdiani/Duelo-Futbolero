@@ -15015,3 +15015,46 @@ Recargando en cada equipo, con racha y sin racha:
 | 844x390 / 1440x900 | — | sin cambios | filaEmpuja de siempre |
 
 Banner, franja y columnas iguales; sin scroll en ningún teléfono ni tablet.
+
+## v267 · el tiempo de descuento: dos cartas de la mesa
+
+El cartel se había llenado: las cinco posibilidades de gol, «ELEGÍ UNA», dos
+opciones con la foto al costado y dos renglones de texto, bordes de cinco
+colores y una cinta con franja dorada. 621px en el 17 Pro, y JUGARLA /
+GUARDARLA se leían como párrafos más que como botones.
+
+Se compararon cuatro sobre el cartel real —dos pestañas, figuritas, los
+botones del juego y dos cartas de la mesa—. Quedó **dos cartas de la mesa**:
+
+- **Las opciones son cartas como las del tablero** (`dcCarta` nueva): foto a
+  sangre, el nombre arriba, y abajo el resultado en el color de siempre —«54%
+  GOL» en celeste, «RACHA LLENA» en dorado— con una línea chica de lo que
+  cuesta. Filo del mismo color.
+- **Laten** como las columnas de la mesa (`dcEmpuja`), cada una en su color y a
+  destiempo. Reemplaza al latido de contorno (`dcLatido`).
+- **Las posibilidades no se ven mientras decidís.** Siguen en el cartel porque
+  el sorteo de JUGARLA corre sobre ellas (v253): al tocar, `descuento()` le pone
+  `sorteando` a la caja, las opciones se van y las cinco aparecen en su lugar
+  con el cursor.
+- La cinta de la racha pierde la franja dorada.
+
+### Medido
+
+| equipo | cartel (ganando) | cartas | el botón termina en |
+|---|---|---|---|
+| 320x568 | 392 | 116x113 | 447 de 568 |
+| 375x667 | 410 | 143x122 | 505 de 667 |
+| 402x784 · 17 Pro | 457 (antes 621) | 138x143 | 533 de 784 |
+| 440x956 | 480 | 156x154 | 647 de 956 |
+| 768x1024 | 496 | 171x154 | 689 de 1024 |
+| 740x360 | 294 | 184x113 | 304 de 360 |
+| 844x390 | 329 | 208x113 | 334 de 390 |
+| 1440x900 | 494 | 245x154 | 616 de 900 |
+
+Entra en todos, ganando, empatando y perdiendo (una sola carta a lo ancho). En
+844x390 JUGARLA quedaba debajo del borde —estaba anotado como pendiente desde
+v254—: ahora termina en 334 de 390.
+
+Probado con toques reales: GUARDARLA cierra el cartel y la racha queda llena;
+JUGARLA muestra las cinco con el cursor, abre la situación de gol sorteada y
+vacía la racha. Sin errores.
