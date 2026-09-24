@@ -14625,3 +14625,68 @@ El anillo quedó **adentro de la pantalla en los cinco**, las cartas miden lo
 mismo que antes y la fila de columnas sigue alineada con la primera carta. El
 cambio vive en el bloque de los teléfonos (`max-width:440px`): acostado y
 escritorio no se tocan.
+
+## v259 · la chapa MINI JUEGO deja de pisar el escudo
+
+Probado en un iPhone 17: en las cartas de mini juego, la chapa MINI JUEGO se
+montaba sobre el escudo del rival.
+
+### Lo que pasaba
+
+El escudo cuelga a una altura fija desde arriba de la carta, debajo del número.
+La chapa, en cambio, se apoya **sobre el pie**: flota 5px arriba del cartel de
+abajo. Cuando la pantalla es baja —un iPhone con la barra de Safari a la vista—
+la foto se achica y la chapa sube. En las dos cartas de pie largo, DELANTERO
+(«DEFENDER / +3 o GOL RIVAL») y ARQUERO («MANO A MANO / ⚽ GOL / +1 o -2»), el
+pie ocupa tres renglones y la chapa llegaba al escudo.
+
+Medido en el juego con las seis cartas de mini juego plantadas (los cuatro
+duelos empatados y los dos penales), la peor carta:
+
+| teléfono | hoy |
+|---|---|
+| 390x754 · iPhone 15 con barra | pisa 8,3px |
+| 393x762 · iPhone 16 con barra | pisa 6,5px |
+| 402x784 · 17 Pro con barra | pisa 1,5px |
+| 402x874 · 17 Pro sin barra | aire 19px |
+
+### Tres formas, sin mover nada de lugar
+
+| peor carta | 390x754 | 393x762 | 402x784 |
+|---|---|---|---|
+| A · el escudo más chico (16 → 11px, sólo en las de mini juego) | pisa 2,9 | pisa 1,0 | aire 4,1 |
+| **B · el pie más apretado** | **aire 1,1** | **aire 2,9** | **aire 7,9** |
+| C · las dos juntas | aire 6,5 | aire 8,3 | aire 13,5 |
+
+Quedó la **B**. La chapa pasa de flotar 5px sobre el pie a 1, pierde el relleno
+de arriba y abajo, y el nombre del mini juego y el efecto juntan la interlínea.
+No cambia ningún tamaño de letra ni el lugar de nada: se saca aire.
+
+Va en `@media (max-width:440px) and (min-height:701px)`. El piso de 701 es el
+techo del bloque que esconde la chapa en pantallas bajas: por debajo no hay
+chapa que separar, y así la regla —que con el `:has()` pesa más que las de
+esos escalones— no les pisa el margen del efecto. Está después del bloque de
+360 para que el relleno de los costados de ése se quede.
+
+### Medido después
+
+| teléfono | peor carta | pie adentro de la carta | scroll |
+|---|---|---|---|
+| 390x754 | aire 1,1 | sí | no |
+| 393x762 | aire 2,9 | sí | no |
+| 402x784 · 17 Pro con barra | aire 7,9 | sí | no |
+| 390x844 | aire 21,6 | sí | no |
+| 402x874 · 17 Pro sin barra | aire 28,4 | sí | no |
+| 412x815 · Pixel | aire 15 | sí | no |
+| 430x842 | aire 21,1 | sí | no |
+| 440x956 · 17 Pro Max | aire 47,1 | sí | no |
+
+Acostado, tablet y escritorio quedan fuera del bloque y no cambian.
+
+### Lo que queda
+
+En **360x710 y 375x720** la B no alcanza: ARQUERO pisa 7,6 y 10px, DELANTERO
+6,8 y 6,5. Con la carta en 106px de alto no entran el nombre, el escudo, la
+chapa y tres renglones de pie. La salida natural es subir de 700 a 730 el corte
+que esconde la chapa —dice lo mismo que el nombre del mini juego que tiene
+abajo—; no toca ningún teléfono de 390 para arriba. Quedó sin aplicar.

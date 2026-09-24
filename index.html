@@ -5376,6 +5376,31 @@ body{padding-bottom:36px}
   .cell .c-out .mj-ico{display:none}
 }
 
+/* **La chapa del mini juego no sube hasta el escudo.** El escudo cuelga a una
+   altura fija desde arriba de la carta y la chapa se apoya sobre el pie, así
+   que cuando la foto se achica —un iPhone con la barra de Safari a la vista—
+   la chapa sube. En las dos cartas de pie largo, DELANTERO («DEFENDER / +3 o
+   GOL RIVAL») y ARQUERO («MANO A MANO / ⚽ GOL / +1 o -2»), llegaba a pisarlo:
+   **8,3px** a 390x754, 6,5 a 393x762 y 1,5 en el 17 Pro a 402x784.
+
+   Nada se mueve de lugar ni cambia de tamaño de letra: se saca aire. La chapa
+   pasa de flotar 5px sobre el pie a 1, pierde el relleno de arriba y abajo, y
+   el nombre del mini juego y el efecto juntan la interlínea. La peor carta
+   queda con **1,1px de aire a 390, 2,9 a 393 y 7,9 en el 17 Pro**.
+
+   Sólo desde 701px de alto: por debajo la chapa ya se esconde (el bloque de
+   «la chapa dice lo mismo que el nombre que tiene abajo»), y así esto no pisa
+   los escalones que aprietan el pie en pantallas bajas. Va después del de
+   360 para que el relleno de los costados de ése se quede.
+
+   Se compararon otras dos: achicar el escudo de las cartas de mini juego (no
+   alcanzaba en DELANTERO a 390 y 393) y las dos cosas juntas. */
+@media (max-width:440px) and (min-height:701px){
+  .cell .c-out .mj-lb{bottom:calc(100% + 1px);padding-top:0;padding-bottom:0;line-height:1.2}
+  .cell .c-out .mj{line-height:1.02}
+  .cell:has(.mj-lb) .c-out .efe{margin-top:2px;padding-top:2px;line-height:1.15}
+}
+
 /* ══════════ MOBILE LANDSCAPE ══════════
    Acostado sobra ancho y falta alto: la mesa va al costado del panel. */
 @media (max-height:560px) and (orientation:landscape){
@@ -11046,7 +11071,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 258;
+const VERSION = 259;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
