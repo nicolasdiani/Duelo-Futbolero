@@ -14690,3 +14690,55 @@ En **360x710 y 375x720** la B no alcanza: ARQUERO pisa 7,6 y 10px, DELANTERO
 chapa y tres renglones de pie. La salida natural es subir de 700 a 730 el corte
 que esconde la chapa —dice lo mismo que el nombre del mini juego que tiene
 abajo—; no toca ningún teléfono de 390 para arriba. Quedó sin aplicar.
+
+## v260 · el mercado vuelve a dejar comprar dos ítems y devolver con la ✕
+
+Reportado: en el MERCADO no se podían comprar dos ítems en la misma pantalla, y
+la ✕ roja no devolvía lo comprado.
+
+### Lo que pasaba
+
+Comprar no rearma la tarjeta: `mercadoRedibujar()` cambia en el lugar la
+franja, la mochila y la lista, y después vuelve a enganchar los botones de los
+renglones nuevos. En el medio, con la primera compra, pone la nota «Lo que
+compraste ahora se puede devolver con la ✕» **antes del botón JUGAR**, con
+`card.insertBefore(nota, $('nextBtn'))`.
+
+En v251 JUGAR se mudó adentro de `.card-pie`, el pie que se queda pegado abajo.
+Desde ahí el botón ya no es hijo de la tarjeta y `insertBefore` tira
+`NotFoundError`. El error cortaba la función **antes de `engancharTienda()`**:
+la lista se veía bien, con la compra hecha y la ✕ dibujada, pero ningún botón
+tenía el toque enganchado. Se podía comprar uno solo, y la ✕ no hacía nada.
+
+### El arreglo
+
+- La nota se inserta **antes del pie**, desde el padre del pie.
+- `engancharTienda()` pasa a correr **antes** de la nota: si algún día algo
+  de lo que sigue falla, la lista igual responde.
+
+El entretiempo del 1v1 y el VESTUARIO del partido único no tenían el problema:
+los dos rearman la tarjeta entera con cada compra.
+
+### Probado
+
+Con toques reales en 402x784, y repetido en 360x710, 844x390 y 1440x900:
+
+| caso | resultado |
+|---|---|
+| dos ítems distintos seguidos | se compran los dos, aparecen las dos ✕ |
+| el mismo ítem dos veces | x2, la plata baja dos veces |
+| ✕ de uno y de otro | devuelve la plata, la ✕ y la nota se van con la última |
+| devolver y volver a comprar | anda |
+| un ítem que ya traías + uno nuevo | la ✕ devuelve sólo el nuevo y desaparece al llegar al que traías |
+| sin plata | el renglón se apaga y dice cuánto falta |
+| JUGAR después de comprar | arranca la ronda con los ítems en los casilleros |
+| 1v1 · entretiempo | dos compras y dos devoluciones, se guarda en el jugador |
+| VESTUARIO | 3 cupos, tope 1 en SEGUNDO AIRE y VAR, la ✕ devuelve el cupo |
+
+Sin errores en la consola en ningún caso.
+
+### Pendiente
+
+La ✕ mide **20x20px**. En el teléfono un toque que cae unos píxeles abajo le
+pega al renglón y compra otro en vez de devolver. Se puede agrandar la zona
+de toque sin cambiar el dibujo.

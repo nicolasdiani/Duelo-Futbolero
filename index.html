@@ -11071,7 +11071,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 259;
+const VERSION = 260;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -16118,8 +16118,20 @@ function mercadoRedibujar(){
   mochila.outerHTML = mochilaHTML();
   shop.outerHTML    = tiendaHTML();
 
+  /* **Los botones se enganchan primero.** Los renglones que se acaban de
+     poner no traen nada; si algo de lo que sigue fallara antes de llegar
+     acá, la lista se vería bien y no respondería a ningún toque. Es lo que
+     pasaba hasta v259: se podía comprar uno solo y la ✕ no devolvía. */
+  engancharTienda();
+
   /* La nota de la ✕ aparece con la primera compra y se va con la última
-     devolución, así que hay que ponerla y sacarla, no sólo redibujarla. */
+     devolución, así que hay que ponerla y sacarla, no sólo redibujarla.
+
+     **Va antes del pie, no antes del botón.** Desde v251 JUGAR vive adentro
+     de `.card-pie`, así que ya no es hijo de la tarjeta: `insertBefore`
+     contra el botón tiraba un error en la primera compra y cortaba la
+     función antes de enganchar la lista. Se inserta contra el pie, y desde
+     el padre del pie, que es donde vive de verdad. */
   const hayCompras = Object.keys(G.compras).length > 0;
   let nota = card.querySelector('.mk-nota');
   if(hayCompras && !nota){
@@ -16127,12 +16139,13 @@ function mercadoRedibujar(){
     nota.className = 'mk-nota';
     nota.innerHTML = 'Lo que compraste ahora se puede devolver con la ✕. ' +
                      'Al pasar de ronda queda firme.';
-    card.insertBefore(nota, $('nextBtn'));
+    const pie = card.querySelector('.card-pie');
+    if(pie) pie.parentNode.insertBefore(nota, pie);
+    else card.querySelector('.shop').after(nota);
   } else if(!hayCompras && nota){
     nota.remove();
   }
 
-  engancharTienda();
   return true;
 }
 
