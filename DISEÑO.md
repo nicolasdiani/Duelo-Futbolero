@@ -14820,3 +14820,65 @@ La mesa termina **en el mismo píxel que antes** en todos: el arreglo de v252
 
 En **844x390** y **1440x900** la página tiene scroll vertical, igual en v261 y
 en v262: no viene de este cambio, y ahí el banner no se tocó.
+
+## v263 · la franja de arriba de la mesa: más grande y con estilo de figuritas
+
+Aguante, racha, plata, ítems y plantel se consultan en cada jugada, y en el
+teléfono iban en letra de nota al pie. El pedido: agrandar lo de adentro **sin
+cambiar el tamaño de la franja**, y de paso darle un estilo menos genérico.
+
+Se compararon cinco sobre el tablero real —tres que sólo agrandaban (un escalón,
+todo lo que entra, los números mandan) y dos con estilo nuevo (tablero de
+estadio, figuritas)—. Quedó **figuritas**.
+
+| | v262 | v263 |
+|---|---|---|
+| pastillas de aguante y racha | 7px de alto | 11px, con brillo arriba |
+| íconos de los medidores | 17px | 21px |
+| plata | 17px | 22px, en píldora verde |
+| ítem: nombre / efecto | 7,8 / 8,8px | 9,8 / 11px |
+| ítem: fondo | azul liso | teñido del color de lo que da |
+| plantel | 15px | 21px, chapas con franjas |
+
+**El color de cada figurita sale del efecto** que ya trae el renglón —`.ef-ag`
+rojo, `.ef-ra` dorado, `.ef-var` azul—, con `:has()`: un ítem nuevo se tiñe
+solo. Apuntando (el VAR esperando carta) no se tiñe: ahí manda el dorado de
+siempre.
+
+**Las cajas quedan fijas**: medidores 29 de alto, ítems 29 (30,5 en tablet),
+plantel 73,5 de ancho. Lo que hace lugar son los rellenos: el ítem pasa a 2px
+de relleno y la chapa del número del plantel pierde el vertical.
+
+Dos textos que ya salían cortados hoy:
+- «+2 ❤ y recuperás un ❤ de máximo» (SEGUNDO AIRE): en el renglón queda +2 ❤;
+  el resto sigue en la ficha.
+- «DESTRABA 🔒» (VAR): va más chico y entra.
+
+Escalones: de 361 a 400 (SE, iPhone 15 y 16) el ícono baja a 12 y el nombre a
+9, que es lo que hace falta para que SUPLENTES entre entero; en 360 y menos el
+ícono pierde la moneda.
+
+El bloque va al final de la hoja y en el mismo `@media` que arma la franja en
+teléfono y tablet vertical; escritorio y el teléfono acostado grande no cambian.
+
+### Medido en el juego
+
+Cuatro estados en cada equipo —los cuatro ítems, uno solo, ninguno, y el VAR
+apuntando—, recargando la página:
+
+| equipo | cajas (con ítems) | la mesa termina | textos cortados |
+|---|---|---|---|
+| 320x568 · SE 1 | 29 / 29 / 73,5x63 | 519 = v262 | SUPLENTES, DESTRABA (igual que v262) |
+| 360x740 | 29 / 29 / 73,5x63 | 691 = v262 | ninguno |
+| 375x667 · SE | 29 / 29 / 73,5x63 | 618 = v262 | ninguno (v262: 2) |
+| 390x754 · iPhone 15 | 29 / 29 / 73,5x63 | 705 = v262 | ninguno (v262: 2) |
+| 393x852 · iPhone 16 | 29 / 29 / 73,5x63 | 803 | ninguno |
+| 402x784 / 402x874 · 17 Pro | 29 / 29 / 73,5x63 | 735 = v262 / 825 | ninguno (v262: 2) |
+| 412x915 · Pixel | 29 / 29 / 73,5x63 | 866 | ninguno |
+| 440x956 · 17 Pro Max | 29 / 29 / 73,5x63 | 907 | ninguno |
+| 768x1024 · tablet | 29 / 30,5 / 73,5x64,5 | 975 | ninguno |
+| 740x360 · acostado | 29 / 30,5 / 73,5x65,5 | 338 | los mismos que v262 |
+
+Sin scroll en ninguno. **Sin ítems** (al arrancar el partido) el plantel mide
+57 en vez de 59: los 2px van para la mesa. En el 1v1 esta franja no se
+muestra —cada jugador tiene su panel— y no cambia nada.

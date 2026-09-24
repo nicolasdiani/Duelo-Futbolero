@@ -9331,6 +9331,127 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .aviso.dc .dc-tira{margin-top:7px}
 }
 
+
+/* ================= LA FRANJA DE ARRIBA DE LA MESA (v263) =================
+   Aguante, racha, plata, ítems y plantel: lo que se consulta en cada jugada,
+   y en el teléfono iba en letra de nota al pie —pastillas de 7px de alto,
+   nombres de ítem en 7,8, los números del plantel en 15—.
+
+   **La franja no cambia de tamaño.** Las tres cajas se quedan con la medida
+   que tenían —medidores 29 de alto, ítems 29 (30,5 en la tablet), plantel
+   73,5 de ancho— y lo que crece es lo de adentro, a costa de los rellenos.
+   Así la mesa arranca en el mismo píxel y el encaje de v252 no se entera.
+
+   Va al final a propósito, como los otros bloques grandes: pisa lo de arriba
+   sin desarmarlo. Y en el mismo bloque que arma la franja en el teléfono y la
+   tablet vertical; escritorio y el teléfono acostado grande no se tocan.
+
+   Se compararon cinco —tres que sólo agrandaban y dos con estilo nuevo—.
+   Quedó la de las **figuritas**: el tamaño más grande que entra, y cada ítem
+   teñido del color de lo que da. */
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){
+  /* ---- las cajas, fijas ---- */
+  #panelEquipo{height:29px}
+  .item{height:30.5px}
+  #panelPlantel{width:73.5px}
+  #panelPlantel .stat{min-width:0}
+
+  /* ---- los medidores ---- */
+  #panelEquipo .med-art,#panelEquipo .racha-track .med-art{height:11px}
+  #panelEquipo .hearts,#panelEquipo .racha-track{gap:3px}
+  #m-aguante::before,#m-racha::before{width:21px;height:21px}
+  #m-aguante,#m-racha{gap:5px}
+  /* La pastilla encendida lleva un brillo arriba, como una golosina: la
+     apagada queda lisa, así se distinguen también por la forma. */
+  #panelEquipo .med-art{background:rgba(147,174,222,.14)}
+  #panelEquipo .hearts .med-art.on{
+    background:linear-gradient(180deg,rgba(255,255,255,.55) 0 30%,transparent 30%),var(--red);
+    box-shadow:0 0 6px rgba(255,59,82,.6);
+  }
+  #panelEquipo .racha-track .med-art.on{
+    background:linear-gradient(180deg,rgba(255,255,255,.6) 0 30%,transparent 30%),var(--gold);
+    box-shadow:0 0 6px rgba(245,200,66,.6);
+  }
+  /* La plata, en una píldora verde: el color que ya tiene la cifra. */
+  #m-dinero{
+    padding:0 9px;border-radius:99px;border-color:rgba(61,220,107,.5);
+    background:linear-gradient(135deg,rgba(61,220,107,.2),rgba(61,220,107,.05));
+  }
+  #m-dinero .rec-val{font-size:22px;line-height:.95}
+
+  /* ---- los ítems: figuritas ---- */
+  .item{padding:2px 4px;gap:3px;border-radius:7px}
+  .item .ii{
+    font-size:15px;background:rgba(0,8,31,.7);border-radius:50%;padding:1px;
+    box-shadow:0 0 0 1px rgba(255,255,255,.18);
+  }
+  .item .itx{line-height:1}
+  .item .inm{font-size:9.8px;letter-spacing:0}
+  .item .ief{font-size:11px;line-height:1.05;color:var(--white)}
+  /* «+2 ❤ y recuperás un ❤ de máximo» no entraba nunca: salía «+2 ❤ y
+     recupe…». En el renglón queda el +2 ❤; el resto sigue en la ficha. */
+  .item .ef-mas{display:none}
+  /* «DESTRABA 🔒» también salía cortado: un punto más chico entra. */
+  .item .ief .ef-var{font-size:8.1px;letter-spacing:-.2px}
+  /* El color de la figurita es el de lo que da: rojo el aguante, dorado la
+     racha, azul el VAR. Sale del efecto que ya trae el renglón, así un ítem
+     nuevo se tiñe solo. Apuntando no se pinta: ahí manda el dorado que
+     avisa que el próximo toque en la mesa lo usa. */
+  .item:not(.apuntando):has(.ef-ag){
+    background:linear-gradient(135deg,rgba(255,59,82,.3),rgba(40,8,20,.9) 70%);
+    border-color:rgba(255,59,82,.55);
+  }
+  .item:not(.apuntando):has(.ef-ra){
+    background:linear-gradient(135deg,rgba(245,200,66,.3),rgba(36,28,6,.9) 70%);
+    border-color:rgba(245,200,66,.55);
+  }
+  .item:not(.apuntando):has(.ef-var){
+    background:linear-gradient(135deg,rgba(79,163,255,.3),rgba(6,18,44,.9) 70%);
+    border-color:rgba(79,163,255,.55);
+  }
+
+  /* ---- el plantel: dos chapas con franjas de cinta de capitán ----
+     Sin relleno vertical, ni en la chapa ni en el número: sin ítems la fila
+     de abajo mide 23 y cada chapa tiene 27 de alto; con el número en 21 y el
+     relleno de antes pedía 29, y el plantel estiraba la franja 4px justo al
+     arrancar el partido. */
+  #panelPlantel .stat{padding:0 4px;gap:4px}
+  #panelPlantel .stat.atk{
+    background:repeating-linear-gradient(-45deg,rgba(255,59,82,.14) 0 5px,transparent 5px 10px),
+               linear-gradient(160deg,rgba(60,8,20,.95),rgba(0,8,31,.96));
+    border-color:rgba(255,59,82,.6);
+  }
+  #panelPlantel .stat.def{
+    background:repeating-linear-gradient(-45deg,rgba(79,163,255,.14) 0 5px,transparent 5px 10px),
+               linear-gradient(160deg,rgba(6,24,60,.95),rgba(0,8,31,.96));
+    border-color:rgba(79,163,255,.6);
+  }
+  #panelPlantel .stat .n{font-size:21px;line-height:.9;min-width:27px;padding:0;background:rgba(0,8,31,.75)}
+  #panelPlantel .stat-txt b{font-size:8.4px;letter-spacing:0}
+}
+/* En el teléfono el ítem mide 29 de alto, como antes. */
+@media (max-width:440px){
+  .item{height:29px}
+}
+/* De 361 a 400 —SE, iPhone 15 y 16— el casillero mide 67-72px: con el ícono
+   en 15 no entraban SUPLENTES ni «DESTRABA 🔒». Un punto menos de ícono y de
+   nombre, y los cuatro entran enteros. */
+@media (max-width:400px){
+  .item .ii{font-size:12px;padding:0}
+  .item .inm{font-size:9px}
+  .item .ief .ef-var{font-size:7.4px;letter-spacing:-.3px}
+}
+/* En 360 y menos el casillero mide 54-66px de ancho: el ícono se achica y
+   pierde la moneda, y el texto gana ese lugar. SUPLENTES en 320 ya salía
+   cortado y sigue así; todo lo demás entra. */
+@media (max-width:360px){
+  .item{padding:2px 3px;gap:2px}
+  .item .ii{font-size:11px;padding:0;background:none;box-shadow:none}
+  .item .inm{font-size:8px;letter-spacing:0}
+  .item .ief{font-size:9.4px}
+  #m-dinero .rec-val{font-size:19px}
+  .item .ief .ef-var{font-size:7.2px}
+}
 </style>
 </head>
 <body>
@@ -11117,7 +11238,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 262;
+const VERSION = 263;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
