@@ -14943,3 +14943,32 @@ que ya no entraba en v263. En 844x390 y 1440x900 la huella no se puede
 comparar —ahí cada carta toma el ancho de su nombre y cada partida reparte
 distinto—, pero el bloque no aplica (`matchMedia` da falso) y las columnas
 quedan con su orden y su radio de siempre.
+
+## v265 · la racha llena avisa en las pastillas, adentro de la franja
+
+Con la racha llena, el recuadro dorado de `#m-racha.lista` se salía de la
+franja del teléfono. Se dibujó para el panel de escritorio —5px de relleno, un
+estirón al 102,5% y un brillo de 20px—, y en la franja, que desde v263 mide
+29px fijos, medía **33**: 8px afuera por abajo, y el brillo por los cuatro lados.
+
+Se compararon tres sobre la franja real: el recuadro a la medida (25px, latido
+hacia adentro), las pastillas que avisan, y la mitad dorada. Quedó **las
+pastillas avisan**:
+
+- **Sin recuadro.** En teléfono y tablet vertical se le sacan al `.lista` el
+  borde, el relleno, el margen negativo, el estirón y el brillo de afuera.
+- **Las cuatro pastillas doradas laten en ola** (`pastillaLista`, 1,9s, con
+  0,12s de diferencia entre una y otra): se encienden y crecen en alto hasta
+  13,75px, que con su brillo caben en los 27 de adentro de la franja.
+- **El rayo brilla al compás** (`rayoListo`).
+- Con «reducir movimiento» quedan quietas, con el rayo encendido.
+
+Escritorio no cambia: ahí la racha vive en un panel alto y el recuadro de
+siempre entra.
+
+### Medido
+
+Con la animación parada en su pico, en 320, 402, 440, 768x1024 y 740x360: la
+racha mide 21px en una franja de 29 y queda adentro; el aguante y la plata
+están en el mismo píxel con la racha llena que a medias. En 1440x900 sigue el
+recuadro de 1px.
