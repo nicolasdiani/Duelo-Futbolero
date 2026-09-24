@@ -14972,3 +14972,46 @@ Con la animación parada en su pico, en 320, 402, 440, 768x1024 y 740x360: la
 racha mide 21px en una franja de 29 y queda adentro; el aguante y la plata
 están en el mismo píxel con la racha llena que a medias. En 1440x900 sigue el
 recuadro de 1px.
+
+## v266 · las filas también son pestañas, y el filo late
+
+Las columnas son pestañas desde v264 —rectas del lado de las cartas,
+redondeadas del de afuera, con un filo que las cuelga de la mesa— y las filas
+seguían siendo cápsulas redondas en los cuatro lados. Ahora son **la misma
+pestaña, espejada**: el lado de las cartas es el derecho.
+
+Se compararon cuatro sobre la mesa real: el espejo solo, el filo que late, con
+flechita, y con la luz hacia las cartas. Quedó **el filo late**:
+
+- **Forma**: `border-radius:12px 3px 3px 12px`.
+- **Filo** de 2px del lado de las cartas, como capa del fondo (no como borde,
+  para no sumarle 2px a la fila): blanco —el color del latido de las filas—
+  cuando se puede elegir, gris cuando no. El de las columnas sigue dorado.
+- **El latido se separa en dos**: `filaEmpujaFilo` hace el empujón de siempre
+  (2px y 1,5px en 2,4s) y `filoLate` enciende el filo en cada golpe, con un
+  brillo que sale hacia las cartas. Reemplaza al brillo alrededor de toda la
+  fila que tenía `filaEmpuja`.
+- Se apaga en la fila elegida, con el mouse encima, con la pantalla yendo atrás;
+  con «reducir movimiento» queda quieta y con el filo encendido.
+
+Sólo en teléfono y tablet vertical, como las pestañas de las columnas. En
+escritorio y en el teléfono acostado grande filas y columnas siguen como
+estaban.
+
+### Medido contra v265
+
+Recargando en cada equipo, con racha y sin racha:
+
+| equipo | huella de las cartas | fila | latido |
+|---|---|---|---|
+| 320x568 | igual | 32x70,5 | filaEmpujaFilo + filoLate |
+| 360x740 | igual | 32x113,1 | ídem |
+| 375x667 | igual | 32x94,6 | ídem |
+| 390x754 | igual | 32x116,2 | ídem |
+| 402x784 / 402x874 | igual | 32x123,7 / 32x146,2 | ídem |
+| 440x956 | igual | 32x166,7 | ídem |
+| 768x1024 | igual | 28x185,3 | ídem |
+| 740x360 | igual | 28x53,5 | ídem |
+| 844x390 / 1440x900 | — | sin cambios | filaEmpuja de siempre |
+
+Banner, franja y columnas iguales; sin scroll en ningún teléfono ni tablet.

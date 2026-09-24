@@ -9549,6 +9549,66 @@ html.html-menu, html.html-menu body{overflow:hidden}
   #m-racha.lista .med-art.on,#m-racha.lista::before{animation:none}
   #m-racha.lista::before{filter:drop-shadow(0 0 6px rgba(245,200,66,.9))}
 }
+
+/* ================= LAS FILAS, COMO PESTAÑAS (v266) =================
+   Las columnas son pestañas desde v264: rectas del lado de las cartas,
+   redondeadas del de afuera, con un filo que las cuelga de la mesa. Las filas
+   seguían siendo cápsulas redondas en los cuatro lados, y filas y columnas se
+   leían como dos cosas distintas. Ahora son **la misma pestaña, espejada**: el
+   lado de las cartas es el derecho.
+
+   **El filo** va como capa del fondo, no como borde —igual que en las
+   columnas—: un borde más grueso le sumaría 2px a la fila y se los sacaría a
+   las cartas. Es blanco, el color del latido de las filas, cuando se puede
+   elegir, y gris cuando no. El de las columnas sigue dorado: cuestan racha.
+
+   **Y el filo late.** El latido de la fila se separa en dos: `filaEmpujaFilo`
+   hace el empujón de siempre hacia las cartas (los mismos 2px y 1,5px, en los
+   mismos 2,4s), y `filoLate` enciende el borde que toca las cartas en cada
+   golpe, con un brillo que sale hacia ellas. Reemplaza al brillo alrededor de
+   toda la fila que tenía `filaEmpuja`: ahora brilla sólo el lado que importa.
+
+   Sólo en teléfono y tablet vertical, donde las columnas son pestañas. En
+   escritorio y en el teléfono acostado grande las columnas van arriba con su
+   forma de siempre, y las filas también. Se compararon cuatro —el espejo solo,
+   el filo que late, con flechita, con la luz hacia las cartas—. */
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){
+  .row-pick{border-radius:12px 3px 3px 12px}
+  .row-pick:not(:disabled){
+    background:linear-gradient(270deg,rgba(255,255,255,.55) 0 2px,transparent 2px),
+               linear-gradient(180deg,rgba(0,20,64,.92),rgba(0,8,31,.95));
+  }
+  .row-pick:disabled{
+    background:linear-gradient(270deg,rgba(147,174,222,.3) 0 2px,transparent 2px),
+               linear-gradient(rgba(8,16,34,.75),rgba(8,16,34,.75));
+  }
+  @keyframes filaEmpujaFilo{
+    0%,100%{transform:translateX(0)}
+    16%    {transform:translateX(2px)}
+    35%    {transform:translateX(0)}
+    51%    {transform:translateX(1.5px)}
+    73%    {transform:translateX(0)}
+  }
+  @keyframes filoLate{
+    0%,100%{box-shadow:inset -2px 0 0 rgba(255,255,255,0), 0 0 0 0 rgba(255,255,255,0)}
+    16%    {box-shadow:inset -2px 0 0 rgba(255,255,255,1), 4px 0 12px rgba(255,255,255,.35)}
+    35%    {box-shadow:inset -2px 0 0 rgba(255,255,255,.4), 0 0 0 0 rgba(255,255,255,0)}
+    51%    {box-shadow:inset -2px 0 0 rgba(255,255,255,.9), 3px 0 10px rgba(255,255,255,.25)}
+    73%    {box-shadow:inset -2px 0 0 rgba(255,255,255,0), 0 0 0 0 rgba(255,255,255,0)}
+  }
+  .row-pick:not(:disabled){animation:filaEmpujaFilo 2.4s ease-in-out infinite, filoLate 2.4s ease-in-out infinite}
+  .row-pick.activo:not(:disabled){animation:none}
+  .wrap.atras .row-pick{animation:none}
+}
+@media (hover:hover) and (max-width:1024px) and (orientation:portrait),
+       (hover:hover) and (max-width:820px){
+  .row-pick:hover:not(:disabled){animation:none}
+}
+/* Quieta, el filo queda encendido: dice lo mismo sin moverse. */
+@media (prefers-reduced-motion:reduce) and (max-width:1024px) and (orientation:portrait),
+       (prefers-reduced-motion:reduce) and (max-width:820px){
+  .row-pick:not(:disabled){animation:none;box-shadow:inset -2px 0 0 rgba(255,255,255,.8)}
+}
 </style>
 </head>
 <body>
@@ -11335,7 +11395,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 265;
+const VERSION = 266;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
