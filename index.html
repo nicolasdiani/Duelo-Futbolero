@@ -9686,6 +9686,31 @@ html.html-menu, html.html-menu body{overflow:hidden}
    Se compararon tres —con la carta de GUARDARLA apagada con candado, una
    carta centrada y a todo o nada en rojo—. */
 .aviso.dc .dc-ops.sola{grid-template-columns:minmax(0, calc(50% - 4px));justify-content:center;margin-top:0}
+
+/* ================= EL PERFIL DEL RIVAL EN LA CINTA (v269) =================
+   DIFICULTAD B: cada rival tiene un perfil —OFENSIVO, DEFENSIVO o PAREJO— que
+   cambia su mesa, y el vestuario lo dice **adentro de la cinta del equipo**,
+   debajo del nombre: la chapa en su color y qué cartas trae. La cinta crece
+   ~22px; la pantalla del vestuario no, porque la de antes de jugar no lleva
+   el estado del equipo.
+
+   Adentro de la cinta mandan `.rf-prox .px-tx span` (gris, un renglón con
+   puntos suspensivos) y `.rf-prox .px-tx b` (el nombre, Saira 17px): todo lo
+   del perfil va con selectores más fuertes para no heredarlos. */
+.rf-prox .px-tx .pf-fila{display:flex;align-items:center;flex-wrap:wrap;gap:3px 6px;margin:5px 0 0;
+  text-align:left;white-space:normal;overflow:visible;letter-spacing:0}
+.rf-prox .px-tx .pf-chapa{display:inline-flex;align-items:center;gap:4px;margin:0;
+  font-family:var(--tit);font-weight:800;font-size:clamp(10px, 3vw, 11.5px);letter-spacing:1.1px;line-height:1;
+  padding:2px 6px 2px 5px;border-radius:3px;border:1px solid;white-space:nowrap;overflow:visible}
+.rf-prox .pf-fila.pf-of .pf-chapa{background:rgba(255,59,82,.16);border-color:rgba(255,59,82,.6);color:#ff8a97}
+.rf-prox .pf-fila.pf-de .pf-chapa{background:rgba(77,155,240,.16);border-color:rgba(77,155,240,.6);color:#8cc0ff}
+.rf-prox .pf-fila.pf-pa .pf-chapa{background:rgba(245,200,66,.12);border-color:rgba(245,200,66,.55);color:var(--gold);padding-left:6px}
+.rf-prox .pf-ico{width:12px;height:12px;flex:0 0 auto}
+.rf-prox .pf-ico .fl,.rf-prox .pf-ico .fn{fill:none;stroke:currentColor}
+.rf-prox .px-tx .pf-tx{display:block;margin:0;font-size:clamp(9px, 2.7vw, 10.5px);letter-spacing:.2px;line-height:1.25;
+  color:var(--dim);white-space:normal;overflow:visible}
+.rf-prox .px-tx .pf-tx b{display:inline;font-family:inherit;font-size:inherit;letter-spacing:inherit;line-height:inherit;
+  white-space:normal;font-weight:600;color:var(--white)}
 </style>
 </head>
 <body>
@@ -10934,6 +10959,43 @@ const EQUIPOS = [
   { nm:'VÉLEZ',          c1:'blanco',   c2:'azul',     pat:'uve',     forma:'clasico',   lvl:5 }
 ];
 
+/* ---- DIFICULTAD B (v269): EL PERFIL DE CADA CLUB ----
+   Cómo juega cada rival, sacado de sus goles a favor y en contra por partido
+   (temporada 2025 + Apertura 2026) contra el promedio de la liga: si sobresale
+   el ataque es OFENSIVO, si sobresale la defensa DEFENSIVO, y si están cerca
+   PAREJO. Los números y las fuentes están en perfiles-equipos.md.
+
+   El perfil **cambia el mazo del partido** —no los valores—:
+   · cómo se reparten los 4 duelos de la mesa: el ofensivo trae 3 medios o
+     delanteros (se pasan con DEFENSA) y 1 defensor o arquero (con ATAQUE); el
+     defensivo al revés, 3 y 1; el parejo, 2 y 2 como hasta la v268;
+   · medio carta más o menos por tablero de cada grupo: el ofensivo te llega
+     más y te deja más espacios (gol rival +½, tus goles +½); el defensivo
+     se cierra y pega (gol rival −½, tus goles −½, lastiman +½). Las cartas
+     buenas compensan para que la mesa siga en 16;
+   · el parejo es el mazo de siempre.
+   El 1v1 no usa perfiles: la mesa es de los dos. */
+const PERFIL_EQUIPO = {
+  'I. RIVADAVIA':'of', 'GIMNASIA MZA':'of', 'ALDOSIVI':'pa', 'SARMIENTO':'pa', 'RIESTRA':'de', 'EST. RÍO IV':'de',
+  'DEFENSA':'of', 'TUCUMÁN':'of', 'BANFIELD':'of', 'BARRACAS':'of', 'C. CÓRDOBA':'pa', 'PLATENSE':'de',
+  'UNIÓN':'of', 'INSTITUTO':'pa', 'GIMNASIA LP':'pa', 'ARGENTINOS':'pa', 'BELGRANO':'de', 'TIGRE':'de',
+  'NEWELL\'S':'of', 'ESTUDIANTES':'pa', 'CENTRAL':'pa', 'LANÚS':'de', 'HURACÁN':'de', 'TALLERES':'de',
+  'BOCA':'of', 'INDEPENDIENTE':'of', 'RACING':'pa', 'RIVER':'pa', 'VÉLEZ':'de', 'SAN LORENZO':'de'
+};
+const GOL_TUYO  = ['jugada','pasegol','corner','libre','penal'];
+const GOL_RIVAL = ['penalC','cornerC','libreC','pasegolC','contra'];
+const LASTIMAN  = ['calambre','lesion'];
+const BUENAS    = ['hinchada','cano','ola','noche','cooling','fama','publicidad','sponsor'];
+const PERFILES = {
+  of:{ nm:'OFENSIVO',  ico:'atk', tx:'sale a atacar',   mix:'más medios y delanteros',
+       duelos:[1, 3],   // [los que pasás con ATAQUE, los que pasás con DEFENSA]
+       ajustes:[[GOL_RIVAL, .5], [GOL_TUYO, .5]] },
+  de:{ nm:'DEFENSIVO', ico:'def', tx:'se cierra atrás', mix:'más defensores y arqueros',
+       duelos:[3, 1],
+       ajustes:[[GOL_RIVAL, -.5], [GOL_TUYO, -.5], [LASTIMAN, .5]] },
+  pa:{ nm:'PAREJO',    ico:'',    tx:'juega parejo',    mix:'de todo un poco', duelos:[2, 2] }
+};
+
 /* Las rondas ya no traen rival: lo sortea `armarCopa()` de la tabla de
    arriba, uno por nivel. */
 /* **16AVOS y no CLASIFICATORIA.** Medido en la marquesina a 320px, el nombre
@@ -11013,7 +11075,14 @@ const RONDA = i => (G.copa && G.copa[i]) || RONDAS[i];
    Calibrado contra lo que el jugador puede tener: con un refuerzo por ronda,
    el camino equilibrado llega a la final con **ATK 4 / DEF 3**, que ahí gana la
    mitad de sus duelos. Antes ganaba el 83% — la final era la ronda más cómoda
-   del campeonato. */
+   del campeonato.
+
+   **DIFICULTAD B (v269): la carta brava.** Semi y final suman a cada tipo de
+   duelo una carta 1 por encima del tope —SEMI ATK 3,3,4,4,5 · DEF 2,3,3,4;
+   FINAL ATK 3,4,4,5,6 · DEF 2,3,3,4,5—. No se sube el valor de las cartas
+   que ya estaban: +1 a todo dejaba al que reparte parejo en 13% en la final,
+   porque sus empates pasaban a derrotas de golpe. Con la carta brava el
+   parejo baja de 50 a 40 y el especialista unos 5 puntos. */
 const POOLS = {
   1:[['defensor',9,1,3],['arquero',4,1,3],['medio',5,1,2],['delantero',4,1,1],
      ['jugada',5],['pasegol',5],['corner',5],
@@ -11031,13 +11100,13 @@ const POOLS = {
      ['hinchada',3],['cano',1],['ola',1],['noche',1],['calambre',3,1,1],['lesion',3,2,2],['cooling',2],
      ['fama',4],['publicidad',3],['sponsor',2],
      ['amarilla',3],['roja',1],['offside',2]],
-  4:[['defensor',9,[3,3,4,4]],['arquero',4,[3,3,4,4]],['medio',5,[2,3,3]],['delantero',7,[2,3,3]],
+  4:[['defensor',9,[3,3,4,4,5]],['arquero',4,[3,3,4,4,5]],['medio',5,[2,3,3,4]],['delantero',7,[2,3,3,4]],
      ['jugada',3],['pasegol',3],['corner',3],['libre',4],['penal',3],
      ['penalC',4],['cornerC',3],['libreC',4],['pasegolC',3],
      ['hinchada',3],['cano',1],['ola',2],['noche',1],['calambre',4,1,1],['lesion',3,2,2],['cooling',2],
      ['fama',4],['publicidad',3],['sponsor',2],
      ['amarilla',3],['roja',1],['autogol',1],['contra',1],['encontra',1],['offside',2]],
-  5:[['defensor',9,[3,4,4,5]],['arquero',4,[3,4,4,5]],['medio',5,[2,3,3,4]],['delantero',8,[2,3,3,4]],
+  5:[['defensor',9,[3,4,4,5,6]],['arquero',4,[3,4,4,5,6]],['medio',5,[2,3,3,4,5]],['delantero',8,[2,3,3,4,5]],
      ['jugada',3],['pasegol',3],['corner',3],['libre',4],['penal',3],
      ['penalC',6],['cornerC',4],['libreC',4],['pasegolC',4],
      ['hinchada',3],['cano',1],['ola',2],['noche',1],['calambre',4,1,1],['lesion',4,2,2],['cooling',2],
@@ -11472,7 +11541,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 268;
+const VERSION = 269;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -11524,7 +11593,7 @@ const G = {
   club:'TU CLUB',
   ronda:0,
   dinero:0,
-  atk:2, def:1,
+  atk:1, def:1,
   aguanteMax:AGUANTE_BASE,
   items:{ suplentes:1, grito:1 },
   // partido
@@ -11599,11 +11668,12 @@ function pick(pool){
   return pool[0];
 }
 
-/* Los rivales se ajustan a lo que fichaste.
-   Si subiste el ataque, los defensores y arqueros suben con vos; si subiste la
-   defensa, suben los delanteros y mediocampistas. Pero suben a la MITAD de tu
-   ritmo (ESCALA_RIVAL), así que fichar siempre te deja mejor parado que antes:
-   te acerca al rival sin volverlo un trámite. */
+/* **DIFICULTAD B (v269): los rivales ya no se acomodan a lo que fichaste.**
+   Hasta la v268 las cartas de duelo subían 1 cada 2 puntos del stat que las
+   enfrenta (ESCALA_RIVAL = 0,5): la mitad de los refuerzos no cambiaba nada,
+   y subir ataque o defensa daba casi lo mismo. Ahora cada punto vale un punto
+   entero, y lo que cambia de un partido a otro es **contra quién**: el perfil
+   del rival decide qué cartas trae (ver PERFIL_EQUIPO). */
 /* El partido son 90 minutos repartidos en 9 jugadas: cada línea que elegís se
    come 10 del reloj. G.reloj sigue contando JUGADAS; los minutos son la cara
    visible de lo mismo. */
@@ -11640,12 +11710,59 @@ const DURA_GOL   = 1500;
 const PAUSA_CADENA = 650;
 const ESPERA_GOL = DURA_GOL + 120;
 
-const BASE_ATK = 2, BASE_DEF = 1;
-const ESCALA_RIVAL = 0.5;
+/* El plantel arranca en 1 y 1 y el primer punto lo elegís en el vestuario,
+   antes del debut y mirando al rival: el total es el mismo que el 2 y 1 de
+   antes, pero la elección importa desde el primer partido. */
+const BASE_ATK = 1, BASE_DEF = 1;
+const ESCALA_RIVAL = 0;   // hasta la v268: 0.5
 const escalada = stat => Math.floor(Math.max(0, stat) * ESCALA_RIVAL);
 
+/* El perfil del rival que se está jugando. El 1v1 no tiene: la mesa es de los
+   dos. */
+function perfilRival(){
+  if(G.modo === 'duelo') return null;
+  const R = RONDA(G.ronda);
+  return (R && R.eq && PERFIL_EQUIPO[R.eq.nm]) || null;
+}
+
+/* El mazo del partido según el perfil del rival (se arma una vez por nivel y
+   perfil). Cada ajuste es **cartas por tablero de 16**: medio carta es
+   sumarle al grupo 0,5/16 del peso total, repartido entre sus cartas, y las
+   buenas devuelven lo que se sumó, así el peso total queda igual. Los duelos
+   no se tocan acá: la mesa los fija en 4 al final de `buildGrid` y el perfil
+   decide cómo se reparten (`ladosDuelo`). */
+const POOL_PERFIL = {};
+function poolDe(lvl){
+  const p = perfilRival();
+  const P = p && PERFILES[p];
+  if(!P || !P.ajustes) return POOLS[lvl];
+  const clave = lvl + p;
+  if(POOL_PERFIL[clave]) return POOL_PERFIL[clave];
+  const pool = POOLS[lvl].map(e => e.slice());
+  const peso = grupo => pool.reduce((t, e) => t + (grupo.includes(e[0]) ? e[1] : 0), 0);
+  const total = pool.reduce((t, e) => t + e[1], 0);
+  let movido = 0;
+  for(const [grupo, cartas] of P.ajustes){
+    const g = peso(grupo);
+    if(!g) continue;
+    const d = Math.max(cartas * total / 16, -g * .9);
+    pool.forEach(e => { if(grupo.includes(e[0])) e[1] *= (g + d) / g; });
+    movido += d;
+  }
+  const b = peso(BUENAS);
+  if(b) pool.forEach(e => { if(BUENAS.includes(e[0])) e[1] *= Math.max(.1, (b - movido) / b); });
+  return (POOL_PERFIL[clave] = pool);
+}
+
+/* Cuántos de los 4 duelos de la mesa se pasan con ATAQUE y cuántos con
+   DEFENSA. Sin perfil —el 1v1— siguen siendo 2 y 2. */
+function ladosDuelo(){
+  const P = PERFILES[perfilRival()];
+  return (P && P.duelos) || [2, 2];
+}
+
 function makeCell(lvl){
-  const e = pick(POOLS[lvl]);
+  const e = pick(poolDe(lvl));
   const cell = { type:e[0] };
   if(e.length > 2){
     const T = TYPES[e[0]];
@@ -12081,19 +12198,24 @@ function buildGrid(lvl){
     canos.slice(1).forEach(([r, c]) => { grid[r][c] = makeCellDe(libres[rnd(libres.length)], lvl); });
   }
 
-  /* ---- Los duelos, siempre 2 y 2 ----
+  /* ---- Los duelos, repartidos según el rival ----
      Antes bastaba con que hubiera al menos uno de cada lado, así que una mesa
-     podía traer 3 de ataque y 1 de defensa. Eso hace que el refuerzo que
-     elegiste importe por azar y no por decisión: con 2 y 2 fijos, subir ataque
-     o defensa vale exactamente lo mismo en todas las mesas. */
+     podía traer 3 de ataque y 1 de defensa **por azar**, y el refuerzo que
+     elegiste importaba por suerte. Hasta la v268 eran 2 y 2 fijos.
+
+     **DIFICULTAD B (v269): el reparto lo decide el perfil del rival**, y se
+     sabe antes: el ofensivo trae 1 y 3 —tu DEFENSA trabaja el triple—, el
+     defensivo 3 y 1, el parejo 2 y 2. Sigue sin haber azar: es el rival el
+     que cambia, y el vestuario te lo avisa cuando elegís el refuerzo. */
+  const [OBJ_FAV, OBJ_CON] = ladosDuelo();
   for(let i = 0; i < 6; i++){
     const fav = posDe(c => D_FAV.includes(c.type));
     const con = posDe(c => D_CON.includes(c.type));
-    if(fav.length === 2 && con.length === 2) break;
-    if(fav.length > 2){
+    if(fav.length === OBJ_FAV && con.length === OBJ_CON) break;
+    if(fav.length > OBJ_FAV){
       const [r, c] = fav[rnd(fav.length)];
       grid[r][c] = makeCellDe(D_CON[rnd(D_CON.length)], lvl);
-    } else if(con.length > 2){
+    } else if(con.length > OBJ_CON){
       const [r, c] = con[rnd(con.length)];
       grid[r][c] = makeCellDe(D_FAV[rnd(D_FAV.length)], lvl);
     } else break;
@@ -15992,6 +16114,23 @@ function estadoEquipo(){
    sale de la tabla de clubes igual que en la cancha, y si la ronda no tiene
    equipo sorteado —el 1v1, los penales sueltos— se arma sin escudo en vez de
    romperse. La ronda va en la chapa dorada; el club, en el renglón grande. */
+/* **Cómo juega el que viene** (v269), como un renglón más del equipo, debajo
+   del nombre: la chapa del perfil en su color —rojo el que ataca, azul el que
+   se cierra, dorado el parejo— y qué cartas trae. Va adentro de la cinta y no
+   suelta abajo para que se lea como un dato de ese club. Se compararon tres:
+   un renglón abajo de la cinta, debajo del nombre y la chapa debajo del escudo. */
+function perfilLinea(R){
+  const p = R.eq && G.modo !== 'duelo' ? PERFIL_EQUIPO[R.eq.nm] : null;
+  const P = p && PERFILES[p];
+  if(!P) return '';
+  return '<span class="pf-fila pf-' + p + '">' +
+    '<span class="pf-chapa">' +
+      (P.ico ? '<svg class="pf-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-' + P.ico + '"/></svg>' : '') +
+      P.nm + '</span>' +
+    '<span class="pf-tx">' + P.tx + ' · <b>' + P.mix + '</b></span>' +
+  '</span>';
+}
+
 function cabeceraRival(R){
   const esc = R.eq ? escudoDe(escudoDeEquipo(R.eq), 38) : '';
   return '<div class="rf-prox">' +
@@ -16000,13 +16139,14 @@ function cabeceraRival(R){
       '<span class="px-rot">PRÓXIMO PARTIDO</span>' +
       '<b><span class="px-nm">' + R.rival + '</span>' +
         '<i class="px-chapa">' + R.name + '</i></b>' +
+      perfilLinea(R) +
     '</span>' +
     '<span class="px-eleg">ELEGÍ<br>UNO</span>' +
   '</div>';
 }
 
-/* El plantel arranca en ATAQUE 2 y DEFENSA 1, y se refuerza una vez por ronda
-   —cuatro veces— así que un stat puede llegar a 6. El tope de la barra crece si
+/* El plantel arranca en ATAQUE 1 y DEFENSA 1, suma el punto del debut y uno
+   por ronda ganada —cinco en total— así que un stat puede llegar a 6. El tope de la barra crece si
    alguna vez pasara de ahí: mejor una barra más larga que un tramo sin dibujar. */
 const barraStat = (cls, nm, n, contra, arte) => {
   const tope = Math.max(6, n + 2);
@@ -16029,9 +16169,13 @@ const barraStat = (cls, nm, n, contra, arte) => {
   '</button>';
 };
 
-function showRefuerzo(){
+function showRefuerzo(debut){
   G.phase = 'refuerzo';
-  const R = RONDA(G.ronda + 1);
+  /* **Una sola pantalla para el primer punto y para los refuerzos** (v269).
+     Antes del debut —`debut`— es el rival de este partido y el equipo está en
+     1 y 1; entre partidos es el que viene. Lo demás es igual: la cinta con el
+     perfil del rival y las dos chapas. */
+  const R = RONDA(debut ? G.ronda : G.ronda + 1);
 
   /* **El refuerzo se ve antes de tocarlo.** Cada chapa muestra los tramos que
      tenés, el que vas a ganar en dorado y los que quedan, así que elegir es
@@ -16041,23 +16185,31 @@ function showRefuerzo(){
      chapas laten, porque son botones y hasta v175 nada lo decía. */
   openCard(
     '<div class="tag">VESTUARIO</div>' +
-    '<h1>SUMÁ UN<br><em>REFUERZO</em></h1>' +
+    (debut ? '<h1>ARMÁ TU<br><em>PLANTEO</em></h1>' : '<h1>SUMÁ UN<br><em>REFUERZO</em></h1>') +
     cabeceraRival(R) +
     '<div class="rf-barras">' +
       barraStat('atk', 'ATAQUE', G.atk, 'defensores y arqueros', 'delantero') +
       barraStat('def', 'DEFENSA', G.def, 'medios y delanteros', 'arquero') +
     '</div>' +
-    estadoEquipo() +
-    /* La advertencia baja de 13,5px a 10,2 y se apaga: sigue estando, pero
-       deja de competir con las dos opciones, que son lo que hay que mirar. */
-    '<p class="rf-ojo">Los rivales se acomodan: cada 2 puntos que sumás en un stat, ' +
-      'las cartas de ese color suben 1.</p>'
+    /* Antes del debut el equipo está entero y sin racha: no hay nada que
+       contar. */
+    (debut ? '' : estadoEquipo()) +
+    '<p class="rf-ojo">' + (debut
+      ? 'Arrancás con 1 y 1. Cada partido que ganes, sumás otro punto.'
+      : 'Cada punto cuenta entero: las cartas del rival no suben con tus stats.') + '</p>'
   );
 
   document.querySelectorAll('.rf-barra').forEach(b => {
     b.onclick = () => {
       const st = b.dataset.stat;
       if(st === 'atk') G.atk++; else G.def++;
+      if(debut){
+        closeCard();
+        startMatch();
+        say(st === 'atk' ? '⚔ Salís a atacar: ATAQUE ' + G.atk + '.'
+                         : '🛡 Salís a aguantar: DEFENSA ' + G.def + '.', 'good');
+        return;
+      }
       say(st === 'atk' ? '⚔ Refuerzo en ataque: ATAQUE ' + G.atk + '.'
                        : '🛡 Refuerzo en defensa: DEFENSA ' + G.def + '.', 'good');
       showMarket(true);
@@ -16373,7 +16525,7 @@ function showElegirItems(){
     });
     $('unicoBack').onclick = () => { showMenu(); };
     const go = $('unicoGo');
-    if(go && !go.disabled) go.onclick = () => { closeCard(); startMatch(); };
+    if(go && !go.disabled) go.onclick = () => showRefuerzo(true);   // el vestuario arranca el partido
   };
   pintar();
 }
@@ -17190,7 +17342,7 @@ function newRun(encadenar, sinArrancar){
   /* Antes que nada: los cinco rivales de esta copa. Todo lo que sigue —el
      reloj, los escudos, los carteles— los lee de acá. */
   armarCopa();
-  G.atk = 2; G.def = 1;
+  G.atk = BASE_ATK; G.def = BASE_DEF;
   /* Un corazón menos de techo por cada copa ganada, hasta el piso. La segunda
      corrida arranca en 3, la tercera en 2, y de ahí no baja más. */
   G.maxCampeonato = Math.max(AGUANTE_PISO, AGUANTE_BASE - G.copas);
@@ -17199,7 +17351,9 @@ function newRun(encadenar, sinArrancar){
   G.racha = 0;
   G.historial = [];
   $('log').innerHTML = '';
-  if(!sinArrancar) startMatch();
+  /* Antes del debut, el vestuario: el primer punto se elige mirando al rival
+     (v269). */
+  if(!sinArrancar) showRefuerzo(true);
 }
 
 function startMatch(){

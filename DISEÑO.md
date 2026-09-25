@@ -15084,3 +15084,78 @@ mismo que cada carta del cartel de dos (138x143 en el 17 Pro), queda centrada
 —desvío 0px— y el cartel entra (441 en el 17 Pro, antes 489). Probado con el
 toque real: JUGARLA muestra el sorteo, abre la situación de gol y vacía la
 racha. Sin errores.
+
+## v269 · ⚠️ CAMBIO DE DIFICULTAD (propuesta B): los stats importan de verdad
+
+> **Para volver atrás:** este cambio vive entero en el commit de la v269 (tag
+> `v269-duelo-futbolero`). El juego sin él es el tag `v268-duelo-futbolero`,
+> que también queda marcado como `dificultad-antes-de-b`. Deshacerlo es
+> `git revert` de ese commit, o traer `index.html` de `v268-duelo-futbolero`.
+> Adentro del código todo lo nuevo dice **DIFICULTAD B (v269)** en su
+> comentario.
+
+### Por qué
+
+Medido sobre las reglas de la v268: **subir ataque o defensa daba casi lo
+mismo.** Las cartas de duelo subían 1 cada 2 puntos del stat que las enfrenta
+(el «espejo», `ESCALA_RIVAL = 0,5`), así que la mitad de los refuerzos no
+cambiaba nada, y la mesa traía siempre 2 duelos de cada lado. En semifinal y
+final se perdía casi todo sin importar lo elegido: el que repartía parejo
+llegaba a la final con 13% (valor de un duelo: gana + empate/2).
+
+### Qué cambió
+
+1. **Sin espejo** (`ESCALA_RIVAL = 0`): cada punto vale un punto entero.
+2. **Perfil fijo por club** (`PERFIL_EQUIPO`): OFENSIVO, DEFENSIVO o PAREJO,
+   sacado de goles a favor y en contra de 2025 + Apertura 2026 (ver
+   `perfiles-equipos.md`). El perfil cambia **la mesa del rival**, no los
+   valores:
+   - **los 4 duelos se reparten según el perfil**: ofensivo 1 de ATAQUE y 3 de
+     DEFENSA, defensivo 3 y 1, parejo 2 y 2 (hasta la v268 eran siempre 2 y 2);
+   - **medio carta más o menos por tablero**: el ofensivo trae +½ de gol rival
+     y +½ de tus goles (deja espacios); el defensivo −½ y −½ y +½ de cartas que
+     lastiman (se cierra y pega). Las cartas buenas compensan. Medido con
+     `buildGrid` real: ±0,3 a ±0,4 por mesa, porque los techos de la mesa
+     recortan un poco.
+3. **Arranque 1 y 1, con el primer punto a elección** en el vestuario antes
+   del debut, mirando al rival. El total es el mismo que el 2 y 1 de antes.
+   Arrancar 1 y 1 sin elegir no ganaba ni un duelo en 16avos.
+4. **La carta brava en semi y final**: cada tipo de duelo suma una carta 1 por
+   encima de su tope (SEMI ATK 3,3,4,4,**5** · DEF 2,3,3,**4**; FINAL ATK
+   3,4,4,5,**6** · DEF 2,3,3,4,**5**). No se sube el valor de las que ya
+   estaban: +1 a todo dejaba al parejo en 13%.
+5. **El 1v1 no cambia**: sin perfiles, 2 y 2, valores planos.
+
+### El vestuario, una sola pantalla
+
+`showRefuerzo(debut)`: la misma pantalla antes del debut —«ARMÁ TU
+PLANTEO», equipo en 1 y 1, sin el estado del equipo— y entre partidos —«SUMÁ
+UN REFUERZO»—. La cinta del rival lleva el perfil **debajo del nombre, al lado
+del escudo**: la chapa en su color (rojo ofensivo, azul defensivo, dorado
+parejo) y qué cartas trae. Se compararon tres lugares: un renglón abajo de la
+cinta, debajo del nombre y la chapa debajo del escudo. El campeonato, la
+revancha, la copa encadenada y el partido único pasan por el vestuario antes
+de jugar. El texto del espejo («Los rivales se acomodan…») se reemplazó por
+«Cada punto cuenta entero: las cartas del rival no suben con tus stats.»
+
+### Números (valor de un duelo; caminos desde 1 y 1)
+
+| Ronda | Rival | todo ATAQUE | parejo | todo DEFENSA | v268 parejo |
+|---|---|---|---|---|---|
+| 16avos | ofensivo / parejo / defensivo | 40 / 43 / 47 | 40 / 43 / 47 | 69 / 51 / 34 | 43 |
+| Cuartos | ofensivo / parejo / defensivo | 22 / 44 / 66 | 38 / 42 / 46 | 75 / 50 / 25 | 42 |
+| Semi | ofensivo / parejo / defensivo | 22 / 45 / 68 | 43 / 35 / 28 | 75 / 50 / 25 | 21 |
+| Final | ofensivo / parejo / defensivo | 22 / 45 / 68 | 40 / 40 / 40 | 75 / 50 / 25 | 13 |
+
+Elegir bien contra quién jugás da 66–75%; mal, 22–25%; parejo, 28–47%.
+
+### Medido
+
+Mesas reales (2000 por nivel y perfil): reparto de duelos 1+3 / 2+2 / 3+1 en
+el 100%, siempre 16 cartas, siempre gol posible para los dos lados. Vestuario
+en 320x568, 360x740, 375x667, 393x762, 402x784, 430x932, 768x1024 y 1280x800
+con los nombres más largos (EST. RÍO IV, I. RIVADAVIA, SAN LORENZO,
+INDEPENDIENTE): entra sin scroll y no corta texto. La cinta pasa de 66 a 88px
+en el 17 Pro. Acostado (844x390, 667x375) la tarjeta del refuerzo ya
+scrolleaba por dentro en la v268 y ahora son 6px más. Probado con toques
+reales: campeonato, partido único y 1v1, sin errores.

@@ -1,4 +1,4 @@
-# Perfiles de los equipos (propuesta B · en análisis, todavía no aplicada)
+# Perfiles de los equipos (propuesta B · aplicada en la v269)
 
 Datos guardados el 25 de septiembre de 2026 para la propuesta **B** de los stats:
 sacar el «espejo» —que las cartas de duelo suban 1 cada 2 puntos de tus stats— y
@@ -8,9 +8,9 @@ darle a cada rival un **perfil fijo** que cambia el mazo de duelos:
 - **DEFENSIVO**: más defensores y arqueros → conviene subir **ATAQUE**.
 - **PAREJO**: el mazo de siempre.
 
-Nada de esto está en el juego todavía (v268). Pendiente: simular campañas
-completas, decidir cuánto endurecer semifinal y final, prototipo jugable y el
-diseño de cómo se muestra el perfil en la pantalla del refuerzo.
+**Aplicado en la v269** (`PERFIL_EQUIPO` en index.html). En el juego el perfil
+reparte los 4 duelos de la mesa —ofensivo 1 de ATAQUE y 3 de DEFENSA, defensivo
+3 y 1, parejo 2 y 2— y mueve medio carta de gol y de golpes; ver DISEÑO.md.
 
 ## Cómo se calculó
 
