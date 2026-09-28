@@ -15207,3 +15207,34 @@ partido único) decía «IR A LA TANDA». Ahora dice **«IR A LOS PENALES»**, q
 como se dice en la cancha y lo mismo que anuncia la cinta del cartel («va a
 penales»). Medido en 320x568: entra en una línea (246px de ancho de texto en
 un botón de 240+ con el ícono), 42px de alto, igual que antes.
+
+## v272 · en los mini juegos, lo tuyo marcado
+
+En los mini juegos no se distinguía qué era tuyo: el único indicio de si
+pateabas o atajabas era el título del cartel. Ahora, mientras decidís, lo tuyo
+está marcado en dorado, y la marca se va apenas tocás:
+
+| Mini juego | Qué se marca | Cómo |
+|---|---|---|
+| Penal que pateás (suelto, posibilidad de gol, tanda, definitorio) | la pelota | dos anillos que salen como un radar y la pelota pica |
+| Penal que atajás (penal rival, fundida, tanda) | tu arquero | un halo que respira detrás |
+| Mano a mano con el arquero | la pelota | anillos y pique |
+| 1 vs 1 contra el defensor | la pelota | cartel **ENCARÁS** |
+| La marca contra el medio | tu jugador | cartel **MARCÁS** |
+| Defender contra el delantero | tu jugador | cartel **DEFENDER** |
+
+Se compararon cuatro estilos —halo, cartel, reflector y anillos— sobre las
+escenas reales, y se eligió uno por escena. El pique va en un grupo de adentro
+de la pelota para no pisar el `transform` del tiro ni el `translate` de la
+respiración del mano a mano. Con movimiento reducido quedan quietos.
+
+**Arreglado de paso:** cuando atajabas un penal suelto —la carta PENAL RIVAL o
+la llegada cuando se te funde el equipo— tu arquero salía con la camiseta del
+rival. El arco se dibujaba siempre con el escudo de `eqs[1 - quien]`, y en el
+penal suelto `quien` es 0 aunque patee el rival. Ahora el arquero es el del
+equipo que no patea. En la tanda ya estaba bien.
+
+Probado con toques reales en los seis mini juegos, la tanda (patea tu equipo y
+patea el rival) y el penal definitorio: la marca aparece, se va al tocar y el
+resultado sale igual que antes. Sin errores. La marca va adentro del dibujo:
+los carteles miden lo mismo.
