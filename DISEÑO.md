@@ -15305,3 +15305,36 @@ en ATAQUE (21–24% de campeón).
 Medido con el juego: en la final el medio y el delantero nunca bajan de 3 con
 ninguna combinación de stats (6/1 a 1/6), el defensor y el arquero tampoco, y
 la carta a tu altura sigue estando en el 100% de las mesas.
+
+## v276 · los ítems en su lugar, y la ficha que muestra lo que suma
+
+**La ficha del ítem, en vidrio esmerilado.** Era del mismo azul que la mesa y
+se perdía contra las cartas. Ahora es un vidrio más oscuro y borroso, con
+borde blanco y una línea del color del ítem a la izquierda —rojo el aguante,
+dorado la racha, azul el VAR—; el recuadro del ítem abierto se marca igual.
+Mide lo mismo que antes.
+
+**Lo que suma, titilando.** Mientras la ficha está abierta, titila en la franja
+lo que el ítem va a llenar: la próxima píldora de racha (grito), la próxima de
+aguante (suplentes) o las dos del 2.º aire; con el VAR titilan las cartas
+trabadas. Si el ítem no sirve en ese momento —aguante lleno, racha llena—, no
+titila nada. En la compu los medidores son íconos y el que suma se enciende.
+
+**Cada ítem en su lugar** (`LUGAR_ITEMS`): 2.º AIRE —suma aguante máximo— a la
+izquierda, SUPLENTES y GRITO DT —aguante y racha— en el medio, y VAR a la
+derecha. Antes se acomodaban en el orden en que los tenías y los huecos iban
+al final, así que un mismo ítem cambiaba de lugar de un partido al otro. En el
+teléfono, el lugar del que no tenés muestra apagado su nombre y «no tenés».
+
+**En el teléfono, sin el ícono del ítem**: el nombre arriba y lo que hace
+abajo, centrados y más grandes (9,8 y 13px; 8,8 y 11,5 en 360). El ícono de
+aguante o racha del efecto se queda. En la compu y acostado la lista vertical
+conserva su ícono y su descripción; sólo cambia el orden.
+
+Se compararon cinco fichas, tres colores de vidrio, tres formas de mostrar los
+ítems en su lugar y tres de mostrarlos sin ícono.
+
+Medido contra la v275 en 320, 360, 375, 402, 430, 768x1024, 1280 y 844x390:
+los recuadros, la franja, la ficha y el arranque de la mesa miden lo mismo, y
+ningún nombre queda cortado. Probado con los cuatro ítems: titila lo que
+corresponde, se apaga al cerrar y el VAR marca la carta trabada. Sin errores.
