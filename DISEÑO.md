@@ -15278,3 +15278,30 @@ Medido contra la v273 con la misma mesa en 320, 402 y 1280: el cartel y el
 título miden exactamente lo mismo, el texto ocupa el mismo ancho y el scroll
 es el mismo. Tocar el cartel —también sobre una letra— sigue abriendo la ficha
 de la posibilidad de gol.
+
+## v275 · la final sin delanteros de 2 (parte de la DIFICULTAD B)
+
+En una final apareció un delantero de 2: muy poco para la última ronda. Salía
+de dos lados:
+
+- **el mazo**: medio y delantero de la final eran 2,3,3,4,5 (un 2 en el 15% de
+  los delanteros);
+- **la carta a tu altura** (v270), que copia tu stat: con DEFENSA 1 o 2 ponía un
+  delantero de 1 o 2 en el 25–39% de las mesas del que va todo al ATAQUE.
+
+Ahora el medio y el delantero de la final son **3,3,4,4,5**, y en la final la
+carta a tu altura va **del lado donde tu stat llega al mínimo** de esa carta.
+En las otras rondas sigue igual: con piso en todas, cuartos y semi se
+endurecían, porque esa carta del lado débil es una ayuda.
+
+Se simularon ocho variantes (6.000 copas por estrategia), con y sin arquero
+asegurado y con piso de 4 también del lado del ATAQUE. Esta fue la más pareja:
+la final se gana el 57,6% en vez del 61,6%, los duelos ganados en la final
+bajan de 54% a 45%, y todas las formas de repartir los stats quedan entre
+15,4% y 16,7% de campeón (antes 16,1–19,4%). Asegurar el arquero se descartó:
+ganarle es gol, así que hacía el juego más fácil y volvía a premiar poner todo
+en ATAQUE (21–24% de campeón).
+
+Medido con el juego: en la final el medio y el delantero nunca bajan de 3 con
+ninguna combinación de stats (6/1 a 1/6), el defensor y el arquero tampoco, y
+la carta a tu altura sigue estando en el 100% de las mesas.
