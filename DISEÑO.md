@@ -15238,3 +15238,24 @@ Probado con toques reales en los seis mini juegos, la tanda (patea tu equipo y
 patea el rival) y el penal definitorio: la marca aparece, se va al tocar y el
 resultado sale igual que antes. Sin errores. La marca va adentro del dibujo:
 los carteles miden lo mismo.
+
+## v273 · el resaltado de la mesa: halo afuera y celeste eléctrico
+
+Al tomar una fila o columna cada carta se enciende con el color de lo que te
+hace, con un filo de 2px. El **OFFSIDE** (gris azulado) y los **porcentajes**
+(celeste) casi no se despegaban de una carta sin resaltar.
+
+- **Halo afuera** en todas las cartas resaltadas: el filo brilla hacia afuera
+  con un halo suave del mismo tono. Es transparente, así que suma luz y no
+  color, y no ocupa lugar.
+- **El neutro, casi blanco** (214,226,245): el offside se lee como elegido.
+- **Los porcentajes, celeste eléctrico** (#00C8FF) con un halo un poco más
+  ancho y denso, para que se remarquen al lado del verde y del rojo.
+
+Se compararon cuatro formas —filo más claro, luz adentro, halo afuera y
+contorno blanco— y después tres celestes para el halo (cielo, eléctrico y con
+luz adentro).
+
+Medido contra la v272 con el mismo tablero en 320, 402 y 1280: las 16 cartas
+miden y están exactamente donde estaban, las no resaltadas no cambian y el
+scroll es el mismo.

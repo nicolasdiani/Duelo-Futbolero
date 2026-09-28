@@ -9736,6 +9736,34 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .mj-anillo,.mj-pica,.mj-halo,.mj-cartel{animation:none}
   .mj-anillo.dos{display:none}
 }
+
+/* ================= EL RESALTADO DE LA MESA: HALO AFUERA (v273) =================
+   Al tomar una fila o columna cada carta se enciende con el color de lo que te
+   hace, pero con un filo de 2px el OFFSIDE (gris azulado) y los porcentajes
+   (celeste) casi no se despegaban de una carta sin resaltar.
+
+   · **Halo afuera**: el filo además brilla hacia afuera, un halo suave del
+     mismo tono. Es transparente, así que suma luz y no color. No ocupa lugar:
+     las cartas miden y están exactamente donde estaban.
+   · **El neutro, casi blanco** (214,226,245): el offside se lee como elegido.
+   · **Los porcentajes, celeste eléctrico** (#00C8FF) y con un halo un poco más
+     ancho y denso: es la jugada que puede terminar en gol y tiene que
+     remarcarse al lado del verde y del rojo.
+   Se compararon cuatro formas —filo más claro, luz adentro, halo afuera y
+   contorno blanco— y después tres celestes para el halo. */
+.row.hl .cell:not(.empty):not(.lock),
+.cell.colhl:not(.empty):not(.lock){
+  box-shadow:inset 0 0 0 var(--filo-hl,1px) rgba(var(--tono),.9),
+    0 0 0 1px rgba(var(--tono),.45),0 0 12px 1px rgba(var(--tono),.42),var(--canto);
+}
+.row.hl .cell.tono-neutral:not(.empty):not(.lock),
+.cell.colhl.tono-neutral:not(.empty):not(.lock){--tono:214,226,245}
+.row.hl .cell.tono-gol:not(.empty):not(.lock),
+.cell.colhl.tono-gol:not(.empty):not(.lock){
+  --tono:0,200,255;
+  box-shadow:inset 0 0 0 var(--filo-hl,1px) rgba(var(--tono),1),
+    0 0 0 1px rgba(var(--tono),.6),0 0 14px 2px rgba(var(--tono),.55),var(--canto);
+}
 </style>
 </head>
 <body>
@@ -11566,7 +11594,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 272;
+const VERSION = 273;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
