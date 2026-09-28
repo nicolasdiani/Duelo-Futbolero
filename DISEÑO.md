@@ -15159,3 +15159,43 @@ INDEPENDIENTE): entra sin scroll y no corta texto. La cinta pasa de 66 a 88px
 en el 17 Pro. Acostado (844x390, 667x375) la tarjeta del refuerzo ya
 scrolleaba por dentro en la v268 y ahora son 6px más. Probado con toques
 reales: campeonato, partido único y 1v1, sin errores.
+
+## v270 · el delantero rival siempre, y una carta a tu altura (parte de la DIFICULTAD B)
+
+Con los duelos repartidos por perfil (v269), el lado que se pasa con DEFENSA
+podía quedar en un solo MEDIO: contra un defensivo el delantero rival faltaba
+en 4 de cada 10 mesas (44–60% según la ronda) y el rival no tenía con qué
+hacerte un gol de mano a mano. Ahora, si la mesa trae duelos de ese lado, uno
+es delantero. Se siguen los 4 duelos (1+3 / 2+2 / 3+1). El 1v1 no cambia.
+
+Se simularon siete variantes, entre 2.000 y 8.000 copas cada una, con el motor real:
+5 o 6 duelos por mesa hacían el juego más difícil (campeón 15–16% contra 17%)
+y hundían al parejo (13–15%); asegurar también el ARQUERO —ganarle es gol
+directo— dejaba a todo ATAQUE en 24,5%. Asegurar sólo el delantero cuesta ~1
+punto de campeón y no cambia el orden de las estrategias.
+
+Medido: 3.000 mesas por nivel y perfil, delantero en el 100%, reparto
+intacto, siempre 16 cartas; 1v1 sigue en 2+2.
+
+### Una carta a tu altura: vuelve el mini juego
+
+El mini juego sale cuando tu stat es igual al valor de la carta. Hasta la v268
+las cartas subían con tus stats y quedaban siempre cerca: 0,7 a 1 mini juego
+por partido. Sin espejo (v269) el que se especializa les pasa por arriba de un
+lado y queda muy abajo del otro: bajaron a 0,5–0,7, y todo DEFENSA no jugaba
+**ninguno** desde cuartos.
+
+Cada mesa trae ahora **un duelo a tu altura** —cualquiera de los cuatro, con
+el valor exacto de tu stat de ese lado—: el crack del rival. Se compararon
+cuatro (6.000 copas por estrategia): una cualquiera, el delantero siempre a tu
+altura (hundía a todo DEFENSA en 11% de campeón), una del lado fuerte del
+rival y dos por mesa. Quedó una cualquiera: los mini juegos vuelven a 0,8–1,2
+por partido y la dificultad no cambia (campeón 17,3% contra 17,2%), ni el
+orden de las estrategias.
+
+Medido con el juego: el 100% de las mesas trae el duelo a tu altura con
+stats 1/1, 6/1, 1/6 y 3/3; el 1v1 no lo tiene. Probado con toques reales en el
+17 Pro, sin errores.
+
+Para volver atrás: `dificultad-antes-de-b` (v268) deshace toda la dificultad B;
+esta versión sola se deshace con `git revert` de su commit.

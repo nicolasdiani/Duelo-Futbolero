@@ -11541,7 +11541,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 269;
+const VERSION = 270;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12219,6 +12219,45 @@ function buildGrid(lvl){
       const [r, c] = con[rnd(con.length)];
       grid[r][c] = makeCellDe(D_FAV[rnd(D_FAV.length)], lvl);
     } else break;
+  }
+
+  /* ---- El delantero rival, siempre (v270) ----
+     Con los duelos repartidos por perfil, el lado que se pasa con DEFENSA
+     podía quedar en un solo MEDIO: contra un defensivo, el delantero rival
+     faltaba en 4 de cada 10 mesas y el rival no tenía con qué hacerte un gol
+     de mano a mano. Si la mesa trae duelos de ese lado, uno es delantero.
+
+     Sólo el delantero: asegurar también el ARQUERO —ganarle es gol directo—
+     hacía que poner todo en ATAQUE rindiera 24% de campeón contra 15% del
+     parejo (simulado). Así el juego queda ~1 punto más difícil y el orden de
+     las estrategias no se mueve. El 1v1 no cambia. */
+  if(G.modo !== 'duelo'){
+    const ata = posDe(c => D_CON.includes(c.type));
+    if(ata.length && !ata.some(([r, c]) => grid[r][c].type === 'delantero')){
+      const [r, c] = ata[rnd(ata.length)];
+      grid[r][c] = makeCellDe('delantero', lvl);
+    }
+  }
+
+  /* ---- Una carta a tu altura (v270) ----
+     El mini juego sale cuando tu stat es igual al valor de la carta. Hasta la
+     v268 las cartas subían con tus stats y quedaban siempre cerca: había 0,7
+     a 1 mini juego por partido. Sin espejo, el que se especializa les pasa
+     por arriba de un lado y queda muy abajo del otro, y el mini juego
+     desaparecía: todo DEFENSA no jugaba **ninguno** desde cuartos.
+
+     Cada mesa trae **un duelo a tu altura** —cualquiera de los cuatro, con el
+     valor exacto de tu stat de ese lado—: el crack del rival. Simulado: los
+     mini juegos vuelven a 0,84–1,02 por partido y la dificultad no cambia
+     (campeón 17,3% contra 17,2%), ni el orden de las estrategias. Se
+     compararon cuatro: una cualquiera, el delantero siempre a tu altura
+     (hundía a todo DEFENSA en 11%), una del lado fuerte del rival y dos. */
+  if(G.modo !== 'duelo'){
+    const duelos = posDe(c => D_FAV.includes(c.type) || D_CON.includes(c.type));
+    if(duelos.length){
+      const [r, c] = duelos[rnd(duelos.length)];
+      grid[r][c].val = D_FAV.includes(grid[r][c].type) ? G.atk : G.def;
+    }
   }
 
   /* ---- Garantía de dinero, al final de todo ----
