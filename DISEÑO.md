@@ -15259,3 +15259,22 @@ luz adentro).
 Medido contra la v272 con el mismo tablero en 320, 402 y 1280: las 16 cartas
 miden y están exactamente donde estaban, las no resaltadas no cambian y el
 scroll es el mismo.
+
+## v274 · LA POSIBILIDAD DE GOL hace la ola
+
+Con la racha llena, las letras del título del cartel hacen **la ola**: cada
+una sube un poco, se agranda y se ilumina al pasar, y vuelve a su lugar. Va al
+ritmo del barrido de luz que ya cruzaba el cartel —1,8s—, con las letras
+escalonadas a lo largo de la mitad del ciclo, así la ola y la luz viajan
+juntas. Con la racha a medias el título queda quieto, y con movimiento
+reducido también.
+
+Cada letra es una caja `inline-block` y la ola es `transform`: no ocupa lugar.
+El rótulo entero queda en `aria-label` para el lector de pantalla. Se
+compararon tres —la ola que salta, la de luz y la que crece— y quedó la que
+crece.
+
+Medido contra la v273 con la misma mesa en 320, 402 y 1280: el cartel y el
+título miden exactamente lo mismo, el texto ocupa el mismo ancho y el scroll
+es el mismo. Tocar el cartel —también sobre una letra— sigue abriendo la ficha
+de la posibilidad de gol.

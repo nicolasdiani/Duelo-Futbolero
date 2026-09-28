@@ -9764,6 +9764,29 @@ html.html-menu, html.html-menu body{overflow:hidden}
   box-shadow:inset 0 0 0 var(--filo-hl,1px) rgba(var(--tono),1),
     0 0 0 1px rgba(var(--tono),.6),0 0 14px 2px rgba(var(--tono),.55),var(--canto);
 }
+
+/* ================= LA POSIBILIDAD DE GOL HACE LA OLA (v274) =================
+   Con la racha llena, las letras del título hacen **la ola**: cada una sube un
+   poco, se agranda y se ilumina al pasar, y vuelve. Va al ritmo del barrido
+   de luz que ya cruza el cartel —1,8s—, con las letras escalonadas a lo largo
+   de la mitad del ciclo: la ola y la luz viajan juntas.
+
+   Hasta acá el cartel no movía el texto ni un píxel (ver el barrido). Ahora
+   se mueve a propósito, pero **sin ocupar nada**: cada letra es una caja
+   `inline-block` y la ola es `transform`, así que el título y el cartel miden
+   exactamente lo mismo que antes. Se compararon tres —la ola que salta, la de
+   luz y la que crece— y quedó la que crece. */
+.gol-banner .gb-l{display:inline-block}
+.gol-banner.lista .gb-l{
+  transform-origin:50% 100%;
+  animation:gbOla 1.8s ease-in-out infinite;animation-delay:calc(var(--i) * 48ms);
+}
+@keyframes gbOla{
+  0%,36%,100%{transform:none;color:var(--green);text-shadow:none}
+  18%        {transform:translateY(-2px) scale(1.22);color:#eafff0;text-shadow:0 0 6px rgba(61,220,107,.85)}
+}
+.gol-banner.lista:disabled .gb-l{animation:none}
+@media (prefers-reduced-motion:reduce){.gol-banner.lista .gb-l{animation:none}}
 </style>
 </head>
 <body>
@@ -9934,7 +9957,8 @@ html.html-menu, html.html-menu body{overflow:hidden}
       <button class="gol-banner" id="golBanner" style="display:none">
         <span class="gb-ico"></span>
         <span class="gb-txt">
-          <span class="gb-t">LA POSIBILIDAD DE GOL</span>
+          <!-- una caja por letra para la ola (v274); el lector de pantalla lee el rótulo entero -->
+          <span class="gb-t" aria-label="LA POSIBILIDAD DE GOL"><span aria-hidden="true"><span class="gb-l" style="--i:0">L</span><span class="gb-l" style="--i:1">A</span> <span class="gb-l" style="--i:2">P</span><span class="gb-l" style="--i:3">O</span><span class="gb-l" style="--i:4">S</span><span class="gb-l" style="--i:5">I</span><span class="gb-l" style="--i:6">B</span><span class="gb-l" style="--i:7">I</span><span class="gb-l" style="--i:8">L</span><span class="gb-l" style="--i:9">I</span><span class="gb-l" style="--i:10">D</span><span class="gb-l" style="--i:11">A</span><span class="gb-l" style="--i:12">D</span> <span class="gb-l" style="--i:13">D</span><span class="gb-l" style="--i:14">E</span> <span class="gb-l" style="--i:15">G</span><span class="gb-l" style="--i:16">O</span><span class="gb-l" style="--i:17">L</span></span></span>
           <span class="gb-s">Cambiás la racha por una llegada clara &middot; 51% de gol &middot; gasta una jugada</span>
         </span>
         <span class="gb-go">USAR</span>
@@ -11594,7 +11618,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 273;
+const VERSION = 274;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
