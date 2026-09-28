@@ -15338,3 +15338,32 @@ Medido contra la v275 en 320, 360, 375, 402, 430, 768x1024, 1280 y 844x390:
 los recuadros, la franja, la ficha y el arranque de la mesa miden lo mismo, y
 ningún nombre queda cortado. Probado con los cuatro ítems: titila lo que
 corresponde, se apaga al cerrar y el VAR marca la carta trabada. Sin errores.
+
+## v277 · en la compu y la tablet acostada, el diseño del teléfono
+
+En la compu y en la tablet acostada el juego usaba un diseño aparte, de tres
+columnas, con cartas de más del doble que en el teléfono: la mesa no entraba
+(434px de scroll en una notebook de 1280x800, 501 en 1366x768) y en el iPad
+acostado las cartas quedaban flacas y altas (97x190).
+
+Ahora, si la pantalla no es la de un teléfono o una tablet parada (la misma
+condición de siempre: `(max-width:1024px) and (orientation:portrait),
+(max-width:820px)`) y tiene al menos 600 de alto, un script al principio del
+`<head>` abre el juego adentro de **una columna con la proporción de un
+celular** (402x784), centrada: entre 400 y 560 de ancho y todo el alto. Adentro
+el juego se ve **exactamente** como en el teléfono —las mismas reglas, los
+mismos tamaños— sin tocar ninguna. El resto del archivo, afuera, se lee como
+texto escondido (`<plaintext hidden>`) para que el juego no corra dos veces;
+con `window.stop()` la página de afuera se quedaba sin el evento `load`. El
+marco lleva `allow="clipboard-write; web-share"` para compartir. El teléfono,
+la tablet parada y el teléfono acostado no cambian. `?sinmarco=1` abre el
+diseño viejo.
+
+Se comparó con achicar el diseño de compu hasta que entre (zoom): quedaba al
+59–73% y el relato y las descripciones de los costados, ilegibles.
+
+Medido: columna de 410x800 en 1280x800, 400x768 en 1366x768 y 1024x768, 554x1080
+en 1920x1080, siempre centrada y sin scroll. La prueba general (47 controles:
+vestuario, mesa, mini juegos, resaltado, ola, ítems, pantalla, copas simuladas)
+pasa entera adentro de la columna en esas cuatro pantallas, y afuera en el
+17 Pro; en 768x1024 y 844x390 no aparece la columna.
