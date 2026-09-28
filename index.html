@@ -11541,7 +11541,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 270;
+const VERSION = 271;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -15937,7 +15937,7 @@ function avisoEmpate(){
         '</div>' +
         '<div class="e-aviso">' + (tanda ? 'TANDA DE CINCO' : 'UN SOLO PENAL Y SE DEFINE') + '</div>' +
         '<button class="cta llama n-verde" id="empBtn">' + ICO('arco') +
-          (tanda ? 'IR A LA TANDA' : 'PATEAR PENAL DEFINITORIO') + '</button>' +
+          (tanda ? 'IR A LOS PENALES' : 'PATEAR PENAL DEFINITORIO') + '</button>' +
       '</div>';
     wrap = montarPop(wrap);
     wrap.querySelector('#empBtn').onclick = () => { cerrarPop(); resolve(); };

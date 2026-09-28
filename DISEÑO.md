@@ -15199,3 +15199,11 @@ stats 1/1, 6/1, 1/6 y 3/3; el 1v1 no lo tiene. Probado con toques reales en el
 
 Para volver atrás: `dificultad-antes-de-b` (v268) deshace toda la dificultad B;
 esta versión sola se deshace con `git revert` de su commit.
+
+## v271 · el empate de la final: IR A LOS PENALES
+
+El botón del cartel de EMPATE cuando se define por tanda (la final y el
+partido único) decía «IR A LA TANDA». Ahora dice **«IR A LOS PENALES»**, que es
+como se dice en la cancha y lo mismo que anuncia la cinta del cartel («va a
+penales»). Medido en 320x568: entra en una línea (246px de ancho de texto en
+un botón de 240+ con el ícono), 42px de alto, igual que antes.
