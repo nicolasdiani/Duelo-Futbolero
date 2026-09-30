@@ -15569,3 +15569,20 @@ mismo lugar en los dos. Nada cambia de alto. Con el teléfono acostado y en la
 compu el panel conserva su diseño; solo cambia la letra.
 
 Solo en el estilo LED. Prueba general 47/47.
+
+## v287 · los números de stats macizos en todos lados
+
+Repaso de todos los lugares donde se muestra un número de ATAQUE o DEFENSA:
+
+| lugar | antes | ahora |
+|---|---|---|
+| recuadros de la mesa, cartas, cartel del duelo | macizos desde v286 | — |
+| barras del vestuario y del refuerzo («1 → 2») | matriz de puntos | Tektur 800, 24px |
+| VS del mano a mano | Tektur 29px | 32px, como el cartel del duelo |
+| ¿Cómo se juega? (LOS DUELOS), repartidor y panel del 1 vs 1 | ya en Tektur 800 | — |
+
+Revisado LED contra clásico en 31 pantallas y estados, en 320×568, 375×667,
+393×762, 402×784, 410×800 (la columna), 430×932, 440×956, 768×1024 y 844×390:
+nada se pisa, se corta ni scrollea de más en vertical, en la columna ni en el
+iPad. Con el teléfono acostado siguen los problemas de ese modo que ya venían
+(la mesa angosta: la fila de columnas no entra). Prueba general 47/47.

@@ -10406,7 +10406,6 @@ html.html-menu, html.html-menu body{overflow:hidden}
 :root .px-eleg{font-family:var(--tit);color:var(--gold)}
 :root .rf-barra{border-radius:4px;background:rgba(6,15,11,.95);border:1px solid var(--line)}
 :root .rf-barra .ba-foto{filter:saturate(.5) brightness(.85)}
-:root .ba-n{font-family:var(--led);font-weight:900}
 :root .ba-track i{border-radius:1px}
 :root .rf-ojo{color:var(--dim)}
 
@@ -10605,6 +10604,15 @@ html.html-menu, html.html-menu body{overflow:hidden}
   :root #panelPlantel .stat.def{border:1px solid rgba(56,210,255,.55)}
   :root #panelPlantel .stat .n{background:transparent;background-image:none;font-size:26px}
 }
+
+/* ---- LOS NÚMEROS DE STATS, EN TODOS LADOS (v287) ----
+   La v286 los pasó a la letra del marcador en la mesa, las cartas y el cartel
+   del duelo. Quedaban dos lugares: el «1 → 2» de las barras del vestuario y del
+   refuerzo, que seguía en la matriz de puntos, y el VS del mano a mano, a 29px
+   contra 32 del cartel del duelo. ¿Cómo se juega?, el repartidor y el panel del
+   1 vs 1 ya estaban en la letra del marcador. */
+:root .ba-n{font-family:var(--tit);font-weight:800;letter-spacing:0;font-size:24px}
+:root .sit.mam .stat .n{font-size:32px}
 </style>
 <script>
 /* ?clasico=1 apaga el estilo PANTALLA LED y deja el clásico (v280). */
@@ -12451,7 +12459,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 286;
+const VERSION = 287;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
