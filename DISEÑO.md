@@ -15511,3 +15511,27 @@ de la compu), 430, 440 y 768 de ancho: nada se corta, se sale ni se pisa.
 | reloj | 29px en puntos | 28px en Tektur, más legible |
 
 Solo en el estilo LED; `?clasico=1` sigue igual. Prueba general 47/47.
+
+## v284 · la pantalla de inicio: estadio nítido y el nombre más grande
+
+Se compararon cuatro encuadres (estadio arriba, la pantalla del estadio, foto de
+portada, cancha dibujada en LED), después tres variantes con el menú más junto y
+por último tres tamaños de nombre. Se eligió **1E**: el encuadre «estadio arriba»
+con el nombre dos escalones más grande.
+
+- **La foto.** Se veía borrosa porque es apaisada (1200×655) y se estiraba 2,25
+  veces para llenar una pantalla vertical; encima tenía gris y la grilla de
+  puntos. Ahora ocupa los dos tercios de arriba y se funde en negro en los
+  botones: entra el estadio entero, estirado 1,4 veces, sin gris ni puntos.
+- **El nombre**, en texto (`.mm-marca`) en vez del logo dibujado por CSS: DUELO
+  64 → 86px y FUTBOLERO 47 → 62px en el 17 Pro, 32px más abajo.
+- **ESTRATEGIA Y SUERTE** pasa de 9px gris al lado de los botones a 15px verde
+  debajo del nombre.
+- **DF**, 56px, como ícono de app en la esquina. En pantallas bajas el nombre
+  guarda al menos 76px arriba para no tocarlo.
+- Con el teléfono acostado el nombre se achica (40/29px) para no montarse sobre
+  CAMPEONATO.
+
+El clásico (`?clasico=1`) oculta `.mm-marca` y sigue con su logo de imagen.
+Medido en 320×568, 402×784, 440×956, 768×1024, 844×390, 932×430 y la columna de
+1280×800: nada se sale ni se pisa. Prueba general 47/47.

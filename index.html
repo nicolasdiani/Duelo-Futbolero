@@ -9983,6 +9983,10 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .card-reglas .tu-fi em{font-size:11.5px}
   .card-reglas .rg-botones .cta{min-height:46px}
 }
+
+/* El nombre en texto de la pantalla de inicio (v284) es del estilo LED: acá, en el
+   clásico, no se muestra y queda el logo de imagen de siempre. */
+.mm-marca{display:none}
 </style>
 <style id="estiloLed">
 /* ================= ESTILO «PANTALLA LED» (v281) =================
@@ -10321,18 +10325,46 @@ html.html-menu, html.html-menu body{overflow:hidden}
 :root .cta.alt{background:transparent;border:1px solid var(--line);color:var(--dim);box-shadow:none}
 
 /* ---- menú (el portal) ---- */
+/* v284 · opción 1E. La foto ya no se estira para llenar toda la pantalla: ocupa
+   los dos tercios de arriba y se funde en negro en los botones. Así entra el
+   estadio entero, estirado 1,4 veces en vez de 2,25, y se ve nítido; sin el gris
+   ni la grilla de puntos que la lavaban. El nombre va en texto (.mm-marca) y
+   más grande —DUELO 64 → 86px, FUTBOLERO 47 → 62px en el 17 Pro—, 32px más
+   abajo; ESTRATEGIA Y SUERTE en verde debajo, y el DF como ícono de app en la
+   esquina. En pantallas bajas el nombre guarda distancia del DF (max 76px). */
 :root .card-menu{background:#020604;border-color:var(--line)}
-:root .card-menu .mm-foto{filter:grayscale(.55) contrast(1.15) brightness(.55) sepia(.25) hue-rotate(70deg)}
-:root .card-menu .mm-velo{background:
-  linear-gradient(180deg, rgba(2,6,4,.1) 0%, rgba(2,6,4,.55) 45%, #020604 78%), var(--puntos)}
-:root .card-menu .mm-logo{opacity:0}
-:root .card-menu .mm-alto{position:relative}
-:root .card-menu .mm-alto::after{
-  content:'DUELO\A FUTBOLERO';white-space:pre;position:absolute;left:0;right:0;bottom:12%;
-  font-family:var(--led);font-weight:900;font-size:clamp(40px,12.5vw,58px);line-height:.9;letter-spacing:1px;text-align:center;
-  color:var(--gold);text-shadow:var(--brillo-led), 0 0 60px rgba(255,178,26,.25);
+:root .card-menu .mm-logo{display:none}
+:root .card-menu .mm-abajo .mm-lema{display:none}
+:root .card-menu .mm-foto{
+  top:0;height:66%;object-position:50% 50%;
+  filter:saturate(.9) contrast(1.12) brightness(.92);
+  -webkit-mask-image:linear-gradient(180deg,#000 72%,transparent);mask-image:linear-gradient(180deg,#000 72%,transparent);
 }
-:root .card-menu .mm-lema{font-family:var(--tit);color:var(--green);text-shadow:0 0 10px rgba(39,240,138,.5)}
+:root .card-menu .mm-velo{
+  background:linear-gradient(180deg, rgba(2,6,4,.9) 0%, rgba(2,6,4,.55) 22%, rgba(2,6,4,.05) 38%, rgba(2,6,4,0) 54%, rgba(2,6,4,.6) 64%, #020604 72%);
+}
+:root .card-menu .mm-alto{align-items:flex-start;position:relative;padding-top:max(calc(clamp(20px,5.5vh,46px) + 32px), 76px)}
+:root .mm-marca{display:flex;flex-direction:column;align-items:center;gap:clamp(10px,1.8vh,16px);width:100%}
+:root .mk-nom{display:flex;flex-direction:column;align-items:center;font-family:var(--led);font-weight:900;line-height:.88;color:var(--gold);
+  text-shadow:0 0 6px rgba(255,178,26,.6), 0 0 26px rgba(255,178,26,.3), 0 3px 12px rgba(0,0,0,.95)}
+:root .mk-nom span:first-child{font-size:clamp(56px,21.5vw,90px)}
+:root .mk-nom span:last-child{font-size:clamp(42px,15.4vw,64px)}
+:root .mk-lema{font-family:var(--tit);font-weight:800;font-size:clamp(12px,3.8vw,15.5px);letter-spacing:.42em;text-indent:.42em;color:var(--green);
+  text-shadow:0 0 10px rgba(39,240,138,.6), 0 2px 8px rgba(0,0,0,.95)}
+:root .mk-df{position:absolute;left:0;top:clamp(10px,1.8vh,16px);width:56px;height:56px;border-radius:14px;
+  display:grid;place-items:center;background:#000;border:1px solid var(--line);
+  font-family:var(--led);font-weight:900;font-size:25px;color:var(--gold);text-shadow:0 0 6px rgba(255,178,26,.6);
+  box-shadow:0 6px 16px rgba(0,0,0,.6)}
+/* Teléfono acostado: la pantalla mide ~390 de alto y el nombre del vertical se
+   montaba sobre CAMPEONATO. Acá va más chico y más arriba. */
+@media (orientation:landscape) and (max-height:500px){
+  :root .card-menu .mm-alto{padding-top:12px}
+  :root .mm-marca{gap:6px}
+  :root .mk-nom span:first-child{font-size:40px}
+  :root .mk-nom span:last-child{font-size:29px}
+  :root .mk-lema{font-size:11px}
+  :root .mk-df{width:40px;height:40px;border-radius:10px;font-size:18px;top:10px}
+}
 :root .mm-grande{background:var(--gold);color:#140c00;border:0;border-radius:4px;
   box-shadow:0 0 0 1px rgba(255,178,26,.6), 0 0 36px rgba(255,178,26,.35)}
 :root .mm-grande .mm-g-nm{font-family:var(--tit);font-weight:900;color:#140c00}
@@ -12362,7 +12394,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 283;
+const VERSION = 284;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -17918,6 +17950,11 @@ function showMenu(){
       '<div class="mm-alto">' +
         (logo ? '<img class="mm-logo" src="' + logo + '" alt="Duelo Futbolero">'
               : '<h1 class="mm-logo-txt">DUELO<br><em>FUTBOLERO</em></h1>') +
+        /* El nombre en texto del estilo LED (v284): DF, DUELO FUTBOLERO y el lema.
+           El clásico lo oculta y sigue con el logo de imagen. */
+        '<div class="mm-marca" aria-hidden="true"><span class="mk-df">DF</span>' +
+        '<span class="mk-nom"><span>DUELO</span><span>FUTBOLERO</span></span>' +
+        '<span class="mk-lema">ESTRATEGIA Y SUERTE</span></div>' +
       '</div>' +
       '<div class="mm-abajo">' +
         '<div class="mm-lema">ESTRATEGIA Y SUERTE</div>' +
