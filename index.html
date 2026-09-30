@@ -36,11 +36,14 @@
     url += (url.indexOf('?') >= 0 ? '&' : '?') + 'marco=1';
     var st = d.createElement('style');
     st.textContent =
-      'html,body{margin:0;height:100%;overflow:hidden;background:#00030c}' +
-      'body{background:radial-gradient(ellipse at 50% 40%,#061a4a 0%,#01081f 55%,#00030c 100%)}' +
+      (/[?&]clasico=1/.test(location.search)
+        ? 'html,body{margin:0;height:100%;overflow:hidden;background:#00030c}' +
+          'body{background:radial-gradient(ellipse at 50% 40%,#061a4a 0%,#01081f 55%,#00030c 100%)}'
+        : 'html,body{margin:0;height:100%;overflow:hidden;background:#020504}' +
+          'body{background:radial-gradient(circle,rgba(255,255,255,.06) 0 .9px,transparent 1.3px) 0 0/4px 4px,radial-gradient(ellipse at 50% 40%,#0d2a1d 0%,#04100a 55%,#020504 100%)}') +
       '#columna{position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);display:block;border:0;' +
         'height:100vh;height:100dvh;width:min(100vw,max(400px,min(560px,51.3vh)));' +
-        'box-shadow:0 0 0 1px rgba(147,174,222,.14),0 0 60px rgba(0,0,0,.7);background:#00081f}';
+        'box-shadow:0 0 0 1px rgba(147,174,222,.14),0 0 60px rgba(0,0,0,.7);background:#030806}';
     d.head.appendChild(st);
     var b = d.body;
     var f = d.createElement('iframe');
@@ -54,6 +57,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Archivo:wght@500;600;700&display=swap" rel="stylesheet">
+<!-- las del estilo PANTALLA LED (v281); ?clasico=1 las apaga -->
+<link id="fuentesLed" href="https://fonts.googleapis.com/css2?family=Doto:wght@700;900&family=Tektur:wdth,wght@75..100,500..900&family=Geist:wght@400..700&display=swap" rel="stylesheet">
 <style>
 :root{
   /* Azul de competición europea, tomado del marcador de referencia (#001648):
@@ -9972,6 +9977,426 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .card-reglas .rg-botones .cta{min-height:46px}
 }
 </style>
+<style id="estiloLed">
+/* ================= ESTILO «PANTALLA LED» (v281) =================
+   El estadio de noche: los carteles LED del perímetro, el marcador y la
+   gráfica de la transmisión. Negro verdoso de césped a oscuras, ámbar LED como
+   acento, verde y rojo de semáforo. Números y títulos en matriz de puntos
+   (Doto), rótulos en Tektur angosta, texto en Geist. Todo CSS: una grilla de
+   puntos, halos y un barrido de luz; ni una imagen nueva.
+
+   **Está entero en este bloque y no toca nada de arriba**: pisa los colores,
+   las fuentes, los bordes y los efectos del estilo clásico (azul y dorado,
+   Saira Condensed + Archivo), que sigue intacto en el <style> principal.
+   · Para jugar el clásico sin tocar el código: ?clasico=1 en la dirección.
+   · Para sacarlo del todo: borrar este <style id="estiloLed">, el <link
+     id="fuentesLed"> y el script de ?clasico=1 que está abajo.
+   · En git, el clásico quedó marcado con el tag estilo-antes-de-led (v280).
+   Se compararon tres direcciones —Pantalla LED, Trapo y Figuritas— sobre las
+   siete pantallas reales; ver DISEÑO.md. */
+/* ---- RECOLOR AUTOMÁTICO ----
+   El clásico tiene su azul marino escrito a mano en unas 130 reglas (fondos,
+   bordes, sombras y los velos sobre las fotos). En vez de perseguirlas una por
+   una, estas son las mismas reglas con ese azul pasado al verde-negro del LED
+   (mismo brillo y transparencia, tono 152). Los azules que significan algo
+   —DEFENSA, el filo, el celeste del gol— quedan como están. Va primero para que
+   lo que sigue, hecho a mano, mande donde coincide. Se regenera con
+   gen-recolor.js si cambia el CSS clásico. */
+:root .cell{--canto:inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -1px 0 rgba(0,0,0,.5),
+    0 1px 0 rgba(116,166,232,.34),
+    0 2px 0 rgba(82,125,105,.32),
+    0 3px 0 rgba(48,79,65,.3),
+    0 4px 0 rgba(23,41,33,.3),
+    0 10px 16px -4px rgba(0,0,0,.62);background:linear-gradient(180deg,rgba(255,255,255,.07) 0%,rgba(255,255,255,0) 34%),
+    linear-gradient(160deg,rgba(18,48,34,.985) 0%,rgba(7,19,14,.99) 100%)}
+:root .marquesina{background:linear-gradient(180deg,rgba(9,23,17,.97),rgba(6,15,11,.98));box-shadow:inset 0 3px 0 var(--gold),
+    inset 0 7px 11px -2px rgba(0,0,0,.62),
+    inset 0 -1px 0 rgba(173,196,185,.1)}
+:root .panel{background:linear-gradient(180deg,rgba(14,36,25,.93),rgba(7,19,14,.95))}
+:root .rec{border-bottom:1px dashed rgba(39,61,51,.7)}
+:root .gol-flash{background:rgba(6,11,8,.72)}
+:root .play-flash{background:rgba(6,11,8,.72)}
+:root .sit-flash{background:rgba(6,11,8,.9)}
+:root .play .p-esc{background:rgba(34,58,47,.5)}
+:root .play .p-vnum{background:rgba(34,58,47,.5)}
+:root .mam-art::after{background:linear-gradient(180deg,transparent,rgba(7,19,14,.92))}
+:root .palo:hover:not(:disabled){background:#21322a}
+:root .palo.elegido{background:#21322a}
+:root .pulse-delta{text-shadow:0 2px 9px rgba(4,10,7,.92),0 0 3px rgba(4,10,7,.9)}
+:root .row-pick{background:linear-gradient(180deg,rgba(15,39,28,.92),rgba(7,19,14,.95))}
+:root .row-pick:disabled{background:rgba(13,23,18,.75)}
+:root .gol-banner{background:linear-gradient(180deg,rgba(19,33,26,.92),rgba(13,23,18,.92))}
+:root .col-pick{background:linear-gradient(180deg,rgba(15,39,28,.92),rgba(7,19,14,.95))}
+:root .col-pick .cc{border-left:1px solid rgba(173,196,185,.22)}
+:root .cell{background:linear-gradient(160deg,rgba(17,44,32,.95) 0%,rgba(7,19,14,.96) 100%)}
+:root .cell .c-out .efe{border-top:1px dashed rgba(39,61,51,.8)}
+:root .cell.empty{background:rgba(8,13,11,.35);border-color:#1f3329}
+:root .cell.lock{background:repeating-linear-gradient(135deg,#0f1914,#0f1914 7px,#13211a 7px,#13211a 14px)}
+@media (max-width:440px){:root .cell{--canto:inset 0 1px 0 rgba(255,255,255,.14),
+      inset 0 -1px 0 rgba(0,0,0,.45),
+      0 1px 0 rgba(116,166,232,.32),
+      0 2px 0 rgba(69,110,91,.3),
+      0 6px 10px -3px rgba(0,0,0,.6)}}
+:root .overlay{background:rgba(6,11,8,.94)}
+:root .overlay.hundido{background:rgba(6,11,8,.99)}
+:root .pop-velo.hundido{background:rgba(6,11,8,.96)}
+:root .cta{background:linear-gradient(160deg, rgba(38,32,4,.92), rgba(9,25,18,.96))}
+@media (hover:hover){:root .cta:hover{background:linear-gradient(160deg, rgba(58,48,6,.95), rgba(12,32,23,.96))}}
+:root .cta.alt{background:linear-gradient(160deg, rgba(17,44,32,.95), rgba(7,19,14,.96))}
+:root .cta.n-linea,:root .if-btn.n-linea{background:rgba(12,32,23,.55)}
+:root .cta.n-apagado{background:rgba(7,18,13,.5)}
+:root .stat{border-bottom:1px dashed rgba(39,61,51,.7)}
+:root .item:hover:not(:disabled){background:#1c2c25}
+:root .item{background:rgba(10,22,16,.9);border-color:rgba(173,196,185,.2)}
+:root .item .iq{box-shadow:0 0 0 1.5px rgba(7,19,14,.92)}
+:root .log p{border-bottom:1px solid rgba(39,61,51,.45)}
+:root .board-hint{background:rgba(13,23,18,.9)}
+:root .pick-stat.def:hover{background:#131b17}
+:root .franja{background:rgba(9,25,18,.55)}
+:root .fr-it + .fr-it{border-left:1px solid rgba(37,72,56,.8)}
+:root .fila{background:rgba(15,39,28,.72)}
+:root .fila.off{background:rgba(7,18,13,.6)}
+:root .f-tengo.cero{border-color:rgba(173,196,185,.2)}
+:root .card-mercado .franja .fr-it:first-child{border-bottom:1px solid rgba(39,61,51,.7)}
+:root .mochila{background:rgba(7,18,13,.45)}
+:root .mochila .mo-it{border:1px solid rgba(173,196,185,.26)}
+@media (min-width:821px) and (max-height:820px){:root .card-mercado .franja .fr-it + .fr-it{border-left:1px solid rgba(37,72,56,.8)}}
+:root .rf-barra{background:rgba(15,39,28,.72)}
+:root .ba-foto::after{background:linear-gradient(180deg, rgba(15,39,28,.08) 0%, rgba(15,39,28,.82) 78%, rgba(15,39,28,.97) 100%)}
+:root .ba-track i{background:rgba(37,72,56,.9)}
+:root .cupo{background:rgba(7,19,14,.7)}
+:root .hist-fila{border-bottom:1px solid rgba(39,61,51,.5)}
+:root .gf,:root .sit,:root .aviso,:root .play,:root .card{background:linear-gradient(160deg, rgba(17,44,32,.96) 0%, rgba(7,19,14,.97) 100%)}
+:root .play .p-art::after{background:linear-gradient(180deg, transparent, rgba(7,19,14,.85))}
+:root .item-ficha:not(.ficha-gol){background:linear-gradient(180deg, rgba(12,32,23,.99), rgba(7,19,14,.99))}
+:root .item-ficha:not(.ficha-gol) .if-btn{background:rgba(10,22,16,.8);border-color:rgba(173,196,185,.28)}
+:root .item-ficha:not(.ficha-gol) .if-btn.alt{background:rgba(10,22,16,.8);border-color:rgba(173,196,185,.28)}
+:root .item-ficha:not(.ficha-gol) .if-btn.n-linea{background:rgba(10,22,16,.8)}
+:root .if-ico{background:rgba(6,15,11,.85)}
+:root .cell .c-out .mj-lb{background:rgba(34,58,47,.5)}
+:root .cell .c-esc{background:rgba(34,58,47,.5)}
+:root .ft{background:rgba(8,13,11,.92)}
+:root .mam-art::after{background:linear-gradient(180deg,transparent,rgba(7,19,14,.93))}
+:root .sit.mam .p-vnum{background:rgba(34,58,47,.5)}
+:root .sit .palo{background:linear-gradient(160deg,rgba(17,44,32,.95),rgba(7,19,14,.96))}
+:root .sit.moneda .palo{background:rgba(12,32,23,.55)}
+:root .gf.con-art .gf-txt{background:linear-gradient(180deg,transparent,rgba(7,19,14,.55) 35%,rgba(7,19,14,.94))}
+:root .menu-op{background:linear-gradient(160deg, rgba(17,44,32,.95), rgba(7,19,14,.96))}
+:root .menu-op.principal{background:linear-gradient(160deg, rgba(38,32,4,.9), rgba(9,25,18,.96))}
+:root .card-club .club-bs input{background:rgba(7,19,14,.72)}
+:root .club-tira::-webkit-scrollbar-track{background:rgba(7,19,14,.5)}
+:root .tr-eq{background:rgba(7,19,14,.45)}
+:root .opt .pend{border:1px solid rgba(39,61,51,.8);background:rgba(7,18,13,.5)}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelEquipo{background:linear-gradient(180deg,rgba(15,39,28,.92),rgba(7,19,14,.95))}:root #panelPlantel{background:linear-gradient(180deg,rgba(15,39,28,.92),rgba(7,19,14,.95))}:root #m-aguante{border-right:1px solid rgba(173,196,185,.18)}:root #panelEquipo .med-art{background:rgba(173,196,185,.16)}:root .item-hueco{border:1px dashed rgba(173,196,185,.22)}:root #panelPlantel .stat{background:linear-gradient(160deg,rgba(17,44,32,.95),rgba(7,19,14,.96))}:root .panel-log{background:linear-gradient(180deg,rgba(14,36,25,.98),rgba(7,19,14,.99))}:root .log-fab{background:linear-gradient(160deg,rgba(21,54,39,.97),rgba(8,22,16,.98))}}
+@media (min-width:1025px), (min-width:821px) and (orientation:landscape){:root #panelPlantel .stat{background:linear-gradient(160deg,rgba(17,44,32,.95),rgba(7,19,14,.96))}}
+:root .aviso .a-foto::after{background:linear-gradient(180deg,transparent,rgba(7,19,14,.5) 38%,rgba(7,19,14,.97))}
+:root .fg-art::after{background:linear-gradient(180deg,rgba(7,19,14,0) 34%,rgba(7,19,14,.9) 78%,rgba(7,19,14,.96))}
+:root .sit.llena .sit-botones .cta.alt{border-color:rgba(173,196,185,.42)}
+:root .sw-b{background:rgba(9,25,18,.7)}
+:root .pizarra{background:rgba(9,25,18,.6)}
+:root .pz-punto{border:1.5px solid var(--line2, #305443);background:rgba(7,19,14,.7)}
+:root .mm-velo{background:linear-gradient(180deg,
+    rgba(7,19,14,.82) 0%, rgba(7,19,14,.42) 26%,
+    rgba(7,19,14,.72) 52%, rgba(7,19,14,.97) 78%, #040907 100%)}
+:root .mm-logo-txt{text-shadow:0 4px 18px rgba(4,10,7,.98)}
+:root .mm-chip{background:rgba(8,21,15,.58)}
+:root .dc-op{background:rgba(7,19,14,.6)}
+:root .dc-art::after{background:linear-gradient(180deg,transparent,rgba(7,19,14,.95))}
+:root .dc-tira{background:rgba(7,19,14,.5)}
+@media (max-width:420px){:root .dc-ops:not(.sola) .dc-art::after{background:linear-gradient(90deg,transparent,rgba(7,19,14,.9))}}
+@media (max-height:430px){:root .dc-ops .dc-art::after{background:linear-gradient(90deg,transparent,rgba(7,19,14,.9))}}
+:root .regla{border-top:1px solid rgba(37,72,56,.55)}
+:root .rg-vis{background:rgba(7,19,14,.55);box-shadow:inset 0 0 0 1px rgba(37,72,56,.85)}
+:root .tu-c{background:rgba(7,19,14,.75)}
+:root .tu-art{background:rgba(12,32,23,.9) center/cover no-repeat}
+:root .gf.gol-foto .gfo::after{background:radial-gradient(120% 90% at 50% 45%, rgba(7,19,14,.2), rgba(7,19,14,.8))}
+:root .gf.gol-foto .t{text-shadow:0 4px 26px rgba(4,10,7,.95)}
+:root .card-remate{border:1px solid rgba(37,72,56,.95);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),
+    0 2px 0 rgba(82,125,105,.3), 0 4px 0 rgba(23,41,33,.36),
+    0 24px 44px -12px rgba(0,0,0,.85)}
+:root .rm-banner{background:linear-gradient(180deg, rgba(20,52,37,.92), rgba(9,23,17,.72))}
+:root .rm-cinta{background:rgba(6,15,11,.6)}
+:root .rm-chapas .chapa{background:rgba(21,45,34,.55)}
+:root .card-remate .pd-caja,:root .card-remate .rm-chapas .chapa,:root .card-remate .hist,:root .card-remate .pr-franja,:root .card-remate .marcador{background:rgba(6,15,11,.62);box-shadow:inset 0 2px 6px rgba(0,0,0,.6), inset 0 -1px 0 rgba(173,196,185,.09)}
+:root .pd-caja{background:rgba(21,45,34,.5)}
+:root .pd-pie{border-top:1px solid rgba(173,196,185,.2)}
+:root .pe-t{border-bottom:3px solid rgba(173,196,185,.18)}
+:root .pr-franja{background:rgba(21,45,34,.55)}
+:root .pn-chapas .chapa{background:rgba(21,45,34,.55)}
+:root .pn-tira b{background:rgba(21,45,34,.5)}
+:root .tu-fi .tu-banda::after{background:linear-gradient(180deg,rgba(7,19,14,0),rgba(7,19,14,.88))}
+:root .tu-fi{background:rgba(21,45,34,.45)}
+:root .cell{--velo:linear-gradient(180deg,
+    rgba(7,19,14,.92) 0%, rgba(7,19,14,.34) 26%, rgba(7,19,14,.12) 46%,
+    rgba(7,19,14,.7) 68%, rgba(7,19,14,.96) 88%, rgba(7,19,14,.99) 100%)}
+:root .cell.arriba{--velo:linear-gradient(180deg,
+    rgba(7,19,14,.58) 0%, rgba(7,19,14,.16) 24%, rgba(7,19,14,.1) 46%,
+    rgba(7,19,14,.7) 68%, rgba(7,19,14,.96) 88%, rgba(7,19,14,.99) 100%)}
+:root .cell .c-out{text-shadow:0 1px 6px #07130e, 0 0 3px #07130e}
+:root .cell .c-nm{text-shadow:0 1px 2px rgba(4,10,7,.95), 0 0 6px rgba(4,10,7,.75)}
+:root .cell .c-val.r,:root .cell .c-val.b{background:rgba(7,19,14,.72)}
+:root .play.con-foto{--velo:linear-gradient(180deg,
+    rgba(7,19,14,.92) 0%, rgba(7,19,14,.34) 26%, rgba(7,19,14,.12) 46%,
+    rgba(7,19,14,.7) 68%, rgba(7,19,14,.96) 88%, rgba(7,19,14,.99) 100%)}
+:root .play.con-foto.arriba{--velo:linear-gradient(180deg,
+    rgba(7,19,14,.58) 0%, rgba(7,19,14,.16) 24%, rgba(7,19,14,.1) 46%,
+    rgba(7,19,14,.7) 68%, rgba(7,19,14,.96) 88%, rgba(7,19,14,.99) 100%)}
+:root .play.con-foto .p-cinta{background:linear-gradient(180deg, rgba(4,10,7,.82), rgba(4,10,7,0))}
+:root .play.con-foto .p-nm{text-shadow:0 2px 5px rgba(4,10,7,.95), 0 0 16px rgba(4,10,7,.85)}
+:root .play.con-foto .p-val,:root .play.con-foto .p-out,:root .play.con-foto .p-go{text-shadow:0 1px 4px rgba(4,10,7,.9)}
+:root .play.con-foto .p-out{background:rgba(4,10,7,.42)}
+:root .card-pie{background:rgba(7,19,14,.97);box-shadow:0 26px 0 rgba(7,19,14,.97)}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelEquipo .med-art{background:rgba(173,196,185,.14)}:root .item .ii{background:rgba(7,19,14,.7)}:root .item:not(.apuntando):has(.ef-var){background:linear-gradient(135deg,rgba(79,163,255,.3),rgba(14,29,22,.9) 70%)}:root #panelPlantel .stat.atk{background:repeating-linear-gradient(-45deg,rgba(255,59,82,.14) 0 5px,transparent 5px 10px),
+               linear-gradient(160deg,rgba(60,8,20,.95),rgba(7,19,14,.96))}:root #panelPlantel .stat.def{background:repeating-linear-gradient(-45deg,rgba(79,163,255,.14) 0 5px,transparent 5px 10px),
+               linear-gradient(160deg,rgba(18,38,29,.95),rgba(7,19,14,.96))}:root #panelPlantel .stat .n{background:rgba(7,19,14,.75)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root .col-pick{background:linear-gradient(180deg,rgba(173,196,185,.4) 0 2px,transparent 2px),
+               linear-gradient(180deg,rgba(15,39,28,.92),rgba(7,19,14,.95))}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root .row-pick:not(:disabled){background:linear-gradient(270deg,rgba(255,255,255,.55) 0 2px,transparent 2px),
+               linear-gradient(180deg,rgba(15,39,28,.92),rgba(7,19,14,.95))}:root .row-pick:disabled{background:linear-gradient(270deg,rgba(173,196,185,.3) 0 2px,transparent 2px),
+               linear-gradient(rgba(13,23,18,.75),rgba(13,23,18,.75))}}
+:root .aviso.dc .dc-op{background:#07130e}
+:root .aviso.dc .dc-op .dc-art::after{background:linear-gradient(180deg,rgba(7,19,14,.9) 0%,rgba(7,19,14,.2) 32%,rgba(7,19,14,.25) 55%,rgba(7,19,14,.95) 82%)}
+:root .dc-nm{text-shadow:0 1px 4px #07130e}
+:root .dc-res{text-shadow:0 1px 6px #07130e}
+:root .item-ficha:not(.ficha-gol){background:linear-gradient(180deg,rgba(37,65,52,.74),rgba(18,35,27,.8))}
+@media (max-width:440px) and (orientation:portrait){:root .card-reglas .reglas .tu-fi.sola .tu-banda::after{background:linear-gradient(90deg,rgba(7,19,14,.55) 0%,rgba(7,19,14,.88) 45%,rgba(7,19,14,.95) 100%)}}
+/* ---- fin del recolor automático ---- */
+
+:root{
+  --black:#030806; --panel:#08130f; --panel2:#0b1813; --line:#1b3a2d;
+  --white:#effff6; --dim:#8db5a2; --dim2:#5a8170;
+  --azul:#0f3a2a; --azul2:#1b6a4a;
+  --gold:#ffb21a; --green:#27f08a; --red:#ff4b3a; --blue:#38d2ff; --naranja:#ff7a1a; --coin:#27f08a;
+  --filo:#24533f; --cesped:#0f3a25; --cesped2:#0c301f;
+  --fi-luz:#ffb21a; --fi-claro:#f4fff8; --fi-suave:#9fc4b2;
+  --fi-fondo-a:rgba(10,24,18,.985); --fi-fondo-b:rgba(4,12,9,.99);
+  --fi-borde:rgba(255,178,26,.5); --fi-borde-suave:rgba(255,178,26,.25); --fi-halo:rgba(255,178,26,.22);
+  --fi-btn-a:rgba(20,40,30,.95); --fi-btn-b:rgba(8,18,14,.96); --fi-mini:rgba(10,24,18,.75);
+  --tit:'Tektur','Saira Condensed',system-ui,sans-serif;
+  --txt:'Geist','Archivo',system-ui,sans-serif;
+  --led:'Doto','Tektur',ui-monospace,monospace;
+  --puntos:radial-gradient(circle at 50% 50%, rgba(255,255,255,.07) 0 .9px, transparent 1.3px) 0 0/4px 4px;
+  --brillo-led:0 0 6px rgba(255,178,26,.55), 0 0 22px rgba(255,178,26,.25);
+}
+:root body{
+  font-stretch:75%;   /* Tektur al 75% mide lo mismo que Saira Condensed: las medidas del clásico siguen valiendo */
+  background:
+    radial-gradient(70% 40% at 0% 0%, rgba(210,255,230,.10), transparent 70%),
+    radial-gradient(70% 40% at 100% 0%, rgba(210,255,230,.10), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(39,240,138,.035) 0 48px, rgba(39,240,138,0) 48px 96px),
+    linear-gradient(180deg, #06110c 0%, #030806 60%, #020504 100%);
+  background-attachment:fixed;
+}
+:root body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:var(--puntos);opacity:.55;mix-blend-mode:screen}
+
+/* ---- tarjetas ---- */
+:root .overlay{background:rgba(2,6,4,.9)}
+:root .card{
+  background:linear-gradient(180deg, rgba(14,30,22,.97), rgba(5,12,9,.98));
+  border:1px solid var(--line);border-top:1px solid var(--line);border-radius:6px;
+  box-shadow:0 0 0 1px rgba(0,0,0,.6), 0 30px 80px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.05);
+  position:relative;
+}
+:root .card::before{content:'';position:absolute;left:14px;right:14px;top:-1px;height:2px;border-radius:2px;
+  background:linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold) 80%, transparent);box-shadow:var(--brillo-led);pointer-events:none}
+:root .card h1{font-family:var(--led);font-weight:900;letter-spacing:1px;color:var(--gold);text-shadow:var(--brillo-led)}
+:root .card h1 em{color:var(--white);font-style:normal;text-shadow:0 0 10px rgba(239,255,246,.45)}
+:root .tag{font-family:var(--tit);font-weight:600;color:var(--dim)}
+:root .tag::before{content:'● ';color:var(--red);animation:ledRec 1.6s steps(1) infinite}
+@keyframes ledRec{50%{opacity:.2}}
+
+/* ---- botones ---- */
+:root .cta{
+  border-radius:4px;font-family:var(--tit);font-weight:800;
+  position:relative;overflow:hidden;isolation:isolate;
+}
+:root .cta:not(.alt), :root .cta.n-verde, :root .cta.n-oro, :root .cta.jugar{
+  background:var(--gold);color:#140c00;border:0;
+  box-shadow:0 0 0 1px rgba(255,178,26,.6), 0 0 28px rgba(255,178,26,.35), inset 0 -3px 0 rgba(0,0,0,.25);
+  text-shadow:none;
+}
+:root .cta:not(.alt)::after{content:'';position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(100deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%) -150% 0/60% 100% no-repeat;
+  animation:barrido 3.2s ease-in-out infinite}
+@keyframes barrido{0%,55%{background-position:-150% 0}100%{background-position:250% 0}}
+:root .cta:not(.alt) svg, :root .cta:not(.alt) .ic{color:#140c00;fill:currentColor}
+:root .cta.alt{background:transparent;border:1px solid var(--line);color:var(--dim);box-shadow:none}
+
+/* ---- menú (el portal) ---- */
+:root .card-menu{background:#020604;border-color:var(--line)}
+:root .card-menu .mm-foto{filter:grayscale(.55) contrast(1.15) brightness(.55) sepia(.25) hue-rotate(70deg)}
+:root .card-menu .mm-velo{background:
+  linear-gradient(180deg, rgba(2,6,4,.1) 0%, rgba(2,6,4,.55) 45%, #020604 78%), var(--puntos)}
+:root .card-menu .mm-logo{opacity:0}
+:root .card-menu .mm-alto{position:relative}
+:root .card-menu .mm-alto::after{
+  content:'DUELO\A FUTBOLERO';white-space:pre;position:absolute;left:0;right:0;bottom:12%;
+  font-family:var(--led);font-weight:900;font-size:clamp(40px,12.5vw,58px);line-height:.9;letter-spacing:1px;text-align:center;
+  color:var(--gold);text-shadow:var(--brillo-led), 0 0 60px rgba(255,178,26,.25);
+}
+:root .card-menu .mm-lema{font-family:var(--tit);color:var(--green);text-shadow:0 0 10px rgba(39,240,138,.5)}
+:root .mm-grande{background:var(--gold);color:#140c00;border:0;border-radius:4px;
+  box-shadow:0 0 0 1px rgba(255,178,26,.6), 0 0 36px rgba(255,178,26,.35)}
+:root .mm-grande .mm-g-nm{font-family:var(--tit);font-weight:900;color:#140c00}
+:root .mm-grande .mm-g-s{color:rgba(20,12,0,.75);font-family:var(--txt)}
+:root .mm-grande svg{color:#140c00}
+:root .mm-chip{background:rgba(8,19,15,.9);border:1px solid var(--line);border-radius:4px;color:var(--white);position:relative}
+:root .mm-chip::before{content:'';position:absolute;inset:0;background:var(--puntos);opacity:.6;pointer-events:none;border-radius:inherit}
+:root .mm-chip .mm-c-nm{font-family:var(--tit);font-weight:700;}
+:root .mm-chip svg{color:var(--gold)}
+:root .beta{background:var(--red);color:#fff;border-radius:2px;font-family:var(--tit)}
+:root .mm-enl b{font-family:var(--tit);color:var(--dim);}
+:root .ver{font-family:var(--led);color:var(--dim2)}
+
+/* ---- tu club ---- */
+:root .club-modo{font-family:var(--led);font-weight:900;color:var(--gold);text-shadow:var(--brillo-led)}
+:root .club-h1{font-family:var(--tit)}
+:root .club-eleg b{font-family:var(--led);font-weight:900;letter-spacing:1px;color:var(--white);text-shadow:0 0 12px rgba(239,255,246,.4)}
+:root .club-peana{background:radial-gradient(50% 50% at 50% 50%, rgba(255,178,26,.45), transparent 70%)}
+:root .club-bs input, :root .club-fila input{background:#020604;border:1px solid var(--line);border-radius:4px;color:var(--white);font-family:var(--txt)}
+:root .club-azar{border-radius:4px;border-color:var(--gold);background:transparent;color:var(--gold);font-family:var(--tit)}
+:root .tr-eq{background:rgba(8,19,15,.9);border:1px solid var(--line);border-radius:4px}
+:root .tr-eq.sel{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold), 0 0 18px rgba(255,178,26,.35);background:rgba(40,28,4,.6)}
+:root .tr-nm{font-family:var(--tit)}
+:root .tr-eq.sel .tr-nm{color:var(--gold)}
+
+/* ---- ¿cómo se juega? ---- */
+:root .tu-fi{background:rgba(6,15,11,.9);border:1px solid var(--line);border-radius:4px}
+:root .tu-fi > b{font-family:var(--tit);color:var(--gold);}
+:root .tu-fi > span:not(.tu-banda){color:var(--dim)}
+:root .tu-fi > span b{color:var(--white)}
+:root .tu-banda{filter:saturate(.6) hue-rotate(40deg) brightness(.9)}
+
+/* ---- vestuario ---- */
+:root .rf-prox{background:rgba(3,9,6,.85);border-block:1px solid var(--line)}
+:root .px-rot{font-family:var(--tit);color:var(--green);}
+:root .px-nm{font-family:var(--tit);font-weight:900;}
+:root .px-chapa{background:transparent;color:var(--gold);border:1px solid var(--gold);border-radius:2px;font-family:var(--led);font-style:normal}
+:root .pf-chapa{border-radius:2px;font-family:var(--tit)}
+:root .px-eleg{font-family:var(--tit);color:var(--gold)}
+:root .rf-barra{border-radius:4px;background:rgba(6,15,11,.95);border:1px solid var(--line)}
+:root .rf-barra .ba-foto{filter:saturate(.5) brightness(.85)}
+:root .ba-n{font-family:var(--led);font-weight:900}
+:root .ba-track i{border-radius:1px}
+:root .rf-ojo{color:var(--dim)}
+
+/* ---- la mesa ---- */
+:root .marquesina{
+  background:#010302;border:1px solid var(--line);border-radius:4px;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.8), 0 0 30px rgba(0,0,0,.5);position:relative;
+}
+:root .marquesina::after{content:'';position:absolute;inset:0;background:var(--puntos);opacity:.9;pointer-events:none;border-radius:inherit}
+:root .mq-ronda{font-family:var(--led);font-weight:900;color:var(--green);text-shadow:0 0 8px rgba(39,240,138,.6)}
+:root .mq-n{font-family:var(--led);font-weight:900;color:var(--gold);text-shadow:var(--brillo-led)}
+:root .mq-sep{color:var(--dim2)}
+:root .mq-nom{font-family:var(--tit);}
+:root .cro-lb, :root .cro-min{font-family:var(--led)}
+:root .cell{
+  border-radius:3px;border-color:var(--line);
+  background:linear-gradient(180deg, rgba(12,26,20,.96), rgba(3,9,6,.98));
+  --canto:0 0 0 1px rgba(0,0,0,.6), 0 8px 14px -6px rgba(0,0,0,.8);
+}
+:root .cell::after{content:'';position:absolute;inset:0;background:var(--puntos);opacity:.35;pointer-events:none}
+:root .c-nm{font-family:var(--tit);font-weight:800;}
+:root .cell.tono-good{border-color:rgba(39,240,138,.55)}
+:root .cell.tono-bad{border-color:rgba(255,75,58,.5)}
+:root .cell.tono-gol{border-color:var(--blue);box-shadow:0 0 0 1px rgba(56,210,255,.5), 0 0 16px rgba(56,210,255,.3)}
+:root .cell.tono-risk{border-color:rgba(255,122,26,.6)}
+:root .c-val{font-family:var(--led);font-weight:900}
+:root .row-pick, :root .col-pick{background:#020604;border-color:var(--line);border-radius:3px}
+:root .pk, :root .col-pick .ck{font-family:var(--tit)}
+:root .pc, :root .col-pick .cc{font-family:var(--led);font-weight:900;color:var(--gold)}
+:root .gol-banner{background:#020604;border:1px solid var(--line);border-radius:4px}
+:root .gb-t{font-family:var(--tit);}
+:root .item{border-radius:3px;background:rgba(6,15,11,.95);border-color:var(--line)}
+:root .inm{font-family:var(--tit);}
+:root .rec, :root .stat{border-color:var(--line)}
+:root .stat .n{font-family:var(--led);font-weight:900}
+:root .board-hint{font-family:var(--txt)}
+
+/* ---- penal ---- */
+:root .sit{background:linear-gradient(180deg, #0b1812, #030806);border:1px solid var(--line);border-radius:6px;box-shadow:0 0 0 1px #000, 0 0 50px rgba(255,178,26,.18)}
+:root .sit .t{font-family:var(--led);font-weight:900;color:var(--gold);text-shadow:var(--brillo-led)}
+:root .sit-tag{font-family:var(--tit);color:var(--green)}
+
+/* ---- campeón ---- */
+:root .final-tit.campeon{font-family:var(--led);font-weight:900;color:var(--gold);text-shadow:var(--brillo-led), 0 0 70px rgba(255,178,26,.4)}
+:root .rm-cinta{background:rgba(255,178,26,.08);border-block:1px solid rgba(255,178,26,.35)}
+:root .rm-cinta b{font-family:var(--led);color:var(--gold)}
+:root .marcador, :root .hist, :root .chapa{background:#020604;border:1px solid var(--line);border-radius:4px}
+:root .m-res{font-family:var(--led);font-weight:900;color:var(--white)}
+:root .hr{font-family:var(--led);font-weight:900;color:var(--green)}
+:root .hist-lb{font-family:var(--tit);}
+
+/* ---- pie ---- */
+:root .ft{font-family:var(--tit);color:var(--dim2);background:transparent}
+
+/* ---- ajustes ---- */
+:root .cta.n-linea, :root .cta.chica{background:transparent;color:var(--gold);border:1px solid rgba(255,178,26,.5);box-shadow:none}
+:root .cta.n-linea::after, :root .cta.chica::after{display:none}
+:root .rg-botones, :root .card-pie, :root .final-pie{background:linear-gradient(180deg, rgba(3,9,6,.6), #030806);border-color:var(--line)}
+:root .rm-banner{background:linear-gradient(180deg, #0a1a12, #030806);border-color:var(--line)}
+:root .chapa{background:#020604}
+:root .ba-track i.off, :root .ba-track i:not(.on):not(.nuevo){background:#12261c}
+:root .pf-chapa{background:transparent;border:1px solid currentColor}
+:root .rec{background:transparent}
+:root .panel{background:#020604;border-color:var(--line);border-radius:4px}
+:root .rm-chapas .chapa{background:#020604;border:1px solid var(--line)}
+:root #panelEquipo, :root #panelPlantel{background:#020604;border-color:var(--line);border-radius:4px}
+:root .board-hint{background:#020604;border-color:var(--line)}
+
+/* Los nombres de carta: Tektur al 75% es apenas más ancha que Saira Condensed y
+   en las cartas con número se partían DELANTERO, PUBLICIDAD y CONTRAATAQUE.
+   Medio punto menos de espacio entre letras y entran como en el clásico. */
+:root .cell .c-nm{letter-spacing:-.5px}
+
+/* Lo que el clásico ponía en un renglón y el LED partía en dos: el nombre del
+   rival en el marcador final (Geist es más ancha que Archivo: va en Tektur, como
+   los otros rótulos), JUGAR OTRO CAMPEONATO y el título de las fichas en puntos. */
+:root .m-eq{font-family:var(--tit);font-weight:700}
+:root .cta.jugar{letter-spacing:.5px}
+/* En 320 y 375 SUPLENTES se cortaba y LA POSIBILIDAD DE GOL bajaba de renglón.
+   El clásico les cambia el espaciado en cada ancho con reglas muy específicas;
+   acá se fija uno solo, un poco más cerrado, para todos los anchos. */
+:root .inm{letter-spacing:-.3px !important}
+:root .gb-t{letter-spacing:.5px !important}
+:root .sit .t{letter-spacing:-1px}
+:root .sit.sorteo .t{letter-spacing:-2px}   /* POSIBILIDAD DE GOL, en un renglón como en el clásico */
+
+/* Hasta 400 de ancho (SE, 360, 390, 393): POSIBILIDAD DE GOL y PATEAR PENAL
+   DEFINITORIO bajaban de renglón. Un poco más chicos y cerrados, entran como en
+   el clásico. */
+@media (max-width:400px){
+  :root .sit.sorteo .t{font-size:26px}
+  :root .overlay .cta, :root .sit .cta, :root .aviso .cta{letter-spacing:.5px}
+}
+
+/* Tablet parada (iPad): los mismos dos rótulos. La matriz de puntos es mucho
+   más ancha que Saira: a 52px no entraba POSIBILIDAD DE GOL; a 36px sí. */
+@media (min-width:600px) and (max-width:1024px) and (orientation:portrait){
+  :root .sit.sorteo .t{font-size:36px}
+  :root .overlay .cta, :root .sit .cta, :root .aviso .cta{letter-spacing:1.5px}
+}
+
+/* Teléfono acostado: los nombres de club largos (INDEPENDIENTE), LA POSIBILIDAD
+   DE GOL, el título de la ficha y PATEAR PENAL DEFINITORIO se cortaban o bajaban
+   de renglón. (MINI JUEGO en las cartas ya se cortaba igual en el clásico.) */
+@media (orientation:landscape) and (max-height:500px){
+  :root .tr-nm{letter-spacing:-.8px}
+  :root .gb-t{letter-spacing:0 !important}
+  :root .sit.sorteo .t{font-size:34px}
+  :root .overlay .cta, :root .sit .cta, :root .aviso .cta{letter-spacing:1px}
+}
+</style>
+<script>
+/* ?clasico=1 apaga el estilo PANTALLA LED y deja el clásico (v280). */
+if(/[?&]clasico=1/.test(location.search)){
+  document.getElementById('estiloLed').media = 'not all';
+  document.getElementById('fuentesLed').media = 'not all';
+  document.documentElement.classList.add('clasico');
+}
+</script>
 </head>
 <body>
 
@@ -11809,7 +12234,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 280;
+const VERSION = 281;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

@@ -15421,3 +15421,32 @@ Sólo cambia el nombre: el mazo sigue igual (2 y 2 duelos, sin ajustes) y la
 clave interna sigue siendo `pa`. Se compararon MIXTO, NEUTRAL, VERSÁTIL,
 COMPLETO y EQUILIBRADO; NEUTRAL entra en un renglón hasta en 320 de ancho.
 Prueba general 47/47 en 402x784.
+
+## v281 · estilo PANTALLA LED
+
+Se compararon tres direcciones (Pantalla LED, Trapo y Figuritas) sobre las siete
+pantallas reales y se eligió **A · Pantalla LED**: el estadio de noche, los
+carteles LED y la gráfica de la transmisión. Negro verdoso, ámbar LED, verde y
+rojo de semáforo; números y títulos en Doto (matriz de puntos), rótulos en
+Tektur al 75%, texto en Geist. Solo CSS y fuentes: la jugabilidad no se toca.
+
+**Separado del clásico:** todo va en  y
+, después del estilo principal, que queda intacto.
+ en la dirección juega el clásico (también dentro de la columna de
+la compu). En git, el clásico es el tag  (v280).
+
+Tektur al 75% mide casi lo mismo que Saira Condensed, así que se usa en todo el
+juego y sin espaciados propios: valen las medidas del clásico. Una capa de
+recolor automático (gen-recolor.js) pasa las ~130 reglas con el azul marino
+escrito a mano al verde-negro del LED; los azules con significado (DEFENSA, gol)
+quedan. Ajustes finos para lo que bajaba de renglón: nombres de carta, SUPLENTES,
+LA POSIBILIDAD DE GOL, el título de la ficha de gol y PATEAR PENAL, con reglas
+para hasta 400 de ancho, tablet parada y teléfono acostado.
+
+Medido en 31 pantallas y estados, LED contra clásico, en 320x568, 360x740,
+375x667, 375x812, 390x844, 393x762, 402x784, 402x874, 412x915, 430x932,
+440x956, 768x1024, 1024x1366, 410x800, 400x768, 844x390 y 932x430: nada se
+corta ni sobra más que en el clásico salvo el mercado acostado (+13px) y en
+400x768 (+4px); CAMPEÓN y el mercado del 17 Pro pasan a entrar sin scroll.
+Ningún azul marino visible en las 31. Prueba general 47/47 en 402x784, 320x568
+y en la columna de 1280x800.
