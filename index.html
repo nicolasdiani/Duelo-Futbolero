@@ -9904,6 +9904,73 @@ html.html-menu, html.html-menu body{overflow:hidden}
   #panelEquipo #hearts > .suma{background-color:rgba(255,59,82,.55)}
   #panelEquipo #racha > .suma{background-color:rgba(245,200,66,.55)}
 }
+
+/* ================= ¿CÓMO SE JUEGA?, SIN SCROLL EN EL TELÉFONO (v278) =================
+   En los teléfonos de altura media la tarjeta no entraba y había que scrollear
+   adentro: 85px en 393x762 y 67 en el 17 Pro con la barra de Safari (402x784),
+   9 en 390x844 y en el SE. Lo que sobraba eran dos cosas:
+   · **NUEVE JUGADAS** iba sola en su fila, parada y centrada: 146px. Ahora va
+     **acostada, a todo el ancho** —el reloj a la izquierda, el título y el texto
+     a la derecha, la foto de fondo— y mide ~70.
+   · **EMPEZAR LA COPA y VOLVER** iban uno abajo del otro. Ahora van **en la
+     misma fila**, el de empezar más ancho, como ya estaban acostado.
+   Las letras no se achican. Sólo en teléfonos parados. */
+@media (max-width:440px) and (orientation:portrait){
+  .card-reglas .reglas .tu-fi.sola{
+    width:100%;justify-self:stretch;position:relative;overflow:hidden;
+    display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;
+    column-gap:12px;row-gap:3px;align-items:center;text-align:left;padding:9px 12px;
+  }
+  .card-reglas .reglas .tu-fi.sola .tu-banda{
+    position:absolute;inset:0;margin:0;height:auto;border-radius:0;z-index:0;grid-area:auto;
+  }
+  .card-reglas .reglas .tu-fi.sola .tu-banda::after{
+    background:linear-gradient(90deg,rgba(0,8,31,.55) 0%,rgba(0,8,31,.88) 45%,rgba(0,8,31,.95) 100%);
+  }
+  .card-reglas .reglas .tu-fi.sola .tu-fi-vis{grid-row:1 / 3;grid-column:1;margin:0;width:auto;min-height:0;position:relative;z-index:1}
+  .card-reglas .reglas .tu-fi.sola > b{grid-column:2;grid-row:1;align-self:end;position:relative;z-index:1}
+  .card-reglas .reglas .tu-fi.sola > span:not(.tu-banda){grid-column:2;grid-row:2;align-self:start;position:relative;z-index:1}
+  /* La barra de los botones es sticky con bottom:0 y Chrome la frena en el borde
+     del padding de la tarjeta: sin scroll quedaba 12px más arriba, pisando la
+     última ficha. Con -12px (el mismo margen negativo que ya tiene) queda al ras. */
+  .card-reglas .rg-botones{flex-direction:row;gap:8px;bottom:-12px}
+  /* La foto de arriba de cada ficha quedaba frenada por el max-width:100% general
+     y el margen negativo la corría a la izquierda: un hueco de 17px a la derecha.
+     Sin ese tope llega a los dos bordes. */
+  .card-reglas .tu-fi:not(.sola) .tu-banda{max-width:none}
+  .card-reglas .rg-botones .cta{margin-top:0}
+  .card-reglas .rg-botones .cta:not(.alt){flex:2 1 0;min-width:0}
+  .card-reglas .rg-botones .cta.alt{flex:1 1 0;min-width:0}
+}
+/* Y con el lugar que queda, **más grande**, en dos escalones: en los teléfonos
+   altos (830 o más, el 17 Pro sin la barra de Safari) títulos y textos de las
+   fichas un punto arriba, fotos más altas y más aire; entre 700 y 830 (el 17 Pro
+   con la barra, 393x762, 360x740) un poco menos, lo que entra sin scroll. En el
+   SE y en 320, que son más bajos, queda como arriba. */
+@media (max-width:440px) and (orientation:portrait) and (min-height:830px){
+  .card-reglas h1{font-size:clamp(26px, 7.4vw, 32px)}
+  .card-reglas .reglas{gap:8px;margin-top:12px}
+  .card-reglas .tu-fi{padding:10px 8px;gap:6px}
+  .card-reglas .tu-fi .tu-banda{height:52px;margin-bottom:8px}
+  .card-reglas .tu-fi .tu-banda + .tu-fi-vis{margin-top:-36px}
+  .card-reglas .tu-fi > b{font-size:14px;letter-spacing:1.8px}
+  .card-reglas .tu-fi > span{font-size:13px;line-height:1.36}
+  .card-reglas .tu-fi em{font-size:12px}
+  .card-reglas .reglas .tu-fi.sola{padding:11px 14px}
+  .card-reglas .reglas .tu-fi.sola .tu-reloj{width:42px;height:42px}
+  .card-reglas .rg-botones{margin-top:12px}
+  .card-reglas .rg-botones .cta{min-height:48px}
+}
+@media (max-width:440px) and (orientation:portrait) and (min-height:700px) and (max-height:829.98px){
+  .card-reglas .reglas{gap:7px;margin-top:10px}
+  .card-reglas .tu-fi{padding:8px 7px;gap:5px}
+  .card-reglas .tu-fi .tu-banda{height:48px;margin-left:-8px;margin-right:-8px}
+  .card-reglas .tu-fi .tu-banda + .tu-fi-vis{margin-top:-34px}
+  .card-reglas .tu-fi > b{font-size:13.5px}
+  .card-reglas .tu-fi > span{font-size:12.5px;line-height:1.32}
+  .card-reglas .tu-fi em{font-size:11.5px}
+  .card-reglas .rg-botones .cta{min-height:46px}
+}
 </style>
 </head>
 <body>
@@ -11741,7 +11808,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 277;
+const VERSION = 278;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

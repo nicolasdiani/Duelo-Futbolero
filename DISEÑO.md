@@ -15367,3 +15367,39 @@ en 1920x1080, siempre centrada y sin scroll. La prueba general (47 controles:
 vestuario, mesa, mini juegos, resaltado, ola, ítems, pantalla, copas simuladas)
 pasa entera adentro de la columna en esas cuatro pantallas, y afuera en el
 17 Pro; en 768x1024 y 844x390 no aparece la columna.
+
+## v278 · ¿Cómo se juega?, sin scroll en el teléfono y más grande
+
+En los teléfonos de altura media la tarjeta de «¿Cómo se juega?» no entraba y
+había que scrollear adentro: 85px en 393x762, 67 en el 17 Pro con la barra de
+Safari (402x784), 9 en 390x844 y en el SE. Sólo en teléfonos parados (hasta 440
+de ancho):
+
+- **NUEVE JUGADAS** iba sola en su fila, parada y centrada (146px). Ahora va
+  **acostada, a todo el ancho**: el reloj a la izquierda, el título y el texto a
+  la derecha y la foto de fondo con un degradé oscuro. Mide 77–84.
+- **EMPEZAR LA COPA y VOLVER** van **en la misma fila** (2 a 1).
+- Con el lugar que queda, **más grande** en dos escalones según el alto:
+  - **830 o más** (17 Pro sin barra, 390x844, 430x932): título hasta 32px,
+    títulos de ficha 14px, textos 13px, fotos de 52px, botones de 48.
+  - **700 a 829** (17 Pro con barra, 393x762, 360x740, la columna de la compu):
+    títulos 13.5px, textos 12.5px, fotos de 48, botones de 46.
+  - Menos de 700 (SE, 320): como estaba, sin fotos.
+
+Tres arreglos que aparecieron al mirarlo sin scroll:
+
+- La barra de los botones es sticky con `bottom:0` y Chrome la frena en el borde
+  del padding de la tarjeta: cuando todo entra quedaba 12px más arriba, pisando
+  la última ficha. Con `bottom:-12px` (el mismo margen negativo que ya tenía)
+  queda al ras.
+- La foto de NUEVE JUGADAS no se veía: la regla que ubica el texto (`> span`)
+  también agarraba la foto, que es un `span`, y la mandaba a una celda de 0px.
+- La foto de arriba de las fichas de dos columnas quedaba frenada por el
+  `max-width:100%` general y el margen negativo la corría: un hueco de 17px a la
+  derecha (ya pasaba en v277). Ahora llega a los dos bordes.
+
+Medido al empezar la copa y desde el partido: sin scroll, sin superposición y sin
+textos cortados en 320x568, 375x667, 360x740, 393x762, 402x784, 375x812,
+360x800, 390x844, 360x844, 402x874, 430x932 y en la columna de 1280x800
+(410x800) y 1366x768 (400x768). La prueba general pasa 47/47 en 402x784 y en la
+columna de 1280x800.
