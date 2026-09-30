@@ -10548,6 +10548,41 @@ html.html-menu, html.html-menu body{overflow:hidden}
   :root .mq-ronda{font-family:var(--tit);font-weight:800;font-size:clamp(12px,4vw,16px);letter-spacing:.5px}
   :root .mq-nom{font-size:clamp(9px,3.2vw,13px);white-space:nowrap}
 }
+
+/* ---- LA POSIBILIDAD DE GOL, ACTIVA (v285) ----
+   Activo, el cartel quedaba con el borde gris del LED (la regla general del
+   cartel le ganaba al verde del clásico) y en el teléfono sin reflejo. Ahora:
+   borde verde, una luz que lo recorre dando la vuelta —como las que corren por
+   los carteles LED del estadio— y adentro el mismo reflejo que cruza los ítems
+   y las columnas. El anillo es una máscara sobre el borde: el cartel sigue
+   midiendo lo mismo (37px) y la mesa no se mueve. Se eligió entre tres (como
+   los ítems, borde que respira, luz que recorre). */
+@property --gbA{syntax:'<angle>';inherits:false;initial-value:0deg}
+:root .gol-banner.lista{
+  border:1px solid rgba(39,240,138,.55);
+  box-shadow:0 0 16px rgba(39,240,138,.25);
+  position:relative;overflow:hidden;
+}
+:root .gol-banner.lista::before{
+  content:'';position:absolute;inset:-1px;border-radius:inherit;padding:2px;pointer-events:none;z-index:2;
+  background:conic-gradient(from var(--gbA), transparent 0 62%, rgba(39,240,138,.6) 74%, #d6ffe6 82%, var(--green) 88%, transparent 96%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation:gbVuelta 2.6s linear infinite;
+}
+@keyframes gbVuelta{to{--gbA:360deg}}
+:root .gol-banner.lista::after{
+  display:block;content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg, transparent 38%, rgba(255,255,255,.14) 47%, rgba(255,255,255,.24) 50%, rgba(255,255,255,.14) 53%, transparent 62%);
+  transform:translateX(-120%);animation:itemBrillo 1.5s ease-in-out infinite;
+}
+/* Apagado (cuando no se puede usar) o sin movimiento: quieto. */
+:root .gol-banner.lista:disabled::before, :root .gol-banner.lista:disabled::after{animation:none}
+:root .gol-banner.lista:disabled::after{opacity:0}
+@media (prefers-reduced-motion:reduce){
+  :root .gol-banner.lista::before, :root .gol-banner.lista::after{animation:none}
+  :root .gol-banner.lista::after{opacity:0}
+}
 </style>
 <script>
 /* ?clasico=1 apaga el estilo PANTALLA LED y deja el clásico (v280). */
@@ -12394,7 +12429,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 284;
+const VERSION = 285;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

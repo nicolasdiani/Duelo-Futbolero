@@ -15535,3 +15535,19 @@ con el nombre dos escalones más grande.
 El clásico (`?clasico=1`) oculta `.mm-marca` y sigue con su logo de imagen.
 Medido en 320×568, 402×784, 440×956, 768×1024, 844×390, 932×430 y la columna de
 1280×800: nada se sale ni se pisa. Prueba general 47/47.
+
+## v285 · LA POSIBILIDAD DE GOL, activa: luz que recorre el borde
+
+Con la racha llena el cartel se activa, pero en el LED quedaba con el borde
+gris: la regla general del cartel (`:root .gol-banner`) le ganaba al verde del
+clásico. En el teléfono, además, el reflejo estaba apagado.
+
+Se compararon tres (como los ítems, borde que respira, luz que recorre) y se
+eligió la **C**: borde verde, una luz que lo recorre dando la vuelta —como las
+que corren por los carteles LED del estadio— y adentro el mismo reflejo que
+cruza los ítems y las columnas. El anillo es una máscara sobre el borde
+(`::before` con un `conic-gradient` que gira con `@property --gbA`): el cartel
+sigue midiendo 37px y la mesa no se mueve. Desactivado o sin movimiento
+(`prefers-reduced-motion`), queda quieto.
+
+Solo en el estilo LED. Prueba general 47/47.
