@@ -9735,7 +9735,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
 .aviso.dc .dc-ops.sola{grid-template-columns:minmax(0, calc(50% - 4px));justify-content:center;margin-top:0}
 
 /* ================= EL PERFIL DEL RIVAL EN LA CINTA (v269) =================
-   DIFICULTAD B: cada rival tiene un perfil —OFENSIVO, DEFENSIVO o PAREJO— que
+   DIFICULTAD B: cada rival tiene un perfil —OFENSIVO, DEFENSIVO o NEUTRAL— que
    cambia su mesa, y el vestuario lo dice **adentro de la cinta del equipo**,
    debajo del nombre: la chapa en su color y qué cartas trae. La cinta crece
    ~22px; la pantalla del vestuario no, porque la de antes de jugar no lleva
@@ -11224,7 +11224,7 @@ const EQUIPOS = [
    Cómo juega cada rival, sacado de sus goles a favor y en contra por partido
    (temporada 2025 + Apertura 2026) contra el promedio de la liga: si sobresale
    el ataque es OFENSIVO, si sobresale la defensa DEFENSIVO, y si están cerca
-   PAREJO. Los números y las fuentes están en perfiles-equipos.md.
+   NEUTRAL (hasta v279, PAREJO). Los números y las fuentes están en perfiles-equipos.md.
 
    El perfil **cambia el mazo del partido** —no los valores—:
    · cómo se reparten los 4 duelos de la mesa: el ofensivo trae 3 medios o
@@ -11254,7 +11254,8 @@ const PERFILES = {
   de:{ nm:'DEFENSIVO', ico:'def', tx:'se cierra atrás', mix:'más defensores y arqueros',
        duelos:[3, 1],
        ajustes:[[GOL_RIVAL, -.5], [GOL_TUYO, -.5], [LASTIMAN, .5]] },
-  pa:{ nm:'PAREJO',    ico:'',    tx:'juega parejo',    mix:'de todo un poco', duelos:[2, 2] }
+  /* v280: se llamaba PAREJO. */
+  pa:{ nm:'NEUTRAL',   ico:'',    tx:'juega neutral',   mix:'de todo un poco', duelos:[2, 2] }
 };
 
 /* Las rondas ya no traen rival: lo sortea `armarCopa()` de la tabla de
@@ -11808,7 +11809,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 279;
+const VERSION = 280;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

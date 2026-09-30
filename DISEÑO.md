@@ -15411,3 +15411,13 @@ decía PRÓXIMO PARTIDO. Ahí no hay próximo: es el primero. Ahora dice **PRIME
 PARTIDO**. Sólo ahí: SUMÁ UN REFUERZO entre partidos y el vestuario del partido
 único siguen con PRÓXIMO PARTIDO. `cabeceraRival(R, rot)` recibe el rótulo;
 sin él, el de siempre.
+
+## v280 · el perfil PAREJO pasa a llamarse NEUTRAL
+
+La chapa del perfil de los clubes que no sobresalen ni en ataque ni en defensa
+decía PAREJO («juega parejo · de todo un poco»). Ahora dice **NEUTRAL** («juega
+neutral · de todo un poco»), en el vestuario antes del debut y entre partidos.
+Sólo cambia el nombre: el mazo sigue igual (2 y 2 duelos, sin ajustes) y la
+clave interna sigue siendo `pa`. Se compararon MIXTO, NEUTRAL, VERSÁTIL,
+COMPLETO y EQUILIBRADO; NEUTRAL entra en un renglón hasta en 320 de ancho.
+Prueba general 47/47 en 402x784.
