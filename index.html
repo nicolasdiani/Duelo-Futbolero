@@ -10583,6 +10583,28 @@ html.html-menu, html.html-menu body{overflow:hidden}
   :root .gol-banner.lista::before, :root .gol-banner.lista::after{animation:none}
   :root .gol-banner.lista::after{opacity:0}
 }
+
+/* ---- LOS NÚMEROS DE STATS (v286) ----
+   Un solo estilo para todos los números de ATAQUE y DEFENSA: los recuadros de la
+   mesa, la chapa de las cartas y el cartel del duelo (arriba y en el VS). Antes
+   eran matriz de puntos finita, salvo el de arriba del cartel, que ya era lisa.
+   Ahora: la letra del marcador (Tektur 800), más grande —mesa 21 → 26px,
+   cartas 13 → 16px, VS 29 → 32px—. Nada cambia de alto. Se eligió entre tres
+   (macizo, LED grueso, chapa llena). */
+:root .stat .n, :root .play .p-vnum, :root .cell .c-val{font-family:var(--tit);font-weight:800;letter-spacing:0;text-shadow:none}
+:root .play .p-val .stat .n{font-size:32px}
+:root .play .p-vnum{font-size:34px}
+:root .cell .c-val{font-size:16px}
+/* Los recuadros de ATAQUE y DEFENSA de la mesa (teléfono y tablet parada): sin
+   las rayas, con el borde de su color, y el número y el rótulo arrancando en el
+   mismo lugar en los dos —estaban centrados y, como ATAQUE es más corto,
+   quedaban 2px corridos—. */
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){
+  :root #panelPlantel .stat.atk, :root #panelPlantel .stat.def{background:#06100b;background-image:none;justify-content:flex-start;padding-left:9px;gap:8px}
+  :root #panelPlantel .stat.atk{border:1px solid rgba(255,75,58,.55)}
+  :root #panelPlantel .stat.def{border:1px solid rgba(56,210,255,.55)}
+  :root #panelPlantel .stat .n{background:transparent;background-image:none;font-size:26px}
+}
 </style>
 <script>
 /* ?clasico=1 apaga el estilo PANTALLA LED y deja el clásico (v280). */
@@ -12429,7 +12451,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 285;
+const VERSION = 286;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

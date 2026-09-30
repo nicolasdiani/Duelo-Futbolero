@@ -15551,3 +15551,21 @@ sigue midiendo 37px y la mesa no se mueve. Desactivado o sin movimiento
 (`prefers-reduced-motion`), queda quieto.
 
 Solo en el estilo LED. Prueba general 47/47.
+
+## v286 · los números de stats, macizos y alineados
+
+Los números de ATAQUE y DEFENSA estaban en la matriz de puntos, finitos (21px en
+la mesa, 13px en las cartas), salvo el de arriba del cartel del duelo, que era
+liso: dos estilos para el mismo dato. En la mesa, además, los dos recuadros
+centraban su contenido y, como ATAQUE es más corto que DEFENSA, los números
+quedaban 2px corridos; y tenían un fondo rayado.
+
+Se compararon tres (macizo, LED grueso, chapa llena) y se eligió **A · macizo**:
+todos los números de stats —recuadros de la mesa, chapa de las cartas, cartel del
+duelo arriba y en el VS— en la letra del marcador (Tektur 800): mesa 21 → 26px,
+cartas 13 → 16px, VS 29 → 32px. En el teléfono y la tablet parada, los recuadros
+van sin rayas, con el borde de su color, y el número y el rótulo arrancan en el
+mismo lugar en los dos. Nada cambia de alto. Con el teléfono acostado y en la
+compu el panel conserva su diseño; solo cambia la letra.
+
+Solo en el estilo LED. Prueba general 47/47.
