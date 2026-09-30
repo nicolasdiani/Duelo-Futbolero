@@ -15430,10 +15430,10 @@ carteles LED y la gráfica de la transmisión. Negro verdoso, ámbar LED, verde 
 rojo de semáforo; números y títulos en Doto (matriz de puntos), rótulos en
 Tektur al 75%, texto en Geist. Solo CSS y fuentes: la jugabilidad no se toca.
 
-**Separado del clásico:** todo va en  y
-, después del estilo principal, que queda intacto.
- en la dirección juega el clásico (también dentro de la columna de
-la compu). En git, el clásico es el tag  (v280).
+**Separado del clásico:** todo va en `<style id="estiloLed">` y
+`<link id="fuentesLed">`, después del estilo principal, que queda intacto.
+`?clasico=1` en la dirección juega el clásico (también dentro de la columna de
+la compu). En git, el clásico es el tag `estilo-antes-de-led` (v280).
 
 Tektur al 75% mide casi lo mismo que Saira Condensed, así que se usa en todo el
 juego y sin espaciados propios: valen las medidas del clásico. Una capa de
