@@ -10416,7 +10416,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
 }
 :root .marquesina::after{content:'';position:absolute;inset:0;background:var(--puntos);opacity:.9;pointer-events:none;border-radius:inherit}
 :root .mq-ronda{font-family:var(--led);font-weight:900;color:var(--green);text-shadow:0 0 8px rgba(39,240,138,.6)}
-:root .mq-n{font-family:var(--led);font-weight:900;color:var(--gold);text-shadow:var(--brillo-led)}
+:root .mq-n{font-weight:800;color:var(--gold);text-shadow:var(--brillo-led)}
 :root .mq-sep{color:var(--dim2)}
 :root .mq-nom{font-family:var(--tit);}
 :root .cro-lb, :root .cro-min{font-family:var(--led)}
@@ -10453,7 +10453,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
 :root .rm-cinta{background:rgba(255,178,26,.08);border-block:1px solid rgba(255,178,26,.35)}
 :root .rm-cinta b{font-family:var(--led);color:var(--gold)}
 :root .marcador, :root .hist, :root .chapa{background:#020604;border:1px solid var(--line);border-radius:4px}
-:root .m-res{font-family:var(--led);font-weight:900;color:var(--white)}
+:root .m-res{font-weight:800;color:var(--white)}
 :root .hr{font-family:var(--led);font-weight:900;color:var(--green)}
 :root .hist-lb{font-family:var(--tit);}
 
@@ -10613,6 +10613,21 @@ html.html-menu, html.html-menu body{overflow:hidden}
    1 vs 1 ya estaban en la letra del marcador. */
 :root .ba-n{font-family:var(--tit);font-weight:800;letter-spacing:0;font-size:24px}
 :root .sit.mam .stat .n{font-size:32px}
+
+/* ---- LOS MARCADORES DE GOLES, EN UNA SOLA LETRA (v288) ----
+   El marcador de GANASTE, ELIMINADO, CAMPEÓN, EMPATE y el resultado del 1 vs 1
+   (.m-res) seguía en la matriz de puntos, igual que el de arriba de la mesa
+   fuera del teléfono parado; el cartel de GOL, el de arriba en el teléfono, El
+   camino, la tanda, el descuento y el panel del 1 vs 1 ya estaban en la letra
+   del marcador. Ahora todos: Tektur 800, sin espaciado. */
+:root .m-res, :root .mq-n, :root .gm-n, :root .hm, :root .pz-marc b, :root .dt-res i, :root .jp-gol, :root .cc-p{
+  font-family:var(--tit);font-weight:800;letter-spacing:0;
+}
+/* CAMPEÓN en el 17 Pro con la barra de Safari quedaba 5px justo (scroll mínimo):
+   el banner del título pierde esos 5px de aire (14/12 → 11/10). */
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){
+  :root .card-remate .rm-banner{padding-top:11px;padding-bottom:10px}
+}
 </style>
 <script>
 /* ?clasico=1 apaga el estilo PANTALLA LED y deja el clásico (v280). */
@@ -12459,7 +12474,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 287;
+const VERSION = 288;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

@@ -15586,3 +15586,19 @@ Revisado LED contra clásico en 31 pantallas y estados, en 320×568, 375×667,
 nada se pisa, se corta ni scrollea de más en vertical, en la columna ni en el
 iPad. Con el teléfono acostado siguen los problemas de ese modo que ya venían
 (la mesa angosta: la fila de columnas no entra). Prueba general 47/47.
+
+## v288 · los marcadores de goles, en una sola letra
+
+El marcador de GANASTE (y de ELIMINADO, CAMPEÓN, EMPATE y el resultado del 1
+vs 1: todos usan `.m-res`) seguía en la matriz de puntos por una regla del
+estilo LED, y el de arriba de la mesa también, fuera del teléfono parado. El
+resto ya estaba en la letra del marcador: el cartel de GOL, El camino, la tanda
+de penales, el descuento, el panel del 1 vs 1 y la lista de copas.
+
+Ahora todos los marcadores de goles van en **Tektur 800**, sin espaciado, en
+todas las pantallas y formatos. Además, CAMPEÓN en el 17 Pro con la barra de
+Safari quedaba 5px justo (ya pasaba con la letra anterior): el banner del título
+pierde esos 5px de aire (14/12 → 11/10) y entra sin scroll.
+
+Revisado LED contra clásico en 320×568, 402×784 y 440×956: GANASTE, ELIMINADO,
+CAMPEÓN y EMPATE sin scroll, nada se pisa ni se corta. Prueba general 47/47.
