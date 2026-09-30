@@ -10500,6 +10500,22 @@ html.html-menu, html.html-menu body{overflow:hidden}
    los botones que no lo fijaban quedaban más bajos (en el SE, de 34 a 27px, justo
    en el límite del dedo). Con el de Saira miden lo mismo que en el clásico. */
 :root .cta, :root .if-btn{line-height:1.57}
+
+/* ---- LA MARQUESINA (v283) ----
+   Los goles y el reloj pasan a la misma letra que el marcador del cartel de GOL
+   (Tektur 800 al 75%) en vez de la matriz de puntos, y todo el cartel queda en
+   una sola familia. Sin tocar el alto del banner (60 en el teléfono), las letras
+   crecen lo que entra en el peor caso (SEMIFINAL, INDEPENDIENTE contra GIMNASIA
+   MZA, 10 a 9 en el minuto 90), medido de 320 a 440 de ancho y en el iPad:
+   · ronda 11,5 → 16px (12,8 en el SE)   · equipos 8,6 → 13px (10,2 en el SE)
+   · goles 32 → 40px                      · reloj 29 → 28px, más ancho y legible */
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){
+  :root .mq-n{font-family:var(--tit);font-weight:800;letter-spacing:0;font-size:40px;line-height:1}
+  :root #reloj{font-family:var(--tit);font-weight:800;letter-spacing:0;font-size:28px}
+  :root .cro-lb{font-family:var(--tit);font-weight:700;font-size:8px;letter-spacing:1px}
+  :root .mq-ronda{font-family:var(--tit);font-weight:800;font-size:clamp(12px,4vw,16px);letter-spacing:.5px}
+  :root .mq-nom{font-size:clamp(9px,3.2vw,13px);white-space:nowrap}
+}
 </style>
 <script>
 /* ?clasico=1 apaga el estilo PANTALLA LED y deja el clásico (v280). */
@@ -12346,7 +12362,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 282;
+const VERSION = 283;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

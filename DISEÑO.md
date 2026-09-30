@@ -15490,3 +15490,24 @@ mismos botones al mismo alto y nunca más scroll que en el clásico. Prueba gene
 Quedan, iguales que en el clásico: con el teléfono acostado la mesa es muy
 angosta (cartas de ~56px, la fila de columnas no entra); los enlaces del pie
 miden 17px de alto; los puntos de color del 1 vs 1 miden 6px.
+
+## v283 · la marquesina, en una sola letra y más grande
+
+Los goles y el reloj de la marquesina estaban en la matriz de puntos (Doto) y el
+marcador del cartel de GOL en Tektur: dos letras para el mismo dato. Ahora toda
+la marquesina va en **Tektur 800 al 75%**, la misma del cartel. La ronda también
+deja la matriz de puntos, que en chico costaba leer.
+
+Sin tocar el alto del banner (60 en el teléfono, 52 en el iPad), las letras
+crecen lo que entra en el peor caso: SEMIFINAL, INDEPENDIENTE contra GIMNASIA
+MZA, 10 a 9 en el minuto 90. Medido en 320, 360, 375, 390, 402, 410 (la columna
+de la compu), 430, 440 y 768 de ancho: nada se corta, se sale ni se pisa.
+
+| | antes | ahora |
+|---|---|---|
+| ronda (OCTAVOS…) | 11,5px | 16px (12,8 en el SE) |
+| equipos | 8,6px | 13px (10,2 en el SE) |
+| goles | 32px | 40px |
+| reloj | 29px en puntos | 28px en Tektur, más legible |
+
+Solo en el estilo LED; `?clasico=1` sigue igual. Prueba general 47/47.
