@@ -1204,7 +1204,10 @@ img{height:auto}
    `transform` o un `filter`. Mientras estuvo, nada `fixed` podía vivir adentro
    de una fila sin anclarse a ella en vez de a la ventana. */
 .cells{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:6px;flex:1;
+  /* minmax(0,1fr) y min-width:0 (v282): con 1fr solo, el contenido podía ensanchar
+     las columnas más allá de la mesa. Con el teléfono acostado las cartas se
+     metían debajo del panel TU EQUIPO. En vertical no cambia nada: ahí ya entran. */
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;flex:1;min-width:0;
 }
 
 /* Las columnas van pegadas arriba de la mesa, alineadas con sus cartas: el
@@ -9322,7 +9325,11 @@ html.html-menu, html.html-menu body{overflow:hidden}
    de verse. El `-30px` de abajo es el relleno de la tarjeta: sin eso el pie
    flotaría con un escalón de tarjeta debajo. */
 .card-pie{
-  position:sticky;bottom:0;z-index:4;
+  /* `bottom` en negativo, lo mismo que el relleno de abajo de la tarjeta (v282):
+     el navegador frena lo sticky en el borde de adentro del relleno, así que con
+     bottom:0 el pie quedaba --cpy más arriba aunque todo entrara, tapando lo
+     último de la lista (el mercado en el SE, «¿Cómo se juega?» en v278). */
+  position:sticky;bottom:calc(var(--cpy, 30px) * -1);z-index:4;
   /* **El max-width:none otra vez.** Los márgenes negativos son los que lo
      estiran hasta los bordes de la tarjeta, pero la regla global de
      max-width:100% le ponía de techo el ancho de la caja de adentro y el pie
@@ -9995,13 +10002,16 @@ html.html-menu, html.html-menu body{overflow:hidden}
    Se compararon tres direcciones —Pantalla LED, Trapo y Figuritas— sobre las
    siete pantallas reales; ver DISEÑO.md. */
 /* ---- RECOLOR AUTOMÁTICO ----
-   El clásico tiene su azul marino escrito a mano en unas 130 reglas (fondos,
-   bordes, sombras y los velos sobre las fotos). En vez de perseguirlas una por
-   una, estas son las mismas reglas con ese azul pasado al verde-negro del LED
-   (mismo brillo y transparencia, tono 152). Los azules que significan algo
-   —DEFENSA, el filo, el celeste del gol— quedan como están. Va primero para que
-   lo que sigue, hecho a mano, mande donde coincide. Se regenera con
-   gen-recolor.js si cambia el CSS clásico. */
+   El clásico tiene su azul marino escrito a mano en unas 140 reglas (fondos,
+   bordes, sombras y los velos sobre las fotos). Estas son las mismas reglas con
+   ese azul pasado al verde-negro del LED (mismo brillo y transparencia, tono
+   152). Los azules que significan algo —DEFENSA, el filo, el celeste del gol—
+   quedan como están. Va primero para que lo que sigue, hecho a mano, mande.
+   v282: como cada regla repetida lleva :root adelante (un punto más de peso),
+   también se repiten, en su orden original, las variantes que antes le ganaban
+   sobre el mismo elemento (.if-btn.n-verde sobre .if-btn…). En la v281 no: el
+   botón USAR de la ficha de los ítems quedaba oscuro con la letra oscura.
+   Se regenera con gen-recolor.js si cambia el CSS clásico. */
 :root .cell{--canto:inset 0 1px 0 rgba(255,255,255,.16),
     inset 0 -1px 0 rgba(0,0,0,.5),
     0 1px 0 rgba(116,166,232,.34),
@@ -10015,24 +10025,32 @@ html.html-menu, html.html-menu body{overflow:hidden}
     inset 0 -1px 0 rgba(173,196,185,.1)}
 :root .panel{background:linear-gradient(180deg,rgba(14,36,25,.93),rgba(7,19,14,.95))}
 :root .rec{border-bottom:1px dashed rgba(39,61,51,.7)}
+:root .rec:last-child{border-bottom:none}
 :root .gol-flash{background:rgba(6,11,8,.72)}
 :root .play-flash{background:rgba(6,11,8,.72)}
 :root .sit-flash{background:rgba(6,11,8,.9)}
 :root .play .p-esc{background:rgba(34,58,47,.5)}
 :root .play .p-vnum{background:rgba(34,58,47,.5)}
+:root .p-val .stat,:root .p-val .stat:last-child{border-bottom:none}
 :root .mam-art::after{background:linear-gradient(180deg,transparent,rgba(7,19,14,.92))}
 :root .palo:hover:not(:disabled){background:#21322a}
 :root .palo.elegido{background:#21322a}
 :root .pulse-delta{text-shadow:0 2px 9px rgba(4,10,7,.92),0 0 3px rgba(4,10,7,.9)}
 :root .row-pick{background:linear-gradient(180deg,rgba(15,39,28,.92),rgba(7,19,14,.95))}
+:root .row-pick:hover:not(:disabled),:root .row-pick.activo:not(:disabled){background:rgba(255,255,255,.13)}
 :root .row-pick:disabled{background:rgba(13,23,18,.75)}
 :root .gol-banner{background:linear-gradient(180deg,rgba(19,33,26,.92),rgba(13,23,18,.92))}
+:root .gol-banner.lista{background:linear-gradient(180deg,rgba(20,58,34,.96),rgba(9,32,18,.96))}
+:root .gol-banner.lista:hover:not(:disabled){background:linear-gradient(180deg,rgba(27,76,44,.98),rgba(13,44,24,.98))}
 :root .col-pick{background:linear-gradient(180deg,rgba(15,39,28,.92),rgba(7,19,14,.95))}
 :root .col-pick .cc{border-left:1px solid rgba(173,196,185,.22)}
+:root .col-picks.lista .col-pick{background:var(--panel)}
+:root .col-picks.lista .col-pick:hover:not(:disabled),:root .col-picks.lista .col-pick.activo:not(:disabled){background:rgba(255,255,255,.13)}
 :root .cell{background:linear-gradient(160deg,rgba(17,44,32,.95) 0%,rgba(7,19,14,.96) 100%)}
 :root .cell .c-out .efe{border-top:1px dashed rgba(39,61,51,.8)}
-:root .cell.empty{background:rgba(8,13,11,.35);border-color:#1f3329}
+:root .cell.empty{background:rgba(8,13,11,.35);border-color:#1f3329;--canto:none}
 :root .cell.lock{background:repeating-linear-gradient(135deg,#0f1914,#0f1914 7px,#13211a 7px,#13211a 14px)}
+:root .row.hl .cell:not(.empty):not(.lock),:root .cell.colhl:not(.empty):not(.lock){border-color:rgba(var(--tono),.9)}
 @media (max-width:440px){:root .cell{--canto:inset 0 1px 0 rgba(255,255,255,.14),
       inset 0 -1px 0 rgba(0,0,0,.45),
       0 1px 0 rgba(116,166,232,.32),
@@ -10044,11 +10062,17 @@ html.html-menu, html.html-menu body{overflow:hidden}
 :root .cta{background:linear-gradient(160deg, rgba(38,32,4,.92), rgba(9,25,18,.96))}
 @media (hover:hover){:root .cta:hover{background:linear-gradient(160deg, rgba(58,48,6,.95), rgba(12,32,23,.96))}}
 :root .cta.alt{background:linear-gradient(160deg, rgba(17,44,32,.95), rgba(7,19,14,.96))}
+:root .cta.ghost{background:transparent}
+:root .cta.n-verde,:root .if-btn.n-verde{background:linear-gradient(165deg, #4ae87a, #25b955)}
+:root .cta.n-oro,:root .if-btn.n-oro{background:linear-gradient(100deg, var(--gold), #ffd964)}
 :root .cta.n-linea,:root .if-btn.n-linea{background:rgba(12,32,23,.55)}
+:root .cta.n-fantasma{background:none}
 :root .cta.n-apagado{background:rgba(7,18,13,.5)}
 :root .stat{border-bottom:1px dashed rgba(39,61,51,.7)}
-:root .item:hover:not(:disabled){background:#1c2c25}
+:root .stat:last-child{border-bottom:none}
+:root .item:hover:not(:disabled){background:#1c2c25;border-color:var(--gold)}
 :root .item{background:rgba(10,22,16,.9);border-color:rgba(173,196,185,.2)}
+:root .item.apuntando{background:#1e1a0c;border-color:var(--gold)}
 :root .item .iq{box-shadow:0 0 0 1.5px rgba(7,19,14,.92)}
 :root .log p{border-bottom:1px solid rgba(39,61,51,.45)}
 :root .board-hint{background:rgba(13,23,18,.9)}
@@ -10058,44 +10082,89 @@ html.html-menu, html.html-menu body{overflow:hidden}
 :root .fila{background:rgba(15,39,28,.72)}
 :root .fila.off{background:rgba(7,18,13,.6)}
 :root .f-tengo.cero{border-color:rgba(173,196,185,.2)}
+:root .card-mercado .franja .fr-it + .fr-it{border-left:none}
 :root .card-mercado .franja .fr-it:first-child{border-bottom:1px solid rgba(39,61,51,.7)}
 :root .mochila{background:rgba(7,18,13,.45)}
 :root .mochila .mo-it{border:1px solid rgba(173,196,185,.26)}
+@media (min-width:821px) and (max-height:820px){:root .card-mercado .franja .fr-it:first-child{border-bottom:none}}
 @media (min-width:821px) and (max-height:820px){:root .card-mercado .franja .fr-it + .fr-it{border-left:1px solid rgba(37,72,56,.8)}}
 :root .rf-barra{background:rgba(15,39,28,.72)}
+:root .rf-barra.atk:hover{background:rgba(255,59,82,.1)}
+:root .rf-barra.def:hover{background:rgba(77,155,240,.1)}
 :root .ba-foto::after{background:linear-gradient(180deg, rgba(15,39,28,.08) 0%, rgba(15,39,28,.82) 78%, rgba(15,39,28,.97) 100%)}
 :root .ba-track i{background:rgba(37,72,56,.9)}
+:root .rf-barra.atk .ba-track i.on{background:var(--red)}
+:root .rf-barra.def .ba-track i.on{background:var(--blue)}
+:root .ba-track i.nuevo{background:var(--gold)}
 :root .cupo{background:rgba(7,19,14,.7)}
+:root .cupo.lleno{background:var(--gold)}
 :root .hist-fila{border-bottom:1px solid rgba(39,61,51,.5)}
+:root .hist-fila:last-child{border-bottom:none}
 :root .gf,:root .sit,:root .aviso,:root .play,:root .card{background:linear-gradient(160deg, rgba(17,44,32,.96) 0%, rgba(7,19,14,.97) 100%)}
 :root .play .p-art::after{background:linear-gradient(180deg, transparent, rgba(7,19,14,.85))}
 :root .item-ficha:not(.ficha-gol){background:linear-gradient(180deg, rgba(12,32,23,.99), rgba(7,19,14,.99))}
 :root .item-ficha:not(.ficha-gol) .if-btn{background:rgba(10,22,16,.8);border-color:rgba(173,196,185,.28)}
 :root .item-ficha:not(.ficha-gol) .if-btn.alt{background:rgba(10,22,16,.8);border-color:rgba(173,196,185,.28)}
-:root .item-ficha:not(.ficha-gol) .if-btn.n-linea{background:rgba(10,22,16,.8)}
+:root .item-ficha:not(.ficha-gol) .if-btn.n-verde{background:linear-gradient(165deg, #4ae87a, #25b955);border-color:#8ff5ae}
+:root .item-ficha:not(.ficha-gol) .if-btn.n-linea{background:rgba(10,22,16,.8);border-color:var(--line)}
 :root .if-ico{background:rgba(6,15,11,.85)}
+:root .if-art.sin-foto .if-ico{background:none}
+:root .item.abierto{border-color:var(--fi-luz) !important}
+:root .item.abierto{border-color:var(--gold) !important}
+:root .board .cell.foco{background-color:rgba(255,255,255,.05)}
 :root .cell .c-out .mj-lb{background:rgba(34,58,47,.5)}
+:root .cell.tono-good .c-out .mj-lb.gol{background:rgba(61,220,107,.16)}
+:root .cell.tono-bad .c-out .mj-lb.gol{background:rgba(255,59,82,.16)}
 :root .cell .c-esc{background:rgba(34,58,47,.5)}
+:root .regla:first-child{border-top:none}
 :root .ft{background:rgba(8,13,11,.92)}
 :root .mam-art::after{background:linear-gradient(180deg,transparent,rgba(7,19,14,.93))}
 :root .sit.mam .p-vnum{background:rgba(34,58,47,.5)}
 :root .sit .palo{background:linear-gradient(160deg,rgba(17,44,32,.95),rgba(7,19,14,.96))}
+:root .sit .palo.elegido{background:rgba(245,200,66,.14)}
 :root .sit.moneda .palo{background:rgba(12,32,23,.55)}
+:root .sit.moneda .palo:hover:not(:disabled){background:rgba(245,200,66,.1)}
+:root .sit.moneda .palo.elegido{background:rgba(245,200,66,.14)}
 :root .gf.con-art .gf-txt{background:linear-gradient(180deg,transparent,rgba(7,19,14,.55) 35%,rgba(7,19,14,.94))}
 :root .menu-op{background:linear-gradient(160deg, rgba(17,44,32,.95), rgba(7,19,14,.96))}
 :root .menu-op.principal{background:linear-gradient(160deg, rgba(38,32,4,.9), rgba(9,25,18,.96))}
 :root .card-club .club-bs input{background:rgba(7,19,14,.72)}
 :root .club-tira::-webkit-scrollbar-track{background:rgba(7,19,14,.5)}
 :root .tr-eq{background:rgba(7,19,14,.45)}
+:root .tr-eq.sel{background:rgba(245,200,66,.13)}
 :root .opt .pend{border:1px solid rgba(39,61,51,.8);background:rgba(7,18,13,.5)}
-@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelEquipo{background:linear-gradient(180deg,rgba(15,39,28,.92),rgba(7,19,14,.95))}:root #panelPlantel{background:linear-gradient(180deg,rgba(15,39,28,.92),rgba(7,19,14,.95))}:root #m-aguante{border-right:1px solid rgba(173,196,185,.18)}:root #panelEquipo .med-art{background:rgba(173,196,185,.16)}:root .item-hueco{border:1px dashed rgba(173,196,185,.22)}:root #panelPlantel .stat{background:linear-gradient(160deg,rgba(17,44,32,.95),rgba(7,19,14,.96))}:root .panel-log{background:linear-gradient(180deg,rgba(14,36,25,.98),rgba(7,19,14,.99))}:root .log-fab{background:linear-gradient(160deg,rgba(21,54,39,.97),rgba(8,22,16,.98))}}
-@media (min-width:1025px), (min-width:821px) and (orientation:landscape){:root #panelPlantel .stat{background:linear-gradient(160deg,rgba(17,44,32,.95),rgba(7,19,14,.96))}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelEquipo{background:linear-gradient(180deg,rgba(15,39,28,.92),rgba(7,19,14,.95))}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelPlantel{background:linear-gradient(180deg,rgba(15,39,28,.92),rgba(7,19,14,.95))}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelPlantel .stat{border:none}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #m-aguante{border-right:1px solid rgba(173,196,185,.18)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelEquipo .med-art{background:rgba(173,196,185,.16)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelEquipo .hearts .med-art.on{background:var(--red)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelEquipo .racha-track .med-art.on{background:var(--gold)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root .item-hueco{border:1px dashed rgba(173,196,185,.22)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelPlantel{background:none}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelPlantel .stat{background:linear-gradient(160deg,rgba(17,44,32,.95),rgba(7,19,14,.96));border:1px solid var(--line)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root .panel-log{background:linear-gradient(180deg,rgba(14,36,25,.98),rgba(7,19,14,.99))}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root .log-fab{background:linear-gradient(160deg,rgba(21,54,39,.97),rgba(8,22,16,.98))}}
+@media (min-width:1025px), (min-width:821px) and (orientation:landscape){:root #panelPlantel .stat{background:linear-gradient(160deg,rgba(17,44,32,.95),rgba(7,19,14,.96));border:1px solid var(--line)}}
+@media (min-width:1025px), (min-width:821px) and (orientation:landscape){:root #panelPlantel .stat.atk{border-left:3px solid var(--red)}}
+@media (min-width:1025px), (min-width:821px) and (orientation:landscape){:root #panelPlantel .stat.def{border-left:3px solid var(--blue)}}
+@media (hover:none){:root .palo:hover:not(:disabled):not(.elegido),:root .sit .palo:hover:not(:disabled):not(.elegido),:root .sit.mam .palo:hover:not(:disabled):not(.elegido),:root .sit.mam.tono-good .palo:hover:not(:disabled):not(.elegido),:root .sit.mam.tono-hot .palo:hover:not(:disabled):not(.elegido),:root .sit.mam.tono-risk .palo:hover:not(:disabled):not(.elegido),:root .sit.penal .palo:hover:not(:disabled):not(.elegido){background:var(--panel2)}}
+@media (hover:none){:root .pick-stat.atk:hover,:root .pick-stat.def:hover{background:var(--panel2)}}
+@media (hover:none){:root .item:hover:not(:disabled){background:var(--panel2);border-color:var(--line)}}
+@media (hover:none){:root .item.abierto:hover,:root .item.apuntando:hover{border-color:var(--gold)}}
+@media (hover:none){:root .item.apuntando:hover{background:#1e1a0c}}
 :root .aviso .a-foto::after{background:linear-gradient(180deg,transparent,rgba(7,19,14,.5) 38%,rgba(7,19,14,.97))}
 :root .fg-art::after{background:linear-gradient(180deg,rgba(7,19,14,0) 34%,rgba(7,19,14,.9) 78%,rgba(7,19,14,.96))}
-:root .sit.llena .sit-botones .cta.alt{border-color:rgba(173,196,185,.42)}
+:root .sit.fundida .sit-botones .cta{background:linear-gradient(165deg,#ff5a6e,#d21f34)}
+:root .sit.llena .sit-botones .cta{background:linear-gradient(165deg,#4ae87a,#25b955)}
+:root .sit.llena .sit-botones .cta.alt{border-color:rgba(173,196,185,.42);background:transparent}
+:root .sit.llena .sit-botones .cta.alt:hover{border-color:var(--white)}
 :root .sw-b{background:rgba(9,25,18,.7)}
 :root .pizarra{background:rgba(9,25,18,.6)}
 :root .pz-punto{border:1.5px solid var(--line2, #305443);background:rgba(7,19,14,.7)}
+:root .pz-punto.gol{border-color:var(--green);background:var(--green)}
+:root .pz-punto.fallo{border-color:var(--red);background:var(--red)}
+:root .pz-punto.ahora{border-color:var(--gold)}
 :root .mm-velo{background:linear-gradient(180deg,
     rgba(7,19,14,.82) 0%, rgba(7,19,14,.42) 26%,
     rgba(7,19,14,.72) 52%, rgba(7,19,14,.97) 78%, #040907 100%)}
@@ -10107,23 +10176,36 @@ html.html-menu, html.html-menu body{overflow:hidden}
 @media (max-width:420px){:root .dc-ops:not(.sola) .dc-art::after{background:linear-gradient(90deg,transparent,rgba(7,19,14,.9))}}
 @media (max-height:430px){:root .dc-ops .dc-art::after{background:linear-gradient(90deg,transparent,rgba(7,19,14,.9))}}
 :root .regla{border-top:1px solid rgba(37,72,56,.55)}
+:root .regla:first-child{border-top:none}
 :root .rg-vis{background:rgba(7,19,14,.55);box-shadow:inset 0 0 0 1px rgba(37,72,56,.85)}
+:root .regla.fila .rg-vis{background:none;box-shadow:none}
 :root .tu-c{background:rgba(7,19,14,.75)}
 :root .tu-art{background:rgba(12,32,23,.9) center/cover no-repeat}
 :root .gf.gol-foto .gfo::after{background:radial-gradient(120% 90% at 50% 45%, rgba(7,19,14,.2), rgba(7,19,14,.8))}
 :root .gf.gol-foto .t{text-shadow:0 4px 26px rgba(4,10,7,.95)}
-:root .card-remate{border:1px solid rgba(37,72,56,.95);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),
+:root .card-remate{border:1px solid rgba(37,72,56,.95);border-top:2px solid var(--filo);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),
     0 2px 0 rgba(82,125,105,.3), 0 4px 0 rgba(23,41,33,.36),
     0 24px 44px -12px rgba(0,0,0,.85)}
 :root .rm-banner{background:linear-gradient(180deg, rgba(20,52,37,.92), rgba(9,23,17,.72))}
 :root .rm-cinta{background:rgba(6,15,11,.6)}
 :root .rm-chapas .chapa{background:rgba(21,45,34,.55)}
+:root .cta.jugar{background:linear-gradient(165deg,#4ae87a,#25b955)}
+@media (hover:hover){:root .cta.jugar:hover{background:linear-gradient(165deg,#5cf089,#2ecb60)}}
+@media (max-height:700px){:root .rm-cuerpo .hist-fila{border:1px solid var(--line);border-bottom:2px solid var(--green)}}
+@media (max-height:700px){:root .rm-cuerpo .hist-fila.no{border-bottom-color:var(--red)}}
 :root .card-remate .pd-caja,:root .card-remate .rm-chapas .chapa,:root .card-remate .hist,:root .card-remate .pr-franja,:root .card-remate .marcador{background:rgba(6,15,11,.62);box-shadow:inset 0 2px 6px rgba(0,0,0,.6), inset 0 -1px 0 rgba(173,196,185,.09)}
+:root .card-remate .pd-caja.viene{background:rgba(245,200,66,.08)}
 :root .pd-caja{background:rgba(21,45,34,.5)}
 :root .pd-pie{border-top:1px solid rgba(173,196,185,.2)}
-:root .pe-t{border-bottom:3px solid rgba(173,196,185,.18)}
+:root .pd-caja.viene{background:rgba(245,200,66,.09)}
+:root .pd-caja.ancha .pd-pie{border-top:none}
+:root .pe-t{border:0;border-bottom:3px solid rgba(173,196,185,.18)}
+:root .pe-t.ok{border-bottom-color:var(--green)}
+:root .pe-t.va{border-bottom-color:var(--gold)}
 :root .pr-franja{background:rgba(21,45,34,.55)}
 :root .pn-chapas .chapa{background:rgba(21,45,34,.55)}
+:root .pn-chapas .chapa.ok{background:rgba(20,70,44,.4)}
+:root .pn-chapas .chapa.no{background:rgba(70,18,28,.4)}
 :root .pn-tira b{background:rgba(21,45,34,.5)}
 :root .tu-fi .tu-banda::after{background:linear-gradient(180deg,rgba(7,19,14,0),rgba(7,19,14,.88))}
 :root .tu-fi{background:rgba(21,45,34,.45)}
@@ -10136,30 +10218,45 @@ html.html-menu, html.html-menu body{overflow:hidden}
 :root .cell .c-out{text-shadow:0 1px 6px #07130e, 0 0 3px #07130e}
 :root .cell .c-nm{text-shadow:0 1px 2px rgba(4,10,7,.95), 0 0 6px rgba(4,10,7,.75)}
 :root .cell .c-val.r,:root .cell .c-val.b{background:rgba(7,19,14,.72)}
+:root .cell .c-esc{background:none}
 :root .play.con-foto{--velo:linear-gradient(180deg,
     rgba(7,19,14,.92) 0%, rgba(7,19,14,.34) 26%, rgba(7,19,14,.12) 46%,
     rgba(7,19,14,.7) 68%, rgba(7,19,14,.96) 88%, rgba(7,19,14,.99) 100%)}
 :root .play.con-foto.arriba{--velo:linear-gradient(180deg,
     rgba(7,19,14,.58) 0%, rgba(7,19,14,.16) 24%, rgba(7,19,14,.1) 46%,
     rgba(7,19,14,.7) 68%, rgba(7,19,14,.96) 88%, rgba(7,19,14,.99) 100%)}
+:root .play.con-foto .p-art::after{background:var(--velo)}
 :root .play.con-foto .p-cinta{background:linear-gradient(180deg, rgba(4,10,7,.82), rgba(4,10,7,0))}
 :root .play.con-foto .p-nm{text-shadow:0 2px 5px rgba(4,10,7,.95), 0 0 16px rgba(4,10,7,.85)}
 :root .play.con-foto .p-val,:root .play.con-foto .p-out,:root .play.con-foto .p-go{text-shadow:0 1px 4px rgba(4,10,7,.9)}
 :root .play.con-foto .p-out{background:rgba(4,10,7,.42)}
 :root .card-pie{background:rgba(7,19,14,.97);box-shadow:0 26px 0 rgba(7,19,14,.97)}
-@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelEquipo .med-art{background:rgba(173,196,185,.14)}:root .item .ii{background:rgba(7,19,14,.7)}:root .item:not(.apuntando):has(.ef-var){background:linear-gradient(135deg,rgba(79,163,255,.3),rgba(14,29,22,.9) 70%)}:root #panelPlantel .stat.atk{background:repeating-linear-gradient(-45deg,rgba(255,59,82,.14) 0 5px,transparent 5px 10px),
-               linear-gradient(160deg,rgba(60,8,20,.95),rgba(7,19,14,.96))}:root #panelPlantel .stat.def{background:repeating-linear-gradient(-45deg,rgba(79,163,255,.14) 0 5px,transparent 5px 10px),
-               linear-gradient(160deg,rgba(18,38,29,.95),rgba(7,19,14,.96))}:root #panelPlantel .stat .n{background:rgba(7,19,14,.75)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelEquipo .med-art{background:rgba(173,196,185,.14)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelEquipo .hearts .med-art.on{background:linear-gradient(180deg,rgba(255,255,255,.55) 0 30%,transparent 30%),var(--red)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelEquipo .racha-track .med-art.on{background:linear-gradient(180deg,rgba(255,255,255,.6) 0 30%,transparent 30%),var(--gold)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root .item .ii{background:rgba(7,19,14,.7)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root .item:not(.apuntando):has(.ef-ag){background:linear-gradient(135deg,rgba(255,59,82,.3),rgba(40,8,20,.9) 70%);border-color:rgba(255,59,82,.55)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root .item:not(.apuntando):has(.ef-ra){background:linear-gradient(135deg,rgba(245,200,66,.3),rgba(36,28,6,.9) 70%);border-color:rgba(245,200,66,.55)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root .item:not(.apuntando):has(.ef-var){background:linear-gradient(135deg,rgba(79,163,255,.3),rgba(14,29,22,.9) 70%);border-color:rgba(79,163,255,.55)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelPlantel .stat.atk{background:repeating-linear-gradient(-45deg,rgba(255,59,82,.14) 0 5px,transparent 5px 10px),
+               linear-gradient(160deg,rgba(60,8,20,.95),rgba(7,19,14,.96));border-color:rgba(255,59,82,.6)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelPlantel .stat.def{background:repeating-linear-gradient(-45deg,rgba(79,163,255,.14) 0 5px,transparent 5px 10px),
+               linear-gradient(160deg,rgba(18,38,29,.95),rgba(7,19,14,.96));border-color:rgba(79,163,255,.6)}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root #panelPlantel .stat .n{background:rgba(7,19,14,.75)}}
+@media (max-width:360px){:root .item .ii{background:none}}
 @media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root .col-pick{background:linear-gradient(180deg,rgba(173,196,185,.4) 0 2px,transparent 2px),
                linear-gradient(180deg,rgba(15,39,28,.92),rgba(7,19,14,.95))}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root .col-picks.lista .col-pick{background:linear-gradient(180deg,var(--gold) 0 2px,transparent 2px),var(--panel)}}
 @media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root .row-pick:not(:disabled){background:linear-gradient(270deg,rgba(255,255,255,.55) 0 2px,transparent 2px),
-               linear-gradient(180deg,rgba(15,39,28,.92),rgba(7,19,14,.95))}:root .row-pick:disabled{background:linear-gradient(270deg,rgba(173,196,185,.3) 0 2px,transparent 2px),
+               linear-gradient(180deg,rgba(15,39,28,.92),rgba(7,19,14,.95))}}
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){:root .row-pick:disabled{background:linear-gradient(270deg,rgba(173,196,185,.3) 0 2px,transparent 2px),
                linear-gradient(rgba(13,23,18,.75),rgba(13,23,18,.75))}}
 :root .aviso.dc .dc-op{background:#07130e}
 :root .aviso.dc .dc-op .dc-art::after{background:linear-gradient(180deg,rgba(7,19,14,.9) 0%,rgba(7,19,14,.2) 32%,rgba(7,19,14,.25) 55%,rgba(7,19,14,.95) 82%)}
 :root .dc-nm{text-shadow:0 1px 4px #07130e}
 :root .dc-res{text-shadow:0 1px 6px #07130e}
 :root .item-ficha:not(.ficha-gol){background:linear-gradient(180deg,rgba(37,65,52,.74),rgba(18,35,27,.8))}
+:root .item.abierto{border-color:#fff !important}
 @media (max-width:440px) and (orientation:portrait){:root .card-reglas .reglas .tu-fi.sola .tu-banda::after{background:linear-gradient(90deg,rgba(7,19,14,.55) 0%,rgba(7,19,14,.88) 45%,rgba(7,19,14,.95) 100%)}}
 /* ---- fin del recolor automático ---- */
 
@@ -10212,7 +10309,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
   position:relative;overflow:hidden;isolation:isolate;
 }
 :root .cta:not(.alt), :root .cta.n-verde, :root .cta.n-oro, :root .cta.jugar{
-  background:var(--gold);color:#140c00;border:0;
+  background:var(--gold);color:#140c00;border:2px solid var(--gold);
   box-shadow:0 0 0 1px rgba(255,178,26,.6), 0 0 28px rgba(255,178,26,.35), inset 0 -3px 0 rgba(0,0,0,.25);
   text-shadow:none;
 }
@@ -10356,6 +10453,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
    los otros rótulos), JUGAR OTRO CAMPEONATO y el título de las fichas en puntos. */
 :root .m-eq{font-family:var(--tit);font-weight:700}
 :root .cta.jugar{letter-spacing:.5px}
+:root #card .cta.jugar{padding-left:8px;padding-right:8px}   /* con el borde de 2px, en 390 volvía a partirse */
 /* En 320 y 375 SUPLENTES se cortaba y LA POSIBILIDAD DE GOL bajaba de renglón.
    El clásico les cambia el espaciado en cada ancho con reglas muy específicas;
    acá se fija uno solo, un poco más cerrado, para todos los anchos. */
@@ -10388,6 +10486,20 @@ html.html-menu, html.html-menu body{overflow:hidden}
   :root .sit.sorteo .t{font-size:34px}
   :root .overlay .cta, :root .sit .cta, :root .aviso .cta{letter-spacing:1px}
 }
+
+/* El botón principal de las fichas —USAR en los ítems, USAR LA RACHA en la
+   posibilidad de gol— en ámbar, como los otros botones principales del LED. */
+:root .item-ficha .if-btn.n-verde,
+:root .item-ficha:not(.ficha-gol) .if-btn.n-verde,
+:root .item-ficha.ficha-gol .if-btn.n-verde{
+  background:var(--gold);border-color:var(--gold);color:#140c00;
+  box-shadow:0 0 0 1px rgba(255,178,26,.6), 0 0 22px rgba(255,178,26,.3), inset 0 -2px 0 rgba(0,0,0,.22);
+}
+:root .item-ficha .if-btn.n-verde .ic{color:#140c00}
+/* Saira Condensed tiene un interlineado natural de ~1,57 y Tektur mucho menos:
+   los botones que no lo fijaban quedaban más bajos (en el SE, de 34 a 27px, justo
+   en el límite del dedo). Con el de Saira miden lo mismo que en el clásico. */
+:root .cta, :root .if-btn{line-height:1.57}
 </style>
 <script>
 /* ?clasico=1 apaga el estilo PANTALLA LED y deja el clásico (v280). */
@@ -12234,7 +12346,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 281;
+const VERSION = 282;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

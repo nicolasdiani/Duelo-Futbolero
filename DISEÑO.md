@@ -15450,3 +15450,43 @@ corta ni sobra más que en el clásico salvo el mercado acostado (+13px) y en
 400x768 (+4px); CAMPEÓN y el mercado del 17 Pro pasan a entrar sin scroll.
 Ningún azul marino visible en las 31. Prueba general 47/47 en 402x784, 320x568
 y en la columna de 1280x800.
+
+## v282 · revisión de maquetación del LED y el botón USAR en ámbar
+
+**USAR en ámbar.** En el iPhone, el botón USAR de la ficha de los ítems se veía
+vacío: oscuro y con la letra oscura. La causa era la capa de recolor de la v281:
+cada regla repetida lleva `:root` adelante (un punto más de peso) y le ganaba a
+las variantes que antes la pisaban (`.if-btn.n-verde` sobre `.if-btn`).
+`gen-recolor.js` ahora repite también esas variantes, en su orden original
+(216 reglas en vez de 130), y el botón principal de las fichas (USAR, USAR LA
+RACHA) va en ámbar como los otros botones principales del LED.
+
+**Revisión completa.** Un medidor nuevo recorre las 31 pantallas y estados y
+busca textos que se pisan, textos recortados o fuera de pantalla, tarjetas
+descentradas, filas de botones desalineadas, botones chicos para el dedo, scroll
+horizontal, botones de otro alto y scroll de más, comparando el LED contra el
+clásico en 320x568, 360x740, 375x667, 390x844, 393x762, 402x784, 402x874,
+412x915, 430x932, 440x956, 768x1024, 1024x1366, 410x800 (la columna) y 844x390.
+Lo que encontró y se arregló:
+
+- Los botones sin interlineado propio quedaban más bajos: Saira Condensed tiene
+  uno natural de ~1,57 y Tektur mucho menos (en el SE, de 34 a 27px). Ahora
+  `.cta` e `.if-btn` llevan 1,57, y los botones ámbar recuperan su borde de 2px.
+  Con eso miden lo mismo que en el clásico en todos los tamaños.
+- JUGAR OTRO CAMPEONATO volvía a partirse en 390: 8px de relleno a los costados.
+- **Pie de las tarjetas (también en el clásico).** El pie sticky quedaba
+  `--cpy` más arriba aunque todo entrara y tapaba lo último de la lista (el
+  mercado en el SE). Ahora `bottom: calc(var(--cpy) * -1)`, como se hizo en
+  «¿Cómo se juega?» en v278, para todas las tarjetas.
+- **Columnas de la mesa (también en el clásico).** `.cells` pasa a
+  `repeat(4, minmax(0,1fr))` con `min-width:0`: con el teléfono acostado las
+  cartas se salían de la mesa y quedaban debajo del panel TU EQUIPO. En vertical
+  no cambia nada.
+
+Resultado: fuera del teléfono acostado, nada propio del LED en ningún tamaño; los
+mismos botones al mismo alto y nunca más scroll que en el clásico. Prueba general
+47/47 en 402x784 y en la columna de 1280x800. Ningún azul marino visible.
+
+Quedan, iguales que en el clásico: con el teléfono acostado la mesa es muy
+angosta (cartas de ~56px, la fila de columnas no entra); los enlaces del pie
+miden 17px de alto; los puntos de color del 1 vs 1 miden 6px.
