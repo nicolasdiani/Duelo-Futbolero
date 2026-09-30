@@ -11808,7 +11808,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 278;
+const VERSION = 279;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -16517,12 +16517,15 @@ function perfilLinea(R){
   '</span>';
 }
 
-function cabeceraRival(R){
+/* El rótulo de arriba (v279): en el debut de la copa no hay «próximo», es el
+   primero. El partido único y los refuerzos entre partidos siguen con
+   PRÓXIMO PARTIDO. */
+function cabeceraRival(R, rot){
   const esc = R.eq ? escudoDe(escudoDeEquipo(R.eq), 38) : '';
   return '<div class="rf-prox">' +
     (esc ? '<span class="px-esc">' + esc + '</span>' : '') +
     '<span class="px-tx">' +
-      '<span class="px-rot">PRÓXIMO PARTIDO</span>' +
+      '<span class="px-rot">' + (rot || 'PRÓXIMO PARTIDO') + '</span>' +
       '<b><span class="px-nm">' + R.rival + '</span>' +
         '<i class="px-chapa">' + R.name + '</i></b>' +
       perfilLinea(R) +
@@ -16572,7 +16575,7 @@ function showRefuerzo(debut){
   openCard(
     '<div class="tag">VESTUARIO</div>' +
     (debut ? '<h1>ARMÁ TU<br><em>PLANTEO</em></h1>' : '<h1>SUMÁ UN<br><em>REFUERZO</em></h1>') +
-    cabeceraRival(R) +
+    cabeceraRival(R, debut && G.formato !== 'unico' ? 'PRIMER PARTIDO' : '') +
     '<div class="rf-barras">' +
       barraStat('atk', 'ATAQUE', G.atk, 'defensores y arqueros', 'delantero') +
       barraStat('def', 'DEFENSA', G.def, 'medios y delanteros', 'arquero') +

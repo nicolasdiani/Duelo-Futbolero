@@ -15403,3 +15403,11 @@ textos cortados en 320x568, 375x667, 360x740, 393x762, 402x784, 375x812,
 360x800, 390x844, 360x844, 402x874, 430x932 y en la columna de 1280x800
 (410x800) y 1366x768 (400x768). La prueba general pasa 47/47 en 402x784 y en la
 columna de 1280x800.
+
+## v279 · «PRIMER PARTIDO» en el vestuario del debut
+
+En ARMÁ TU PLANTEO, antes del primer partido de la copa, la cabecera del rival
+decía PRÓXIMO PARTIDO. Ahí no hay próximo: es el primero. Ahora dice **PRIMER
+PARTIDO**. Sólo ahí: SUMÁ UN REFUERZO entre partidos y el vestuario del partido
+único siguen con PRÓXIMO PARTIDO. `cabeceraRival(R, rot)` recibe el rótulo;
+sin él, el de siempre.
