@@ -10658,6 +10658,14 @@ html.html-menu, html.html-menu body{overflow:hidden}
 @media (max-width:1024px) and (orientation:portrait), (max-width:820px){
   :root .card-remate .rm-banner{padding-top:11px;padding-bottom:10px}
 }
+
+/* ---- EL ÍCONO DE COMPARTIR, DEL COLOR DE SU BOTÓN (v290) ----
+   `:root .cta:not(.alt) svg` pinta casi negro el ícono de los botones dorados
+   rellenos, y COMPARTIR (CAMPEÓN y ELIMINADO) es el único `.cta` de línea con
+   ícono: fondo transparente y letra dorada, así que el ícono quedaba negro
+   sobre el fondo oscuro y no se veía. En los botones de línea el ícono va del
+   color de la letra. En el estilo clásico ya era así. */
+:root .cta.n-linea svg, :root .cta.n-linea .ic{color:var(--gold)}
 </style>
 <script>
 /* ?clasico=1 apaga el estilo PANTALLA LED y deja el clásico (v280). */
@@ -12504,7 +12512,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 289;
+const VERSION = 290;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

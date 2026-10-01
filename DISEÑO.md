@@ -15641,3 +15641,15 @@ por tamaño) con los cuatro cruces posibles, las figuras nunca se pisan, la pelo
 siempre con el que gana y todo queda adentro de la cancha. Prueba general 48/48
 (las pruebas de los mini juegos pasan a pedir el aro, las manos, los pasos y el
 avance).
+
+## v290 · el ícono de COMPARTIR se ve
+
+En el estilo LED, una regla pinta casi negro el ícono de los botones dorados
+rellenos (EMPEZAR, IR AL VESTUARIO, JUGAR OTRO CAMPEONATO...). COMPARTIR, en
+CAMPEÓN y en ELIMINADO, es el único botón de línea con ícono: fondo
+transparente y letra dorada. Le tocaba la misma regla, así que el ícono quedaba
+negro sobre el fondo oscuro y no se veía.
+
+Ahora, en los botones de línea, el ícono va dorado como la letra. En el estilo
+clásico ya era así. Se revisaron los íconos de todos los botones en las 31
+pantallas: ése era el único que no contrastaba con su botón.
