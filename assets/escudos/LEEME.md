@@ -54,7 +54,7 @@ de referencia, y el juego los vuelve a usar con `?escudos=dibujados`.
 | archivo | qué es |
 |---|---|
 | `reales/<club>-192.webp` | 160×192, para todo lo que se ve de 17 a 70px (~8 KB) |
-| `reales/<club>-480.webp` | 400×480, para el escudo grande del vestuario (120px) |
+| `reales/<club>-600.webp` | 500×600, para el escudo grande de la elección de club (120px, ~26 KB) |
 
 Salen de los PNG originales de 1500px, con el margen transparente recortado y
 el escudo centrado en una caja 5:6. Es la misma proporción que el dibujo

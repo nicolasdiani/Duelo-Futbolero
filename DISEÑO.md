@@ -15785,3 +15785,35 @@ escena, con el azar fijo, en 31 pantallas: 556 escudos en 402×784 y 440×956,
 140 en 320×568 y 556 en el estilo clásico. Ninguno cambia de lugar ni de
 tamaño, y todas las imágenes cargan. Prueba general 49/49.
 `?escudos=dibujados` vuelve a los dibujados.
+
+## v295 · los escudos, probados en 17 pantallas y nítidos en la tablet
+
+Testeo completo de los escudos reales en los dispositivos más usados:
+
+- 11 teléfonos: 320×568, 360×740, 375×667, 390×844, 393×852, 402×784, 402×874,
+  412×915, 430×932, 440×956 (éste, con la comparación de cajas de la v294) y
+  844×390 acostado;
+- 4 tablets: 768×1024, 854×1180, 1024×1366 y 1180×820 acostada;
+- 2 compus: 1366×657 y 1920×960.
+
+En cada una se recorrieron las 31 pantallas. Cada escudo real se cambió por el
+dibujado en el mismo lugar para comparar la caja. **Ninguno se mueve ni cambia de
+tamaño, y todas las imágenes cargan.** La hoja de los treinta sobre el fondo de
+la marquesina, de las fichas y de las cartas no muestra problemas de contraste:
+casi todos traen su propio borde claro.
+
+Lo que apareció fue nitidez en la tablet. El navegador elige el archivo por el
+tamaño que se le dice y la densidad de la pantalla, pero no sabe que el marco
+agranda todo (x1,5 en una tablet parada, v293). En una tablet de densidad 3, el
+escudo de la elección de club se veía a 181px con un archivo de 400, y el del
+marcador a 63px con uno de 160.
+
+- El archivo grande pasa de 480 a **600 de alto** (26 KB). Se baja uno solo: el
+  de la elección de club.
+- El `sizes` lleva el agrandado del marco y un 25% más, por las pantallas que
+  agrandan el escudo por CSS.
+
+Resultado: en el teléfono (densidad 3) 540 de 541 escudos bajan el archivo
+chico; el grande sólo lo baja la elección de club. En la tablet parada no queda
+ninguno borroso, ni a densidad 3. Queda un único caso: el iPad Pro de 12,9" si
+tuviera densidad 3. Tiene densidad 2, y ahí se ve nítido. Prueba general 49/49.

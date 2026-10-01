@@ -11440,8 +11440,19 @@ function escudoRivalNuevo(evitar){
    imagen que para el SVG.
 
    Dos tamaños por club: 192 de alto (8 KB en promedio) para todo lo que se ve
-   de 17 a 70px, y 480 para el escudo grande del vestuario (120px). El
-   `srcset` deja que el navegador baje sólo el que hace falta.
+   de 17 a 70px, y 600 (26 KB) para el escudo grande de la elección de club
+   (120px). El `srcset` deja que el navegador baje sólo el que hace falta.
+
+   **El `sizes` pide de más a propósito** (v295). El navegador elige el archivo
+   por el tamaño que le decimos y la densidad de la pantalla, pero no sabe que
+   en la tablet y la compu el marco agranda todo (hasta x1,74, v293), ni que
+   algunas pantallas agrandan el escudo por CSS (el del vestuario se pide de 40
+   y se ve de 58). Se le dice el tamaño por el agrandado del marco y por 1,25:
+   en el teléfono sigue bajando el chico para todo lo que no pasa de 42px, y en
+   la tablet baja el grande cuando de verdad hace falta. Con 1,5 el escudo de
+   38px del próximo rival bajaba el grande en el teléfono sin necesitarlo. Antes, en una tablet
+   de densidad 3, el escudo de la elección de club se veía a 209px con un
+   archivo de 400, y el del marcador a 73 con uno de 160.
 
    **Cuál es el club** se sabe por el escudo mismo: cada uno de los treinta
    tiene una combinación única de forma, colores y dibujo, así que no hace falta
@@ -11502,12 +11513,18 @@ function escudoRealDe(e){
 
 /* El escudo de un club es un objeto de cuatro campos, y `pat` puede no
    estar: los escudos armados a mano no lo traen. */
+/* Cuánto agranda el marco de la tablet y la compu (1 en el teléfono). */
+function escalaDelMarco(){
+  try{ const f = window.frameElement; return f ? (f.getBoundingClientRect().width / window.innerWidth) || 1 : 1; }
+  catch(e){ return 1; }
+}
 function escudoDe(e, size){
   const real = escudoRealDe(e);
   if(real){
     const r = 'assets/escudos/reales/' + real;
-    return '<img class="escudo esc-real" src="' + r + '-192.webp" srcset="' + r + '-192.webp 160w, ' + r + '-480.webp 400w"' +
-      ' sizes="' + size + 'px" width="' + size + '" height="' + Math.round(size * 1.2) + '" alt="" decoding="async" draggable="false">';
+    const pide = Math.round(size * 1.25 * escalaDelMarco());
+    return '<img class="escudo esc-real" src="' + r + '-192.webp" srcset="' + r + '-192.webp 160w, ' + r + '-600.webp 500w"' +
+      ' sizes="' + pide + 'px" width="' + size + '" height="' + Math.round(size * 1.2) + '" alt="" decoding="async" draggable="false">';
   }
   return escudoSVG(size, e.forma, e.c1, e.c2, e.pat);
 }
@@ -12675,7 +12692,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 294;
+const VERSION = 295;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
