@@ -9823,6 +9823,12 @@ html.html-menu, html.html-menu body{overflow:hidden}
      tuya). El cartel ENCARÁS / MARCÁS / DEFENDER se fue: lo que hay que hacer
      ya lo dice la pregunta. */
 .mj-marca{pointer-events:none}
+/* **Los jugadores, delante de los recuadros** (v298). Las zonas del arco y los
+   dos lados de los duelos ahora se dibujan detrás del arquero, los jugadores y
+   la pelota; todo eso deja pasar el toque, así que tocar sobre un jugador
+   elige el recuadro que tiene abajo, igual que antes. */
+.parco .pp-arq,.parco .pp-pel,.parco .pp-atajo,.parco .pp-flash,
+.duelo .dl-fig,.duelo .dl-pel,.duelo .dl-chog,.duelo .dl-robo{pointer-events:none}
 .mj-aro{fill:var(--green);fill-opacity:.18;stroke:var(--green);stroke-width:1.8}
 .mj-onda{fill:none;stroke:var(--green);stroke-width:1.4;
   transform-box:fill-box;transform-origin:center;animation:mjOnda 1.4s ease-out infinite}
@@ -12698,7 +12704,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 297;
+const VERSION = 298;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -15186,6 +15192,11 @@ function arcoPenalHTML(esc, marca){
     '<path class="pp-post" d="M22 104 V14 H178 V104"/>' +
     '<path class="pp-piso" d="M8 108 H192"/>' +
     '<path class="pp-gol" d="M22 104 V14 H178 V104"/>' +
+    /* Las zonas que se tocan van acá, **detrás** del arquero y de la pelota
+       (v298): dibujadas al final les pasaban por encima, con su relleno y su
+       borde blanco. El arquero y la pelota dejan pasar el toque (CSS), así que
+       tocar sobre el arquero sigue eligiendo esa zona. */
+    zonas +
     /* El arquero, con los colores del que ataja. */
     (marca === 'arquero'
       ? '<g class="mj-marca mj-sigue">' + aroTuyo(100, 101, 17, 4.2) + '</g>' : '') +
@@ -15212,7 +15223,6 @@ function arcoPenalHTML(esc, marca){
     '<circle class="pp-atajo" cx="100" cy="112" r="11"/>' +
     /* Y el destello del golpe, entre o no entre. */
     '<circle class="pp-flash" cx="100" cy="112" r="11"/>' +
-    zonas +
   '</svg>';
 }
 
@@ -15832,6 +15842,12 @@ function escenaDuelo(mia){
     '</g>' +
     '<path class="dl-cal" d="M8 118 H192"/>' +
     '<path class="dl-cal pt" d="M100 10 V130"/>' +
+    /* Los dos lados, del borde al borde: el ancho que sobraba al costado no
+       servía para nada y sí sirve para el dedo. Van **detrás** de los
+       jugadores (v298): dibujados al final les pasaban por encima. Los
+       jugadores y la pelota dejan pasar el toque (CSS). */
+    '<rect class="dl-z" data-l="izq" x="6" y="8" width="90" height="124" rx="7"/>' +
+    '<rect class="dl-z" data-l="der" x="104" y="8" width="90" height="124" rx="7"/>' +
     '<g transform="translate(0,12)">' +
       /* `mia` dice de quién es la pelota, y con eso alcanza para repartir el
          movimiento: el que la tiene es el que va a resolver. */
@@ -15843,10 +15859,6 @@ function escenaDuelo(mia){
       '<g class="dl-chog"><circle class="dl-choque" cx="100" cy="74" r="20"/></g>' +
       '<circle class="dl-robo" cx="100" cy="74" r="13"/>' +
     '</g>' +
-    /* Los dos lados, del borde al borde: el ancho que sobraba al costado no
-       servía para nada y sí sirve para el dedo. */
-    '<rect class="dl-z" data-l="izq" x="6" y="8" width="90" height="124" rx="7"/>' +
-    '<rect class="dl-z" data-l="der" x="104" y="8" width="90" height="124" rx="7"/>' +
   '</svg>';
 }
 

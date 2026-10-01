@@ -15881,3 +15881,25 @@ Mismas cajas que antes: el arquero ocupa el mismo lugar (de 76 a 124 de ancho
 y de 48 a 100 de alto) y vuela igual. Control de layout de las 31 pantallas
 igual al anterior. Prueba general 49/49: la del arquero ahora pide el flúor con
 tu escudo.
+
+## v298 · los jugadores, delante de los recuadros que se tocan
+
+En los mini juegos, los recuadros que se tocan se dibujaban al final, encima de
+todo. Son las zonas del arco y los dos lados de los duelos, y con su relleno y
+su borde blanco les pasaban por encima al arquero, a los jugadores y a la pelota.
+
+Ahora se dibujan **detrás**:
+
+- en el arco, justo después de la red y los palos, antes del aro, el arquero y
+  la pelota;
+- en los duelos, antes de los dos jugadores.
+
+El arquero, los jugadores, la pelota y los anillos del choque y del quite
+tienen `pointer-events:none`: dejan pasar el toque. Tocar sobre un jugador
+elige el recuadro que tiene abajo, igual que antes.
+
+Probado en los ocho: penal del partido (atajás y pateás), mano a mano del
+arquero, penal definitorio, tanda final, 1 vs 1, la marca y defender. En los
+ocho los recuadros quedan detrás, y el punto que se toca sobre el arquero o un
+jugador cae en la zona de abajo. Control de layout de las 31 pantallas igual al
+anterior. Prueba general 49/49.
