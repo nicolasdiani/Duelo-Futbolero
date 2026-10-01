@@ -15817,3 +15817,39 @@ Resultado: en el teléfono (densidad 3) 540 de 541 escudos bajan el archivo
 chico; el grande sólo lo baja la elección de club. En la tablet parada no queda
 ninguno borroso, ni a densidad 3. Queda un único caso: el iPad Pro de 12,9" si
 tuviera densidad 3. Tiene densidad 2, y ahí se ve nítido. Prueba general 49/49.
+
+## v296 · los personajes de los mini juegos con la camiseta de su club
+
+El arquero del penal y del mano a mano y los dos jugadores de los duelos eran
+muñecos de dos colores: el torso del primero del escudo y las piernas del
+segundo. Ahora visten **la camiseta de su club**, con su dibujo de verdad
+(rayas, banda, franja, la V de Vélez, las mitades de Newell's), y llevan el
+escudo chico en el pecho. El short va del segundo color y las medias del
+primero; los guantes del arquero, del segundo.
+
+Se compararon tres propuestas: camiseta del club con escudo chico, lisa con
+escudo grande y equipo completo con cuello, puños y volumen. Quedó la primera.
+
+Los colores salen del escudo salvo donde la camiseta de verdad es otra:
+
+- lisas: Independiente, Argentinos, Huracán, Riestra y Sarmiento;
+- con franja horizontal: Gimnasia LP, Platense y Tigre;
+- Racing y Unión, con rayas anchas;
+- Defensa, amarilla con banda verde;
+- Banfield, blanca con rayas verdes;
+- Belgrano, con vivos blancos.
+
+Un escudo que no es de un club (el que se arma a mano en el 1 vs 1, el rival
+al azar) lleva la camiseta lisa en sus colores y su escudo dibujado en el pecho.
+
+Se dibujan en las mismas cajas de antes: torso, mangas, piernas y guantes. Nada
+cambia de lugar, y las manos que suben, los pasos y la estirada siguen igual. El
+arquero ocupa el mismo lugar, así que vuela al mismo palo.
+
+Probado:
+
+- control de layout de las 31 pantallas, igual al anterior;
+- 1 vs 1 con escudos armados a mano;
+- prueba general 49/49. La prueba del arquero ahora pide la camiseta de tu
+  club con el escudo, y la de los duelos, las dos camisetas con escudo y los
+  pasos.

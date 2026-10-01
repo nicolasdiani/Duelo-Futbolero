@@ -11501,14 +11501,20 @@ const ESCUDO_REAL = {
 const ESCUDOS_DIBUJADOS = /[?&]escudos=dibujados/.test(location.search);
 const claveEscudo = e => e && e.pat
   ? [aIndice(e.forma, IDX_ESC), aIndice(e.c1, IDX_COL), aIndice(e.c2, IDX_COL), e.pat].join('/') : '';
-let escudoPorClave = null;   // se arma la primera vez: EQUIPOS está más abajo en el archivo
-function escudoRealDe(e){
-  if(ESCUDOS_DIBUJADOS || !e) return null;
-  if(!escudoPorClave){
-    escudoPorClave = {};
-    EQUIPOS.forEach(q => { if(ESCUDO_REAL[q.nm]) escudoPorClave[claveEscudo(q)] = ESCUDO_REAL[q.nm]; });
+let clubPorClave = null;   // se arma la primera vez: EQUIPOS está más abajo en el archivo
+/* El nombre del club de un escudo, o null si no es de ninguno de los treinta. */
+function clubDeEscudo(e){
+  if(!e) return null;
+  if(!clubPorClave){
+    clubPorClave = {};
+    EQUIPOS.forEach(q => { clubPorClave[claveEscudo(q)] = q.nm; });
   }
-  return escudoPorClave[claveEscudo(e)] || null;
+  return clubPorClave[claveEscudo(e)] || null;
+}
+function escudoRealDe(e){
+  if(ESCUDOS_DIBUJADOS) return null;
+  const nm = clubDeEscudo(e);
+  return nm && ESCUDO_REAL[nm] || null;
 }
 
 /* El escudo de un club es un objeto de cuatro campos, y `pat` puede no
@@ -12692,7 +12698,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 295;
+const VERSION = 296;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -15030,6 +15036,70 @@ function pelotaSVG(x, y, r, cls){
   '</g>';
 }
 
+/* ---------------- LA CAMISETA DEL CLUB (v296) ----------------
+   Los personajes de los mini juegos —el arquero del penal y del mano a mano,
+   los dos jugadores de los duelos— llevaban un muñeco de dos colores: el torso
+   del primero del escudo y las piernas del segundo. Ahora visten **la camiseta
+   de su club**: el dibujo de verdad (rayas, banda, franja, la V, las mitades)
+   y el escudo chico en el pecho. Short del segundo color y medias del primero;
+   los guantes del arquero, del segundo.
+
+   Los colores salen del escudo salvo donde la camiseta es otra: Independiente,
+   Argentinos y Huracán son lisas (la diagonal o las rayas son del escudo),
+   Gimnasia, Platense y Tigre llevan franja horizontal, Racing y Unión rayas
+   anchas, Belgrano vivos blancos. Se compararon tres —camiseta del club,
+   lisa con escudo grande y equipo completo— y quedó la primera.
+
+   El dibujo va en un `svg` anidado con el viewBox de los escudos (100x120),
+   así que usa los mismos `PATRONES` y se recorta solo al torso. Las cajas son
+   las de siempre —torso, mangas, piernas, guantes—: nada cambia de lugar, y las
+   manos que suben, los pasos y la estirada siguen funcionando igual.
+
+   Un escudo que no es de un club (el que se arma a mano en el 1 vs 1, el rival
+   al azar) lleva su camiseta lisa en sus colores y su escudo dibujado. */
+const CAMISETA = {
+  'RIESTRA':['negro','blanco','solido'], 'SARMIENTO':['verde','blanco','solido'], 'ALDOSIVI':['amarillo','verde','rayas'],
+  'I. RIVADAVIA':['azul','blanco','franjav'], 'GIMNASIA MZA':['blanco','negro','rayas'], 'EST. RÍO IV':['celeste','blanco','rayas'],
+  'DEFENSA':['amarillo','verde','banda'], 'BANFIELD':['blanco','verde','rayas'], 'PLATENSE':['blanco','marron','franja'],
+  'TUCUMÁN':['celeste','blanco','rayas'], 'C. CÓRDOBA':['negro','blanco','rayas'], 'BARRACAS':['blanco','rojo','rayas'],
+  'GIMNASIA LP':['blanco','azul','franja'], 'ARGENTINOS':['rojo','blanco','solido'], 'BELGRANO':['celeste','blanco','solido'],
+  'TIGRE':['azul','rojo','franja'], 'UNIÓN':['rojo','blanco','rayas'], 'INSTITUTO':['rojo','blanco','rayas'],
+  'ESTUDIANTES':['rojo','blanco','rayas'], "NEWELL'S":['rojo','negro','mitades'], 'CENTRAL':['azul','amarillo','rayas'],
+  'LANÚS':['bordo','blanco','solido'], 'HURACÁN':['blanco','rojo','solido'], 'TALLERES':['azul','blanco','rayas'],
+  'RIVER':['blanco','rojo','banda'], 'BOCA':['azul','amarillo','franja'], 'INDEPENDIENTE':['rojo','blanco','solido'],
+  'RACING':['celeste','blanco','rayas'], 'SAN LORENZO':['azul','rojo','rayas'], 'VÉLEZ':['blanco','azul','uve']
+};
+/* Los colores y el dibujo de la camiseta de un escudo. `c2` es el de los
+   vivos: si es igual al de base (Belgrano), va blanco para que se vea. */
+function camisetaDe(esc){
+  const nm = clubDeEscudo(esc), cam = nm && CAMISETA[nm];
+  const c1 = cam ? hexEscudo(cam[0]) : hexEscudo(esc && esc.c1);
+  let c2 = cam ? hexEscudo(cam[1]) : hexEscudo(esc && esc.c2);
+  if(c2 === c1) c2 = hexEscudo('blanco') === c1 ? hexEscudo('negro') : hexEscudo('blanco');
+  return { nm, c1, c2, pat:cam ? cam[2] : 'solido', esc };
+}
+const BORDE_CAM = ' stroke="rgba(0,0,0,.38)" stroke-width="0.9"';
+const cajaCam = (x, y, w, h, f, extra) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + f + '"' + (extra || '') + '/>';
+/* El escudo del pecho: la imagen real si el club tiene, si no el dibujado. */
+function escudoDelPecho(k, cx, y, w){
+  const real = escudoRealDe(k.esc);
+  if(real) return '<image href="assets/escudos/reales/' + real + '-192.webp" x="' + (cx - w / 2) + '" y="' + y + '" width="' + w + '"' +
+    ' height="' + (w * 1.2) + '" preserveAspectRatio="xMidYMid meet"/>';
+  return k.esc ? '<g transform="translate(' + (cx - w / 2) + ',' + y + ')">' +
+    escudoSVG(w, k.esc.forma, k.esc.c1, k.esc.c2, k.esc.pat).replace(/ width="[^"]*" height="[^"]*"/, ' width="' + w + '" height="' + (w * 1.2) + '"') + '</g>' : '';
+}
+/* Torso con el dibujo, recortado a su caja, y el escudo al pecho. */
+function torsoCam(k, x, y, w, h){
+  return '<svg class="cam-torso" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" viewBox="0 0 100 120" preserveAspectRatio="none">' +
+      '<rect class="cam-base" width="100" height="120" fill="' + k.c1 + '"/>' + (PATRONES[k.pat] ? PATRONES[k.pat](k.c2) : '') +
+    '</svg>' +
+    cajaCam(x, y, w, h, 'none', BORDE_CAM) +
+    escudoDelPecho(k, x + w / 2, y + h * 0.16, w * 0.42);
+}
+const mangaCam = (k, x, y, w, h) => cajaCam(x, y, w, h, k.c1, BORDE_CAM);
+/* pierna: short del segundo color arriba, media del primero abajo */
+const piernaCam = (k, x, y, w, h) => cajaCam(x, y, w, h / 2, k.c2, BORDE_CAM) + cajaCam(x, y + h / 2, w, h / 2, k.c1, BORDE_CAM);
+
 /* El aro verde de lo tuyo (v289): la onda que sale y el aro fijo encima, como
    una elipse en el piso. Lo usan el arco y los tres duelos. */
 function aroTuyo(cx, cy, rx, ry){
@@ -15047,8 +15117,8 @@ function aroTuyo(cx, cy, rx, ry){
    Todo se va apenas tocás (`animarPenal`). Las manos que suben las tienen
    los dos arqueros, marcados o no. */
 function arcoPenalHTML(esc, marca){
-  const A = hexEscudo(esc && esc.c1);   // camiseta
-  const B = hexEscudo(esc && esc.c2);   // guantes
+  const K = camisetaDe(esc);   // la camiseta del que ataja (v296)
+  const B = K.c2;              // guantes
 
   let red = '';
   for(let x = 30; x <= 170; x += 13) red += '<path class="pp-red" d="M' + x + ' 14 V104"/>';
@@ -15083,15 +15153,15 @@ function arcoPenalHTML(esc, marca){
       ? '<g class="mj-marca mj-sigue">' + aroTuyo(100, 101, 17, 4.2) + '</g>' : '') +
     '<g class="pp-arq idle">' +
       '<circle cx="100" cy="56" r="8" fill="#f0c9a0" stroke="rgba(0,0,0,.35)" stroke-width="1"/>' +
-      '<path d="M91 66 h18 v24 h-18 z" fill="' + A + '" stroke="rgba(0,0,0,.35)" stroke-width="1"/>' +
-      '<path d="M93 90 h6 v10 h-6 z M101 90 h6 v10 h-6 z" fill="' + B + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
+      /* la camiseta del club con su escudo, y las piernas de short y media (v296) */
+      torsoCam(K, 91, 66, 18, 24) + piernaCam(K, 93, 90, 6, 10) + piernaCam(K, 101, 90, 6, 10) +
       /* cada brazo con su guante, para que las manos suban (v289) */
       '<g class="pp-mano izq">' +
-        '<path d="M91 68 h-6 v-7 h6 z" fill="' + A + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
+        mangaCam(K, 85, 61, 6, 7) +
         '<rect x="76" y="55" width="12" height="12" rx="3.5" fill="' + B + '" stroke="rgba(0,0,0,.4)" stroke-width="1"/>' +
       '</g>' +
       '<g class="pp-mano der">' +
-        '<path d="M109 68 h6 v-7 h-6 z" fill="' + A + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
+        mangaCam(K, 109, 61, 6, 7) +
         '<rect x="112" y="55" width="12" height="12" rx="3.5" fill="' + B + '" stroke="rgba(0,0,0,.4)" stroke-width="1"/>' +
       '</g>' +
     '</g>' +
@@ -15674,18 +15744,16 @@ function polar(cx, cy, r, grados){
    Cada uno va con los colores de su escudo, igual que el arquero de los
    penales: vos con los tuyos, el rival con los suyos. */
 function figuraDuelo(esc, cls, tuyo){
-  const A = hexEscudo(esc && esc.c1);
-  const B = hexEscudo(esc && esc.c2);
+  const K = camisetaDe(esc);   // la camiseta de su club (v296)
   return '<g class="' + cls + '">' +
     /* el aro verde bajo tus pies (v289): va adentro de la figura, así acompaña
        el vaivén; se va al tocar un lado */
     (tuyo ? '<g class="mj-marca">' + aroTuyo(0, 18.5, 13, 3.4) + '</g>' : '') +
     '<circle cx="0" cy="-22" r="7.5" fill="#f0c9a0" stroke="rgba(0,0,0,.35)" stroke-width="1"/>' +
-    '<path d="M-8 -13 h16 v20 h-16 z" fill="' + A + '" stroke="rgba(0,0,0,.35)" stroke-width="1"/>' +
-    '<path d="M-8 -12 h-5 v-6 h5 z M8 -12 h5 v-6 h-5 z" fill="' + A + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
+    torsoCam(K, -8, -13, 16, 20) + mangaCam(K, -13, -18, 5, 6) + mangaCam(K, 8, -18, 5, 6) +
     /* las dos piernas por separado, para que el que lleva la pelota dé pasos */
-    '<path class="dl-pie i" d="M-7 7 h6 v11 h-6 z" fill="' + B + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
-    '<path class="dl-pie d" d="M1 7 h6 v11 h-6 z" fill="' + B + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
+    '<g class="dl-pie i">' + piernaCam(K, -7, 7, 6, 11) + '</g>' +
+    '<g class="dl-pie d">' + piernaCam(K, 1, 7, 6, 11) + '</g>' +
   '</g>';
 }
 
