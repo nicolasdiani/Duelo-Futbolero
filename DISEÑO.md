@@ -15903,3 +15903,26 @@ arquero, penal definitorio, tanda final, 1 vs 1, la marca y defender. En los
 ocho los recuadros quedan detrás, y el punto que se toca sobre el arquero o un
 jugador cae en la zona de abajo. Control de layout de las 31 pantallas igual al
 anterior. Prueba general 49/49.
+
+## v299 · los escudos de la marquesina, al doble
+
+El escudo de cada equipo en la marquesina iba en una caja de 17×17 arriba del
+nombre y se veía chico. Ahora mide **34 de alto** (28,3 de ancho, su forma): el
+doble. El cartel no crece: sigue en 60 porque lo sostiene el reloj, y la columna
+del escudo y el nombre ocupa el mismo lugar que antes. El escudo sube 8,5px
+sobre el aire de arriba y el nombre baja 8,5px hacia el de abajo, con márgenes
+negativos que se compensan. La letra del nombre es la misma.
+
+Se compararon tres tamaños: 25, 30 y 34 de alto. Se eligió el más grande que
+entra: quedan 5px de aire arriba (con la línea dorada del cartel) y abajo.
+
+Además, **la imagen del escudo conserva su forma** en cualquier caja
+(`img.escudo{object-fit:contain}`). El escudo dibujado se acomodaba solo por su
+viewBox, pero la imagen real llenaba la caja, y en la de la marquesina, que era
+cuadrada, quedaba un poco estirada.
+
+Medido en 320×568, 360×740, 375×667, 390×844, 402×784, 412×915, 430×932 y
+440×956: cartel 60 en todos, de 5 a 6,4px de aire arriba y abajo, y 9px hasta
+los goles. En la tablet y la compu es lo mismo que en 402, porque el juego va
+adentro del marco. El estilo clásico no cambia de tamaño. Control de layout de
+las 31 pantallas igual al anterior. Prueba general 49/49.

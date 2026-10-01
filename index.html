@@ -2914,6 +2914,10 @@ img{height:auto}
 /* ---------- ESCUDO ---------- */
 .escudo{display:block}
 .mq-esc{display:inline-flex;flex:0 0 auto}
+/* El escudo real conserva su forma (v299): el dibujado se acomodaba solo por su
+   viewBox, pero la imagen llenaba la caja, y donde la caja no era 5:6 —la de
+   la marquesina era cuadrada— quedaba un poco estirada. */
+img.escudo{object-fit:contain}
 .mq-esc .escudo{filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
 .marcador .m-esc{display:block;margin:0 0 6px auto}
 .marcador .m-eq.mio{display:flex;flex-direction:column;align-items:flex-end}
@@ -10760,6 +10764,22 @@ html.html-menu, html.html-menu body{overflow:hidden}
 :root .gol-banner.lista:disabled{animation:none;outline-width:0}
 @media (hover:hover){:root .gol-banner.lista:hover:not(:disabled){animation:none}}
 @media (prefers-reduced-motion:reduce){:root .gol-banner.lista{animation:none}}
+
+/* ---- LOS ESCUDOS DE LA MARQUESINA, AL DOBLE (v299) ----
+   El escudo de cada equipo iba en una caja de 17x17 arriba del nombre y se veía
+   chico. Ahora mide **34 de alto** (28,3 de ancho, su forma), el doble, sin que
+   el cartel crezca: sigue en 60 porque lo sostiene el reloj, y la columna del
+   escudo y el nombre ocupa el mismo lugar que antes. El escudo sube 8,5px sobre
+   el aire de arriba y el nombre baja 8,5px hacia el de abajo (márgenes
+   negativos que se compensan). La letra del nombre es la misma.
+
+   Quedan 5px de aire arriba —con la línea dorada del cartel— y abajo en 402 y
+   440, y 6,4 en 320: es lo más grande que entra. Se compararon tres, de 25, 30
+   y 34 de alto. */
+@media (max-width:1024px) and (orientation:portrait), (max-width:820px){
+  :root .mq-esc{width:28.3px;height:34px;margin-top:-8.5px}
+  :root .mq-nom{margin-bottom:-8.5px}
+}
 </style>
 <script>
 /* ?clasico=1 apaga el estilo PANTALLA LED y deja el clásico (v280). */
@@ -12704,7 +12724,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 298;
+const VERSION = 299;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
