@@ -15696,3 +15696,51 @@ hace scroll y no pisa nada. Es `transform` y `outline`, así que no ocupa lugar
 y la mesa no se mueve. Apagado no late; con mouse se calma al pasar por
 encima, como los botones; sin movimiento, quieto. En el estilo clásico no
 cambia. Prueba general 49/49.
+
+## v293 · en tablet y compu el juego se agranda entero, como en el teléfono
+
+En tablet y compu las letras y los detalles de las cartas se veían chicos.
+El juego siempre usa el diseño del teléfono, y la mesa y las cartas crecían con
+la pantalla, pero las letras se quedaban en sus píxeles de teléfono. En una
+tablet parada de 854 de ancho la carta medía 198 (83 en el teléfono) con el
+nombre en 12,6px. En una compu de 1920×960, 108 con las mismas letras.
+
+Ahora, en todo lo que no es teléfono (el lado corto de la pantalla mide 600 o
+más), el juego se dibuja con el tamaño del iPhone 17 Pro, **402×784**. El marco
+que lo contiene se agranda con `transform: scale` hasta llenar el alto, en una
+columna centrada, así que letras, cartas, botones e íconos crecen juntos. El
+juego no se entera: adentro la pantalla mide como un teléfono, y las animaciones
+y las cuentas de posición siguen igual.
+
+| pantalla | escala | carta | nombre | texto |
+|---|---|---|---|---|
+| teléfono 402×784 | sin cambio | 83 | 11,2 | 11,5 |
+| tablet parada 854×1180 | ×1,51 | 125 | 16,9 | 17,3 |
+| tablet parada 800×1232 | ×1,57 | 130 | 17,6 | 18,1 |
+| iPad parado 768×1024 | ×1,31 | 108 | 14,6 | 15 |
+| iPad Pro parado 1024×1366 | ×1,74 | 144 | 19,5 | 20 |
+| tablet acostada 1600×990 | ×1,26 | 104 | 14,1 | 14,5 |
+| compu 1920×960 | ×1,22 | 101 | 13,7 | 14,1 |
+| compu 2560×1300 | ×1,66 | 137 | 18,6 | 19,1 |
+
+Con menos de 784 de alto (tablet acostada de 1280×780, notebook de 1366×657) no
+hay lugar para agrandar: queda la columna de antes. El teléfono, parado o
+acostado, no cambia nada.
+
+**¿Por qué una columna y no a todo el ancho en la tablet parada?** Se probó
+primero llenando el ancho. El juego quedaba de 491 a 588 de ancho por 784 de
+alto, más ancho que cualquier teléfono, y tres pantallas que crecen con el ancho
+pasaban a scrollear: ¿Cómo se juega? (hasta 104px), CAMPEÓN y el mercado. A 440
+todavía scrolleaban 3–4px. A 402 no scrollea ninguna, que es lo ya probado en el
+teléfono.
+
+Al girar la tablet o cambiar el tamaño de la ventana el marco se recalcula: con
+el evento `resize` y, por si no llega, observando el tamaño de la página.
+
+Probado:
+
+- medidas en 12 tamaños, de 402×784 a 2560×1300: la columna entra siempre;
+- un toque real a través del marco agrandado llega a la fila tocada;
+- las 31 pantallas adentro del marco, iguales que en el teléfono;
+- prueba general 49/49 adentro del marco;
+- `?clasico=1` y `?sinmarco=1` siguen andando.
