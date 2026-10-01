@@ -780,7 +780,7 @@ img{height:auto}
   border:1px solid rgba(255,255,255,.34);
   box-shadow:0 3px 10px rgba(0,0,0,.65);
 }
-.play .p-esc svg{height:34px;width:auto;display:block}
+.play .p-esc svg, .play .p-esc img{height:34px;width:auto;display:block}
 /* **El valor de la carta, sobre la foto.** La chapita de la mesa —mismo borde
    de 2px en el color del eje— pero del tamaño del escudo: 40 x 44, los mismos
    que él en celular y en escritorio. El escudo no tiene escalón de escritorio,
@@ -3224,7 +3224,7 @@ img{height:auto}
   display:flex;flex-direction:column;align-items:center;gap:4px;
   min-width:0;text-align:center;
 }
-.gm-eq svg{width:auto;height:30px;display:block;flex:0 0 auto}
+.gm-eq svg, .gm-eq img{width:auto;height:30px;display:block;flex:0 0 auto}
 .gm-eq b{
   font-family:var(--txt);font-weight:600;
   font-size:9.6px;letter-spacing:1.1px;text-transform:uppercase;
@@ -3291,7 +3291,7 @@ img{height:auto}
 /* Los nombres bajan un punto y se apagan: son la etiqueta de cada lado, no la
    noticia. El escudo cede los cuatro píxeles que necesita el número. */
 .gf .gm-eq b{font-size:9.2px;letter-spacing:1.2px;color:var(--dim2)}
-.gf .gm-eq svg{height:26px}
+.gf .gm-eq svg, .gf .gm-eq img{height:26px}
 .gf .gm-res{gap:10px}
 
 /* ---- EL LATIDO ----
@@ -4039,7 +4039,7 @@ img{height:auto}
    absoluto, así que su `100%` sí resuelve contra `.c-ico`. En el `svg`, que es
    hijo de un flex de alto automático, el porcentaje no resolvía nada. */
 .cell .c-esc{max-height:calc(100% - 8px);overflow:hidden}
-.cell .c-esc svg{
+.cell .c-esc svg, .cell .c-esc img{
   height:clamp(13px, calc(var(--carta) * .17), 22px);
   width:auto;max-height:100%;
 }
@@ -4110,7 +4110,7 @@ img{height:auto}
      sale unos píxeles de la foto en las cartas de nombre largo y no molesta a
      nadie: sigue adentro de la carta y no pisa ni el nombre ni el resultado. */
   .cell .c-esc{padding:1.5px 2.5px;border-radius:6px;max-height:none;overflow:visible}
-  .cell .c-esc svg{height:clamp(11px, calc(var(--carta) * .17), 22px)}
+  .cell .c-esc svg, .cell .c-esc img{height:clamp(11px, calc(var(--carta) * .17), 22px)}
 }
 /* Abajo de 639px de alto la carta queda en 71px y no alcanza ni con el hueco
    del ícono en cero: título 24 + pie 34 + huecos 8 = 66 contra 62 de caja. Se
@@ -4406,7 +4406,7 @@ body{padding-bottom:36px}
    renglón, el mismo escudo salía tres veces en un cartel de 600px. */
 .p-val.con-esc{gap:14px}
 .pv-esc{display:flex;flex:0 0 auto}
-.pv-esc svg{height:34px;width:auto;display:block}
+.pv-esc svg, .pv-esc img{height:34px;width:auto;display:block}
 /* El VS deja el dorado. Con los escudos al lado, el dorado era **lo más
    brillante del renglón** y se llevaba la mirada al separador en vez de a los
    dos que se enfrentan. En gris hace lo que tiene que hacer: marcar el medio y
@@ -4951,7 +4951,7 @@ body{padding-bottom:36px}
      «DEPORTIV…». Lo que no entra se sigue cortando con puntos suspensivos. */
   .mq-eq{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;max-width:18ch}
   .mq-esc{width:17px;height:17px;flex:0 0 auto}
-  .mq-esc svg{width:100%;height:100%}
+  .mq-esc svg, .mq-esc img{width:100%;height:100%}
   .mq-nom{
     font-size:8.4px;letter-spacing:.3px;line-height:1;
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;
@@ -5915,7 +5915,7 @@ body{padding-bottom:36px}
      grande se aprovecha entero. El que estaba al límite era el del duelo. */
   /* Acá el número va a 34px y su recuadro mide 38 de alto: el escudo sube con él
      para que el renglón no quede con una punta más chica que la otra. */
-  .pv-esc svg{height:40px}
+  .pv-esc svg, .pv-esc img{height:40px}
   .sit.mam .palo{padding:18px 12px}
   .sit.mam .palo .pn{font-size:16px;letter-spacing:1px}
 
@@ -6631,7 +6631,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
    teléfono los dos ya ocupan lo que tienen que ocupar. */
 @media (min-width:1025px), (min-width:821px) and (orientation:landscape){
   .cell .c-esc{padding:3.5px 5px;border-radius:9px}
-  .cell .c-esc svg{height:clamp(22px, calc(var(--carta) * .26), 34px)}
+  .cell .c-esc svg, .cell .c-esc img{height:clamp(22px, calc(var(--carta) * .26), 34px)}
   .cell .c-val{font-size:26px;padding:3px 10px;border-radius:7px}
   /* y los números del panel y del cartel, con la misma curva que la chapita */
   .stat .n{border-radius:7px}
@@ -7352,7 +7352,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 .pz-cab{display:flex;align-items:center;gap:6px;min-width:0}
 .pz-eq.der .pz-cab,.pz-eq.der .pz-tiros{flex-direction:row-reverse}
 .pz-esc{flex:0 0 auto;display:flex}
-.pz-esc svg{display:block;width:21px;height:auto}
+.pz-esc svg, .pz-esc img{display:block;width:21px;height:auto}
 .pz-club{
   font-family:var(--tit);font-weight:800;font-size:11px;letter-spacing:.6px;
   color:var(--white);text-transform:uppercase;
@@ -7399,7 +7399,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 
 @media (min-width:1025px), (min-width:821px) and (orientation:landscape){
   .pizarra{gap:14px;padding:13px 15px;margin:12px 0 4px}
-  .pz-esc svg{width:26px}
+  .pz-esc svg, .pz-esc img{width:26px}
   .pz-club{font-size:14px}
   .pz-tiros{gap:7px}
   .pz-punto{width:17px;height:17px;border-width:2px}
@@ -7410,7 +7410,7 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 }
 @media (max-width:440px){
   .pizarra{gap:7px;padding:8px 9px}
-  .pz-esc svg{width:18px}
+  .pz-esc svg, .pz-esc img{width:18px}
   .pz-club{font-size:10px}
   .pz-tiros{gap:4px}
   .pz-punto{width:11px;height:11px;border-width:1.2px}
@@ -8465,7 +8465,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .gf.gol-foto .gfb{padding:16px 26px 18px}
   .gf.gol-foto .gm-n{font-size:clamp(46px, 4vw, 64px)}
   .gf.gol-foto .gm-eq b{font-size:12px}
-  .gf.gol-foto .gm-eq svg{height:40px}
+  .gf.gol-foto .gm-eq svg, .gf.gol-foto .gm-eq img{height:40px}
   /* El aviso crece como el de la jugada, que en esta misma consulta pasa a 12,5. */
   .gf .gf-tap{font-size:12.5px;letter-spacing:4.5px;margin-top:15px}
 }
@@ -8490,7 +8490,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .gf.gol-foto .gm-n{font-size:min(40px, 10vh)}
   /* Acostado lo que falta es alto: el escudo cede antes que el número, que es
      el dato que se busca. */
-  .gf.gol-foto .gm-eq svg{height:22px}
+  .gf.gol-foto .gm-eq svg, .gf.gol-foto .gm-eq img{height:22px}
   .gf.gol-foto .gm-eq{gap:2px}
 }
 
@@ -8823,7 +8823,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
 @media (max-height:700px){
   .pr-dos{margin-top:10px}
   .pr-esc,.pr-franja{margin-top:10px}
-  .pd-esc svg{width:32px;height:38px}
+  .pd-esc svg, .pd-esc img{width:32px;height:38px}
   /* Los escudos grandes también se achican acá: en una pantalla corta el
      botón es lo que tiene que entrar, no el escudo. Siguen siendo más
      grandes que antes —46 y 38 contra 32 y 34— pero no a costa del resto. */
@@ -9149,7 +9149,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
   -webkit-mask:radial-gradient(circle at 50% 45%, #000 58%, transparent 82%);
   mask:radial-gradient(circle at 50% 45%, #000 58%, transparent 82%);
 }
-.cell .c-esc svg{filter:drop-shadow(0 1px 3px rgba(0,4,16,.9))}
+.cell .c-esc svg, .cell .c-esc img{filter:drop-shadow(0 1px 3px rgba(0,4,16,.9))}
 
 /* ---- EL RESALTADO ----
    El brillo diagonal vivía en `.c-ico::after`, que ahora es una caja chica en el
@@ -9291,7 +9291,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
   position:static;flex:0 0 auto;
   padding:3px 4px;border-radius:8px;
 }
-.play.con-foto .p-esc svg{height:32px}
+.play.con-foto .p-esc svg, .play.con-foto .p-esc img{height:32px}
 /* El pie: lo que antes flotaba suelto sobre el panel ahora se apoya junto,
    abajo, sobre el tramo oscuro del velo. */
 .play.con-foto .p-pie{padding:0 16px 16px}
@@ -9330,7 +9330,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
      tiene su barra para rodar. Acostado ya rodaba antes de todo esto. */
   .play.con-foto{min-height:calc(100dvh - 60px);padding-top:52px;justify-content:flex-start}
   .play.con-foto .p-vnum{top:48px;font-size:24px;min-width:32px;padding:2px 8px}
-  .play.con-foto .p-esc svg{height:26px}
+  .play.con-foto .p-esc svg, .play.con-foto .p-esc img{height:26px}
 }
 
 /* ═══════════ EL PIE QUE NO SE CORTA ═══════════
@@ -11431,9 +11431,84 @@ function escudoRivalNuevo(evitar){
 }
 
 
+/* ---------------- LOS ESCUDOS DE VERDAD (v294) ----------------
+   Los treinta clubes muestran su escudo real en vez del dibujado: una imagen
+   WebP por club en `assets/escudos/reales/`, recortada y centrada en la misma
+   caja que el dibujo (100x120, o sea 5:6). Por eso ocupa **exactamente el
+   mismo lugar** en todas las pantallas: el `width`/`height` que pide cada
+   una, y las reglas de CSS que lo agrandan o achican, valen igual para la
+   imagen que para el SVG.
+
+   Dos tamaños por club: 192 de alto (8 KB en promedio) para todo lo que se ve
+   de 17 a 70px, y 480 para el escudo grande del vestuario (120px). El
+   `srcset` deja que el navegador baje sólo el que hace falta.
+
+   **Cuál es el club** se sabe por el escudo mismo: cada uno de los treinta
+   tiene una combinación única de forma, colores y dibujo, así que no hace falta
+   pasar el nombre por los veintiséis lugares que lo dibujan, y las partidas
+   guardadas también lo encuentran. Los escudos que no son de un club —el que
+   se arma a mano en el 1 vs 1, el rival al azar— no traen dibujo y siguen
+   saliendo dibujados.
+
+   Las reglas que dan el tamaño apuntaban al `svg` (`.cell .c-esc svg` y otras
+   diecisiete): cada una lleva ahora también la `img`, con el mismo peso, así
+   que la imagen toma el mismo tamaño y el orden entre reglas no cambia.
+
+   `?escudos=dibujados` vuelve a los dibujados. */
+const ESCUDO_REAL = {
+  "RIESTRA":'riestra',
+  "SARMIENTO":'sarmiento',
+  "ALDOSIVI":'aldosivi',
+  "I. RIVADAVIA":'rivadavia',
+  "GIMNASIA MZA":'gimnasia-mza',
+  "EST. RÍO IV":'est-rio-iv',
+  "DEFENSA":'defensa',
+  "BANFIELD":'banfield',
+  "PLATENSE":'platense',
+  "TUCUMÁN":'tucuman',
+  "C. CÓRDOBA":'c-cordoba',
+  "BARRACAS":'barracas',
+  "GIMNASIA LP":'gimnasia-lp',
+  "ARGENTINOS":'argentinos',
+  "BELGRANO":'belgrano',
+  "TIGRE":'tigre',
+  "UNIÓN":'union',
+  "INSTITUTO":'instituto',
+  "ESTUDIANTES":'estudiantes',
+  "NEWELL'S":'newell-s',
+  "CENTRAL":'central',
+  "LANÚS":'lanus',
+  "HURACÁN":'huracan',
+  "TALLERES":'talleres',
+  "RIVER":'river',
+  "BOCA":'boca',
+  "INDEPENDIENTE":'independiente',
+  "RACING":'racing',
+  "SAN LORENZO":'san-lorenzo',
+  "VÉLEZ":'velez'
+};
+const ESCUDOS_DIBUJADOS = /[?&]escudos=dibujados/.test(location.search);
+const claveEscudo = e => e && e.pat
+  ? [aIndice(e.forma, IDX_ESC), aIndice(e.c1, IDX_COL), aIndice(e.c2, IDX_COL), e.pat].join('/') : '';
+let escudoPorClave = null;   // se arma la primera vez: EQUIPOS está más abajo en el archivo
+function escudoRealDe(e){
+  if(ESCUDOS_DIBUJADOS || !e) return null;
+  if(!escudoPorClave){
+    escudoPorClave = {};
+    EQUIPOS.forEach(q => { if(ESCUDO_REAL[q.nm]) escudoPorClave[claveEscudo(q)] = ESCUDO_REAL[q.nm]; });
+  }
+  return escudoPorClave[claveEscudo(e)] || null;
+}
+
 /* El escudo de un club es un objeto de cuatro campos, y `pat` puede no
    estar: los escudos armados a mano no lo traen. */
 function escudoDe(e, size){
+  const real = escudoRealDe(e);
+  if(real){
+    const r = 'assets/escudos/reales/' + real;
+    return '<img class="escudo esc-real" src="' + r + '-192.webp" srcset="' + r + '-192.webp 160w, ' + r + '-480.webp 400w"' +
+      ' sizes="' + size + 'px" width="' + size + '" height="' + Math.round(size * 1.2) + '" alt="" decoding="async" draggable="false">';
+  }
   return escudoSVG(size, e.forma, e.c1, e.c2, e.pat);
 }
 
@@ -12600,7 +12675,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 293;
+const VERSION = 294;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

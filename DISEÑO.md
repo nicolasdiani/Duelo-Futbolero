@@ -15744,3 +15744,44 @@ Probado:
 - las 31 pantallas adentro del marco, iguales que en el teléfono;
 - prueba general 49/49 adentro del marco;
 - `?clasico=1` y `?sinmarco=1` siguen andando.
+
+## v294 · los escudos reales de los treinta clubes
+
+Los treinta clubes muestran su escudo real en vez del dibujado: en la
+marquesina, las cartas de la mesa, el marcador, el vestuario, la elección de
+club, los carteles de GOL, el VS de los duelos, El camino, la tanda y el resto.
+Los escudos que no son de un club siguen dibujados: el que se arma a mano en el
+1 vs 1 y el rival al azar.
+
+Las imágenes salen del paquete de PNG de 1500px. Se eligieron Boca 2026, Racing
+sin contorno, Estudiantes con EDLP e Independiente con contorno. A cada una se
+le recortó el margen transparente y se la centró en una caja 5:6, la misma
+proporción que el dibujo (100×120). Quedan en WebP en dos tamaños:
+
+| archivo | para | peso |
+|---|---|---|
+| `<club>-192.webp` | todo lo que se ve de 17 a 70px | 244 KB los treinta (~8 KB c/u) |
+| `<club>-480.webp` | el escudo grande del vestuario (120px) | 611 KB los treinta |
+
+El `srcset` deja que el navegador baje sólo el tamaño que hace falta, y sólo de
+los clubes que aparecen en pantalla. En la mesa se bajan dos escudos chicos.
+
+Se eligió WebP y no SVG porque varios escudos tienen mucho detalle (el casco y
+las plumas de Gimnasia, las estrellas, los laureles), y en SVG pesarían más y
+tardarían más en dibujarse.
+
+**El mismo tamaño que antes, en todos lados.** Hay 26 lugares que dibujan
+escudos y todos pasan por `escudoDe`, que ahora devuelve la imagen con el mismo
+`width`/`height` que pedía el dibujo. Dieciocho reglas de CSS daban el tamaño
+apuntando al `svg` (`.cell .c-esc svg` y otras). Cada una lleva ahora también la
+`img`, con el mismo peso, así que el orden entre reglas no cambia.
+
+**Cuál es el club** se reconoce por el escudo mismo: las treinta combinaciones
+de forma, colores y dibujo son únicas. No hizo falta tocar los veintiséis
+lugares, y las partidas guardadas también lo encuentran.
+
+Probado comparando la caja de cada escudo dibujado contra el real, escena por
+escena, con el azar fijo, en 31 pantallas: 556 escudos en 402×784 y 440×956,
+140 en 320×568 y 556 en el estilo clásico. Ninguno cambia de lugar ni de
+tamaño, y todas las imágenes cargan. Prueba general 49/49.
+`?escudos=dibujados` vuelve a los dibujados.

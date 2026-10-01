@@ -44,3 +44,20 @@ Los SVG son una **salida**, no la fuente. El escudo es una función de cinco
 campos —silueta, dibujo, color de fondo, color de detalle y nombre— y eso vive
 en `equipos.json`. Si cambia un color de un club, se cambia ahí y se vuelven a
 generar los treinta; no se edita un SVG a mano.
+
+## Los escudos reales (v294)
+
+El juego muestra los escudos reales de los treinta clubes, que están en
+`reales/`. Los SVG de esta carpeta son los dibujados de antes. Siguen sirviendo
+de referencia, y el juego los vuelve a usar con `?escudos=dibujados`.
+
+| archivo | qué es |
+|---|---|
+| `reales/<club>-192.webp` | 160×192, para todo lo que se ve de 17 a 70px (~8 KB) |
+| `reales/<club>-480.webp` | 400×480, para el escudo grande del vestuario (120px) |
+
+Salen de los PNG originales de 1500px, con el margen transparente recortado y
+el escudo centrado en una caja 5:6. Es la misma proporción que el dibujo
+(100×120), y por eso la imagen ocupa exactamente el mismo lugar en todas las
+pantallas. Para cambiar un escudo hay que regenerar los dos tamaños con ese
+mismo recorte.
