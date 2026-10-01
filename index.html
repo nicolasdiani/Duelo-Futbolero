@@ -9771,29 +9771,59 @@ html.html-menu, html.html-menu body{overflow:hidden}
 .rf-prox .px-tx .pf-tx b{display:inline;font-family:inherit;font-size:inherit;letter-spacing:inherit;line-height:inherit;
   white-space:normal;font-weight:600;color:var(--white)}
 
-/* ================= LO TUYO, MARCADO EN LOS MINI JUEGOS (v272) =================
-   En cada mini juego queda claro qué es tuyo mientras decidís, y la marca se
-   va al tocar. Se compararon cuatro estilos —halo, cartel, reflector y
-   anillos— sobre las cinco escenas, y quedó uno para cada una:
-   · penal que pateás y mano a mano con el arquero: ANILLOS y la pelota pica;
-   · penal que atajás: HALO detrás de tu arquero;
-   · duelos (1 vs 1, la marca, defender): CARTEL dorado con lo que hacés. */
+/* ================= LO TUYO, MARCADO: EL ARO VERDE (v289) =================
+   La v272 marcaba lo tuyo distinto en cada mini juego: dos anillos dorados en
+   la pelota, un halo amarillo detrás de tu arquero y un cartel dorado en los
+   duelos. Ahora es **una sola marca en los seis**: un aro verde en el piso,
+   bajo tu arquero, tu jugador o tu pelota, con una onda que sale. Es la marca
+   del jugador que manejás en un juego de fútbol. Se va al tocar, como antes.
+   Se compararon cuatro para el arquero —guantes, aro, silueta y cartel VOS— y
+   quedó el aro.
+
+   · penal que pateás y mano a mano: el aro bajo la pelota, que sigue picando;
+   · penal que atajás: el aro bajo los pies de tu arquero;
+   · 1 vs 1, la marca y defender: el aro bajo tu jugador (y la pelota, si es
+     tuya). El cartel ENCARÁS / MARCÁS / DEFENDER se fue: lo que hay que hacer
+     ya lo dice la pregunta. */
 .mj-marca{pointer-events:none}
-.mj-anillo{fill:none;stroke:var(--gold);stroke-width:1.6;
-  transform-box:fill-box;transform-origin:center;animation:mjAnillo 1.6s ease-out infinite}
-.mj-anillo.dos{animation-delay:.8s}
-@keyframes mjAnillo{0%{transform:scale(.7);opacity:.95}100%{transform:scale(2);opacity:0}}
+.mj-aro{fill:var(--green);fill-opacity:.18;stroke:var(--green);stroke-width:1.8}
+.mj-onda{fill:none;stroke:var(--green);stroke-width:1.4;
+  transform-box:fill-box;transform-origin:center;animation:mjOnda 1.4s ease-out infinite}
+@keyframes mjOnda{0%{transform:scale(1);opacity:.9}100%{transform:scale(1.8);opacity:0}}
+/* El aro de tu arquero acompaña su vaivén (el de `arqPeso`, sin el giro). Va
+   afuera del muñeco: adentro le corría el centro sobre el que gira la
+   estirada. */
+.mj-sigue{animation:mjSigue 2.6s ease-in-out infinite}
+@keyframes mjSigue{0%,100%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
 .mj-pica{transform-box:fill-box;transform-origin:center bottom;animation:mjPica .9s ease-in-out infinite}
 @keyframes mjPica{0%,100%{transform:translateY(0)}45%{transform:translateY(-5px)}}
-.mj-halo{transform-box:fill-box;transform-origin:center;animation:mjHalo 1.3s ease-in-out infinite}
-@keyframes mjHalo{0%,100%{transform:scale(.82);opacity:.55}50%{transform:scale(1.12);opacity:1}}
-.mj-cartel{animation:mjCartel 1.1s ease-in-out infinite}
-@keyframes mjCartel{0%,100%{transform:translateX(0)}50%{transform:translateX(3px)}}
-.mj-cartel path{fill:var(--gold);stroke:rgba(0,0,0,.35);stroke-width:.8}
-.mj-cartel text{font-family:var(--tit);font-weight:800;font-size:9px;letter-spacing:.9px;fill:#00081f}
+
+/* **Las manos de los arqueros** (v289): suben juntas mientras decidís, el tuyo
+   y el rival. Cada brazo gira desde el hombro; viven en `.idle`, que
+   `animarPenal` saca antes de la estirada, así que vuelan con las manos en su
+   lugar y las cuentas de los guantes siguen valiendo. */
+.pp-mano{transform-box:view-box}
+.pp-mano.izq{transform-origin:91px 64px}
+.pp-mano.der{transform-origin:109px 64px}
+.pp-arq.idle .pp-mano.izq{animation:ppManoI .9s ease-in-out infinite}
+.pp-arq.idle .pp-mano.der{animation:ppManoD .9s ease-in-out infinite}
+@keyframes ppManoI{0%,100%{transform:rotate(0)}50%{transform:rotate(24deg)}}
+@keyframes ppManoD{0%,100%{transform:rotate(0)}50%{transform:rotate(-24deg)}}
+
+/* **El que lleva la pelota mueve los pies** (v289), y la pelota va con él: se
+   hamaca al mismo ritmo que su `dlActivo` y rueda. Va con `translate` y
+   `rotate`, que no pisan el `transform` con el que se resuelve el duelo.
+   Cuando el que gana sale con la pelota (`.corre`) los pasos siguen. */
+.dl-pie{transform-box:fill-box;transform-origin:center bottom}
+.dl-fig.activo .dl-pie.i,.dl-fig.corre .dl-pie.i{animation:dlPaso .42s ease-in-out infinite}
+.dl-fig.activo .dl-pie.d,.dl-fig.corre .dl-pie.d{animation:dlPaso .42s ease-in-out -.21s infinite}
+@keyframes dlPaso{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-2.5px) scaleY(.8)}}
+.dl-pel.lleva{animation:dlLleva 1.25s ease-in-out infinite}
+@keyframes dlLleva{0%,100%{translate:-6px 0;rotate:-50deg}50%{translate:6px 0;rotate:50deg}}
+
 @media (prefers-reduced-motion:reduce){
-  .mj-anillo,.mj-pica,.mj-halo,.mj-cartel{animation:none}
-  .mj-anillo.dos{display:none}
+  .mj-pica,.mj-sigue,.pp-arq .pp-mano,.dl-fig .dl-pie,.dl-pel.lleva{animation:none}
+  .mj-onda{display:none}
 }
 
 /* ================= EL RESALTADO DE LA MESA: HALO AFUERA (v273) =================
@@ -12392,19 +12422,19 @@ const MANOAMANO = {
     gana:'¡GOLAZO!', pierde:'ATAJADÓN', gGana:'golazo', gPierde:'atajada'
   },
   defensor: {
-    tit:'1 vs 1', ico:'🧱', yo:'⚽', el:'👟', pregunta:'¿POR DÓNDE LO ENCARÁS?', adivinar:false, cartel:'ENCARÁS',
+    tit:'1 vs 1', ico:'🧱', yo:'⚽', el:'👟', pregunta:'¿POR DÓNDE LO ENCARÁS?', adivinar:false,
     izq:'⬅ POR ADENTRO', der:'POR AFUERA ➡',
     rival:l => 'El defensor cierra ' + (l === 'izq' ? 'por adentro' : 'por afuera'),
     gana:'¡LO PASÁS!', pierde:'LA PERDISTE', gGana:'gambeta', gPierde:'quite'
   },
   medio: {
-    tit:'LA MARCA', ico:'🌀', yo:'👟', el:'⚽', pregunta:'¿DE QUÉ LADO LO MARCÁS?', adivinar:true, cartel:'MARCÁS',
+    tit:'LA MARCA', ico:'🌀', yo:'👟', el:'⚽', pregunta:'¿DE QUÉ LADO LO MARCÁS?', adivinar:true,
     izq:'⬅ IZQUIERDA', der:'DERECHA ➡',
     rival:l => 'Se la lleva para ' + (l === 'izq' ? 'la izquierda' : 'la derecha'),
     gana:'¡SE LA ROBÁS!', pierde:'TE PASÓ', gGana:'quite', gPierde:'gambeta'
   },
   delantero: {
-    tit:'DEFENDER', ico:'👟', yo:'👟', el:'⚽', pregunta:'¿PARA QUÉ LADO LO MARCÁS?', adivinar:true, cartel:'DEFENDER',
+    tit:'DEFENDER', ico:'👟', yo:'👟', el:'⚽', pregunta:'¿PARA QUÉ LADO LO MARCÁS?', adivinar:true,
     izq:'⬅ IZQUIERDA', der:'DERECHA ➡',
     rival:l => 'Encara por ' + (l === 'izq' ? 'la izquierda' : 'la derecha'),
     gana:'¡LO CORTÁS!', pierde:'SE VA SOLO', gGana:'quite', gPierde:'gambeta'
@@ -12474,7 +12504,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 288;
+const VERSION = 289;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -14812,13 +14842,22 @@ function pelotaSVG(x, y, r, cls){
   '</g>';
 }
 
-/* **Lo tuyo, marcado** (v272). `marca` dice qué es tuyo en este arco:
-   · 'pelota' —pateás o definís—: dos anillos dorados salen de la pelota y la
+/* El aro verde de lo tuyo (v289): la onda que sale y el aro fijo encima, como
+   una elipse en el piso. Lo usan el arco y los tres duelos. */
+function aroTuyo(cx, cy, rx, ry){
+  const e = cls => '<ellipse class="' + cls + '" cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '"/>';
+  return e('mj-onda') + e('mj-aro');
+}
+
+/* **Lo tuyo, marcado** (v272, con el aro verde desde v289). `marca` dice qué
+   es tuyo en este arco:
+   · 'pelota' —pateás o definís—: el aro verde en el piso, bajo la pelota, y la
      pelota pica. El pique va en un grupo de adentro para no pisar el
      `transform` del tiro ni el `translate` de la respiración del mano a mano.
-   · 'arquero' —atajás—: un halo dorado que respira detrás de tu arquero.
-   Todo se va apenas tocás (`animarPenal`). Se compararon cuatro por escena
-   —halo, cartel, reflector y anillos— y se eligió una para cada una. */
+   · 'arquero' —atajás—: el aro verde bajo los pies de tu arquero. Hasta la
+     v288 era un halo amarillo detrás.
+   Todo se va apenas tocás (`animarPenal`). Las manos que suben las tienen
+   los dos arqueros, marcados o no. */
 function arcoPenalHTML(esc, marca){
   const A = hexEscudo(esc && esc.c1);   // camiseta
   const B = hexEscudo(esc && esc.c2);   // guantes
@@ -14843,12 +14882,7 @@ function arcoPenalHTML(esc, marca){
     'style="animation-delay:' + (i * 260) + 'ms"/>').join('');
 
   return '<svg class="parco" viewBox="0 0 200 136" aria-label="Arco">' +
-    '<defs><clipPath id="ppCaja"><rect x="0" y="0" width="200" height="136" rx="8"/></clipPath>' +
-      (marca === 'arquero'
-        ? '<radialGradient id="mjHaloG"><stop offset="0" stop-color="#f5c842" stop-opacity=".95"/>' +
-          '<stop offset=".55" stop-color="#f5c842" stop-opacity=".4"/><stop offset="1" stop-color="#f5c842" stop-opacity="0"/></radialGradient>'
-        : '') +
-    '</defs>' +
+    '<defs><clipPath id="ppCaja"><rect x="0" y="0" width="200" height="136" rx="8"/></clipPath></defs>' +
     '<g clip-path="url(#ppCaja)">' +
       '<rect class="dl-cesped" x="0" y="100" width="200" height="36"/>' + rayas +
     '</g>' +
@@ -14857,19 +14891,25 @@ function arcoPenalHTML(esc, marca){
     '<path class="pp-piso" d="M8 108 H192"/>' +
     '<path class="pp-gol" d="M22 104 V14 H178 V104"/>' +
     /* El arquero, con los colores del que ataja. */
-    (marca === 'arquero' ? '<circle class="mj-marca mj-halo" cx="100" cy="76" r="33" fill="url(#mjHaloG)"/>' : '') +
+    (marca === 'arquero'
+      ? '<g class="mj-marca mj-sigue">' + aroTuyo(100, 101, 17, 4.2) + '</g>' : '') +
     '<g class="pp-arq idle">' +
       '<circle cx="100" cy="56" r="8" fill="#f0c9a0" stroke="rgba(0,0,0,.35)" stroke-width="1"/>' +
       '<path d="M91 66 h18 v24 h-18 z" fill="' + A + '" stroke="rgba(0,0,0,.35)" stroke-width="1"/>' +
       '<path d="M93 90 h6 v10 h-6 z M101 90 h6 v10 h-6 z" fill="' + B + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
-      '<path d="M91 68 h-6 v-7 h6 z M109 68 h6 v-7 h-6 z" fill="' + A + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
-      '<rect x="76" y="55" width="12" height="12" rx="3.5" fill="' + B + '" stroke="rgba(0,0,0,.4)" stroke-width="1"/>' +
-      '<rect x="112" y="55" width="12" height="12" rx="3.5" fill="' + B + '" stroke="rgba(0,0,0,.4)" stroke-width="1"/>' +
+      /* cada brazo con su guante, para que las manos suban (v289) */
+      '<g class="pp-mano izq">' +
+        '<path d="M91 68 h-6 v-7 h6 z" fill="' + A + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
+        '<rect x="76" y="55" width="12" height="12" rx="3.5" fill="' + B + '" stroke="rgba(0,0,0,.4)" stroke-width="1"/>' +
+      '</g>' +
+      '<g class="pp-mano der">' +
+        '<path d="M109 68 h6 v-7 h-6 z" fill="' + A + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
+        '<rect x="112" y="55" width="12" height="12" rx="3.5" fill="' + B + '" stroke="rgba(0,0,0,.4)" stroke-width="1"/>' +
+      '</g>' +
     '</g>' +
     /* La pelota, con el mismo dibujo en todo el juego. */
     (marca === 'pelota'
-      ? '<circle class="mj-marca mj-anillo" cx="100" cy="112" r="9"/>' +
-        '<circle class="mj-marca mj-anillo dos" cx="100" cy="112" r="9"/>' +
+      ? '<g class="mj-marca">' + aroTuyo(100, 119, 11, 3) + '</g>' +
         '<g class="pp-pel"><g class="mj-pica">' + pelotaSVG(100, 112, 7, 'pp-pel-in') + '</g></g>'
       : pelotaSVG(100, 112, 7, 'pp-pel')) +
     /* El anillo del impacto cuando la ataja. */
@@ -15445,18 +15485,24 @@ function polar(cx, cy, r, grados){
 
    Cada uno va con los colores de su escudo, igual que el arquero de los
    penales: vos con los tuyos, el rival con los suyos. */
-function figuraDuelo(esc, cls){
+function figuraDuelo(esc, cls, tuyo){
   const A = hexEscudo(esc && esc.c1);
   const B = hexEscudo(esc && esc.c2);
   return '<g class="' + cls + '">' +
+    /* el aro verde bajo tus pies (v289): va adentro de la figura, así acompaña
+       el vaivén; se va al tocar un lado */
+    (tuyo ? '<g class="mj-marca">' + aroTuyo(0, 18.5, 13, 3.4) + '</g>' : '') +
     '<circle cx="0" cy="-22" r="7.5" fill="#f0c9a0" stroke="rgba(0,0,0,.35)" stroke-width="1"/>' +
     '<path d="M-8 -13 h16 v20 h-16 z" fill="' + A + '" stroke="rgba(0,0,0,.35)" stroke-width="1"/>' +
     '<path d="M-8 -12 h-5 v-6 h5 z M8 -12 h5 v-6 h-5 z" fill="' + A + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
-    '<path d="M-7 7 h6 v11 h-6 z M1 7 h6 v11 h-6 z" fill="' + B + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
+    /* las dos piernas por separado, para que el que lleva la pelota dé pasos */
+    '<path class="dl-pie i" d="M-7 7 h6 v11 h-6 z" fill="' + B + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
+    '<path class="dl-pie d" d="M1 7 h6 v11 h-6 z" fill="' + B + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>' +
   '</g>';
 }
 
-const pelotaDuelo = (x, y) => pelotaSVG(x, y, 6.4, 'dl-pel');
+/* `lleva`: va con los pies del que la tiene mientras decidís (v289) */
+const pelotaDuelo = (x, y) => pelotaSVG(x, y, 6.4, 'dl-pel lleva');
 
 /* La misma pelota, suelta, para los carteles que hablan de la posibilidad de
    gol: el cartel del tablero, la ficha y los dos avisos. Se mide en `em`, así
@@ -15469,18 +15515,7 @@ const icoPelota = (cls) =>
 
 /* `mia` es de quién es la pelota: con la tuya ganás esquivando, con la de él
    adivinando. Es el mismo dato que `adivinar`, dado vuelta. */
-/* **Lo tuyo, marcado** (v272): en los duelos, una chapita dorada al costado
-   dice qué hacés y apunta a lo tuyo —la pelota cuando encarás, tu jugador
-   cuando defendés—. Se va al tocar un lado. */
-function cartelDuelo(txt, x, y){
-  const w = txt.length * 6.3 + 12;
-  return '<g class="mj-marca mj-cartel">' +
-    '<path d="M' + x + ' ' + y + ' l6 -6 h' + w + ' a2 2 0 0 1 2 2 v8 a2 2 0 0 1 -2 2 h-' + w + ' z"/>' +
-    '<text x="' + (x + 7 + w / 2) + '" y="' + (y + 3.2) + '" text-anchor="middle">' + txt + '</text>' +
-  '</g>';
-}
-
-function escenaDuelo(mia, cartel){
+function escenaDuelo(mia){
   /* Las franjas de corte, recortadas a la caja: sueltas se salen por las
      esquinas redondeadas. */
   let rayas = '';
@@ -15507,14 +15542,12 @@ function escenaDuelo(mia, cartel){
       /* `mia` dice de quién es la pelota, y con eso alcanza para repartir el
          movimiento: el que la tiene es el que va a resolver. */
       '<g transform="translate(100,44) scale(1.02)">' +
-        figuraDuelo(G.escudoRival, 'dl-fig dl-riv ' + (mia ? 'espera' : 'activo')) + '</g>' +
+        figuraDuelo(G.escudoRival, 'dl-fig dl-riv ' + (mia ? 'espera' : 'activo'), false) + '</g>' +
       '<g transform="translate(100,102) scale(1.02)">' +
-        figuraDuelo(G.escudo, 'dl-fig dl-yo ' + (mia ? 'activo' : 'espera')) + '</g>' +
+        figuraDuelo(G.escudo, 'dl-fig dl-yo ' + (mia ? 'activo' : 'espera'), true) + '</g>' +
       (mia ? pelotaDuelo(100, 112) : pelotaDuelo(100, 58)) +
       '<g class="dl-chog"><circle class="dl-choque" cx="100" cy="74" r="20"/></g>' +
       '<circle class="dl-robo" cx="100" cy="74" r="13"/>' +
-      /* con la pelota tuya apunta a la pelota; si no, a tu jugador */
-      (cartel ? (mia ? cartelDuelo(cartel, 111.5, 112) : cartelDuelo(cartel, 118, 97)) : '') +
     '</g>' +
     /* Los dos lados, del borde al borde: el ancho que sobraba al costado no
        servía para nada y sí sirve para el dedo. */
@@ -15608,7 +15641,7 @@ function manoAMano(tipo, mio, val){
           '<span class="pv-esc">' + miEscudo(26) + '</span>' +
         '</div>' +
         '<div class="t">' + M.tit + '</div>' +
-        (esArco ? arcoManoAMano(G.escudoRival) : escenaDuelo(!M.adivinar, M.cartel)) +
+        (esArco ? arcoManoAMano(G.escudoRival) : escenaDuelo(!M.adivinar)) +
         '<div class="s">' + M.pregunta + '</div>' +
         '<div class="dl-hint">' + (esArco ? 'tocá adentro del arco' : 'tocá un lado') + '</div>' +
       '</div>';
@@ -15645,6 +15678,7 @@ function manoAMano(tipo, mio, val){
         const yo = wrap.querySelector('.dl-yo'), riv = wrap.querySelector('.dl-riv');
         const pel = wrap.querySelector('.dl-pel');
         yo.classList.remove('activo', 'espera'); riv.classList.remove('activo', 'espera');
+        pel.classList.remove('lleva');
         const dxYo = mio2 === 'izq' ? -50 : 50, dxRiv = suyo === 'izq' ? -50 : 50;
 
         /* **El mano a mano no es una carrera: es un remate.** En los otros tres
@@ -15695,7 +15729,26 @@ function manoAMano(tipo, mio, val){
           ro.setAttribute('cx', 100 + destino);
           ro.classList.add('on');
         }
-        await wait(460);
+        await wait(esRemate ? 460 : 380);
+
+        /* **El que gana sale con la pelota** (v289). En el 1 vs 1, la marca y
+           defender el duelo terminaba con los dos quietos y la pelota a los
+           pies del ganador: no se veía qué había ganado. Ahora el que gana
+           avanza con ella hacia donde ataca —vos hacia arriba, el rival hacia
+           abajo— dando pasos. Si quedaron en el mismo carril sale por el medio,
+           para no pasarle por encima al otro. */
+        if(!esRemate){
+          const mia = !M.adivinar;            // la pelota arrancó abajo, con vos
+          const ganador = gana ? yo : riv;
+          const dxF = mio2 === suyo ? 0 : (gana ? dxYo : dxRiv);
+          const dyF = gana ? -60 : 56;   // más allá del otro y adentro de la cancha: vos casi hasta arriba, él hasta tu línea
+          const base = gana ? (mia ? 0 : 54) : (mia ? -54 : 0);   // la pelota, a sus pies
+          ganador.classList.add('corre');
+          ganador.style.transition = pel.style.transition = 'transform .6s cubic-bezier(.3,.7,.4,1)';
+          ganador.style.transform = 'translate(' + dxF + 'px,' + dyF + 'px)';
+          pel.style.transform = 'translate(' + dxF + 'px,' + (base + dyF) + 'px)';
+          await wait(820)   // .6s de carrera y un respiro antes del cartel;
+        }
         }
 
         const box = wrap.querySelector('.sit.mam');

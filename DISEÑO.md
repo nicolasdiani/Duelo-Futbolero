@@ -15602,3 +15602,42 @@ pierde esos 5px de aire (14/12 → 11/10) y entra sin scroll.
 
 Revisado LED contra clásico en 320×568, 402×784 y 440×956: GANASTE, ELIMINADO,
 CAMPEÓN y EMPATE sin scroll, nada se pisa ni se corta. Prueba general 47/47.
+
+## v289 · el aro verde marca lo tuyo en los seis mini juegos
+
+La v272 marcaba lo tuyo distinto en cada mini juego: dos anillos dorados en la
+pelota, un halo amarillo detrás de tu arquero y un cartel dorado (ENCARÁS,
+MARCÁS, DEFENDER) en los duelos. Para el penal que atajás se compararon cuatro
+formas sin el fondo amarillo —guantes que llaman, marca en el piso, silueta
+encendida y cartel VOS— y quedó **la marca en el piso**, que ahora va en los seis:
+
+| mini juego | el aro verde va bajo |
+|---|---|
+| penal que pateás, mano a mano | la pelota (que sigue picando) |
+| penal que atajás | los pies de tu arquero, y acompaña su vaivén |
+| 1 vs 1 | tu jugador, con la pelota a sus pies |
+| la marca, defender | tu jugador |
+
+Es un aro con una onda que sale, como el jugador que manejás en un juego de
+fútbol, y se va al tocar, como antes. El cartel dorado de los duelos se fue: lo
+que hay que hacer ya lo dice la pregunta.
+
+Además:
+
+- **Los arqueros mueven las manos.** Los dos, el tuyo y el rival: suben juntas
+  mientras decidís y bajan antes de la estirada, así que el vuelo no cambia.
+- **El que lleva la pelota da pasos**, y la pelota va con él: se hamaca a su
+  ritmo y rueda.
+- **El que gana el duelo sale con la pelota** (1 vs 1, la marca y defender).
+  Antes los dos quedaban quietos y la pelota a los pies del ganador; ahora el
+  que gana avanza con ella hacia donde ataca —vos hacia arriba, el rival hacia
+  abajo—. Vos lo pasás y quedás casi en el borde de arriba; él llega hasta tu
+  línea, que es lo que deja el fondo de la cancha. Si quedaron en el mismo
+  carril sale por el medio para no pasarle por encima. Suma unos 0,7 s a cada duelo.
+
+Revisado LED en 320×568, 402×784 y 440×956: las 31 pantallas quedan igual que
+en la v288 (nada se pisa, se corta ni scrollea de más). En 36 duelos jugados (12
+por tamaño) con los cuatro cruces posibles, las figuras nunca se pisan, la pelota termina
+siempre con el que gana y todo queda adentro de la cancha. Prueba general 48/48
+(las pruebas de los mini juegos pasan a pedir el aro, las manos, los pasos y el
+avance).
