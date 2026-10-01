@@ -10683,6 +10683,40 @@ html.html-menu, html.html-menu body{overflow:hidden}
   box-shadow:inset 0 0 0 var(--filo-hl,1px) rgba(var(--tono),.9),
     0 0 0 1px rgba(var(--tono),.45),0 0 12px 1px rgba(var(--tono),.42),var(--canto);
 }
+
+/* ---- LA POSIBILIDAD DE GOL LATE COMO EJECUTAR (v292) ----
+   Cuando está activa, el cartel late con el mismo ritmo que los botones que
+   esperan un toque (`ctaLatido`: EJECUTAR, IR AL VESTUARIO...): dos golpes
+   cortos y una pausa larga, cada 2,8s, con un anillo que se enciende en cada
+   golpe. El anillo va en el verde del cartel, como el de IR AL VESTUARIO.
+
+   **Lo único que cambia es cuánto crece.** El botón crece un 3,5%, pero el
+   cartel ocupa casi todo el ancho: a 402 mide 386 y le quedan 8px por lado y
+   5 hasta la mesa. Con ese 3,5% el anillo salía 4px de la pantalla y tocaba
+   los ítems de arriba. Crece un 1,2% en el teléfono (2px de margen en el
+   pico) y un 0,4% con el anillo pegado en la tablet parada, donde ocupa 758
+   de 768. Medido en el pico en 320, 402, 440, 768, 1024, 1280 y acostado:
+   no sale de la pantalla ni pisa nada. Es `transform` y `outline`, así que no
+   ocupa lugar y la mesa no se mueve. */
+:root .gol-banner.lista{
+  --gbK1:1.012;--gbK2:1.0075;
+  outline:0 solid rgba(39,240,138,.65);outline-offset:2px;
+  animation:gbLatido 2.8s ease-in-out infinite;
+}
+@keyframes gbLatido{
+  0%      {transform:scale(1);           outline-width:0}
+  10%     {transform:scale(var(--gbK1)); outline-width:2px}
+  20%     {transform:scale(1)}
+  30%     {transform:scale(var(--gbK2)); outline-width:1.5px}
+  45%,100%{transform:scale(1);           outline-width:0}
+}
+@media (min-width:521px) and (max-width:1024px) and (orientation:portrait){
+  :root .gol-banner.lista{--gbK1:1.004;--gbK2:1.0025;outline-offset:0}
+}
+/* Apagado no late; con mouse se calma al pasar por encima, como los botones. */
+:root .gol-banner.lista:disabled{animation:none;outline-width:0}
+@media (hover:hover){:root .gol-banner.lista:hover:not(:disabled){animation:none}}
+@media (prefers-reduced-motion:reduce){:root .gol-banner.lista{animation:none}}
 </style>
 <script>
 /* ?clasico=1 apaga el estilo PANTALLA LED y deja el clásico (v280). */
@@ -12529,7 +12563,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 291;
+const VERSION = 292;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,

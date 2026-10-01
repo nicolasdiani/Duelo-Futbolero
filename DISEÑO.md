@@ -15671,3 +15671,28 @@ Cada carta mantiene su color: el % sigue en celeste. La regla vieja de la piel
 se borró y la nueva vive en su propio bloque. En el estilo clásico no cambia
 nada. Prueba general 49/49: el chequeo del celeste ahora pide el mismo halo
 que las demás cartas en LED, y que sin fila tomada el % no brille.
+
+## v292 · la POSIBILIDAD DE GOL activa late como EJECUTAR
+
+Cuando el cartel está activo late con el mismo ritmo que los botones que
+esperan un toque (EJECUTAR, IR AL VESTUARIO, CONTINUAR PARTIDO...). Son dos
+golpes cortos y una pausa larga cada 2,8 s, con un anillo que se enciende en
+cada golpe. El anillo va en el verde del cartel. Se suma al borde que gira y
+al reflejo de la v285.
+
+Lo único distinto al botón es **cuánto crece**. El botón crece un 3,5%, pero
+el cartel ocupa casi todo el ancho: a 402 mide 386, con 8px por lado y 5 hasta
+la mesa. Con ese 3,5% el anillo salía 4px de la pantalla y tocaba los ítems de
+arriba.
+
+| pantalla | crece | anillo | margen en el pico |
+|---|---|---|---|
+| teléfono (320 a 440), columna, escritorio, acostado | 1,2% | 2px, separado 2px | 1 a 2px |
+| tablet parada (521 a 1024 de ancho) | 0,4% | 2px, pegado al borde | 1px |
+
+Medido con la animación real congelada en el pico, en 320×568, 402×784,
+440×956, 768×1024, 1024×1366, 1280×800 y 844×390: no sale de la pantalla, no
+hace scroll y no pisa nada. Es `transform` y `outline`, así que no ocupa lugar
+y la mesa no se mueve. Apagado no late; con mouse se calma al pasar por
+encima, como los botones; sin movimiento, quieto. En el estilo clásico no
+cambia. Prueba general 49/49.
