@@ -15653,3 +15653,21 @@ negro sobre el fondo oscuro y no se veía.
 Ahora, en los botones de línea, el ícono va dorado como la letra. En el estilo
 clásico ya era así. Se revisaron los íconos de todos los botones en las 31
 pantallas: ése era el único que no contrastaba con su botón.
+
+## v291 · las cartas de % se resaltan como las demás
+
+Con el estilo LED, las cartas de porcentaje (TIRO LIBRE, PASE GOL...) quedaron
+distintas al resto. Una regla de la piel les daba borde celeste pleno y un halo
+de 16px **siempre**, con la fila tomada o no. Al tomarla se sumaba el halo
+reforzado de la v273 (filo al 100%, halo de 14px al 55%). En la mesa brillaban
+más que todas las demás aunque no estuvieran en juego.
+
+| | antes | ahora (igual que las demás) |
+|---|---|---|
+| en reposo | borde celeste pleno y halo de 16px | borde celeste al 55%, sin halo |
+| fila o columna tomada | filo 100%, halo 14px al 55% | filo 90%, halo 12px al 42% |
+
+Cada carta mantiene su color: el % sigue en celeste. La regla vieja de la piel
+se borró y la nueva vive en su propio bloque. En el estilo clásico no cambia
+nada. Prueba general 49/49: el chequeo del celeste ahora pide el mismo halo
+que las demás cartas en LED, y que sin fila tomada el % no brille.
