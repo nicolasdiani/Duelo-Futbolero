@@ -15853,3 +15853,31 @@ Probado:
 - prueba general 49/49. La prueba del arquero ahora pide la camiseta de tu
   club con el escudo, y la de los duelos, las dos camisetas con escudo y los
   pasos.
+
+## v297 · los arqueros de amarillo flúor, con el escudo de su club
+
+Con la camiseta del club (v296) el arquero se vestía igual que los jugadores. En
+el arco se perdía: detrás tiene un fondo casi negro (#0b1812) con la red clara.
+Ahora lleva **camiseta de arquero amarillo flúor** con el escudo de su club en
+el pecho y el color del club en el cuello, los hombros y los puños. Short negro,
+medias flúor y guantes blancos.
+
+| propuesta | contraste con el arco |
+|---|---|
+| negra con vivos del club (pedía contorno claro) | 1,03:1 |
+| **amarillo flúor** | **14,7:1** |
+| fucsia | 5,5:1 |
+
+El color del club que va encima es el primero de su camiseta. Si casi no se
+distingue del flúor (Aldosivi y Defensa, amarillos) va el segundo, y si tampoco,
+blanco.
+
+Va en **todos los arcos**, porque todos salen de `arcoPenalHTML`: el penal
+durante el partido (atajás y pateás), el mano a mano del arquero, el penal
+definitorio y la tanda final. Cuando atajás va tu escudo y cuando pateás, el del
+rival. Probado abriendo los seis casos.
+
+Mismas cajas que antes: el arquero ocupa el mismo lugar (de 76 a 124 de ancho
+y de 48 a 100 de alto) y vuela igual. Control de layout de las 31 pantallas
+igual al anterior. Prueba general 49/49: la del arquero ahora pide el flúor con
+tu escudo.

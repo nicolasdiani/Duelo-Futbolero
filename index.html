@@ -12698,7 +12698,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 296;
+const VERSION = 297;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -15100,6 +15100,43 @@ const mangaCam = (k, x, y, w, h) => cajaCam(x, y, w, h, k.c1, BORDE_CAM);
 /* pierna: short del segundo color arriba, media del primero abajo */
 const piernaCam = (k, x, y, w, h) => cajaCam(x, y, w, h / 2, k.c2, BORDE_CAM) + cajaCam(x, y + h / 2, w, h / 2, k.c1, BORDE_CAM);
 
+/* ---- EL ARQUERO, DE AMARILLO FLÚOR (v297) ----
+   Con la camiseta del club (v296) el arquero se vestía igual que los jugadores,
+   y en el arco se perdía: detrás tiene un fondo casi negro (#0b1812) con la red
+   clara. Ahora lleva **camiseta de arquero amarillo flúor**, la de toda la
+   vida, con el escudo de su club en el pecho y el color del club en el cuello,
+   los hombros y los puños; short negro, medias flúor y guantes blancos.
+
+   Contra el fondo del arco el flúor da 14,7:1 (el negro daba 1,03 y el fucsia
+   5,5). Se compararon tres —negra con vivos del club y contorno claro, amarillo
+   flúor y fucsia— y quedó el flúor.
+
+   El color del club que va encima es el primero de su camiseta; si casi no se
+   distingue del flúor (Aldosivi, Defensa: amarillo), el segundo, y si tampoco,
+   blanco. Las cajas son las de siempre: el arquero vuela igual. */
+const ARQ_FLUOR = '#d7f53a';
+const ARQ_BORDE = ' stroke="rgba(0,0,0,.45)" stroke-width="0.9"';
+const luzDe = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255)
+  .map(v => v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4)); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+const contrasteDe = (a, b) => { const x = luzDe(a), y = luzDe(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+function acentoArquero(k){
+  if(contrasteDe(k.c1, ARQ_FLUOR) >= 1.6) return k.c1;
+  if(contrasteDe(k.c2, ARQ_FLUOR) >= 1.6) return k.c2;
+  return hexEscudo('blanco');
+}
+/* torso, piernas y mangas del arquero, en las cajas de siempre */
+function arqueroCam(k){
+  const ac = acentoArquero(k);
+  return {
+    torso:'<rect class="cam-base" x="91" y="66" width="18" height="24" fill="' + ARQ_FLUOR + '"' + ARQ_BORDE + '/>' +
+      cajaCam(91, 66, 18, 2.2, ac) + cajaCam(96.5, 66, 7, 3.4, ac) +          // hombros y cuello del club
+      escudoDelPecho(k, 100, 70.4, 7.6),
+    pierna:x => cajaCam(x, 90, 6, 5, hexEscudo('negro'), ARQ_BORDE) + cajaCam(x, 95, 6, 5, ARQ_FLUOR, ARQ_BORDE),
+    manga:x => cajaCam(x, 61, 6, 7, ARQ_FLUOR, ARQ_BORDE) + cajaCam(x, 61, 6, 2, ac),
+    guante:hexEscudo('blanco')
+  };
+}
+
 /* El aro verde de lo tuyo (v289): la onda que sale y el aro fijo encima, como
    una elipse en el piso. Lo usan el arco y los tres duelos. */
 function aroTuyo(cx, cy, rx, ry){
@@ -15117,8 +15154,9 @@ function aroTuyo(cx, cy, rx, ry){
    Todo se va apenas tocás (`animarPenal`). Las manos que suben las tienen
    los dos arqueros, marcados o no. */
 function arcoPenalHTML(esc, marca){
-  const K = camisetaDe(esc);   // la camiseta del que ataja (v296)
-  const B = K.c2;              // guantes
+  const K = camisetaDe(esc);   // el club del que ataja (v296)
+  const A = arqueroCam(K);     // y su camiseta de arquero (v297)
+  const B = A.guante;          // guantes
 
   let red = '';
   for(let x = 30; x <= 170; x += 13) red += '<path class="pp-red" d="M' + x + ' 14 V104"/>';
@@ -15153,15 +15191,15 @@ function arcoPenalHTML(esc, marca){
       ? '<g class="mj-marca mj-sigue">' + aroTuyo(100, 101, 17, 4.2) + '</g>' : '') +
     '<g class="pp-arq idle">' +
       '<circle cx="100" cy="56" r="8" fill="#f0c9a0" stroke="rgba(0,0,0,.35)" stroke-width="1"/>' +
-      /* la camiseta del club con su escudo, y las piernas de short y media (v296) */
-      torsoCam(K, 91, 66, 18, 24) + piernaCam(K, 93, 90, 6, 10) + piernaCam(K, 101, 90, 6, 10) +
+      /* la camiseta de arquero con el escudo del club, short negro y medias (v297) */
+      A.torso + A.pierna(93) + A.pierna(101) +
       /* cada brazo con su guante, para que las manos suban (v289) */
       '<g class="pp-mano izq">' +
-        mangaCam(K, 85, 61, 6, 7) +
+        A.manga(85) +
         '<rect x="76" y="55" width="12" height="12" rx="3.5" fill="' + B + '" stroke="rgba(0,0,0,.4)" stroke-width="1"/>' +
       '</g>' +
       '<g class="pp-mano der">' +
-        mangaCam(K, 109, 61, 6, 7) +
+        A.manga(109) +
         '<rect x="112" y="55" width="12" height="12" rx="3.5" fill="' + B + '" stroke="rgba(0,0,0,.4)" stroke-width="1"/>' +
       '</g>' +
     '</g>' +
