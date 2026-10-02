@@ -15926,3 +15926,14 @@ Medido en 320×568, 360×740, 375×667, 390×844, 402×784, 412×915, 430×932 y
 los goles. En la tablet y la compu es lo mismo que en 402, porque el juego va
 adentro del marco. El estilo clásico no cambia de tamaño. Control de layout de
 las 31 pantallas igual al anterior. Prueba general 49/49.
+
+## v300 · la carta ARQUERO, sin el +1 de racha
+
+La carta ARQUERO de mini juego era la más cargada de la mesa: la chapa MINI
+JUEGO, MANO A MANO en dos renglones, «⚽ GOL» en un renglón y «+1 ⚡ o -2 ❤» en
+otro. Ahora el efecto es **un solo renglón: «⚽ GOL o -2 ❤»**. El premio de
+racha se saca del texto, pero la racha sube igual cuando ganás y se ve en el
+medidor.
+
+Lo mismo al ganar el duelo: dice **⚽ GOL a secas**, como JUGADA CLARA, sin el
+«+1 ⚡» al lado.
