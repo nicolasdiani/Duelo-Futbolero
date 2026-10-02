@@ -16210,3 +16210,47 @@ el escudo ni el nombre del mini juego, y ninguna carta se sale por abajo. Los
 seis pop-ups con su color, sin salirse, en 320, 375, 402 y 667x375. La ficha
 de gol en 320, 360 y 402. Control de layout de las 31 pantallas igual al de la
 v305 (LED y clásico). Prueba general 49/49.
+
+## v307 · la posibilidad de gol dice de quién es
+
+Cuando se usa la posibilidad de gol (racha llena) o se termina el aguante, se
+sortea una de las cinco jugadas y sale su cartel. Ese cartel decía «⚡ RACHA
+LLENA» o «SE TERMINÓ EL AGUANTE», pero no **de quién era la jugada**. El de las
+cartas de la mesa sí lo dice, con una cinta arriba: escudo, nombre del club y
+minuto, rojiza si es del rival.
+
+Ahora la misma cinta va en:
+
+- **la jugada que salió** (PASE GOL, CÓRNER…): tuya con la racha llena, del
+  rival con el aguante fundido;
+- **su resultado** cuando no entra (LA ERRASTE, ¡TE SALVASTE!);
+- **el penal suelto**, el que sale de ahí y el de las cartas PENAL y PENAL
+  RIVAL: tuyo si lo pateás, del rival si lo atajás. En la tanda no va, porque
+  la pizarra ya muestra los dos equipos.
+
+`cintaDelClub(tipo)` pasa a ser un atajo de `cintaDelLado(delRival)`, que es
+la que usan estos carteles. El CSS de la cinta del mini juego
+(`.sit.mam .p-cinta`) se generalizó a `.sit:is(.mam, .penal, .con-art)`: los
+tres tienen el mismo padding, que es contra lo que están calculados los
+márgenes negativos de la cinta. El cartel de la jugada lleva `con-art`
+aunque no tenga foto, por lo mismo.
+
+Los carteles del sorteo («SE TE LLENA LA RACHA», «SE TE FUNDE EL EQUIPO») no
+la llevan: hablan de tu equipo y una cinta ahí confundiría.
+
+**Acostado y bajo** (500 de alto o menos) la cinta va compacta —escudo de 18,
+menos relleno— y la foto del cartel un poco más baja: con la cinta entera, la
+jugada que antes entraba en 667x375 pasaba a scrollear. Quedó mejor que antes:
+en 844x390 sobraban 57px y ahora 0.
+
+De paso, la etiqueta MINI JUEGO de la miniatura del penal en la ficha de gol
+(v306) se recortaba con el teléfono acostado: ahí va con el joystick solo,
+como en los teléfonos angostos.
+
+Probado en el juego real en 320x568, 375x667, 402x784, 440x956 y 667x375: la
+jugada a favor y la del rival, su resultado, y el penal pateando y atajando con
+su resultado. En todos, el club correcto con su escudo, la cinta de borde a
+borde y el nombre sin cortar. Parado, ningún cartel scrollea; acostado en
+667x375 scrollean el resultado del aguante y los dos penales, igual que en la
+v306. Control de layout de las 31 pantallas igual al de la v306 (320, 375,
+402 LED y clásico, 667x375). Prueba general 49/49.

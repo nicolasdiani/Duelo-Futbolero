@@ -4426,7 +4426,7 @@ body{padding-bottom:36px}
    la izquierda y no se estira—. Es el mismo enredo que ya está anotado en
    `.play .p-cinta`, y acá además, si aparece la barra de scroll del cartel, el
    ancho explícito la sigue y la cinta queda simétrica igual. */
-.sit.mam .p-cinta{
+.sit:is(.mam, .penal, .con-art) .p-cinta{
   display:flex;align-items:center;gap:9px;
   margin:-22px -24px 14px;width:calc(100% + 48px);padding:8px 18px;
   border-bottom:1px solid var(--line);background:rgba(0,0,0,.28);
@@ -4434,18 +4434,18 @@ body{padding-bottom:36px}
   text-transform:none;text-align:left;
 }
 .sit.mam .pc-esc{flex:0 0 auto;display:flex}
-.sit.mam .p-cinta b{
+.sit:is(.mam, .penal, .con-art) .p-cinta b{
   font-family:var(--tit);font-weight:800;font-size:16px;letter-spacing:1.4px;
   color:var(--white);line-height:1;min-width:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-.sit.mam .p-cinta i{
+.sit:is(.mam, .penal, .con-art) .p-cinta i{
   margin-left:auto;font-style:normal;font-family:var(--txt);font-weight:400;
   font-size:11px;letter-spacing:2px;color:var(--dim2);white-space:nowrap;
 }
-.sit.mam .p-cinta.riv{background:rgba(74,10,22,.34);border-bottom-color:rgba(255,59,82,.26)}
+.sit:is(.mam, .penal, .con-art) .p-cinta.riv{background:rgba(74,10,22,.34);border-bottom-color:rgba(255,59,82,.26)}
 /* Con la cinta arriba, la foto ya no tiene que subirse al relleno. */
-.sit.mam .p-cinta + .mam-art{margin-top:0}
+.sit:is(.mam, .penal, .con-art) .p-cinta + .mam-art{margin-top:0}
 /* ---- LOS ESCUDOS DEL CHOQUE ----
    Uno en cada punta del renglón, del alto del recuadro del número, y el hueco
    se ajusta porque los rótulos que estaban ahí ya no están. El renglón mide lo
@@ -4496,7 +4496,7 @@ body{padding-bottom:36px}
   /* La cancha se lleva 36px más que la escena de antes y en 320 x 568 el cartel
      se pasaba por 4. La foto cede dos puntos más de alto y vuelve a entrar con
      21 de sobra: acá el que tiene que ganar es el lugar donde se juega. */
-  .sit.mam .p-cinta + .mam-art img{max-height:min(216px, 21vh)}
+  .sit:is(.mam, .penal, .con-art) .p-cinta + .mam-art img{max-height:min(216px, 21vh)}
 }
 
 /* Los botones, como las opciones del menú. */
@@ -5949,9 +5949,9 @@ body{padding-bottom:36px}
      topa en 410px —de 249 de alto pasa a 228, un 8% que no se nota—, y con eso
      el cartel queda en 626 contra los 646 de antes: entra sin barra. */
   .sit.mam{padding:20px 36px 16px}
-  .sit.mam .p-cinta{margin:-20px -36px 10px;width:calc(100% + 72px);padding:7px 24px}
+  .sit:is(.mam, .penal, .con-art) .p-cinta{margin:-20px -36px 10px;width:calc(100% + 72px);padding:7px 24px}
   .sit.mam .sit-tag{margin-bottom:8px}
-  .sit.mam .p-cinta + .mam-art{margin-bottom:8px}
+  .sit:is(.mam, .penal, .con-art) .p-cinta + .mam-art{margin-bottom:8px}
   .sit.mam .t{margin:9px 0 6px}
   .sit.mam .s{margin-top:8px}
   /* Con el viewBox más alto, toparla en 410 dejaba el cartel 17px por encima de
@@ -6129,10 +6129,21 @@ body{padding-bottom:36px}
 .fg-art .mj-lb:is(.mj-favor, .mj-rival, .mj-duelo){width:100% !important;box-sizing:border-box}
 /* en los teléfonos angostos la miniatura mide 47 y la chapa con el texto pide
    55: queda la banda con el joystick solo, y «MINI JUEGO» ya está escrito
-   debajo de la miniatura */
-@media (max-width:380px){
+   debajo de la miniatura. Lo mismo con el teléfono acostado y bajo (v307). */
+@media (max-width:380px), (orientation:landscape) and (max-height:500px){
   .fg-art .mj-lb:is(.mj-favor, .mj-rival, .mj-duelo){font-size:0 !important;padding:2px 0 !important;gap:0 !important}
   .fg-art .mj-lb .mj-emo{font-size:12px;margin:-4px 0 -3px}
+}
+
+/* **Acostado y bajo, la cinta de quién es la jugada va compacta** (v307):
+   en 667x375 la posibilidad de gol entraba justa y la cinta —48 de alto más
+   14 de margen— la hacía scrollear. Escudo de 18, menos relleno y la foto un
+   poco más baja. */
+@media (orientation:landscape) and (max-height:500px){
+  .sit:is(.mam, .penal, .con-art) .p-cinta{padding-top:3px !important;padding-bottom:3px !important;margin-bottom:6px !important;gap:7px}
+  .sit:is(.mam, .penal, .con-art) .p-cinta b{font-size:13px}
+  .sit:is(.mam, .penal, .con-art) .pc-esc :is(img, svg){height:18px !important;width:auto}
+  .sit:is(.mam, .penal, .con-art) .p-cinta + .mam-art img{max-height:20vh}
 }
 
 /* ================= NI FOCO NI DESTELLO AL TOCAR =================
@@ -7715,9 +7726,9 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
      ceden un par de píxeles cada uno —relleno de abajo, cinta, foto, rótulo— y
      vuelve a entrar con 28 de sobra. Medido a 320 x 568. */
   .sit.mam{padding-bottom:10px}
-  .sit.mam .p-cinta{padding:6px 14px;margin-bottom:10px}
-  .sit.mam .p-cinta b{font-size:14px}
-  .sit.mam .p-cinta + .mam-art{margin-bottom:8px}
+  .sit:is(.mam, .penal, .con-art) .p-cinta{padding:6px 14px;margin-bottom:10px}
+  .sit:is(.mam, .penal, .con-art) .p-cinta b{font-size:14px}
+  .sit:is(.mam, .penal, .con-art) .p-cinta + .mam-art{margin-bottom:8px}
   .sit.mam .sit-tag{margin-bottom:8px}
   .sit.mam .t{margin-top:8px}
 }
@@ -12878,7 +12889,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 306;
+const VERSION = 307;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -15659,6 +15670,9 @@ function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo, rot){
     wrap.className = 'sit-flash';
     wrap.innerHTML =
       '<div class="sit penal">' +
+        /* de quién es el penal (v307): pateás vos, es tuyo; atajás vos, es del
+           rival. En la tanda no va: ahí la pizarra ya muestra los dos equipos. */
+        (suelto ? cintaDelLado(!yoPateo) : '') +
         '<div class="sit-tag">' +
           (suelto ? ((rot && rot.tag) || 'POSIBILIDAD DE GOL')
            : muerte ? 'MUERTE SÚBITA · PENAL ' + (ronda - TANDA_TIROS)
@@ -15695,6 +15709,7 @@ function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo, rot){
         const bueno = yoPateo ? conv : atajado;
         const box = wrap.querySelector('.sit.penal');
         morfarPop(box, 'sit penal resuelta ' + (bueno ? 'salvado' : 'gol'),
+          (suelto ? cintaDelLado(!yoPateo) : '') +
           '<div class="sit-tag">' +
             (suelto ? 'EL PENAL' : yoPateo ? 'PATEÓ ' + eqs[quien].club : 'ATAJA ' + eqs[1 - quien].club) +
           '</div>' +
@@ -16473,9 +16488,12 @@ function mostrarJugada(cell){
    campeonato, el jugador 2 en el 1v1— así que los dos modos lo dicen bien sin
    una rama aparte. Si todavía no hay escudos en juego cae en el renglón de
    antes, que es el que usan el tutorial y las pantallas sueltas. */
-function cintaDelClub(tipo){
-  const delRival = esDelRival(tipo);
-  const e = escudoDeLaJugada(tipo);
+function cintaDelClub(tipo){ return cintaDelLado(esDelRival(tipo)); }
+/* **La misma cinta, por lado** (v307): la usan también la posibilidad de gol
+   y el penal suelto, que no salen de una carta de la mesa sino de la racha
+   llena (tuya) o del aguante fundido (del rival). */
+function cintaDelLado(delRival){
+  const e = delRival ? G.escudoRival : G.escudo;
   const min = 'MINUTO ' + minutoActual() + '\'';
   if(!e) return '<div class="p-tag">' + min + ' &nbsp;·&nbsp; TE TOCÓ</div>';
   const nm = delRival
@@ -17003,7 +17021,12 @@ function situacionGol(lado, yaElegida){
          distintos. Es el molde del pop-up del mini juego —foto a sangre
          arriba, nombre grande abajo en el color del resultado— así que los dos
          pop-ups de acción del juego pasan a ser la misma pieza. */
-      '<div class="sit' + (favor ? ' lado-favor' : '') + (art ? ' con-art' : '') + '">' +
+      '<div class="sit' + (favor ? ' lado-favor' : '') + ' con-art">' +
+        /* **De quién es la jugada** (v307): la cinta de las cartas de la mesa,
+           con el escudo y el nombre del club. Con la racha llena es tuya; con
+           el aguante fundido, del rival. Lleva `con-art` aunque no haya foto:
+           es el padding contra el que está calculada la cinta. */
+        cintaDelLado(!favor) +
         (art ? '<div class="mam-art"><img src="' + art + '" alt=""></div>' : '') +
         '<div class="sit-tag">' + (favor ? '<i class="ir"></i> RACHA LLENA' : 'SE TERMINÓ EL AGUANTE') + '</div>' +
         (art ? '' : '<div class="sit-ico">' + S.ico + '</div>') +
@@ -17098,7 +17121,8 @@ function situacionGol(lado, yaElegida){
 
       say(S.no + (favor ? '' : ' Te salvaste. +1 racha.'), favor ? 'bad' : 'good');
 
-      morfarPop(box, 'sit resuelta salvado' + (favor ? ' lado-favor' : ''),
+      morfarPop(box, 'sit resuelta salvado con-art' + (favor ? ' lado-favor' : ''),
+        cintaDelLado(!favor) +
         '<div class="sit-tag">' + S.nm + ' &nbsp;·&nbsp; ' + Math.round(S.p * 100) + '%</div>' +
         '<div class="sit-ico">' + icoDesenlace(favor ? 'afuera' : 'atajada') + '</div>' +
         '<div class="t">' + (favor ? 'LA ERRASTE' : '¡TE SALVASTE!') + '</div>' +
