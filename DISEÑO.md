@@ -15994,3 +15994,36 @@ Dibujar la mesa pasa de 4,5 a 13ms en la compu, y casi todo eso es el cálculo
 de layout que el navegador hacía igual antes de pintar. Control de layout de
 las 31 pantallas igual al de la v300 en el mismo navegador. Prueba general
 49/49.
+
+## v302 · el recuadro que tocaste en blanco, y la red que se hunde cuando entra
+
+En todos los mini juegos con arco (el penal del partido pateando y atajando, la
+tanda final, el penal definitorio y el mano a mano del arquero), al tocar un
+recuadro:
+
+- **Se marca en blanco el que tocaste, y nada más.** Antes era dorado. No se
+  pinta de verde ni de rojo: si entra o la atajan lo cuenta la pelota.
+- **Atajando se marca el palo al que te tirás.** Hasta la v301 se marcaba
+  siempre el palo de la pelota: atajando, tocabas la izquierda y se encendía la
+  derecha, que es adonde iba a patear el rival. Eso dejaba ver el resultado
+  antes del tiro. `animarPenal` recibe ahora `tocado`, que en el penal atajando
+  es el palo del arquero y en el resto es el de la pelota.
+- **Cuando entra, la red se hunde** donde pega la pelota. Una máscara tapa la
+  red en un círculo de 30 alrededor del punto, y adentro va una copia de la red
+  que se achica hacia el punto (al 68%), rebota (107%) y vuelve, con una sombra
+  que hace de bolsillo. Dura 650ms. Afuera de ese círculo la red no se mueve.
+  Lo arma `arcoPenalHTML` (cada arco con sus ids) y lo dispara `redSeHunde`.
+  Con movimiento reducido no se anima.
+
+El amague, el disparo, el temblor, el destello, el borde verde del gol y el
+anillo de la atajada quedan como estaban.
+
+Se compararon tres marcas al tocar (blanco y después el resultado, solo el
+resultado, y las dos marcas) y tres impactos en la red (ondas, la red se hunde,
+y sacudón con chispas). Se eligió la marca en blanco sola y la red que se hunde.
+
+Probado en el juego real en los ocho casos: penal pateando (gol y atajada),
+penal atajando (gol rival y atajada), mano a mano, penal definitorio y tanda
+final pateando y atajando. En los ocho la marca va en lo que tocaste, y la red
+se hunde solo cuando entra. Control de layout igual al de la v301. Prueba
+general 49/49.

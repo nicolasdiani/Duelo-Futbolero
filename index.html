@@ -7256,10 +7256,19 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
 }
 .pp-zona:hover{fill-opacity:.2;stroke-opacity:1;animation:none}
 .pp-zona.off{pointer-events:none;animation:none;stroke-opacity:.12;fill-opacity:0}
+/* **Lo que tocaste, en blanco** (v302; antes dorado). Marca la elección y nada
+   más: no adelanta si entra o si la atajan, eso lo cuenta la pelota. */
 .pp-zona.sel{
-  animation:none;stroke:var(--gold);stroke-opacity:1;stroke-width:2.5;
-  fill:var(--gold);fill-opacity:.16;
+  animation:none;stroke:#fff;stroke-opacity:1;stroke-width:2.6;
+  fill:#fff;fill-opacity:.14;
 }
+/* **La red se hunde cuando entra** (v302). Alrededor de donde pega, la red de
+   siempre se tapa con una máscara y en su lugar va una copia que se achica
+   hacia el punto —el bolsillo—, con una sombra, y vuelve con un rebote. Afuera
+   de ese círculo la red no se mueve. Lo arma `arcoPenalHTML` y lo dispara
+   `redSeHunde`. */
+.pp-hueco{opacity:0}
+.pp-red2 .pp-red{stroke:rgba(232,238,248,.55)}
 
 /* El arquero: **se mueve apenas** mientras decidís, vuelo cuando disparás.
 
@@ -12739,7 +12748,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 301;
+const VERSION = 302;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -15280,8 +15289,10 @@ function aroTuyo(cx, cy, rx, ry){
      v288 era un halo amarillo detrás.
    Todo se va apenas tocás (`animarPenal`). Las manos que suben las tienen
    los dos arqueros, marcados o no. */
+let arcoN = 0;   // ids propios para la máscara de la red de cada arco
 function arcoPenalHTML(esc, marca){
   const K = camisetaDe(esc);   // el club del que ataja (v296)
+  const n = ++arcoN;
   const A = arqueroCam(K);     // y su camiseta de arquero (v297)
   const B = A.guante;          // guantes
 
@@ -15305,11 +15316,22 @@ function arcoPenalHTML(esc, marca){
     'style="animation-delay:' + (i * 260) + 'ms"/>').join('');
 
   return '<svg class="parco" viewBox="0 0 200 136" aria-label="Arco">' +
-    '<defs><clipPath id="ppCaja"><rect x="0" y="0" width="200" height="136" rx="8"/></clipPath></defs>' +
+    '<defs><clipPath id="ppCaja"><rect x="0" y="0" width="200" height="136" rx="8"/></clipPath>' +
+      /* el bolsillo de la red (v302): un círculo de radio 0 hasta que entra */
+      '<mask id="ppFuera' + n + '" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="136">' +
+        '<rect width="200" height="136" fill="#fff"/><circle class="pp-hueco-m" r="0" fill="#000"/></mask>' +
+      '<clipPath id="ppDentro' + n + '"><circle class="pp-hueco-m" r="0"/></clipPath>' +
+      '<radialGradient id="ppSombra' + n + '"><stop offset="0" stop-color="#000" stop-opacity=".55"/>' +
+        '<stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>' +
+    '</defs>' +
     '<g clip-path="url(#ppCaja)">' +
       '<rect class="dl-cesped" x="0" y="100" width="200" height="36"/>' + rayas +
     '</g>' +
-    '<g class="pp-redg">' + red + '</g>' +
+    '<g class="pp-redg" mask="url(#ppFuera' + n + ')">' + red + '</g>' +
+    '<g class="pp-bolsa" clip-path="url(#ppDentro' + n + ')">' +
+      '<circle class="pp-hueco" r="30" fill="url(#ppSombra' + n + ')"/>' +
+      '<g class="pp-red2">' + red + '</g>' +
+    '</g>' +
     '<path class="pp-post" d="M22 104 V14 H178 V104"/>' +
     '<path class="pp-piso" d="M8 108 H192"/>' +
     '<path class="pp-gol" d="M22 104 V14 H178 V104"/>' +
@@ -15378,7 +15400,33 @@ function arcoManoAMano(esc){
 
    Lo comparten los tres penales del juego: el definitorio, los de la tanda de
    la final y los del modo suelto. Los tres pasan por acá. */
-async function animarPenal(wrap, mio, suyo){
+/* La red se hunde donde pega la pelota (v302): el agujero de la máscara y el
+   recorte se abren en ese punto, la copia de la red se achica hacia él y
+   vuelve, y al terminar el agujero se cierra. */
+function redSeHunde(svg, p){
+  const copia = svg.querySelector('.pp-red2');
+  if(!copia || !copia.animate || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const aguj = svg.querySelectorAll('.pp-hueco-m');
+  aguj.forEach(c => { c.setAttribute('cx', p.x); c.setAttribute('cy', p.y); c.setAttribute('r', 30); });
+  const h = svg.querySelector('.pp-hueco');
+  h.setAttribute('cx', p.x); h.setAttribute('cy', p.y);
+  h.animate([{ opacity:0 }, { opacity:1, offset:.25 }, { opacity:0 }], { duration:650, easing:'ease-out' });
+  copia.style.transformBox = 'view-box';
+  copia.style.transformOrigin = p.x + 'px ' + p.y + 'px';
+  copia.animate([
+    { transform:'scale(1)' },
+    { transform:'scale(.68)', offset:.22 },
+    { transform:'scale(1.07)', offset:.55 },
+    { transform:'scale(.97)', offset:.78 },
+    { transform:'scale(1)' }
+  ], { duration:650, easing:'ease-out' }).onfinish = () => aguj.forEach(c => c.setAttribute('r', 0));
+}
+
+/* `tocado` es el recuadro que tocó el jugador. Pateando o en el mano a mano
+   es el de la pelota; atajando es el del arquero. Hasta la v301 se marcaba
+   siempre el de la pelota, y atajando eso mostraba adónde iba a patear el
+   rival antes del tiro. */
+async function animarPenal(wrap, mio, suyo, tocado = mio){
   const svg = wrap.querySelector('.parco');
   if(!svg) return;
   /* la marca de lo tuyo (v272) es para decidir: al tocar, se va */
@@ -15390,7 +15438,7 @@ async function animarPenal(wrap, mio, suyo){
      por orden marcaba la equivocada. */
   svg.querySelectorAll('.pp-zona').forEach(z => {
     z.classList.add('off');
-    if(+z.dataset.z === mio) z.classList.add('sel');
+    if(+z.dataset.z === tocado) z.classList.add('sel');
   });
   const arq = svg.querySelector('.pp-arq'), pel = svg.querySelector('.pp-pel');
   arq.classList.remove('idle');
@@ -15438,6 +15486,7 @@ async function animarPenal(wrap, mio, suyo){
     arq.classList.add('sacude');
   } else {
     svg.querySelector('.pp-gol').classList.add('on');
+    redSeHunde(svg, cp);
   }
   await wait(430);
   svg.classList.remove('tiembla');
@@ -15490,7 +15539,7 @@ function penalUno(eqs, quien, tiros, ronda, muerte, primero, yoPateo, rot){
         const atajado = paloPelota === paloArquero;
         const conv = !atajado;                      // convierte el que patea
 
-        await animarPenal(wrap, paloPelota, paloArquero);
+        await animarPenal(wrap, paloPelota, paloArquero, mio);
 
         /* El cartel se lee siempre desde tu lado: verde lo que te conviene,
            rojo lo que no. Pateando, gol es verde; atajando, gol es rojo. */
