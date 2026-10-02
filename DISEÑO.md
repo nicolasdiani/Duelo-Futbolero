@@ -16254,3 +16254,16 @@ borde y el nombre sin cortar. Parado, ningún cartel scrollea; acostado en
 667x375 scrollean el resultado del aguante y los dos penales, igual que en la
 v306. Control de layout de las 31 pantallas igual al de la v306 (320, 375,
 402 LED y clásico, 667x375). Prueba general 49/49.
+
+## v308 · el reloj de «Cómo se juega», igual al del tablero
+
+En la pantalla de reglas, el reloj de la fila «NUEVE JUGADAS» tenía el número
+en la letra de puntos del estilo LED (Doto), a 30px y con -2 de espacio entre
+letras, en un anillo de 52. El del tablero va en Tektur 800 a 28px, sin
+espacio negativo, en un anillo de 50: la regla del LED que lo pasa a Tektur
+apuntaba sólo a `#reloj`, y el de las reglas es otra pieza (`.tu-crono`).
+
+Ahora la misma regla apunta a los dos, y el anillo de las reglas baja a 50.
+Medido en 320x568, 375x667, 402x784, 440x956 y 667x375: misma letra, mismo
+tamaño y mismo «MIN» en los dos relojes. Control de layout de las 31 pantallas
+igual al de la v307 (LED y clásico). Prueba general 49/49.
