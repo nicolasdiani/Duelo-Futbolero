@@ -16027,3 +16027,25 @@ penal atajando (gol rival y atajada), mano a mano, penal definitorio y tanda
 final pateando y atajando. En los ocho la marca va en lo que tocaste, y la red
 se hunde solo cuando entra. Control de layout igual al de la v301. Prueba
 general 49/49.
+
+## v303 · al aparecer el mini juego, laten todos los recuadros
+
+Al abrirse un mini juego, a veces uno de los recuadros aparecía ya encendido:
+no latía y parecía elegido. Era el `:hover`. Si el mini juego aparecía debajo
+del puntero (el mouse quieto, o en el teléfono el último punto tocado),
+ese recuadro entraba en hover desde el primer cuadro, y el hover le cortaba el
+latido.
+
+Ahora el hover de los recuadros (`.pp-zona` en el arco y `.dl-z` en los
+duelos):
+
+- **no existe en pantallas táctiles** (`@media (hover:hover)`);
+- **con mouse, se enciende recién cuando el puntero se mueve** sobre el arco o
+  la cancha del duelo: un `pointermove` de mouse le pone la clase `puntero`
+  a la escena.
+
+Reproducido y verificado en el juego real con eventos de mouse y de toque de
+verdad, en el penal pateando y atajando, el mano a mano, 1 vs 1 y defender. Con
+el mouse quieto sobre un recuadro, antes ese recuadro quedaba sin latido; ahora
+laten todos, y al mover el mouse se enciende el que está debajo. Control de
+layout igual al de la v302. Prueba general 49/49.

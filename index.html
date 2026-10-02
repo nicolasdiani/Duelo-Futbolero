@@ -7254,7 +7254,16 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   0%,100%{stroke-opacity:.4;fill-opacity:.04}
   50%    {stroke-opacity:1;fill-opacity:.18}
 }
-.pp-zona:hover{fill-opacity:.2;stroke-opacity:1;animation:none}
+/* **El hover, sólo con el mouse y cuando se mueve** (v303). Si el mini juego
+   aparecía debajo del puntero —el dedo que tocó la fila o el mouse que quedó
+   quieto—, ese recuadro quedaba en hover desde el primer cuadro: dejaba de
+   latir y se quedaba encendido, como si ya estuviera elegido. Ahora en una
+   pantalla táctil no hay hover, y con mouse se enciende recién cuando el
+   puntero se mueve sobre el arco (la clase `puntero` la pone un
+   `pointermove`). Al aparecer laten todos. */
+@media (hover:hover){
+  .parco.puntero .pp-zona:hover{fill-opacity:.2;stroke-opacity:1;animation:none}
+}
 .pp-zona.off{pointer-events:none;animation:none;stroke-opacity:.12;fill-opacity:0}
 /* **Lo que tocaste, en blanco** (v302; antes dorado). Marca la elección y nada
    más: no adelanta si entra o si la atajan, eso lo cuenta la pelota. */
@@ -7488,7 +7497,10 @@ html,button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:
   0%,100%{stroke-opacity:.4;fill-opacity:.04}
   50%    {stroke-opacity:1;fill-opacity:.18}
 }
-.dl-z:hover{fill-opacity:.2;stroke-opacity:1;animation:none}
+/* el hover, igual que en el arco (v303) */
+@media (hover:hover){
+  .duelo.puntero .dl-z:hover{fill-opacity:.2;stroke-opacity:1;animation:none}
+}
 .dl-z.off{pointer-events:none;animation:none;stroke-opacity:.12;fill-opacity:0}
 .dl-z.sel{
   animation:none;stroke:var(--gold);stroke-opacity:1;stroke-width:2.5;
@@ -12748,7 +12760,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 302;
+const VERSION = 303;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -15403,6 +15415,14 @@ function arcoManoAMano(esc){
 /* La red se hunde donde pega la pelota (v302): el agujero de la máscara y el
    recorte se abren en ese punto, la copia de la red se achica hacia él y
    vuelve, y al terminar el agujero se cierra. */
+/* El hover de los recuadros se habilita cuando el mouse se mueve sobre el
+   arco o la cancha del duelo (v303). Ver `.parco.puntero` en el CSS. */
+document.addEventListener('pointermove', e => {
+  if(e.pointerType !== 'mouse' || !e.target.closest) return;
+  const esc = e.target.closest('.parco, .duelo');
+  if(esc) esc.classList.add('puntero');
+}, { passive:true });
+
 function redSeHunde(svg, p){
   const copia = svg.querySelector('.pp-red2');
   if(!copia || !copia.animate || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
