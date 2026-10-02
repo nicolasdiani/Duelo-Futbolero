@@ -1306,6 +1306,20 @@ img{height:auto}
 }
 .gb-go .ir{width:7px;height:10px;display:block;flex:0 0 auto}
 .gb-go .ir.off{opacity:.28;filter:grayscale(1)}
+/* **El rayo que falta, late** (v304). Con la racha a uno de llenarse, el rayo
+   apagado que falta se enciende y se apaga en dorado: falta uno, y el GRITO DEL
+   DT lo da. Los otros apagados no cambian. */
+.gb-go .ir.off.falta{
+  opacity:1;filter:none;transform-origin:center;
+  animation:rayoFalta 1.1s ease-in-out infinite;
+}
+@keyframes rayoFalta{
+  0%,100%{opacity:.35;filter:grayscale(1);transform:scale(1)}
+  50%    {opacity:1;filter:drop-shadow(0 0 4px rgba(255,178,26,.95)) brightness(1.25);transform:scale(1.28)}
+}
+@media (prefers-reduced-motion:reduce){
+  .gb-go .ir.off.falta{animation:none;filter:drop-shadow(0 0 3px rgba(255,178,26,.9))}
+}
 
 /* Encendido */
 /* **El cartel no late: lo cruza un brillo.** Latía con `golvivo`, que además
@@ -4257,30 +4271,51 @@ img.escudo{object-fit:contain}
 .beta-list b{color:var(--white)}
 
 /* ---------- FOOTER ----------
-   Barra fija abajo, centrada. 26px de alto y fondo semitransparente para que
-   esté siempre a mano sin pelearle espacio al mesa. El body reserva ese
-   alto, así el contenido nunca queda tapado. */
+   Barra fija abajo, de **30px**, con dos chapas como las de los ítems (v304):
+   Instagram con su ícono a color y el mail con uno verde.
+
+   Hace también de **línea de aviso**: la de abajo de la mesa se fue, y los dos
+   avisos que sí hacen falta —«tocá otra vez para confirmar» y el del VAR—
+   aparecen acá, en lugar de las chapas, mientras corresponden (`aviso()`).
+   El body reserva el alto del footer más 4 de aire. */
 .ft{
   position:fixed;left:0;right:0;bottom:0;z-index:300;
+  height:30px;box-sizing:border-box;
   display:flex;align-items:center;justify-content:center;
-  gap:8px;flex-wrap:wrap;
-  padding:6px 12px;
+  gap:6px;flex-wrap:nowrap;padding:0 8px;
   background:rgba(5,10,20,.92);border-top:1px solid var(--line);
   backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
 }
+/* El link ocupa todo el alto del footer —29px para el dedo— y la chapa que
+   se ve, 22, va adentro. */
 .ft a{
-  display:inline-flex;align-items:center;gap:5px;
-  font-family:var(--txt);font-size:10.5px;letter-spacing:.5px;
-  color:var(--dim);text-decoration:none;transition:color .15s;
+  display:inline-flex;align-items:center;flex:0 1 auto;min-width:0;height:100%;
+  color:var(--white);text-decoration:none;
 }
-.ft a:hover{color:var(--gold)}
-.ft .fi{font-size:12px}
-.ft .fsep{color:var(--line);font-size:10px}
+.ft-chapa{
+  display:inline-flex;align-items:center;gap:5px;min-width:0;
+  height:22px;box-sizing:border-box;padding:0 8px 0 3px;
+  border:1px solid var(--line);border-radius:4px;background:var(--panel2);
+  font-family:var(--txt);font-weight:600;font-size:10.5px;letter-spacing:.2px;line-height:1;
+  white-space:nowrap;transition:border-color .15s;
+}
+.ft a:hover .ft-chapa{border-color:var(--gold)}
+.ft a.ft-mail{color:var(--dim)}
+.ft-ico{width:16px;height:16px;border-radius:4px;display:inline-grid;place-items:center;flex:0 0 auto}
+.ft-ico svg{width:11px;height:11px;display:block}
+.ft-ig .ft-ico{background:radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%);color:#fff}
+.ft-mail .ft-ico{background:rgba(39,240,138,.14);color:var(--green);box-shadow:inset 0 0 0 1px rgba(39,240,138,.35)}
+/* el aviso: una chapa dorada en lugar de las dos */
+.ft-msg{
+  display:none;max-width:100%;height:22px;box-sizing:border-box;padding:0 10px;
+  border:1px solid rgba(255,178,26,.55);border-radius:4px;background:rgba(40,28,4,.6);
+  font-family:var(--txt);font-weight:600;font-size:10.5px;line-height:20px;color:var(--white);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ft-msg b{color:var(--gold)}
+.ft.con-msg a{display:none}
+.ft.con-msg .ft-msg{display:block}
 body{padding-bottom:36px}
-@media (max-width:380px){
-  .ft{gap:2px 10px}
-  .ft .fsep{display:none}
-}
 
 
 /* ================= REBRANDING DEL MINI JUEGO (v92-v93) =================
@@ -5000,13 +5035,12 @@ body{padding-bottom:36px}
        fuera de vista.
 
        El relato no tiene fila propia: es un botón flotante. */
-    grid-template-rows:auto auto auto minmax(0,1fr) auto;
+    grid-template-rows:auto auto auto minmax(0,1fr);
     grid-template-areas:
       "meds   stats"
       "items  stats"
       "gol    gol"
-      "mesa   mesa"
-      "hint   hint";
+      "mesa   mesa";
     gap:5px 6px;align-items:center;
     flex:1;min-height:0;
   }
@@ -5985,7 +6019,8 @@ body{padding-bottom:36px}
    tapa con su fondo. */
 @media (max-width:1024px) and (orientation:portrait), (max-width:820px){
   :root{--fab:40px}
-  body{padding-bottom:22px}
+  /* 30 del footer + 4 de aire con los botones de columna (v304) */
+  body{padding-bottom:34px}
   .log-fab{
     left:7px;right:auto;bottom:4px;
     width:var(--fab);height:var(--fab);
@@ -6000,8 +6035,36 @@ body{padding-bottom:36px}
      tablero, así que en el menú ese hueco quedaba reservado para nada y los
      créditos salían 20px corridos a la derecha: medido a 390, el centro del
      renglón caía en 215 y el de la pantalla está en 195. Sin botón, sin hueco. */
-  .ft{padding-left:calc(var(--fab) + 12px)}
-  #overlay.open ~ .ft, body:has(#overlay.open) .ft{padding-left:12px}
+}
+
+/* **Lo que dejó la línea de ayuda va para la posibilidad de gol** (v304): 15px
+   más de alto —de 37 a 52— con el título, las pelotas y los rayos más grandes.
+   La mesa queda del mismo alto que tenía con la línea, medido de 320 a 440.
+   Sólo con el teléfono parado: acostado el cartel va al costado de la mesa y
+   ahí agrandarlo se la achicaba. */
+@media (orientation:portrait) and (max-width:820px){
+  .gol-banner{min-height:52px}
+  .gol-banner .gb-ico{font-size:21px}
+  .gol-banner .gb-t{font-size:17px}
+  .gol-banner .gb-go .ir{width:8.5px;height:12px}
+}
+/* En 320 el título a 17 bajaba de renglón: va a 15, como antes, con las
+   pelotas y los rayos del tamaño de antes. El cartel mide 52 igual. */
+@media (orientation:portrait) and (max-width:340px){
+  .gol-banner .gb-t{font-size:15px}
+  .gol-banner .gb-ico{font-size:17px}
+  .gol-banner .gb-go .ir{width:7px;height:10px}
+}
+
+/* **El teléfono acostado no es un escritorio** (v304). De 821 de ancho para
+   arriba, acostado, le tocaban las reglas de escritorio: el número del duelo
+   con 10px de relleno a cada lado y la carta con 7. En una carta de 61 (844x390)
+   al nombre le quedaban **9px** y se leía letra por letra en una columna. Acá
+   van los valores del teléfono (con `.board` adelante: la regla de escritorio
+   está más abajo en la hoja). */
+@media (min-width:821px) and (orientation:landscape) and (max-height:560px){
+  .board .cell{padding:4px 3px 3px}
+  .board .cell .c-val{padding:0 3px;min-width:20px;border-radius:5px}
 }
 
 /* ================= NI FOCO NI DESTELLO AL TOCAR =================
@@ -10565,7 +10628,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
 :root .hist-lb{font-family:var(--tit);}
 
 /* ---- pie ---- */
-:root .ft{font-family:var(--tit);color:var(--dim2);background:transparent}
+:root .ft{background:linear-gradient(180deg,#07120d,#020604);border-top-color:var(--filo)}
 
 /* ---- ajustes ---- */
 :root .cta.n-linea, :root .cta.chica{background:transparent;color:var(--gold);border:1px solid rgba(255,178,26,.5);box-shadow:none}
@@ -10982,10 +11045,6 @@ if(/[?&]clasico=1/.test(location.search)){
         <h2 class="panel-tit">ÍTEMS</h2>
         <div id="itemBar" class="item-list"></div>
       </section>
-      <section class="panel panel-log" id="panelLog">
-        <h2 class="panel-tit" id="logTit">RELATO DEL PARTIDO</h2>
-        <div class="log" id="log"></div>
-      </section>
     </aside>
 
     <!-- CENTRO: la mesa -->
@@ -11006,14 +11065,6 @@ if(/[?&]clasico=1/.test(location.search)){
       <div class="board-zona">
         <div class="col-picks" id="colPicks" style="display:none"></div>
         <div class="board" id="board"></div>
-      </div>
-      <!-- la ayuda va abajo: arriba empujaba la mesa y competía con el
-           banner de gol, que es lo que sí hay que mirar -->
-      <div class="board-hint">
-        <span id="hint">Elegí una FILA. El azar decide qué carta te toca.</span>
-        <span id="cards"></span>
-        <!-- releer las reglas sin salir del partido -->
-        <button class="hint-ayuda" id="ayudaBtn" title="Cómo se juega">?</button>
       </div>
     </main>
 
@@ -11679,7 +11730,6 @@ function duelNuevoPartido(){
   G.grid.forEach(row => row.forEach(c => { if(c) c.lock = false; }));
   if(G.duelSinPlata) duelSacarPlata();
 
-  $('log').innerHTML = '';
   G.turno = 0;
   cargarTurno();
   render();
@@ -12506,8 +12556,6 @@ function mesaAtras(si){
   if(!w) return;
   if(si){
     cerrarFichaItem();
-    const pl = document.getElementById('panelLog');
-    if(pl) pl.classList.remove('abierto');
   } else {
     /* **No vuelve si todavía quedó algo adelante.** Desde que las pantallas
        también mandan la mesa atrás, hay dos casos donde el pedido de vuelta
@@ -12760,7 +12808,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 303;
+const VERSION = 304;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -12866,18 +12914,19 @@ function guardarTurno(){
      equivocado. */
 }
 
-function say(text, cls){
-  const log = $('log');
-  const p = document.createElement('p');
-  if(cls) p.className = cls;
-  /* innerHTML y no textContent: los relatos llevan el rayo y el corazón como
-     etiquetas, y `textContent` las escapaba mostrando el markup en el relato. */
-  p.innerHTML = text;
-  // lo último arriba: en una columna lateral el jugador mira el borde de
-  // arriba, no persigue el scroll hacia abajo
-  log.prepend(p);
-  log.scrollTop = 0;
-  while(log.children.length > 60) log.removeChild(log.lastChild);
+/* **El relato del partido se fue** (v304). `say()` queda como punto único por
+   donde pasaban las frases —se la llama desde muchos lugares—, pero ya no
+   escribe en ningún lado. */
+function say(){}
+
+/* El aviso de la jugada, en el footer y en lugar de las chapas (v304). Vacío,
+   vuelven las chapas. El footer está después del script, así que en el primer
+   render todavía no existe. */
+function aviso(html){
+  const m = $('hint');
+  if(!m) return;
+  m.innerHTML = html || '';
+  m.parentElement.classList.toggle('con-msg', !!html);
 }
 
 function pick(pool){
@@ -13911,7 +13960,6 @@ function render(){
   const conAmarilla = G.amarillas > 0 && G.phase === 'match';
   $('m-amarilla').classList.toggle('hay', conAmarilla);
   $('m-aguante').classList.toggle('con-amarilla', conAmarilla);
-  $('cards').innerHTML = conAmarilla ? '🟨 amarilla acumulada' : '';
 
   renderBoard();
   renderItems();
@@ -13935,7 +13983,7 @@ const NOMBRE_TOPE = 1.7;
 const medidaNombres = new Map();
 function ajustarNombresCartas(){
   document.querySelectorAll('#board .cell:not(.empty) .c-nm').forEach(nm => {
-    nm.style.fontSize = '';
+    nm.style.fontSize = ''; nm.style.letterSpacing = '';
     if(!nm.offsetWidth) return;
     const cab = nm.parentElement, ancho = nm.clientWidth;
     const sc = nm.getBoundingClientRect().width / nm.offsetWidth || 1;
@@ -13943,20 +13991,29 @@ function ajustarNombresCartas(){
     const lineas = () => new Set(rects().map(q => Math.round(q.top / sc))).size;
     const base = parseFloat(getComputedStyle(nm).fontSize), l0 = lineas(), cab0 = cab.offsetHeight;
     const clave = nm.textContent + '|' + ancho + '|' + base + '|' + l0 + '|' + cab0;
-    if(medidaNombres.has(clave)){ const t = medidaNombres.get(clave); if(t) nm.style.fontSize = t + 'px'; return; }
+    if(medidaNombres.has(clave)){ const m = medidaNombres.get(clave); if(m.t) nm.style.fontSize = m.t + 'px'; if(m.ls) nm.style.letterSpacing = m.ls; return; }
     const entra = () => lineas() <= l0 && Math.max(...rects().map(q => q.width)) / sc <= ancho - 2 && cab.offsetHeight <= cab0;
     /* mientras prueba, una palabra que no entra se sale (y se nota) en vez de partirse */
     nm.style.overflowWrap = 'normal'; nm.style.hyphens = 'manual';
     const prueba = t => { nm.style.fontSize = t + 'px'; return entra(); };
     let lo = base, hi = base * NOMBRE_TOPE;
-    if(prueba(hi)) lo = hi;
-    else for(let i = 0; i < 8; i++){ const m = (lo + hi) / 2; if(prueba(m)) lo = m; else hi = m; }
+    if(prueba(base)){
+      if(prueba(hi)) lo = hi;
+      else for(let i = 0; i < 8; i++){ const m = (lo + hi) / 2; if(prueba(m)) lo = m; else hi = m; }
+    } else {
+      /* **Ni a su tamaño entra sin partir una palabra** (v304): en 320 salía
+         «ARQUE / RO» y «DELANT / ERO». Se juntan un poco las letras y se achica
+         hasta que la palabra más larga entre entera, con piso en el 70%. */
+      nm.style.letterSpacing = '-.3px';
+      lo = base * .7; hi = base;
+      for(let i = 0; i < 8; i++){ const m = (lo + hi) / 2; if(prueba(m)) lo = m; else hi = m; }
+    }
     nm.style.overflowWrap = ''; nm.style.hyphens = '';
     /* con el corte de palabras de vuelta se confirma; si algo cambió, baja de a un cuarto de punto */
     let t = Math.floor(lo * 4) / 4;
     for(nm.style.fontSize = t + 'px'; t > base && !entra(); ) nm.style.fontSize = (t -= .25) + 'px';
-    if(t <= base + .1){ nm.style.fontSize = ''; t = 0; }
-    medidaNombres.set(clave, t);
+    if(Math.abs(t - base) < .1){ nm.style.fontSize = ''; t = 0; }
+    medidaNombres.set(clave, { t, ls:nm.style.letterSpacing });
   });
 }
 function ajustarEscudosCartas(){
@@ -14062,7 +14119,9 @@ function renderBoard(){
   banner.querySelector('.gb-go').innerHTML = rachaReady
     ? 'USAR'
     : Array.from({ length: G.rachaMax }, (_, n) =>
-        '<i class="ir' + (n < G.racha ? '' : ' off') + '"></i>').join('');
+        '<i class="ir' + (n < G.racha ? '' : ' off') +
+        /* el que falta, cuando falta uno solo (v304) */
+        (n === G.racha && G.racha === G.rachaMax - 1 ? ' falta' : '') + '"></i>').join('');
   /* El toque abre la ficha con las cinco posibilidades, no cobra directo: la
      racha llena es el recurso más caro del partido y conviene saber qué puede
      salir antes de gastarla. */
@@ -14097,18 +14156,9 @@ function renderBoard(){
   }
   if(G.armed && G.armed.kind === 'col') markCol(G.armed.idx, true);
 
-  // mientras la racha esté cargada, la línea de ayuda lo recuerda
-  /* Tres estados y no dos. Con la columna abriéndose a mitad de camino hay un
-     tramo —racha 2 o 3— en el que los botones se encienden y antes la línea no
-     decía nada: el jugador veía cuatro botones dorados sin que nada le
-     explicara qué hacían ni cuánto costaban. */
-  if(!G.busy && !G.targeting && !G.armed && G.phase === 'match'){
-    $('hint').innerHTML = rachaReady
-      ? '<i class="ir"></i> <b>Racha llena.</b> Seguí con una FILA, o gastala en la <b>situación de gol</b> o una <b>columna</b>.'
-      : colReady
-      ? '<i class="ir"></i> Podés gastar ' + COSTO_COLUMNA + ' en una <b>COLUMNA</b>, o guardarla para la <b>situación de gol</b>.'
-      : 'Elegí una FILA. El azar decide qué carta te toca.';
-  }
+  /* Sin nada que confirmar ni apuntar, el footer vuelve a las chapas (v304).
+     La racha llena ya la dicen el medidor y las columnas encendidas. */
+  if(!G.busy && !G.targeting && !G.armed && G.phase === 'match') aviso('');
   ajustarCartas();
 }
 
@@ -14150,8 +14200,7 @@ function tapLine(kind, idx){
   /* Acá va el nombre corto, que es el que dice el botón: 'tocá otra vez F2' se
      corresponde con lo que el jugador está mirando. En el relato, en cambio,
      los nombres van largos porque son frases. */
-  $('hint').innerHTML = 'Tocá otra vez ' + (kind === 'row' ? 'F' : 'C') +
-                        (idx + 1) + ' para <b>confirmar</b>.';
+  aviso('Tocá otra vez <b>' + (kind === 'row' ? 'F' : 'C') + (idx + 1) + '</b> para confirmar.');
   render();
 }
 
@@ -14739,8 +14788,7 @@ document.addEventListener('click', e => {
      lo maneja `tapLine`, que es el que confirma o mueve la selección. */
   if(G.armed && !e.target.closest('.row, .col-pick')){
     G.armed = null;
-    const h = $('hint');
-    if(h) h.textContent = 'Elegí una FILA. El azar decide qué carta te toca.';
+    aviso('');
     render();
   }
 });
@@ -14762,7 +14810,7 @@ async function useItem(k){
 
   if(k === 'revision'){
     G.targeting = 'revision';
-    $('hint').innerHTML = '<b>VAR:</b> tocá la carta 🔒 que querés que revisen. <em>Tocá el ítem otra vez (o Esc) para cancelar.</em>';
+    aviso('<b>VAR:</b> tocá la carta 🔒 que querés que revisen.');
     render();
     return;
   }
@@ -14813,7 +14861,7 @@ function cancelarApuntado(){
   if(!G.targeting) return;
   G.targeting = false;
   say('↩ Cancelás la jugada. El ítem sigue en tu poder.', 'good');
-  $('hint').textContent = 'Elegí una FILA. El azar decide qué carta te toca.';
+  aviso('');
   render();
 }
 
@@ -14824,7 +14872,7 @@ function useVarOn(r, c){
   G.items.revision--;
   if(G.items.revision <= 0) delete G.items.revision;
   G.targeting = false;
-  $('hint').textContent = 'Elegí una FILA. El azar decide qué carta te toca.';
+  aviso('');
   say('📺 Revisa el VAR: habilitan ' + TYPES[cell.type].nm + ' y vuelve a jugarse.', 'good');
   render();
 }
@@ -14833,7 +14881,7 @@ function useVarOn(r, c){
 async function chooseLine(kind, idx){
   if(G.busy || G.targeting) return;
   G.armed = null;
-  $('hint').textContent = 'Elegí una FILA. El azar decide qué carta te toca.';
+  aviso('');
   G.busy = true;
 
   let coords = jugables(kind, idx);
@@ -18764,39 +18812,6 @@ function showStart(irAlDuelo){
   if(ini) tira().scrollLeft = Math.max(0, ini.offsetLeft - (tira().clientWidth - ini.offsetWidth) / 2);
 }
 
-/* En pantallas donde todo tiene que entrar sin scroll, el relato va plegado:
-   se lee después de la jugada, no antes de decidir. El título lo abre y cierra. */
-(function(){
-  const t = document.getElementById('logTit');
-  const pl = document.getElementById('panelLog');
-  if(t) t.onclick = () => pl.classList.remove('abierto');
-
-  /* El relato ocupaba una franja fija arriba de la mesa. Ahora vive detrás de un
-     botón flotante: se abre como panel sobre el juego y se cierra tocando el
-     título. El punto verde avisa que hay relato sin leer. */
-  if(pl && !document.querySelector('.log-fab')){
-    const fab = document.createElement('button');
-    fab.className = 'log-fab';
-    fab.type = 'button';
-    fab.innerHTML = '📋';
-    fab.title = 'Relato del partido';
-    fab.onclick = () => { pl.classList.add('abierto'); fab.classList.remove('hay'); };
-    document.body.appendChild(fab);
-
-    /* Cada línea nueva enciende el punto, salvo que el panel esté abierto. */
-    new MutationObserver(() => {
-      if(!pl.classList.contains('abierto')) fab.classList.add('hay');
-    }).observe(document.getElementById('log'), { childList:true });
-  }
-
-  /* Los paneles **no se mueven nunca**: quedan donde los pone el HTML y el CSS
-     los acomoda con grid en cada tamaño de pantalla.
-
-     Antes se movían con JS al cargar, según el ancho. Eso rompía al rotar la
-     tablet: si arrancaba en portrait el DOM quedaba armado para mobile, y al
-     girar el CSS pasaba a desktop con los paneles en el lugar equivocado. */
-})();
-
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape') cancelarApuntado();
 });
@@ -18902,11 +18917,6 @@ function sacarFoco(){
   if(typeof a.blur === 'function') a.blur();
 }
 
-/* El "?" de abajo de la mesa: reabre las reglas sin perder la partida. */
-document.addEventListener('DOMContentLoaded', () => {
-  const b = document.getElementById('ayudaBtn');
-  if(b) b.onclick = () => comoSeJuega(false);
-});
 
 /* Los íconos del aguante y de la racha se ponen como variables CSS: así las
    clases `.ih` y `.ir` los usan de fondo en cualquier texto —«-1 ❤», «+2 ⚡»—
@@ -18959,7 +18969,6 @@ function newRun(encadenar, sinArrancar){
   G.aguante = G.maxCampeonato;   // el equipo arranca entero en cada campeonato
   G.racha = 0;
   G.historial = [];
-  $('log').innerHTML = '';
   /* Antes del debut, el vestuario: el primer punto se elige mirando al rival
      (v269). */
   if(!sinArrancar) showRefuerzo(true);
@@ -18988,7 +18997,7 @@ function startMatch(){
   G.ultimaFila = null; G.marcarFila = null;
   G.busy = false; G.targeting = false; G.armed = null;
   G.phase = 'match';
-  $('hint').textContent = 'Elegí una FILA. El azar decide qué carta te toca.';
+  aviso('');
   say('— ' + R.name + ' — ' + G.club + ' vs ' + R.rival + ' —', 'big');
   render();
 }
@@ -18996,10 +19005,12 @@ function startMatch(){
 render();
 showMenu();
 </script>
+<!-- v304: dos chapas, y el aviso de la jugada (confirmar la fila, el VAR) en el
+     mismo lugar cuando hace falta. La línea de ayuda de abajo de la mesa se fue. -->
 <footer class="ft">
-  <a href="https://instagram.com/nickkdia" target="_blank" rel="noopener"><span class="fi">📷</span>@nickkdia</a>
-  <span class="fsep">·</span>
-  <a href="mailto:nicolasdiani@gmail.com"><span class="fi">✉</span>nicolasdiani@gmail.com</a>
+  <a class="ft-ig" href="https://instagram.com/nickkdia" target="_blank" rel="noopener" aria-label="Instagram @nickkdia"><span class="ft-chapa"><span class="ft-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.2"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor" stroke="none"/></svg></span>@nickkdia</span></a>
+  <a class="ft-mail" href="mailto:nicolasdiani@gmail.com"><span class="ft-chapa"><span class="ft-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3.5 6.5 12 13l8.5-6.5"/></svg></span>nicolasdiani@gmail.com</span></a>
+  <span class="ft-msg" id="hint" aria-live="polite"></span>
 </footer>
 </body>
 </html>

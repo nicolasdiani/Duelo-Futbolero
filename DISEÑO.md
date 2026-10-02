@@ -16049,3 +16049,71 @@ verdad, en el penal pateando y atajando, el mano a mano, 1 vs 1 y defender. Con
 el mouse quieto sobre un recuadro, antes ese recuadro quedaba sin latido; ahora
 laten todos, y al mover el mouse se enciende el que está debajo. Control de
 layout igual al de la v302. Prueba general 49/49.
+
+## v304 · sin relato ni línea de ayuda; el footer en chapas y la posibilidad de gol más grande
+
+**Se fue el relato del partido**: el panel, el botón flotante 📋 de abajo a la
+izquierda y su punto verde. `say()` sigue existiendo porque se la llama desde
+muchos lugares, pero ya no escribe en ningún lado.
+
+**Se fue la línea de ayuda** de abajo de la mesa («Elegí una FILA…») y con
+ella el **?** de las reglas. Esa línea también mostraba avisos, y les tocó
+esto:
+
+- «Tocá otra vez F2 para confirmar» y el del VAR («tocá la carta 🔒 que querés
+  que revisen») aparecen **en el footer**, en una chapa dorada en lugar de las
+  dos chapas, mientras corresponden. Los maneja `aviso(html)`; vacío, vuelven
+  las chapas.
+- El de la racha llena se saca: ya lo dicen el medidor y las columnas
+  encendidas.
+- El texto «amarilla acumulada» (`#cards`) también: en el teléfono ya estaba
+  la tarjeta pegada al aguante.
+
+**El footer: dos chapas, del mismo alto de antes (30px).** Instagram con su
+ícono a color y el mail con un ícono verde, como las chapas de los ítems. El
+link ocupa todo el alto del footer (29px para el dedo) y la chapa que se ve,
+22. El body reserva 34: el footer más 4 de aire con los botones de columna.
+
+**Lo que se ganó va para LA POSIBILIDAD DE GOL**, sólo con el teléfono
+parado: el cartel pasa de **37 a 52** de alto, con el título de 15 a 17 y las
+pelotas y los rayos más grandes. La mesa queda **exactamente del mismo alto**
+que con la línea de ayuda. En 320 de ancho el título queda en 15 y las
+pelotas y los rayos del tamaño de antes, porque a 17 bajaba de renglón.
+
+**El rayo que falta, late.** Con la racha a uno de llenarse, el rayo apagado
+que falta se enciende y se apaga en dorado y crece un poco, para que se note
+que falta uno y que el GRITO DEL DT lo da. Con movimiento reducido queda
+encendido sin latir.
+
+**Arreglos que aparecieron al probar:**
+
+- **Nombres de carta partidos en 320** («ARQUE / RO», «DELANT / ERO»), desde
+  la v301. `ajustarNombresCartas` sólo agrandaba; ahora, si una palabra no
+  entra entera ni a su tamaño, junta un poco las letras y achica el nombre
+  hasta que entre, con piso en el 70%.
+- **El teléfono acostado de 821 de ancho para arriba tomaba las reglas de
+  escritorio**: el número del duelo con 10px de relleno a cada lado y la carta
+  con 7. En 844x390 al nombre le quedaban 9px y se leía letra por letra en una
+  columna de hasta 139 de alto, que estiraba las cartas a 223. Ahora lleva los
+  valores del teléfono: el nombre tiene 28, las cartas bajan a 171 y el scroll
+  de esa pantalla pasa de 951 a 634.
+
+**Medido** con la pantalla del partido en 320x568, 360x640, 360x740,
+360x800, 375x667, 375x812, 390x844, 393x852, 402x784, 402x874, 412x915,
+414x896, 430x932 y 440x956: cartel 52, título en un renglón (en reposo y con
+la racha llena), mesa igual a la de la v303, 4 de aire con el footer, nada
+tapado y sin scroll. Ningún nombre de carta parte una palabra. Acostado
+(667x375, 740x360) el footer ya no tapa las cartas de abajo, como hacía antes.
+En la tablet y la compu es lo mismo que en 402, adentro del marco.
+
+Probado en el juego real, en LED y en clásico: tocar una fila muestra el aviso
+en el footer, tocar afuera lo saca; el VAR lo muestra y cancelarlo lo saca; con
+la racha en 3 de 4 late el cuarto rayo, en 2 de 4 ninguno y llena dice USAR.
+Control de layout de las 31 pantallas igual al de la v303 en 320, 360, 375,
+390, 393, 402 (LED y clásico), 412, 430, 440, 667x375 y 844x390. Prueba general
+49/49.
+
+**Queda pendiente:** en 844x390 acostado, DELANTERO y DEFENSOR con número
+todavía se parten. Las cartas miden 61 de ancho y ese layout acostado pide un
+rediseño propio. Y en 667x375 y 740x360 acostado el título del cartel de gol
+sigue en dos renglones, como antes.
