@@ -16117,3 +16117,43 @@ Control de layout de las 31 pantallas igual al de la v303 en 320, 360, 375,
 todavía se parten. Las cartas miden 61 de ancho y ese layout acostado pide un
 rediseño propio. Y en 667x375 y 740x360 acostado el título del cartel de gol
 sigue en dos renglones, como antes.
+
+## v305 · la racha y el aguante de cada carta, al resaltar
+
+Idea tomada de SOL CESTO (ver `notas-sol-cesto.md` en futbol-cesto): en
+reposo cada casilla dice qué es, y lo que te hace aparece cuando elegís la
+fila. Acá ese momento ya existía —el primer toque resalta la fila o la
+columna, el segundo la juega— y se usa para lo que más cargaba las 16 cartas.
+
+**El renglón de abajo de cada carta, «+1 ⚡ o -1 ❤» —cuánto suma o resta de
+racha y de aguante—, se ve sólo en la fila o la columna resaltada**: con el
+primer toque, o con el mouse encima. Todo lo demás se ve siempre: el número
+del duelo, el mini juego y cuál es, la chance (35% GOL), el resultado
+(ATAJADÓN, -2 ❤, +€10M) y el color del borde. La probabilidad de cada carta no
+se repite en la carta: ya está en los botones F y C.
+
+El resaltado con el mouse no redibuja la mesa, así que al aparecer o irse el
+renglón se reacomoda el escudo (`ajustarEscudosCartas()` en el `marcar` de la
+fila y en `markCol`).
+
+Se compararon dos tandas de tres. La primera escondía más (el número del
+duelo, la chance, el mini juego, el color) y se descartó: eso hace falta para
+elegir. De la segunda —sin la línea; con los íconos ⚡ ❤ como pista; con los
+efectos en chapas al resaltar— se eligió la más simple.
+
+**Para volver atrás:**
+
+- `?efectos=siempre` en la dirección muestra el renglón en todas las cartas,
+  como hasta la v304 (pasa también al marco de la tablet y la compu);
+- el tag `tablero-antes-de-resaltar` es la v304 entera.
+
+En los teléfonos de 580 de alto o menos (320x568) el renglón ya estaba oculto
+siempre, porque no entra en cartas de 71: ahí sigue igual, con el resultado
+solo y el detalle en el pop-up al tocar la carta.
+
+Probado en el juego real en 320x568, 375x667, 402x784 y 440x956: en reposo no
+se ve ningún renglón de efectos; con F1 tocada aparecen los de esa fila, con
+C3 los de esa columna, con el mouse sobre F4 los de F4, y al sacar el mouse se
+van. El escudo no pisa nada en ningún caso. Con `?efectos=siempre` se ven en
+todas. Control de layout de las 31 pantallas igual al de la v304 (LED y
+clásico). Prueba general 49/49.

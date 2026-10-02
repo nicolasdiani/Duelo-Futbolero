@@ -6067,6 +6067,17 @@ body{padding-bottom:36px}
   .board .cell .c-val{padding:0 3px;min-width:20px;border-radius:5px}
 }
 
+/* **La racha y el aguante, al resaltar** (v305). El renglón de abajo de cada
+   carta —«+1 ⚡ o -1 ❤», cuánto suma o resta— se muestra sólo en la fila o la
+   columna resaltada (el primer toque, o el mouse encima). Lo demás se ve
+   siempre: el número del duelo, el mini juego y cuál es, la chance, el
+   resultado y el color del borde. Idea tomada de SOL CESTO: lo que te hace la
+   casilla aparece cuando estás por elegir.
+
+   Para volver a verlo en todas: `?efectos=siempre` en la dirección, o el tag
+   `tablero-antes-de-resaltar`. */
+:root:not(.efectos-siempre) #board .cell:not(.colhl):not(.hl .cell) .c-out .efe{display:none}
+
 /* ================= NI FOCO NI DESTELLO AL TOCAR =================
    Android pinta un rectángulo celeste encima de lo que tocás
    —`-webkit-tap-highlight-color`, que por defecto es rgba(51,181,229,.4)— y
@@ -10882,6 +10893,8 @@ html.html-menu, html.html-menu body{overflow:hidden}
 </style>
 <script>
 /* ?clasico=1 apaga el estilo PANTALLA LED y deja el clásico (v280). */
+/* ?efectos=siempre: los «+1 ⚡ o -1 ❤» en todas las cartas, como hasta la v304. */
+if(/[?&]efectos=siempre/.test(location.search)) document.documentElement.classList.add('efectos-siempre');
 if(/[?&]clasico=1/.test(location.search)){
   document.getElementById('estiloLed').media = 'not all';
   document.getElementById('fuentesLed').media = 'not all';
@@ -12808,7 +12821,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 304;
+const VERSION = 305;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -14082,6 +14095,7 @@ function renderBoard(){
       const marcar = on => {
         rowEl.classList.toggle('hl', on);
         pickBtn.classList.toggle('activo', on);   // el botón se enciende igual
+        ajustarEscudosCartas();   // aparece o se va el renglón de efectos (v305)
       };
       rowEl.onmouseenter = () => { if(!G.armed) marcar(true); };
       rowEl.onmouseleave = () => { if(!isArmed('row', r)) marcar(false); };
@@ -14288,6 +14302,7 @@ function markCol(c, on){
   document.querySelectorAll('.cell').forEach(el => {
     if(Number(el.dataset.c) === c) el.classList.toggle('colhl', on);
   });
+  ajustarEscudosCartas();   // aparece o se va el renglón de efectos (v305)
   // el botón de la columna se enciende junto con sus cartas, igual que el de fila
   document.querySelectorAll('.col-pick').forEach((b, i) => {
     if(i === c) b.classList.toggle('activo', on);
