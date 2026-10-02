@@ -16157,3 +16157,56 @@ C3 los de esa columna, con el mouse sobre F4 los de F4, y al sacar el mouse se
 van. El escudo no pisa nada en ningún caso. Con `?efectos=siempre` se ven en
 todas. Control de layout de las 31 pantallas igual al de la v304 (LED y
 clásico). Prueba general 49/49.
+
+## v306 · la etiqueta MINI JUEGO, en banda y con el color de lo que se juega
+
+La chapa MINI JUEGO era dorada en los duelos y tomaba el color de la carta en
+los penales. Ahora **el color dice qué se juega**, igual en todos lados:
+
+| Color | Qué se juega | Mini juegos |
+|---|---|---|
+| verde | puede haber gol tuyo | PENAL (pateás), ARQUERO (mano a mano) |
+| rojo | puede haber gol del rival | PENAL RIVAL (atajás), DELANTERO (defender) |
+| amarillo | encarar o defender, sin gol | DEFENSOR (1 vs 1), MEDIO (la marca) |
+
+**La forma es una banda**: una cinta del color que se apaga hacia los
+costados, con una línea arriba y otra abajo, letra blanca y el **🕹️ suelto**,
+más grande que la letra, con un contorno blanco que lo despega del color. El
+nombre del mini juego que va abajo (MANO A MANO, ATAJÁS…) toma el mismo color.
+
+Está en **los tres lugares** donde aparece la etiqueta, y sale de una sola
+función, `chapaMJ(clase)`, con la tabla `MJ_CLASE` (tipo de carta → color):
+
+- la carta de la mesa;
+- su pop-up, al salir la carta (ahí la banda va más ancha);
+- la miniatura del penal en la ficha de la posibilidad de gol: verde en la
+  lista tuya, roja en la del rival.
+
+**Donde la banda no entra, el joystick va delante del nombre**: «🕹️ MANO A
+MANO» en su color. Es en los teléfonos de 700 de alto o menos —ahí la chapa ya
+se escondía— y con el teléfono acostado y ancho, donde las cartas miden 61.
+Medido: la banda, que flota sobre la foto, subía al resaltar la fila (aparece
+el renglón de efectos) y pisaba el nombre y el número de la carta; y en 61 de
+ancho el texto no entraba. El emoji va `inline` con `line-height:0` (como
+bloque le sumaba 13px al renglón) y el nombre del mini juego en un renglón,
+que de paso arregla algo de antes: con la fila resaltada, «MANO A / MANO» en
+dos renglones sacaba la carta ARQUERO 8px por abajo en 360x640.
+
+En la miniatura de la ficha, en los teléfonos angostos (380 o menos) la banda
+lleva el joystick solo: la miniatura mide 47 y el texto pedía 55, y «MINI
+JUEGO» ya está escrito debajo.
+
+Se compararon tres estilos (chapa llena, contorno LED, banda) y, para la
+banda, tres formas del joystick (sobre un disco oscuro, en una medalla clara,
+suelto con contorno).
+
+**Para volver atrás:** el tag `mini-juego-antes-de-banda` (= v305).
+
+Probado en el juego real con una mesa armada con los seis mini juegos, en
+320x568, 360x640, 360x740, 375x667, 390x844, 402x784, 412x915, 440x956,
+667x375 y 844x390, en reposo y con la fila resaltada: el color correcto en las
+nueve etiquetas, ninguna se sale de su carta, no pisan el nombre, el número,
+el escudo ni el nombre del mini juego, y ninguna carta se sale por abajo. Los
+seis pop-ups con su color, sin salirse, en 320, 375, 402 y 667x375. La ficha
+de gol en 320, 360 y 402. Control de layout de las 31 pantallas igual al de la
+v305 (LED y clásico). Prueba general 49/49.
