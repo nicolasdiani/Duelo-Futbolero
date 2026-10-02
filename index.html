@@ -95,7 +95,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Archivo:wght@500;600;700&display=swap" rel="stylesheet">
 <!-- las del estilo PANTALLA LED (v281); ?clasico=1 las apaga -->
-<link id="fuentesLed" href="https://fonts.googleapis.com/css2?family=Doto:wght@700;900&family=Tektur:wdth,wght@75..100,500..900&family=Geist:wght@400..700&display=swap" rel="stylesheet">
+<link id="fuentesLed" href="https://fonts.googleapis.com/css2?family=Doto:wght@700;900&family=Tektur:wdth,wght@75..100,500..900&family=Saira+Extra+Condensed:wght@800&family=Geist:wght@400..700&display=swap" rel="stylesheet">
 <style>
 :root{
   /* Azul de competición europea, tomado del marcador de referencia (#001648):
@@ -4045,8 +4045,12 @@ img.escudo{object-fit:contain}
    absoluto, así que su `100%` sí resuelve contra `.c-ico`. En el `svg`, que es
    hijo de un flex de alto automático, el porcentaje no resolvía nada. */
 .cell .c-esc{max-height:calc(100% - 8px);overflow:hidden}
+/* **24% del alto de la carta, hasta 31px** (v301; antes 17% y 22). En el
+   teléfono de referencia pasa de 17,3 a 24,5. Donde no entra entero —las cartas
+   de mini juego, con la chapa y el resultado en dos renglones— lo achica
+   `ajustarEscudosCartas()`, que mide el lugar de cada carta. */
 .cell .c-esc svg, .cell .c-esc img{
-  height:clamp(13px, calc(var(--carta) * .17), 22px);
+  height:clamp(13px, calc(var(--carta) * .24), 31px);
   width:auto;max-height:100%;
 }
 /* **El escudo sube al borde de arriba de la foto.** Con la chapa del mini
@@ -4058,6 +4062,10 @@ img.escudo{object-fit:contain}
    Va para todos los tamaños y no sólo para mobile: si abajo se cruzan en 80px
    y en 185, no hay ancho donde convenga dejarlo ahí. */
 .cell .c-esc{top:4px;bottom:auto}
+/* **Y al centro** (v301). A la misma altura, arriba de la foto, pero centrado
+   en la carta. Se compararon derecha, izquierda y centro en 29 tipos de carta:
+   en los tres el escudo queda a 3px o más de cualquier texto o chapa. */
+.cell .c-esc{left:50%;right:auto;transform:translateX(-50%)}
 
 /* Con la carta trabada el escudo se apaga como el resto: si quedara
    brillando sería lo único vivo de una carta que no se puede jugar. */
@@ -4116,7 +4124,7 @@ img.escudo{object-fit:contain}
      sale unos píxeles de la foto en las cartas de nombre largo y no molesta a
      nadie: sigue adentro de la carta y no pisa ni el nombre ni el resultado. */
   .cell .c-esc{padding:1.5px 2.5px;border-radius:6px;max-height:none;overflow:visible}
-  .cell .c-esc svg, .cell .c-esc img{height:clamp(11px, calc(var(--carta) * .17), 22px)}
+  .cell .c-esc svg, .cell .c-esc img{height:clamp(11px, calc(var(--carta) * .24), 31px)}
 }
 /* Abajo de 639px de alto la carta queda en 71px y no alcanza ni con el hueco
    del ícono en cero: título 24 + pie 34 + huecos 8 = 66 contra 62 de caja. Se
@@ -10556,6 +10564,11 @@ html.html-menu, html.html-menu body{overflow:hidden}
    en las cartas con número se partían DELANTERO, PUBLICIDAD y CONTRAATAQUE.
    Medio punto menos de espacio entre letras y entran como en el clásico. */
 :root .cell .c-nm{letter-spacing:-.5px}
+/* **El nombre en Saira Extra Condensed** (v301), la versión más angosta de la
+   letra del clásico: por ser más angosta entra más grande en el mismo lugar.
+   El tamaño lo pone `ajustarNombresCartas()`: cada nombre crece hasta llenar
+   el suyo. */
+:root .cell .c-nm{font-family:'Saira Extra Condensed','Saira Condensed',system-ui,sans-serif;font-weight:800;font-stretch:normal;letter-spacing:.1px}
 
 /* Lo que el clásico ponía en un renglón y el LED partía en dos: el nombre del
    rival en el marcador final (Geist es más ancha que Archivo: va en Tektur, como
@@ -12726,7 +12739,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 300;
+const VERSION = 301;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -13883,6 +13896,84 @@ function render(){
   renderItems();
 }
 
+/* ---- EL NOMBRE Y EL ESCUDO DE CADA CARTA, A LA MEDIDA DE SU LUGAR (v301) ----
+   El CSS les da un tamaño de partida igual para las 16 cartas, pero el lugar
+   no es el mismo en todas: FAMA ocupa 21px de 73 y CONTRAATAQUE RIVAL va en
+   dos renglones. Después de dibujar la mesa, cada carta mide el suyo.
+
+   - **El nombre** crece hasta 1,7 veces su tamaño, mientras no sume renglones,
+     no corte palabras (con 2px de aire al costado) y no agrande la cabecera.
+     La foto, el escudo, el número y el resultado no se mueven.
+   - **El escudo** mira hacia abajo en su columna hasta lo primero que hay
+     (la chapa MINI JUEGO o un renglón de texto) y, si no entra, se achica
+     hasta dejar 3px. Si no entra ni con 11px, no se muestra antes que pisar.
+
+   Todo se mide en píxeles de la carta y no de la pantalla: si la carta está
+   escalada (el resaltado al tocarla), se divide por esa escala. */
+const NOMBRE_TOPE = 1.7;
+const medidaNombres = new Map();
+function ajustarNombresCartas(){
+  document.querySelectorAll('#board .cell:not(.empty) .c-nm').forEach(nm => {
+    nm.style.fontSize = '';
+    if(!nm.offsetWidth) return;
+    const cab = nm.parentElement, ancho = nm.clientWidth;
+    const sc = nm.getBoundingClientRect().width / nm.offsetWidth || 1;
+    const rects = () => { const rg = document.createRange(); rg.selectNodeContents(nm); return [...rg.getClientRects()].filter(q => q.width > 1); };
+    const lineas = () => new Set(rects().map(q => Math.round(q.top / sc))).size;
+    const base = parseFloat(getComputedStyle(nm).fontSize), l0 = lineas(), cab0 = cab.offsetHeight;
+    const clave = nm.textContent + '|' + ancho + '|' + base + '|' + l0 + '|' + cab0;
+    if(medidaNombres.has(clave)){ const t = medidaNombres.get(clave); if(t) nm.style.fontSize = t + 'px'; return; }
+    const entra = () => lineas() <= l0 && Math.max(...rects().map(q => q.width)) / sc <= ancho - 2 && cab.offsetHeight <= cab0;
+    /* mientras prueba, una palabra que no entra se sale (y se nota) en vez de partirse */
+    nm.style.overflowWrap = 'normal'; nm.style.hyphens = 'manual';
+    const prueba = t => { nm.style.fontSize = t + 'px'; return entra(); };
+    let lo = base, hi = base * NOMBRE_TOPE;
+    if(prueba(hi)) lo = hi;
+    else for(let i = 0; i < 8; i++){ const m = (lo + hi) / 2; if(prueba(m)) lo = m; else hi = m; }
+    nm.style.overflowWrap = ''; nm.style.hyphens = '';
+    /* con el corte de palabras de vuelta se confirma; si algo cambió, baja de a un cuarto de punto */
+    let t = Math.floor(lo * 4) / 4;
+    for(nm.style.fontSize = t + 'px'; t > base && !entra(); ) nm.style.fontSize = (t -= .25) + 'px';
+    if(t <= base + .1){ nm.style.fontSize = ''; t = 0; }
+    medidaNombres.set(clave, t);
+  });
+}
+function ajustarEscudosCartas(){
+  document.querySelectorAll('#board .cell:not(.empty) .c-esc').forEach(e => {
+    const im = e.querySelector('img, svg'); if(!im) return;
+    im.style.height = ''; e.style.visibility = '';
+    if(!e.getClientRects().length) return;
+    const c = e.closest('.cell'), cr = c.getBoundingClientRect(), er = im.getBoundingClientRect();
+    if(!er.height || !c.offsetWidth) return;
+    const sc = cr.width / c.offsetWidth || 1;
+    const izq = er.left - 1, der = er.right + 1;
+    let tope = cr.bottom - 4 * sc;
+    c.querySelectorAll('.mj-lb').forEach(n => { const q = n.getBoundingClientRect(); if(q.top >= er.top && q.right > izq && q.left < der) tope = Math.min(tope, q.top); });
+    const w = document.createTreeWalker(c, NodeFilter.SHOW_TEXT);
+    for(let t; (t = w.nextNode()); ){
+      if(!t.textContent.trim() || e.contains(t) || t.parentElement.closest('.c-val, .mj-lb, .c-nm')) continue;
+      const rg = document.createRange(); rg.selectNodeContents(t);
+      for(const q of rg.getClientRects()) if(q.height > 1 && q.top >= er.top && q.right > izq && q.left < der) tope = Math.min(tope, q.top);
+    }
+    const lugar = Math.floor((tope - er.top) / sc - 3);
+    if(er.height / sc > lugar){
+      if(lugar < 11) e.style.visibility = 'hidden';
+      else im.style.height = lugar + 'px';
+    }
+  });
+}
+function ajustarCartas(){ ajustarNombresCartas(); ajustarEscudosCartas(); }
+/* Otra vez cuando cambia el tamaño de la mesa (girar, la ventana, la mesa que
+   aparece después de estar oculta) y cuando terminan de llegar las letras. */
+(function(){
+  let pend = 0;
+  const otraVez = () => { if(pend) return; pend = requestAnimationFrame(() => { pend = 0; medidaNombres.clear(); ajustarCartas(); }); };
+  const b = document.getElementById('board');
+  if(b && window.ResizeObserver) new ResizeObserver(otraVez).observe(b);
+  window.addEventListener('resize', otraVez);
+  if(document.fonts){ document.fonts.ready.then(otraVez); document.fonts.addEventListener && document.fonts.addEventListener('loadingdone', otraVez); }
+})();
+
 function renderBoard(){
   const board = $('board');
   board.innerHTML = '';
@@ -13997,6 +14088,7 @@ function renderBoard(){
       ? '<i class="ir"></i> Podés gastar ' + COSTO_COLUMNA + ' en una <b>COLUMNA</b>, o guardarla para la <b>situación de gol</b>.'
       : 'Elegí una FILA. El azar decide qué carta te toca.';
   }
+  ajustarCartas();
 }
 
 /* Con el dedo no hay hover, así que la selección es en dos tiempos: el primer

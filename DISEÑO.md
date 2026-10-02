@@ -15937,3 +15937,60 @@ medidor.
 
 Lo mismo al ganar el duelo: dice **⚽ GOL a secas**, como JUGADA CLARA, sin el
 «+1 ⚡» al lado.
+
+## v301 · el escudo de la carta más grande y al centro, y el nombre en condensada
+
+**El escudo** de cada carta pasa del 17% al **24% del alto de la carta**, con
+tope de 31px (antes 22), y va **centrado** en la carta, a la misma altura de
+antes: arriba de la foto. En el teléfono de referencia (402×784) pasa de 17,3 a
+**24,5px**.
+
+**El nombre** de la carta va en **Saira Extra Condensed** (sólo en el estilo
+LED), la versión más angosta de la letra del clásico. Por ser más angosta entra
+más grande en el mismo lugar. Antes iba a 11,2px en todas las cartas; ahora la
+mayoría va a **19** (+70%).
+
+El lugar no es el mismo en las 16 cartas: FAMA ocupaba 21px de 73 y
+CONTRAATAQUE RIVAL va en dos renglones. Por eso, después de dibujar la mesa,
+cada carta mide el suyo:
+
+- `ajustarNombresCartas()`: cada nombre crece hasta 1,7 veces su tamaño
+  mientras no sume renglones, no corte palabras (deja 2px de aire al costado) y
+  no agrande la cabecera. Las cortas llegan a 19; DELANTERO con número queda en
+  13 y CONTRAATAQUE RIVAL en 11,8. Recuerda la medida de cada nombre y la
+  vuelve a calcular cuando cambia el tamaño de la mesa o llegan las letras.
+- `ajustarEscudosCartas()`: el escudo mira hacia abajo en su columna hasta lo
+  primero que hay (la chapa MINI JUEGO o un renglón de texto) y, si no entra,
+  se achica hasta dejar 3px. En las cartas de mini juego queda en 23. Si no
+  entra ni con 11px, no se muestra antes que pisar.
+
+Las dos se llaman al final de `renderBoard()`, y otra vez con un
+ResizeObserver sobre la mesa, al cambiar el tamaño de la ventana y cuando
+terminan de cargar las letras. Miden en píxeles de la carta: si la carta está
+escalada por el resaltado, dividen por esa escala.
+
+Se compararon tres tamaños del escudo (21, 24 y 27% del alto), tres lugares
+(derecha, izquierda y centro) y tres nombres (la misma letra, condensada al
+máximo y condensada pareja), carta por carta, en 29 tipos de carta.
+
+El 375×667 tenía una superposición de antes: el escudo de las cartas DELANTERO
+y ARQUERO de mini juego pisaba DEFENDER y MANO A MANO. Ahora en esas dos cartas
+no se muestra, porque no hay ni 11px libres. En 360×740 pasa lo mismo con
+ARQUERO de mini juego.
+
+Medido en 320×568, 360×740, 375×667, 390×844, 402×784, 412×915, 430×932 y
+440×956, con cinco mesas fijas (80 cartas):
+
+- ningún nombre se corta y ninguna cabecera crece;
+- la foto, el número y el resultado no se mueven;
+- el escudo queda centrado exacto y a 3px o más de cualquier texto o chapa;
+- el escudo va de 24,5 (402) a 29,8 (440).
+
+En 320×568 el escudo sigue oculto como antes y el nombre casi no crece, porque
+la cabecera ahí no tiene alto de sobra. En la tablet y la compu es lo mismo que
+en 402, porque el juego va adentro del marco.
+
+Dibujar la mesa pasa de 4,5 a 13ms en la compu, y casi todo eso es el cálculo
+de layout que el navegador hacía igual antes de pintar. Control de layout de
+las 31 pantallas igual al de la v300 en el mismo navegador. Prueba general
+49/49.
