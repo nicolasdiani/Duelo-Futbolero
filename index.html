@@ -6146,6 +6146,18 @@ body{padding-bottom:36px}
   .sit:is(.mam, .penal, .con-art) .p-cinta + .mam-art img{max-height:20vh}
 }
 
+/* Lo que se juega, debajo del título del mini juego (v310): verde lo que suma,
+   rojo lo que resta, como en la carta. */
+.sit.mam .mam-efe{
+  display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap;
+  font-family:var(--txt);font-weight:700;font-size:15px;letter-spacing:.5px;text-transform:none;
+  margin:2px 0 8px;color:var(--dim);
+}
+.sit.mam .mam-efe .ra, .sit.mam .mam-efe .esgol{color:var(--green)}
+.sit.mam .mam-efe .esgol{display:inline}
+.sit.mam .mam-efe b{color:var(--red)}
+.sit.mam .mam-efe i{width:12px;height:16px;display:inline-block;vertical-align:-2px}
+
 /* ================= NI FOCO NI DESTELLO AL TOCAR =================
    Android pinta un rectángulo celeste encima de lo que tocás
    —`-webkit-tap-highlight-color`, que por defecto es rgba(51,181,229,.4)— y
@@ -12894,7 +12906,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 309;
+const VERSION = 310;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -16233,6 +16245,15 @@ function efectoDuelo(tipo, val, gana){
   return agu(costoDuelo(cell));
 }
 
+/* Lo que se juega en el mini juego: el renglón de efectos de la carta en el
+   empate (v310). Se toma de `predict` para que la pantalla y la carta digan
+   siempre lo mismo. */
+function efeDelEmpate(tipo, val){
+  const d = document.createElement('div');
+  d.innerHTML = predict({ type:tipo, val }).label;
+  const e = d.querySelector('.efe');
+  return e ? '<div class="mam-efe">' + e.innerHTML + '</div>' : '';
+}
 function manoAMano(tipo, mio, val){
   const M = MANOAMANO[tipo];
   const esAtk = TYPES[tipo].stat === 'atk';
@@ -16258,41 +16279,17 @@ function manoAMano(tipo, mio, val){
            —la marca, el cruce, el uno contra uno y la salida—, así que los cuatro
            lo tienen sin repetir una línea. */
         cintaDelClub(tipo) +
-        (artCarta(tipo)
-          ? '<div class="mam-art"><img src="' + artCarta(tipo) + '" alt="">' +
-            '<span class="p-vnum ' + (esAtk ? 'r' : 'b') + '">' + val + '</span>' +
-            '</div>'
-          : '') +
+        /* **Sin la foto ni el 2 VS 2** (v310). La ventana de la carta, que sale
+           justo antes, ya muestra la foto, el valor contra tu stat y la chapa
+           MINI JUEGO; acá se repetían la foto con el número y el renglón
+           «escudo · 2 VS 2 · escudo». Ahora es como el penal: de quién es, qué
+           carta, el mini juego, **lo que se juega** —la misma línea de la carta,
+           «+3 ⚡ o GOL RIVAL», «⚽ GOL o -2 ❤»— y el arco o la cancha. La
+           pantalla baja de unos 650 a unos 400 de alto. Para volver: el tag
+           `mini-juego-antes-de-sin-repetir`. */
         '<div class="sit-tag">' + TYPES[tipo].nm + '</div>' +
-        /* **El choque, con los escudos de los dos clubes.**
-
-           Decía de quién era cada número **con palabras** —VALOR / de la carta y
-           ATAQUE / el tuyo—, en un juego que a los equipos los nombra con escudos
-           en todas las demás pantallas. Y el escudo del rival salía dos veces en
-           el mismo cartel —en la cinta y sobre la foto— mientras que el tuyo no
-           salía ninguna, aunque uno de los dos números es tuyo.
-
-           Ahora el renglón es `escudo · número · VS · número · escudo`, que es el
-           mismo orden con el que el juego cuenta un marcador. Los rótulos se van
-           y el escudo ocupa su hueco: medido, el renglón sigue midiendo 35px y el
-           cartel entero **no cambia de alto en ninguna pantalla**.
-
-           Lo que decían los rótulos y ahora no se escribe es **qué eje se mide**.
-           Lo dice el color del recuadro: rojo el ataque, azul la defensa, el mismo
-           código que la chapita de la carta y el panel de stats.
-
-           El escudo de la izquierda es el del club de la carta y el de la derecha
-           el tuyo; las cuatro cartas de mini juego son siempre del rival, así que
-           nunca son el mismo escudo. */
-        '<div class="p-val con-esc">' +
-          (escudoDeLaJugada(tipo)
-            ? '<span class="pv-esc">' + escudoDe(escudoDeLaJugada(tipo), 26) + '</span>' : '') +
-          '<span class="stat ' + (esAtk ? 'atk' : 'def') + '"><span class="n">' + val + '</span></span>' +
-          '<span class="p-vs">VS</span>' +
-          '<span class="stat ' + (esAtk ? 'atk' : 'def') + '"><span class="n">' + mio + '</span></span>' +
-          '<span class="pv-esc">' + miEscudo(26) + '</span>' +
-        '</div>' +
         '<div class="t">' + M.tit + '</div>' +
+        efeDelEmpate(tipo, val) +
         (esArco ? arcoManoAMano(G.escudoRival) : escenaDuelo(!M.adivinar)) +
         '<div class="s">' + M.pregunta + '</div>' +
         '<div class="dl-hint">' + (esArco ? 'tocá adentro del arco' : 'tocá un lado') + '</div>' +

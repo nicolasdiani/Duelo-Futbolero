@@ -16302,3 +16302,32 @@ mini juego con el color nuevo en la carta (reposo y resaltada), en el pop-up
 de la carta y en el cartel del mini juego; las otras 33 situaciones, igual que
 antes. Control de layout de las 31 pantallas igual al de la v308 (402 LED y
 clásico, 375). Prueba general 49/49.
+
+## v310 · la pantalla del mini juego, sin lo que ya se vio
+
+Cuando una carta de duelo empata con tu stat, primero sale la ventana de la
+carta (la foto, el valor contra tu stat y la chapa MINI JUEGO) y después la
+pantalla del mini juego, donde elegís el lado. Esa segunda pantalla repetía
+la foto con el número del rival y el renglón «escudo · 2 VS 2 · escudo».
+
+Ahora, en los cuatro (ARQUERO mano a mano, DELANTERO defender, DEFENSOR 1 vs
+1 y MEDIO la marca), queda como la del penal: la cinta de quién es, el nombre
+de la carta, el título del mini juego, **lo que se juega** —la misma línea de
+la carta, «+3 ⚡ o GOL RIVAL», «⚽ GOL o -2 ❤», verde lo que suma y rojo lo que
+resta— y el arco o la cancha con la pregunta. La línea se toma de `predict`
+(`efeDelEmpate`), así la carta y la pantalla dicen siempre lo mismo. La
+ventana de la carta no se tocó.
+
+La pantalla baja de unos 650 a unos 400 de alto (402x784: 654 → 408); con el
+teléfono acostado (667x375), el scroll del cartel pasa de 235 a 120.
+
+Se compararon tres versiones: sólo el juego, con lo que se juega (elegida) y
+con la banda MINI JUEGO arriba en vez del nombre de la carta.
+
+**Para volver atrás:** el tag `mini-juego-antes-de-sin-repetir` (= v309).
+
+Probado en el juego real en 320x568, 375x667, 402x784, 440x956 y 667x375: los
+cuatro mini juegos sin foto ni números, la línea igual a la de la carta, sin
+scroll con el teléfono parado, nada más ancho que el cartel, y jugados hasta el
+final (tocar un lado y que se resuelva). Control de layout de las 31 pantallas
+igual al de la v309 (402 LED y clásico, 375). Prueba general 49/49.
