@@ -16356,3 +16356,45 @@ Probado con el recorrido real (`sumarRacha` llenando la racha) en 320x568,
 puede tocar es CONTINUAR PARTIDO, entra sin scroll, y al cerrarlo el partido
 sigue con la racha cargada. Control de layout de las 31 pantallas igual al de
 la v310 (402 LED y clásico, 375). Prueba general 49/49.
+
+## v312 · jugalo como app
+
+Una franja en el menú, debajo de los modos de juego: «JUGALO COMO APP · Un
+ícono en tu inicio y pantalla completa» con el botón AGREGAR. Va en verde para
+no competir con CAMPEONATO, el único botón dorado de la pantalla.
+
+Lo que hace al tocarla depende del navegador:
+
+- **Android (Chrome, Samsung, Edge) y Chrome en la compu:** abre el cartel del
+  propio navegador para instalar el juego; el jugador sólo toca Instalar. Se
+  usa el aviso `beforeinstallprompt`, que el navegador da cuando el juego se
+  puede instalar. Si lo rechaza, la franja queda y el próximo toque abre los
+  pasos.
+- **iPhone:** Apple no deja que una página abra «Agregar a inicio». Abre una
+  hoja con los tres pasos de Safari: Compartir → Agregar a inicio → Agregar.
+- **Instagram, Facebook, TikTok:** su navegador de adentro no guarda accesos
+  directos. La hoja dice que lo abran en el navegador.
+- **Android sin el cartel** (Firefox, o si lo cerraron hace poco): la hoja con
+  los pasos del menú.
+
+Si el juego ya se abrió desde el ícono, la franja no aparece. En la compu
+sólo aparece si el navegador ofrece instalarlo.
+
+Para que se pueda instalar se sumaron `manifest.webmanifest` (nombre, «Duelo»
+abajo del ícono, pantalla completa), los íconos con el DF del menú
+(`assets/icono-192.png`, `icono-512.png` y `icono-iphone.png`) y `sw.js`, un
+service worker que **no guarda nada en caché**: cada versión nueva se sigue
+viendo apenas se publica. Sólo muestra «SIN CONEXIÓN» si se abre sin internet.
+
+Se compararon cuatro lugares: un enlace en el pie, un botón en la esquina
+frente al DF, esta franja y un renglón en OPCIONES.
+
+**Para volver atrás:** el tag `menu-antes-de-instalar` (= v311).
+
+Probado en el juego real: manifest, íconos y service worker cargan, y el Chrome
+de pruebas ofrece instalar el juego. La franja en 320x568, 360x640, 375x667,
+402x784, 440x956, 667x375, 844x390 y el clásico, sin scroll ni pisar nada. El
+cartel simulado: se abre al tocar, aceptado se va la franja, rechazado queda y
+abre los pasos. Las tres hojas con el texto de cada teléfono, sin scroll
+también acostado, y LISTO vuelve al menú. Control de layout de las 31 pantallas
+igual al de la v311 (402 LED y clásico, 375). Prueba general 49/49.

@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DUELO FUTBOLERO — Estrategia y Suerte</title>
+<!-- Para guardarlo en el inicio del teléfono (v312): el manifest dice el
+     nombre, el ícono y que abra a pantalla completa; el ícono de iPhone va
+     aparte porque Safari no lo saca del manifest. -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icono-iphone.png">
+<meta name="apple-mobile-web-app-title" content="Duelo">
+<meta name="theme-color" content="#000000">
 <script>
 /* **En la compu y en la tablet acostada, el diseño del teléfono** (v277).
    Ahí el juego usaba un diseño aparte, de tres columnas, con cartas de más del
@@ -7995,6 +8002,59 @@ html.html-menu, html.html-menu body{overflow:hidden}
 .mm-enl:hover{color:var(--white)}
 .card-menu .ver{margin-top:0}
 
+/* ---------- JUGALO COMO APP (v312) ----------
+   Una franja debajo de los modos para guardar el juego en el inicio del
+   teléfono. Es verde y no dorada a propósito: dorado es CAMPEONATO, el único
+   botón relleno de la pantalla, y esto no compite con jugar. El AGREGAR sí va
+   relleno, chico, para que se lea como el botón de la franja. */
+.in-franja{
+  display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;
+  padding:9px 12px;border-radius:4px;border:1px solid rgba(39,240,138,.4);background:rgba(7,24,15,.75);
+  color:var(--white);cursor:pointer;text-align:left;font:inherit;
+}
+.in-franja > .ic{width:24px;height:24px;font-size:24px;color:var(--green);flex:0 0 auto}
+.in-franja .in-f-txt{display:grid;gap:1px;flex:1;min-width:0}
+.in-franja b{font-family:var(--tit);font-weight:800;font-size:13px;letter-spacing:1.4px;color:var(--white)}
+.in-franja small{font-family:var(--txt);font-weight:500;font-size:11.5px;line-height:1.25;color:var(--dim)}
+.in-franja i{font-family:var(--tit);font-weight:800;font-size:11px;letter-spacing:1.5px;font-style:normal;
+  color:#062012;background:var(--green);border-radius:3px;padding:6px 9px;flex:0 0 auto}
+
+/* La hoja que se abre cuando el navegador no ofrece su propio cartel: iPhone,
+   las apps con navegador adentro (Instagram) y Android sin el cartel. */
+.card.in-hoja{max-width:380px;display:grid;gap:14px;text-align:center}
+.in-hoja h1{margin:0}
+.in-app{display:flex;align-items:center;gap:12px;justify-content:center}
+.in-ico{width:54px;height:54px;border-radius:13px;background:#000;border:1px solid var(--line);display:grid;place-items:center;flex:0 0 auto;
+  font-family:var(--led, var(--tit));font-weight:900;font-size:23px;color:var(--gold);text-shadow:0 0 6px rgba(255,178,26,.6);box-shadow:0 6px 16px rgba(0,0,0,.6)}
+.in-app span{display:grid;text-align:left;gap:2px}
+.in-app b{font-family:var(--tit);font-weight:800;font-size:15px;letter-spacing:1px;color:var(--white)}
+.in-app small{font-family:var(--txt);font-weight:500;font-size:12px;color:var(--dim)}
+.in-pasos{list-style:none;margin:0;padding:0;display:grid;gap:8px;text-align:left;counter-reset:inp}
+.in-pasos li{counter-increment:inp;display:flex;align-items:center;gap:11px;padding:10px 12px;border:1px solid var(--line);border-radius:4px;
+  background:rgba(7,18,13,.6);font-family:var(--txt);font-weight:500;font-size:14px;line-height:1.35;color:var(--white)}
+.in-pasos li::before{content:counter(inp);flex:0 0 auto;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;
+  font-family:var(--tit);font-weight:800;font-size:13px;color:#140c00;background:var(--gold)}
+.in-pasos li > span{display:block}
+.in-pasos b{color:var(--gold);font-weight:700}
+.in-pasos .ic{display:inline-block;width:20px;height:20px;font-size:20px;color:var(--white);vertical-align:-5px;margin-inline:2px}
+.in-nota{margin:0;font-family:var(--txt);font-weight:500;font-size:14px;line-height:1.4;color:var(--white)}
+.in-flecha{font-family:var(--tit);font-weight:800;font-size:11px;letter-spacing:1.6px;color:var(--dim);text-transform:uppercase;
+  display:flex;justify-content:center;align-items:center;gap:6px}
+.in-flecha span{font-size:18px;color:var(--gold);animation:inBaja 1.1s ease-in-out infinite}
+@keyframes inBaja{0%,100%{transform:translateY(-2px)}50%{transform:translateY(3px)}}
+@media (prefers-reduced-motion:reduce){ .in-flecha span{animation:none} }
+/* Acostado la hoja no entraba (LISTO quedaba 170px abajo del corte en
+   844x390): los pasos van en fila y se va el ícono, que es adorno. */
+@media (orientation:landscape) and (max-height:500px){
+  .card.in-hoja{max-width:min(660px, 94vw);gap:8px}
+  .card.in-hoja .in-nota{margin:0}
+  .card.in-hoja h1{font-size:30px;line-height:1}
+  .in-app, .in-flecha{display:none}
+  .in-pasos{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .in-pasos li{padding:8px 10px;font-size:13px;align-items:flex-start}
+  .in-nota{font-size:13px}
+}
+
 /* ---------- en touch, sin relieve pegado ---------- */
 @media (hover:none){
   .mm-grande:hover, .mm-chip:hover{transform:none}
@@ -11107,6 +11167,28 @@ if(/[?&]clasico=1/.test(location.search)){
     <symbol id="i-check" viewBox="0 0 24 24">
       <path d="M4.6 12.6l4.8 4.8L19.4 7.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
     </symbol>
+    <!-- INSTALAR (v312): un teléfono con la flecha que entra. Y los botones
+         del navegador que nombra la hoja de pasos, dibujados simples: el
+         compartir de Safari, el agregar a inicio y los menús de tres puntos. -->
+    <symbol id="i-instalar" viewBox="0 0 24 24">
+      <rect x="6.2" y="2.4" width="11.6" height="19.2" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M12 6.4v7.2M8.9 10.8l3.1 3.1 3.1-3.1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M10.4 18.4h3.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-safari-comp" viewBox="0 0 24 24">
+      <path d="M12 3.2v11M8.2 7l3.8-3.8L15.8 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8.5 10.2H6v10.6h12V10.2h-2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-agregar" viewBox="0 0 24 24">
+      <rect x="4" y="4" width="16" height="16" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 8.5v7M8.5 12h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-puntos" viewBox="0 0 24 24">
+      <circle cx="12" cy="5.5" r="1.9" fill="currentColor"/><circle cx="12" cy="12" r="1.9" fill="currentColor"/><circle cx="12" cy="18.5" r="1.9" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-puntos-h" viewBox="0 0 24 24">
+      <circle cx="5.5" cy="12" r="1.9" fill="currentColor"/><circle cx="12" cy="12" r="1.9" fill="currentColor"/><circle cx="18.5" cy="12" r="1.9" fill="currentColor"/>
+    </symbol>
     <!-- COMPARTIR, al final del campeonato. -->
     <symbol id="i-compartir" viewBox="0 0 24 24">
       <circle cx="18" cy="5.6" r="2.6" fill="none" stroke="currentColor" stroke-width="1.7"/>
@@ -12924,7 +13006,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 311;
+const VERSION = 312;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -18737,6 +18819,112 @@ function showCreditos(){
    La primera pantalla: el logo grande y los seis caminos. Antes se entraba
    directo a crear el club, así que el 1v1 y el resto quedaban escondidos detrás
    de un botón secundario. */
+/* ---- JUGALO COMO APP (v312) ----
+   Guardar el juego en el inicio del teléfono. Cuánto se puede depende del
+   navegador, y la franja del menú hace lo máximo en cada uno:
+
+   · Android con Chrome, Samsung o Edge (y Chrome en la compu): el navegador
+     avisa que el juego se puede instalar con `beforeinstallprompt`. Se guarda
+     el aviso y la franja abre **el cartel del propio navegador**: el jugador
+     sólo toca Instalar.
+   · iPhone: Apple no deja que una página abra «Agregar a inicio». La franja
+     abre una hoja con los tres pasos de Safari.
+   · Instagram, Facebook, TikTok: su navegador de adentro no guarda accesos
+     directos en ningún teléfono. La hoja dice que lo abran en el navegador.
+     Importa porque el pie del juego lleva a Instagram.
+   · Android sin el cartel (Firefox, o si lo cerraron hace poco y Chrome se
+     lo guarda un tiempo): la hoja con los pasos del menú.
+
+   Si el juego ya se abrió desde el ícono, la franja no aparece. En la compu
+   sólo aparece si el navegador ofrece el cartel: los pasos de la hoja son de
+   teléfono. Para volver atrás: tag `menu-antes-de-instalar`. */
+let avisoInstalar = null;
+addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();   // sin la barrita automática de Chrome: el que avisa es el menú
+  avisoInstalar = e;
+  /* El aviso puede llegar con el menú ya en pantalla: la franja aparece ahí. */
+  const chips = document.querySelector('.card-menu .mm-chips');
+  if(chips && !document.querySelector('.in-franja') && mostrarInstalar()){
+    chips.insertAdjacentHTML('afterend', franjaInstalar());
+    const f = document.querySelector('.in-franja');
+    f.onclick = () => instalarJuego();
+  }
+});
+addEventListener('appinstalled', () => {
+  avisoInstalar = null;
+  const f = document.querySelector('.in-franja'); if(f) f.remove();
+});
+const UA = navigator.userAgent;
+const yaInstalado = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const esIOS = () => /iPhone|iPad|iPod/.test(UA) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const appAjena = () => /Instagram/.test(UA) ? 'Instagram' : /FBAN|FBAV|FB_IAB/.test(UA) ? 'Facebook'
+  : /TikTok|musical_ly|BytedanceWebview/.test(UA) ? 'TikTok' : /Snapchat/.test(UA) ? 'Snapchat' : /\bLine\//.test(UA) ? 'LINE' : '';
+function mostrarInstalar(){
+  if(yaInstalado()) return false;
+  return !!avisoInstalar || matchMedia('(pointer:coarse)').matches;
+}
+function franjaInstalar(){
+  return '<button class="in-franja" data-menu="instalar">' + ICO('instalar') +
+    '<span class="in-f-txt"><b>JUGALO COMO APP</b><small>Un ícono en tu inicio y pantalla completa</small></span>' +
+    '<i>AGREGAR</i></button>';
+}
+function instalarJuego(){
+  if(avisoInstalar){
+    const a = avisoInstalar;
+    /* Si el navegador no lo deja abrir (ya se usó, o no vino de un toque),
+       quedan los pasos de la hoja. */
+    const otraVez = () => { if(avisoInstalar === a){ avisoInstalar = null; instalarJuego(); } };
+    try{ Promise.resolve(a.prompt()).catch(otraVez); }catch(e){ otraVez(); return; }
+    /* El aviso sirve una sola vez. Si lo rechaza, la franja sigue y la próxima
+       vez abre la hoja con los pasos. */
+    a.userChoice.then(r => { avisoInstalar = null; if(r && r.outcome === 'accepted'){ const f = document.querySelector('.in-franja'); if(f) f.remove(); } }).catch(() => {});
+    return;
+  }
+  const app = appAjena();
+  hojaInstalar(app ? 'app' : esIOS() ? 'ios' : 'android', app);
+}
+function hojaInstalar(tipo, app){
+  const safari = esIOS() && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(UA);
+  const iphone = /iPhone|iPod/.test(UA);
+  let pasos = '';
+  if(tipo === 'ios') pasos =
+    '<ol class="in-pasos">' +
+      '<li><span>Tocá ' + ICO('safari-comp') + ' <b>Compartir</b> en la barra ' + (safari ? 'de Safari' : 'del navegador') +
+        ' (si no lo ves, está en ' + ICO('puntos-h') + ').</span></li>' +
+      '<li><span>Bajá y elegí ' + ICO('agregar') + ' <b>Agregar a inicio</b>.</span></li>' +
+      '<li><span>Tocá <b>Agregar</b>, arriba a la derecha.</span></li>' +
+    '</ol>' +
+    (safari && iphone ? '<div class="in-flecha">la barra está abajo <span>↓</span></div>' : '');
+  if(tipo === 'android') pasos =
+    '<ol class="in-pasos">' +
+      '<li><span>Tocá ' + ICO('puntos') + ' <b>el menú</b> del navegador.</span></li>' +
+      '<li><span>Elegí <b>Agregar a la pantalla principal</b> o <b>Instalar app</b>.</span></li>' +
+      '<li><span>Confirmá con <b>Instalar</b> o <b>Agregar</b>.</span></li>' +
+    '</ol>';
+  if(tipo === 'app') pasos =
+    '<p class="in-nota">Lo abriste desde ' + app + ', y ahí no se puede guardar.</p>' +
+    '<ol class="in-pasos">' +
+      '<li><span>Tocá ' + ICO('puntos-h') + ' arriba a la derecha.</span></li>' +
+      '<li><span>Elegí <b>Abrir en el navegador</b>.</span></li>' +
+      '<li><span>Ahí tocá de nuevo <b>AGREGAR</b>.</span></li>' +
+    '</ol>';
+  openCard(
+    '<div class="tag">ACCESO DIRECTO</div>' +
+    '<h1>EN TU <em>INICIO</em></h1>' +
+    '<div class="in-app"><div class="in-ico">DF</div><span><b>DUELO FUTBOLERO</b>' +
+      '<small>Se abre a pantalla completa, sin la barra del navegador</small></span></div>' +
+    pasos +
+    '<button class="cta n-linea" id="inBack">LISTO</button>',
+    'card-final in-hoja'
+  );
+  $('inBack').onclick = () => { showMenu(); };
+}
+/* El service worker es lo que Chrome pide para ofrecer el cartel. No guarda
+   nada: cada versión nueva se sigue viendo apenas se publica. */
+if('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')){
+  addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+}
+
 function showMenu(){
   const logo = ARTSRC('logo');
   const fondo = ARTSRC('cancha');   // el estadio desde arriba, ahora a sangre
@@ -18785,6 +18973,7 @@ function showMenu(){
             ICO('arco') + '<span class="mm-c-nm">PENALES</span>' +
           '</button>' +
         '</div>' +
+        (mostrarInstalar() ? franjaInstalar() : '') +
         '<div class="mm-pie">' +
           '<button class="mm-enl" data-menu="opciones">' + ICO('ajustes') + '<b>OPCIONES</b></button>' +
           '<button class="mm-enl" data-menu="creditos">' + ICO('firma') + '<b>CRÉDITOS</b></button>' +
@@ -18803,6 +18992,7 @@ function showMenu(){
       else if(op === 'penales')   { showPenalesSolos(); }
       else if(op === 'opciones')  { showOpciones(); }
       else if(op === 'creditos')  { showCreditos(); }
+      else if(op === 'instalar')  { instalarJuego(); }
     };
   });
 }
