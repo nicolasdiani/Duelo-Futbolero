@@ -16267,3 +16267,38 @@ Ahora la misma regla apunta a los dos, y el anillo de las reglas baja a 50.
 Medido en 320x568, 375x667, 402x784, 440x956 y 667x375: misma letra, mismo
 tamaño y mismo «MIN» en los dos relojes. Control de layout de las 31 pantallas
 igual al de la v307 (LED y clásico). Prueba general 49/49.
+
+## v309 · sin naranja en las cartas
+
+Se armó el inventario de todas las cartas, en cada situación en que salen, con
+el color de su borde en reposo y con la fila resaltada. El naranja estaba sólo
+en los duelos de mini juego (la carta empata con tu stat):
+
+- DELANTERO (defender, puede haber gol rival): sin color en reposo, naranja al
+  resaltar, y naranja también el borde de su pop-up, el texto del resultado y
+  su cartel del mini juego;
+- DEFENSOR, MEDIO y ARQUERO: naranja en reposo y amarillo al resaltar.
+
+Ahora **el color de la carta es el de su etiqueta MINI JUEGO** (v306):
+
+| Mini juego | Antes | Ahora |
+|---|---|---|
+| DELANTERO · defender | sin color / naranja | **rojo** en reposo y resaltada |
+| ARQUERO · mano a mano | naranja / amarillo | **verde** |
+| DEFENSOR · 1 vs 1 | naranja / amarillo | **amarillo** |
+| MEDIO · la marca | naranja / amarillo | **amarillo** |
+
+El DELANTERO sigue en el tono `hot`, que pasó de naranja a rojo en la carta, su
+pop-up y el cartel del mini juego. El ARQUERO pasa al tono `good`: es decisión
+del jugador, que lo prefiere verde como su etiqueta aunque se puedan perder
+2 ❤ (ya había estado en verde y se había vuelto atrás). No cambia ninguna
+regla: lo único que mira el tono por código es `isSafe`, que pregunta por
+`bad`. Ya no queda ningún uso del naranja en el juego.
+
+**Para volver atrás:** el tag `colores-antes-de-sin-naranja` (= v308).
+
+Verificado con el mismo inventario sobre el juego real: los cuatro duelos de
+mini juego con el color nuevo en la carta (reposo y resaltada), en el pop-up
+de la carta y en el cartel del mini juego; las otras 33 situaciones, igual que
+antes. Control de layout de las 31 pantallas igual al de la v308 (402 LED y
+clásico, 375). Prueba general 49/49.

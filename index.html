@@ -886,7 +886,7 @@ img{height:auto}
    necesita su regla acá o el penal y el córner se resuelven sin color. */
 .play.gol{border-color:var(--fi-luz)} .play.gol .p-out{color:var(--fi-luz)}
 .play.risk{border-color:var(--gold)}  .play.risk .p-out{color:var(--gold)}
-.play.hot{border-color:var(--naranja)}  .play.hot .p-out{color:var(--naranja)}
+.play.hot{border-color:var(--red)}  .play.hot .p-out{color:var(--red)}   /* v309: era naranja */
 .play.coin{border-color:var(--coin)}  .play.coin .p-out{color:var(--coin)}
 .play.neutral .p-out{color:var(--dim)}
 
@@ -926,8 +926,8 @@ img{height:auto}
 .sit.mam.tono-risk .t{color:var(--gold)}
 .sit.mam.tono-good{border-color:var(--green);box-shadow:0 0 60px rgba(61,220,107,.3)}
 .sit.mam.tono-good .t{color:var(--green)}
-.sit.mam.tono-hot{border-color:var(--naranja);box-shadow:0 0 60px rgba(232,116,20,.34)}
-.sit.mam.tono-hot .t{color:var(--naranja)}
+.sit.mam.tono-hot{border-color:var(--red);box-shadow:0 0 60px rgba(255,59,82,.34)}   /* v309: era naranja */
+.sit.mam.tono-hot .t{color:var(--red)}
 
 /* Resuelto: el borde pasa a verde o rojo según cómo salió, pisando el tono. */
 .sit.mam.resuelta.salvado{border-color:var(--green);box-shadow:0 0 70px rgba(61,220,107,.4)}
@@ -1582,7 +1582,7 @@ img{height:auto}
    celeste de las fichas, así que la mesa y los pop-ups hablan igual. */
 .c-out.gol{color:var(--fi-luz)}
 .c-out.risk{color:var(--gold)}
-.c-out.hot{color:var(--naranja)}
+.c-out.hot{color:var(--red)}   /* v309: era naranja */
 /* El GOL RIVAL dentro del empate del delantero: el peor resultado posible de
    esa carta, marcado igual que el GOL a favor pero en rojo. */
 .c-out.hot .efe b{color:var(--red);text-shadow:0 0 10px rgba(255,59,82,.5)}
@@ -1681,7 +1681,7 @@ img{height:auto}
 .row.hl .cell.tono-risk:not(.empty):not(.lock),
 .cell.colhl.tono-risk:not(.empty):not(.lock){--tono:245,200,66}
 .row.hl .cell.tono-hot:not(.empty):not(.lock),
-.cell.colhl.tono-hot:not(.empty):not(.lock){--tono:232,116,20}
+.cell.colhl.tono-hot:not(.empty):not(.lock){--tono:255,59,82}   /* v309: era naranja */
 .row.hl .cell.tono-neutral:not(.empty):not(.lock),
 .cell.colhl.tono-neutral:not(.empty):not(.lock){--tono:147,174,222}
 /* **El canto, por tamaño de carta.** En escritorio la carta mide 185px de ancho
@@ -4364,8 +4364,8 @@ body{padding-bottom:36px}
 .sit.mam.tono-risk .t{color:var(--gold)}
 .sit.mam.tono-good{border-color:var(--green);box-shadow:0 0 55px rgba(61,220,107,.25)}
 .sit.mam.tono-good .t{color:var(--green)}
-.sit.mam.tono-hot{border-color:var(--naranja);box-shadow:0 0 55px rgba(232,116,20,.28)}
-.sit.mam.tono-hot .t{color:var(--naranja)}
+.sit.mam.tono-hot{border-color:var(--red);box-shadow:0 0 55px rgba(255,59,82,.28)}
+.sit.mam.tono-hot .t{color:var(--red)}
 .sit.penal{border-color:var(--gold);box-shadow:0 0 55px rgba(245,200,66,.25)}
 .sit.penal .t{color:var(--gold)}
 /* **El título es la instancia.** Antes decía UNA PELOTA y la ronda vivía en la
@@ -4511,7 +4511,7 @@ body{padding-bottom:36px}
 .sit .palo:hover:not(:disabled){transform:translateY(-2px)}
 .sit.mam.tono-good .palo:hover:not(:disabled),
 .sit.penal .palo:hover:not(:disabled){border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
-.sit.mam.tono-hot .palo:hover:not(:disabled){border-color:var(--naranja);box-shadow:0 0 0 1px var(--naranja)}
+.sit.mam.tono-hot .palo:hover:not(:disabled){border-color:var(--red);box-shadow:0 0 0 1px var(--red)}
 .sit.mam.tono-risk .palo:hover:not(:disabled){border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
 .sit .palo:disabled{opacity:.35;cursor:not-allowed}
 .sit .palo.elegido{border-color:var(--gold);background:rgba(245,200,66,.14)}
@@ -10679,7 +10679,10 @@ html.html-menu, html.html-menu body{overflow:hidden}
 :root .c-nm{font-family:var(--tit);font-weight:800;}
 :root .cell.tono-good{border-color:rgba(39,240,138,.55)}
 :root .cell.tono-bad{border-color:rgba(255,75,58,.5)}
-:root .cell.tono-risk{border-color:rgba(255,122,26,.6)}
+/* v309: sin naranja. Los duelos de mini juego en reposo llevan el color de su
+   etiqueta: amarillo (era naranja) y el delantero en rojo (no tenía color). */
+:root .cell.tono-risk{border-color:rgba(255,178,26,.6)}
+:root .cell.tono-hot{border-color:rgba(255,75,58,.5)}
 :root .c-val{font-family:var(--led);font-weight:900}
 :root .row-pick, :root .col-pick{background:#020604;border-color:var(--line);border-radius:3px}
 :root .pk, :root .col-pick .ck{font-family:var(--tit)}
@@ -12891,7 +12894,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 308;
+const VERSION = 309;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -13817,8 +13820,15 @@ function duelo(cell, mio, gana, pierde, empate, premio, golGana){
      demás cartas —acá no se resuelve solo, elegís un lado. */
   const etiqueta = chapaMJ(MJ_CLASE[cell.type] || 'mj-duelo') + '<span class="mj">' + mj + '</span>';
 
-  const caro = cell.type === 'delantero';
-  return { label: etiqueta + '<span class="efe">' + empate + '</span>', tone: caro ? 'hot' : 'risk' };
+  /* **v309: el color del empate es el de su etiqueta** (v306). El DELANTERO
+     sigue en `hot` —es el único donde perder es gol en contra— pero `hot`
+     pasó de naranja a rojo. El ARQUERO vuelve al verde: el mano a mano puede
+     ser gol tuyo, y su etiqueta ya es verde (decisión del jugador, a pesar de
+     los 2 ❤ en juego; ver el comentario de arriba). DEFENSOR y MEDIO quedan en
+     `risk`, amarillo. No cambia ninguna regla: lo único que mira el tono por
+     código es `isSafe` (`!== 'bad'`). */
+  const tonoEmpate = { delantero:'hot', arquero:'good' };
+  return { label: etiqueta + '<span class="efe">' + empate + '</span>', tone: tonoEmpate[cell.type] || 'risk' };
 }
 
 /* **La chapa de MINI JUEGO, en un solo lugar** (v306): una banda con 🕹️ y el
@@ -16238,7 +16248,7 @@ function manoAMano(tipo, mio, val){
       /* El pop-up toma **el mismo tono que la carta**: verde el mano a mano del
          arquero, naranja el cruce del delantero, dorado los otros dos. Así el
          cartel que leíste en la mesa y el que se abre son la misma cosa. */
-      '<div class="sit mam tono-' + (tipo === 'delantero' ? 'hot' : 'risk') + '">' +
+      '<div class="sit mam tono-' + ({ delantero:'hot', arquero:'good' }[tipo] || 'risk') + '">' +   // v309: el mismo color que la carta
         /* **La misma cabecera que el cartel de la jugada.** Sale de la misma
            función —`cintaDelClub`— así que dice de quién es la jugada y en qué
            minuto pasa, igual que un toque antes, y sobre la foto va la chapa
