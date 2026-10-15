@@ -6158,6 +6158,24 @@ body{padding-bottom:36px}
 .sit.mam .mam-efe b{color:var(--red)}
 .sit.mam .mam-efe i{width:12px;height:16px;display:inline-block;vertical-align:-2px}
 
+/* ---- EL AVISO DE RACHA LLENA (v311) ----
+   Los rayos, el título, dónde está la posibilidad de gol y el botón de siempre.
+   El cartel del tablero va dibujado apagado y con borde punteado: dice «es
+   éste» sin parecer algo que se toca acá. */
+.aviso.racha-llena{display:grid;gap:12px;justify-items:center;text-align:center;padding:22px 20px 18px;max-width:380px}
+.aviso.racha-llena .a-rayos{margin:0}
+.aviso.racha-llena .rl-t{font:800 26px/1 var(--led, var(--tit));color:var(--gold);letter-spacing:2px;text-shadow:var(--brillo-led, none)}
+.aviso.racha-llena .rl-donde{font:800 12px/1.35 var(--tit);letter-spacing:1.5px;text-transform:uppercase;color:var(--dim)}
+.aviso.racha-llena .rl-cartel{
+  pointer-events:none;width:100%;box-sizing:border-box;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;
+  border:1px dashed rgba(39,240,138,.45);border-radius:4px;background:rgba(9,32,18,.5);opacity:.85;filter:saturate(.8);
+}
+.aviso.racha-llena .rl-cartel .gb-ico{font-size:20px;display:flex}
+.aviso.racha-llena .rl-cartel b{font:800 15px var(--tit);letter-spacing:.5px;color:var(--green);flex:1}
+.aviso.racha-llena .rl-p{font:500 14.5px/1.45 var(--txt);color:var(--white);text-transform:none;letter-spacing:.2px;max-width:32ch}
+.aviso.racha-llena .cta{width:100%;margin-top:2px}
+
 /* ================= NI FOCO NI DESTELLO AL TOCAR =================
    Android pinta un rectángulo celeste encima de lo que tocás
    —`-webkit-tap-highlight-color`, que por defecto es rgba(51,181,229,.4)— y
@@ -12906,7 +12924,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 310;
+const VERSION = 311;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -16843,26 +16861,24 @@ function avisoRacha(){
      era el número de cuando la jugada clara salía el 8% y el tiro libre el 25%.
      Desde que las cinco pesan igual son 51, y la ficha de la mesa ya lo decía
      bien — así que el aviso prometía una cosa y la ficha otra. */
-  const esperadoFavor = esperadoDe(SIT_FAVOR);
-
   return new Promise(resolve => {
     let wrap = document.createElement('div');
     wrap.className = 'sit-flash';
     wrap.innerHTML =
-      /* Solo se anuncia la SITUACIÓN DE GOL: es lo único que aparece recién
-         ahora. La columna se habilita antes, a los 2 de racha, así que a esta
-         altura el jugador ya la viene usando y repetirla acá sería ruido. */
-      '<div class="aviso con-foto">' +
-        fotoRacha('RACHA LLENA') +
+      /* **Sólo informativo** (v311). Antes llevaba una caja «SITUACIÓN DE GOL»
+         con su descripción, armada como las opciones que se eligen en otros
+         carteles, y parecía que la posibilidad de gol se usaba desde acá. Ahora
+         dice dónde está: el cartel del tablero, dibujado apagado, con borde
+         punteado y sin USAR, para que no se lea como un botón. El único botón
+         es el de siempre, que cierra el aviso. Para volver: el tag
+         `racha-antes-de-aviso-simple`. */
+      '<div class="aviso racha-llena">' +
         rayosLlenos() +
-        '<div class="a-s">SE HABILITA LA POSIBILIDAD DE GOL</div>' +
-        '<div class="a-ops">' +
-          '<div class="a-op gol solo">' +
-            '<div class="oi">' + icoPelota() + '</div><div class="on">SITUACIÓN DE GOL</div>' +
-            '<div class="od">Una llegada clara al ' + esperadoFavor + '%, sin riesgo de que te lastimen. Gasta la racha entera y una jugada.</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="a-s">No hace falta usarla ahora: queda disponible hasta que la gastes.</div>' +
+        '<div class="rl-t">RACHA LLENA</div>' +
+        '<div class="rl-donde">Buscalo en el tablero, arriba de las cartas</div>' +
+        '<div class="rl-cartel" aria-hidden="true"><span class="gb-ico">' + icoPelota() + '</span>' +
+          '<b>LA POSIBILIDAD DE GOL</b><span class="gb-ico">' + icoPelota() + '</span></div>' +
+        '<div class="rl-p">Se usa desde ahí, cuando quieras.<br>La racha queda cargada.</div>' +
         '<button class="cta llama n-verde" id="avisoBtn">' + ICO('rayo') + 'CONTINUAR PARTIDO</button>' +
       '</div>';
     wrap = montarPop(wrap);

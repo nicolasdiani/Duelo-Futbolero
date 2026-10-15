@@ -16331,3 +16331,28 @@ cuatro mini juegos sin foto ni números, la línea igual a la de la carta, sin
 scroll con el teléfono parado, nada más ancho que el cartel, y jugados hasta el
 final (tocar un lado y que se resuelva). Control de layout de las 31 pantallas
 igual al de la v309 (402 LED y clásico, 375). Prueba general 49/49.
+
+## v311 · el aviso de racha llena, sólo informativo
+
+Cuando la racha se llena sale un aviso. Llevaba la foto de RACHA FULL, una
+caja «⚽ SITUACIÓN DE GOL» con su descripción —armada como las opciones que se
+eligen en otros carteles— y el botón CONTINUAR PARTIDO: parecía que la
+posibilidad de gol se usaba desde ahí, y no.
+
+Ahora es sólo informativo y dice dónde está: los rayos, RACHA LLENA, «Buscalo
+en el tablero, arriba de las cartas», el cartel LA POSIBILIDAD DE GOL dibujado
+como en el tablero pero apagado, con borde punteado y sin USAR (no se puede
+tocar), «Se usa desde ahí, cuando quieras. / La racha queda cargada.» en dos
+renglones, y el botón de siempre, CONTINUAR PARTIDO en amarillo, que cierra.
+El aviso baja de 518 a 324 de alto (402x784).
+
+Se compararon tres: un aviso corto, éste (te muestra dónde) y una cinta arriba
+que no frena el partido.
+
+**Para volver atrás:** el tag `racha-antes-de-aviso-simple` (= v310).
+
+Probado con el recorrido real (`sumarRacha` llenando la racha) en 320x568,
+375x667, 402x784, 440x956, 667x375 y el clásico: aparece, lo único que se
+puede tocar es CONTINUAR PARTIDO, entra sin scroll, y al cerrarlo el partido
+sigue con la racha cargada. Control de layout de las 31 pantallas igual al de
+la v310 (402 LED y clásico, 375). Prueba general 49/49.
