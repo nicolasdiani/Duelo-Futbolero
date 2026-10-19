@@ -8074,6 +8074,81 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .pv-cinta .pv-m{font-size:22px}
 }
 
+/* ---------- EL MERCADO EXPLICADO (v314) ----------
+   La plata grande, una línea con el aguante y la racha, cuatro renglones que
+   dicen en palabras qué hace cada ítem y una nota. Todo verde lo que es plata
+   y lo que se puede comprar; apagado lo que no alcanza. */
+.card-mercado .mv-saldo{display:grid;justify-items:center;gap:0;margin-top:12px;padding:10px 10px;
+  border:1px solid var(--line);border-radius:6px;background:rgba(7,18,13,.6);text-align:center}
+.card-mercado .mv-lb{font-family:var(--tit);font-weight:800;font-size:11px;letter-spacing:2.5px;color:var(--dim)}
+.card-mercado .mv-plata{font-family:var(--tit);font-weight:900;font-size:40px;line-height:normal;color:var(--green);text-shadow:0 0 14px rgba(39,240,138,.4)}
+.card-mercado .mv-saldo small{font-family:var(--txt);font-weight:500;font-size:12.5px;color:var(--dim)}
+.card-mercado .mv-saldo small em{font-style:normal;font-weight:700;color:var(--green)}
+.card-mercado .mv-estado{display:flex;justify-content:center;gap:18px;margin-top:10px;
+  font-family:var(--tit);font-weight:800;font-size:12px;letter-spacing:1.5px;color:var(--dim)}
+.card-mercado .mv-estado b{color:var(--white);font-size:15px;letter-spacing:.5px}
+.card-mercado .mv-estado .ih, .card-mercado .mv-estado .ir{vertical-align:-2px}
+.card-mercado .mv-lista{display:grid;gap:8px;margin-top:10px;text-align:left}
+.card-mercado .mv-fila{display:flex;align-items:stretch;border:1px solid var(--line);border-radius:5px;background:rgba(7,18,13,.6)}
+.card-mercado .mv-comprar{flex:1;min-width:0;display:flex;align-items:center;gap:12px;padding:10px 12px;
+  background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer;border-radius:5px}
+.card-mercado .mv-comprar:disabled{cursor:default}
+.card-mercado .mv-ico{position:relative;width:34px;height:34px;display:grid;place-items:center;flex:0 0 auto}
+.card-mercado .mv-ico .ii-svg{width:28px;height:28px;display:block;color:var(--gold)}
+/* Cuántos tenés: un numerito dorado sobre el ícono, sólo si tenés alguno. */
+.card-mercado .mv-x{position:absolute;right:-7px;top:-7px;min-width:18px;height:18px;border-radius:9px;padding:0 4px;box-sizing:border-box;
+  display:grid;place-items:center;background:var(--gold);color:#140c00;font-family:var(--tit);font-weight:900;font-size:11px;font-style:normal}
+.card-mercado .mv-tx{flex:1;min-width:0;display:grid;gap:2px}
+.card-mercado .mv-tx b{font-family:var(--tit);font-weight:800;font-size:15px;letter-spacing:1px;color:var(--white)}
+.card-mercado .mv-tx span{font-family:var(--txt);font-size:13px;line-height:1.3;color:var(--white);opacity:.85}
+.card-mercado .mv-tx span em{font-style:normal;color:var(--gold)}
+.card-mercado .mv-pr{flex:0 0 auto;font-family:var(--tit);font-weight:900;font-size:15px;letter-spacing:.5px;white-space:nowrap;
+  color:#062012;background:var(--green);border-radius:4px;padding:7px 10px}
+.card-mercado .mv-fila.off .mv-pr{background:transparent;color:var(--dim);box-shadow:inset 0 0 0 1px var(--line)}
+.card-mercado .mv-fila.off .mv-ico, .card-mercado .mv-fila.off .mv-tx{opacity:.45}
+/* La ✕ de devolver: un botón propio al final del renglón, de 40 de ancho para
+   el dedo (la vieja medía 20). Sólo aparece en lo comprado en este mercado. */
+.card-mercado .mv-dev{flex:0 0 40px;display:grid;place-items:center;border:0;border-left:1px solid var(--line);
+  background:rgba(255,75,58,.08);color:var(--red);font-size:15px;font-weight:700;cursor:pointer;border-radius:0 5px 5px 0}
+.card-mercado .mv-dev:hover{background:rgba(255,75,58,.18)}
+.card-mercado .mv-nota{margin:10px 0 0;text-align:center;font-family:var(--txt);font-size:12.5px;line-height:1.4;color:var(--dim)}
+.card-mercado .mv-nota b{color:var(--red)}
+@media (hover:hover){ .card-mercado .mv-fila:not(.off) .mv-comprar:hover{background:rgba(39,240,138,.06)} }
+/* Teléfonos bajos: se aprieta el aire, no se saca nada. */
+@media (max-height:700px){
+  .card-mercado .mv-saldo{margin-top:8px;padding:8px 10px}
+  .card-mercado .mv-plata{font-size:32px}
+  .card-mercado .mv-estado{margin-top:8px}
+  .card-mercado .mv-lista{gap:6px;margin-top:8px}
+  .card-mercado .mv-comprar{padding:7px 10px}
+  .card-mercado .mv-tx span{font-size:12px}
+  .card-mercado .mv-nota{margin-top:8px}
+}
+@media (max-height:600px){
+  .card-mercado .mv-saldo{padding:6px 10px;gap:0}
+  .card-mercado .mv-lb{display:none}
+  .card-mercado .mv-plata{font-size:26px;line-height:1}
+  .card-mercado .mv-comprar{padding:5px 10px;gap:10px}
+  .card-mercado .mv-tx{gap:0}
+}
+/* Teléfono acostado: hay ancho y no alto. La plata va en un renglón con el
+   premio, y los cuatro ítems en dos columnas. */
+@media (orientation:landscape) and (max-height:500px){
+  .card.card-mercado h1{font-size:24px;line-height:1;margin:2px 0 0}
+  .card-mercado .mv-saldo{display:flex;justify-content:center;align-items:baseline;gap:12px;margin-top:6px;padding:5px 12px}
+  .card-mercado .mv-lb{display:inline}
+  .card-mercado .mv-plata{font-size:24px}
+  .card-mercado .mv-estado{margin-top:6px}
+  .card-mercado .mv-lista{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:6px}
+  .card-mercado .mv-comprar{padding:5px 8px;gap:8px}
+  .card-mercado .mv-ico{width:28px;height:28px}
+  .card-mercado .mv-ico .ii-svg{width:22px;height:22px}
+  .card-mercado .mv-tx b{font-size:13px}
+  .card-mercado .mv-tx span{font-size:11.5px}
+  .card-mercado .mv-pr{font-size:13px;padding:5px 7px}
+  .card-mercado .mv-nota{margin-top:6px;font-size:11.5px}
+}
+
 /* Acostado la hoja no entraba (LISTO quedaba 170px abajo del corte en
    844x390): los pasos van en fila y se va el ícono, que es adorno. */
 @media (orientation:landscape) and (max-height:500px){
@@ -13046,7 +13121,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 313;
+const VERSION = 314;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -18484,26 +18559,21 @@ function showMarket(primeraVez){
      firmes. */
   if(primeraVez) G.compras = {};
 
-  /* **Una franja con los tres datos, y la lista debajo.** Antes eran cuatro
-     bloques apilados —el estado, el inventario, la plata suelta y la grilla— y
-     la pantalla se pasaba: 815px de contenido contra 764 de hueco en un
-     teléfono, así que el botón de JUGAR quedaba abajo del corte.
-
-     Lo que se fue: el inventario repetía en un bloque propio lo que cada
-     renglón ya dice con su `x2`, y la descripción larga de cada ítem repetía
-     en prosa lo que el efecto dice en tres caracteres. Lo que entró: la plata
-     deja de flotar suelta y se sienta al lado del aguante y la racha, que es
-     con lo que se decide qué comprar. */
+  /* **El mercado explicado (v314).** La plata grande arriba con el premio que
+     acaba de entrar, una línea con el aguante y la racha, y los cuatro ítems
+     diciendo en palabras qué hacen. Se fueron el párrafo de consejo, la mochila
+     (LO QUE LLEVÁS repetía lo que dice cada renglón) y la franja grande de
+     aguante y racha, que era la tercera vez seguida que salía. Cuántos tenés va
+     en un numerito dorado sobre el ícono; el precio es un botón verde cuando
+     alcanza y apagado cuando no. Lo comprado acá se devuelve con la ✕ del
+     renglón. Para volver atrás: tag `mercado-antes-de-explicado`. */
   const html =
     '<div class="tag">MERCADO</div>' +
     '<h1>ÍTEMS</h1>' +
-    '<p class="mk-p">Gastá ahora o guardá para las rondas de arriba, donde la mesa ya casi no te regala nada.</p>' +
-    franjaMercado() +
-    mochilaHTML() +
-    tiendaHTML() +
-    (Object.keys(G.compras).length
-      ? '<div class="mk-nota">Lo que compraste ahora se puede devolver con la ✕. Al pasar de ronda queda firme.</div>'
-      : '') +
+    mercadoSaldoHTML() +
+    mercadoEstadoHTML() +
+    mercadoListaHTML() +
+    mercadoNotaHTML() +
     /* El botón va en un pie que se queda pegado abajo mientras la lista rueda
        por detrás: es la acción de la pantalla y no puede depender de que el
        jugador adivine que hay que bajar. */
@@ -18516,25 +18586,68 @@ function showMarket(primeraVez){
   $('nextBtn').onclick = () => { closeCard(); G.ronda++; startMatch(); };
 }
 
-/* Los tres datos con los que se compra, en una tira: **con cuánta plata, con
-   cuántos corazones y con cuánta racha llegás**. La plata primero porque es la
-   que decide qué se puede, y las otras dos porque son las que dicen qué
-   conviene: sin aguante, un SUPLENTES vale más que un VAR. */
-function franjaMercado(){
-  let corazones = '', puntos = '';
-  for(let i = 0; i < G.aguanteMax; i++)
-    corazones += '<span class="' + (i < G.aguante ? 'heart-on' : 'heart-off') + '"><i class="ih"></i></span>';
-  for(let i = 0; i < G.rachaMax; i++)
-    puntos += '<span class="' + (i < G.racha ? 'ray-on' : 'ray-off') + '"><i class="ir"></i></span>';
+/* ---- LAS PARTES DEL MERCADO (v314) ----
+   Cuatro piezas que dependen de la plata y de lo que tenés, y que
+   `mercadoRedibujar` cambia en el lugar después de cada compra o devolución. */
 
-  return '<div class="franja">' +
-    '<div class="fr-it"><span class="fr-lb">PRESUPUESTO</span>' +
-      '<b class="fr-plata">' + plata(G.dinero) + '</b></div>' +
-    '<div class="fr-it"><span class="fr-lb">LLEGÁS CON</span>' +
-      '<span class="hearts">' + corazones + '</span></div>' +
-    '<div class="fr-it"><span class="fr-lb">RACHA</span>' +
-      '<div class="racha-track">' + puntos + '</div></div>' +
+/* Qué hace cada ítem, en palabras. El renglón corto (`efecto`, «+1 ❤») sigue
+   para la mesa y el 1v1; acá se explica, porque es donde se decide. */
+const ITEM_EXPLICA = {
+  suplentes: 'Recuperás <em>1 corazón</em> de aguante.',
+  grito:     'Sumás <em>1 rayo</em> de racha.',
+  refuerzo:  'Recuperás <em>2 corazones</em> y uno de máximo.',
+  revision:  'Destrabás <em>una carta trabada</em>.'
+};
+
+/* La plata, grande, y debajo el premio que acaba de entrar. Se lee del último
+   partido del camino: si fue por penales o no pagó, la línea no aparece. Dice
+   «entraron» y no «incluye» porque después de comprar la plata baja y el
+   premio no. */
+function mercadoSaldoHTML(){
+  const h = G.historial && G.historial[G.historial.length - 1];
+  const premio = h && h.gano && h.premio ? h.premio : 0;
+  return '<div class="mv-saldo">' +
+    '<span class="mv-lb">PARA GASTAR</span>' +
+    '<b class="mv-plata">' + plata(G.dinero) + '</b>' +
+    (premio ? '<small>Entraron <em>+' + plata(premio) + '</em> de premio por ganar por ' + (h.gU - h.gC) + '</small>' : '') +
   '</div>';
+}
+
+/* Con qué llegás, en una línea chica: es lo que dice qué conviene (sin
+   aguante, un SUPLENTES vale más que un VAR). Ya no en la franja grande. */
+function mercadoEstadoHTML(){
+  return '<div class="mv-estado">' +
+    '<span>LLEGÁS CON <b>' + G.aguante + '/' + G.aguanteMax + '</b> <i class="ih"></i></span>' +
+    '<span>RACHA <b>' + G.racha + '/' + G.rachaMax + '</b> <i class="ir"></i></span>' +
+  '</div>';
+}
+
+/* Los cuatro renglones. Todo el renglón compra; la ✕, al lado, devuelve uno de
+   los comprados en este mercado (los que traías no se venden). Son dos botones
+   hermanos: uno adentro de otro es HTML inválido. */
+function mercadoListaHTML(){
+  return '<div class="mv-lista">' + Object.keys(ITEMS).map(k => {
+    const I = ITEMS[k];
+    const tengo = G.items[k] || 0;
+    const alcanza = G.dinero >= I.price;
+    const dev = (G.compras[k] || 0) > 0;
+    return '<div class="mv-fila' + (alcanza ? '' : ' off') + (dev ? ' con-dev' : '') + '" data-item="' + k + '">' +
+      '<button class="mv-comprar" data-buy="item:' + k + '"' + (alcanza ? '' : ' disabled') +
+        ' aria-label="Comprar ' + I.nm + ' por ' + plata(I.price) + (tengo ? ', tenés ' + tengo : '') + '">' +
+        '<span class="mv-ico">' + icoItem(k) + (tengo ? '<i class="mv-x">' + tengo + '</i>' : '') + '</span>' +
+        '<span class="mv-tx"><b>' + I.nm + '</b><span>' + ITEM_EXPLICA[k] + '</span></span>' +
+        '<span class="mv-pr">' + plata(I.price) + '</span>' +
+      '</button>' +
+      (dev ? '<button class="mv-dev" data-dev="' + k + '" aria-label="Devolver un ' + I.nm + ' y recuperar ' + plata(I.price) + '">✕</button>' : '') +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+/* Una línea abajo: cuándo se usan, o —si compraste algo acá— cómo se devuelve. */
+function mercadoNotaHTML(){
+  return '<p class="mv-nota">' + (Object.keys(G.compras).length
+    ? 'Lo que compraste acá se devuelve con la <b>✕</b>. Al jugar queda firme.'
+    : 'Se usan durante el partido, cuando quieras.') + '</p>';
 }
 
 /* Un renglón de la tienda: el ícono, el nombre con lo que ya tenés, el efecto,
@@ -18572,23 +18685,8 @@ function filaItem(k, der, off, extra, dev){
   '</div>';
 }
 
-/* **Lo que llevás, en una tira propia.** Sale de los mismos números que la
-   lista —`G.items`— pero muestra sólo los que tenés, así que con qué contás se
-   lee de una y no hay que recorrer los cuatro renglones. Cuando no tenés
-   ninguno lo dice en una línea, que es más corto que cuatro ceros. */
-function mochilaHTML(){
-  const llevo = Object.keys(ITEMS).filter(k => (G.items[k] || 0) > 0);
-  return '<div class="mochila">' +
-    '<span class="mo-lb">Lo que llevás</span>' +
-    (llevo.length
-      ? llevo.map(k => '<span class="mo-it">' + ITEMS[k].nm +
-                       ' <b>' + G.items[k] + '</b></span>').join('')
-      : '<span class="mo-nada">Todavía no tenés ninguno.</span>') +
-  '</div>';
-}
-
-/* La lista de compra, sola. Se usa en el mercado del campeonato y en el
-   entretiempo del 1v1. */
+/* La lista de compra del entretiempo del 1v1. El mercado del campeonato usa
+   la suya desde la v314 (`mercadoListaHTML`). */
 function tiendaHTML(){
   return '<div class="shop lista">' +
     Object.keys(ITEMS).map(k => {
@@ -18622,50 +18720,30 @@ function mercadoRedibujar(){
   const card = $('card');
   if(!card || !card.classList.contains('card-mercado')) return false;
 
-  const franja = card.querySelector('.franja');
-  const mochila = card.querySelector('.mochila');
-  const shop = card.querySelector('.shop');
-  if(!franja || !mochila || !shop) return false;
-  franja.outerHTML  = franjaMercado();
-  mochila.outerHTML = mochilaHTML();
-  shop.outerHTML    = tiendaHTML();
+  /* Las cuatro partes que dependen de la plata y de lo que tenés. La nota
+     siempre está (cambia de texto con la primera compra), así que ya no hay
+     que ponerla y sacarla como antes. */
+  const partes = [
+    ['.mv-saldo', mercadoSaldoHTML], ['.mv-estado', mercadoEstadoHTML],
+    ['.mv-lista', mercadoListaHTML], ['.mv-nota', mercadoNotaHTML]
+  ];
+  if(partes.some(([s]) => !card.querySelector(s))) return false;
+  partes.forEach(([s, f]) => { card.querySelector(s).outerHTML = f(); });
 
-  /* **Los botones se enganchan primero.** Los renglones que se acaban de
-     poner no traen nada; si algo de lo que sigue fallara antes de llegar
-     acá, la lista se vería bien y no respondería a ningún toque. Es lo que
-     pasaba hasta v259: se podía comprar uno solo y la ✕ no devolvía. */
+  /* **Los botones se enganchan enseguida.** Los renglones que se acaban de
+     poner no traen nada: hasta v259 se podía comprar uno solo y la ✕ no
+     devolvía, porque un error antes de engancharlos cortaba la función. */
   engancharTienda();
-
-  /* La nota de la ✕ aparece con la primera compra y se va con la última
-     devolución, así que hay que ponerla y sacarla, no sólo redibujarla.
-
-     **Va antes del pie, no antes del botón.** Desde v251 JUGAR vive adentro
-     de `.card-pie`, así que ya no es hijo de la tarjeta: `insertBefore`
-     contra el botón tiraba un error en la primera compra y cortaba la
-     función antes de enganchar la lista. Se inserta contra el pie, y desde
-     el padre del pie, que es donde vive de verdad. */
-  const hayCompras = Object.keys(G.compras).length > 0;
-  let nota = card.querySelector('.mk-nota');
-  if(hayCompras && !nota){
-    nota = document.createElement('div');
-    nota.className = 'mk-nota';
-    nota.innerHTML = 'Lo que compraste ahora se puede devolver con la ✕. ' +
-                     'Al pasar de ronda queda firme.';
-    const pie = card.querySelector('.card-pie');
-    if(pie) pie.parentNode.insertBefore(nota, pie);
-    else card.querySelector('.shop').after(nota);
-  } else if(!hayCompras && nota){
-    nota.remove();
-  }
-
   return true;
 }
 
+/* Engancha comprar y devolver: los renglones del 1v1 (`.fila`, `.f-dev`) y
+   los del mercado del campeonato (`.mv-comprar`, `.mv-dev`). */
 function engancharTienda(){
-  document.querySelectorAll('.fila[data-buy]').forEach(b => {
+  document.querySelectorAll('.fila[data-buy], .mv-comprar[data-buy]').forEach(b => {
     b.onclick = () => buy(b.dataset.buy);
   });
-  document.querySelectorAll('.f-dev').forEach(b => {
+  document.querySelectorAll('.f-dev, .mv-dev').forEach(b => {
     b.onclick = e => { e.stopPropagation(); devolver(b.dataset.dev); };
   });
 }

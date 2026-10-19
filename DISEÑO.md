@@ -16439,3 +16439,45 @@ v312. Con el teléfono acostado (667x375 y 844x390) las tres ya rodaban en la
 v312 y ahora ruedan entre 10 y 40px más: queda pendiente acomodarlas
 acostado. Control de layout de las 31 pantallas igual al de la v312 (402 LED y
 clásico, 375). Prueba general 49/49.
+
+## v314 · el mercado explicado
+
+El mercado de ítems, más simple y alineado con el premio por diferencia de gol
+(v313). De arriba abajo:
+
+- **PARA GASTAR**, la plata grande, y debajo «Entraron +€20M de premio por
+  ganar por 3» (sale del último partido; después de penales no aparece).
+- Una línea chica: **LLEGÁS CON 3/4 ❤ · RACHA 1/4 ⚡**.
+- Los cuatro ítems, cada uno diciendo en palabras qué hace («Recuperás 1
+  corazón de aguante», «Sumás 1 rayo de racha», «Recuperás 2 corazones y uno
+  de máximo», «Destrabás una carta trabada»). Cuántos tenés va en un numerito
+  dorado sobre el ícono, sólo si tenés alguno. El precio es un botón verde
+  cuando alcanza; si no, el renglón se apaga.
+- La **✕ de devolver** es un botón propio al final del renglón, de 40px de
+  ancho (la vieja medía 20), y sólo aparece en lo comprado en este mercado.
+- Una nota: «Se usan durante el partido, cuando quieras», que pasa a «Lo que
+  compraste acá se devuelve con la ✕» con la primera compra.
+
+Se fueron el párrafo de consejo, LO QUE LLEVÁS (repetía lo que dice cada
+renglón) y la franja grande de aguante y racha, que era la tercera vez seguida
+que salía. Con el teléfono acostado la plata va en un renglón y los ítems en
+dos columnas. El entretiempo del 1 vs 1 sigue con su lista de siempre.
+
+Se compararon cuatro: una lista limpia, una grilla 2×2, una cuenta tipo ticket
+y ésta.
+
+**Para volver atrás:** el tag `mercado-antes-de-explicado` (= v313).
+
+Probado tocando de verdad en el juego real (47 controles): al entrar (plata,
+premio, aguante y racha, numeritos, qué alcanza, sin ✕), comprar uno y dos
+del mismo (la plata baja, el numerito sube, aparece la ✕, se apaga lo que ya
+no alcanza, la pantalla no se reabre), devolver de a uno hasta volver a lo que
+traías (lo que traías no se puede devolver, ni con la ✕ ni con la función),
+comprar uno que no tenías (aparece y desaparece su numerito), quedarse sin
+plata (nada se compra, ni tocando ni por la función), compras mezcladas y
+devolver una sola, JUGAR (los ítems viajan al partido) y el mercado siguiente
+(lo comprado queda firme). En 320x568, 360x640, 375x667, 402x784, 440x956 y el
+clásico, sin scroll ni nada cortado, también con las ✕ a la vista; acostado
+rueda menos que en la v313 (667x375: 36 → 5; 844x390: 154 → 43). El 1 vs 1
+compra y devuelve como antes. Control de layout de las 31 pantallas igual al
+de la v313 (402 LED y clásico, 375). Prueba general 49/49.
