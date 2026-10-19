@@ -16481,3 +16481,37 @@ clásico, sin scroll ni nada cortado, también con las ✕ a la vista; acostado
 rueda menos que en la v313 (667x375: 36 → 5; 844x390: 154 → 43). El 1 vs 1
 compra y devuelve como antes. Control de layout de las 31 pantallas igual al
 de la v313 (402 LED y clásico, 375). Prueba general 49/49.
+
+## v315 · cuántos ítems tenés, con una sola pastilla
+
+En la mesa del teléfono no se veía cuántos tenías de cada ítem. La cantidad
+era un numerito sobre el ícono, y desde la v276 el ícono se oculta en el
+teléfono parado para dejarle el ancho al nombre: el número se iba con él.
+
+Ahora hay **una sola pastilla dorada, «x2», «x3»**, igual en todo el juego:
+
+- **Mesa del teléfono parado:** sólo con dos o más, apoyada sobre el borde
+  de arriba de su caja, del lado derecho. Para que entre sin pisar el panel de
+  arriba, la fila de ítems baja 8px (había 5,4 de aire); los cede la mesa, que
+  se achica sola: la carta pierde 1 o 2px. Siempre, aunque no haya pastilla,
+  para que la mesa no salte al usar el penúltimo.
+- **Compu y teléfono acostado ancho (con ícono):** la misma pastilla, sobre el
+  ícono, ahora con la «x».
+- **Mercado:** la misma pastilla, con «x1», «x2».
+
+Se compararon cuatro lugares: arriba en la esquina (ésta), al lado del
+efecto, cajas apiladas y abajo sobre el borde.
+
+**Para volver atrás:** el tag `items-antes-de-cantidad` (= v314).
+
+Probado en el juego real con cuatro combinaciones de ítems (1, 2, 3, 4 y 9 de
+cada uno) en 320x568, 360x640, 375x667, 390x844, 402x784, 414x736, 440x956,
+el clásico, 667x375 y 844x390 (108 controles): la pastilla aparece sólo con
+dos o más y dice la cantidad justa; no pisa la letra del nombre ni el efecto
+de su caja, ni las cajas vecinas, ni los bordes y piezas de arriba, ni se sale
+de la pantalla; la mesa no scrollea; el estilo es idéntico en la mesa, el
+ícono y el mercado; tocar el ítem abre su ficha y usarlo baja el número (con
+uno, la pastilla se va). En 667x375 la fila de ítems ya se montaba sobre
+DEFENSA desde antes: ahí no se baja la fila y queda pendiente acomodar ese
+diseño acostado. Control de layout de las 31 pantallas igual al de la v314.
+Prueba general 49/49.

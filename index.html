@@ -2170,13 +2170,16 @@ img{height:auto}
    despega del dibujo de abajo y sirve igual con el ítem apuntando, que cambia
    el fondo del botón. */
 .item .ii{position:relative}
-.item .iq{
-  position:absolute;right:-6px;bottom:-4px;
-  font-family:var(--txt);font-weight:700;font-size:9.5px;letter-spacing:0;
-  line-height:1;padding:1px 4px;border-radius:99px;
-  background:var(--gold);color:var(--black);
-  box-shadow:0 0 0 1.5px rgba(0,8,31,.92);
+/* **Cuántos tenés, con una sola pastilla en todo el juego (v315).** «x1»,
+   «x2», dorada: la misma en la mesa del teléfono, sobre el ícono en la compu y
+   acostado, y en el mercado. Cada lugar sólo dice dónde va. */
+.cant-x{
+  display:inline-grid;place-items:center;min-width:18px;height:12px;padding:0 4px;box-sizing:border-box;border-radius:6px;
+  background:var(--gold);color:#140c00;font-family:var(--tit);font-weight:900;font-size:9px;line-height:1;letter-spacing:.2px;font-style:normal;
+  box-shadow:0 0 0 1px rgba(7,19,14,.92);
 }
+.item .iq-x{display:none}   /* la del teléfono parado: se prende en su media query */
+.item .iq{position:absolute;right:-6px;bottom:-4px}
 .item .idesc{font-size:9.6px;line-height:1.4;color:var(--dim);margin-top:3px}
 
 /* ---------- EFECTO DE LOS ÍTEMS ---------- */
@@ -5296,7 +5299,7 @@ body{padding-bottom:36px}
   /* Ya no se esconde: fuera del nombre no le quita ancho a nada. */
   /* Pegada al ícono y no afuera: con 4px de hueco hasta el texto del efecto,
      un pelín más a la derecha y la chapita le tapaba el signo. */
-  .item .iq{font-size:8.4px;padding:1px 3px;right:-1px;bottom:-3px}
+  .item .iq{right:-1px;bottom:-3px}
   /* El tope de 30px venía de cuando los ítems eran angostos y de ancho libre.
      Ahora cada uno es una columna fija, así que el efecto usa lo que hay y, si
      no entra, corta con puntos suspensivos en vez de partir la palabra al
@@ -5503,7 +5506,7 @@ body{padding-bottom:36px}
      distingue un ítem de otro cuando tenés los cuatro y los efectos se parecen.
      Antes se ocultaba y quedaban cuatro cajas casi iguales. */
   .item .inm{font-size:7.8px;letter-spacing:0}
-  .item .iq{font-size:7.8px;padding:0 3px;right:-1px;bottom:-3px}
+  .item .iq{right:-1px;bottom:-3px}
   .item .ief{font-size:8.8px}
   .item .ii{font-size:12px}
   .item{padding:3px 4px;gap:3px}
@@ -8096,8 +8099,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
 .card-mercado .mv-ico{position:relative;width:34px;height:34px;display:grid;place-items:center;flex:0 0 auto}
 .card-mercado .mv-ico .ii-svg{width:28px;height:28px;display:block;color:var(--gold)}
 /* Cuántos tenés: un numerito dorado sobre el ícono, sólo si tenés alguno. */
-.card-mercado .mv-x{position:absolute;right:-7px;top:-7px;min-width:18px;height:18px;border-radius:9px;padding:0 4px;box-sizing:border-box;
-  display:grid;place-items:center;background:var(--gold);color:#140c00;font-family:var(--tit);font-weight:900;font-size:11px;font-style:normal}
+.card-mercado .mv-x{position:absolute;right:-8px;top:-5px}   /* la pastilla es .cant-x, la misma de la mesa */
 .card-mercado .mv-tx{flex:1;min-width:0;display:grid;gap:2px}
 .card-mercado .mv-tx b{font-family:var(--tit);font-weight:800;font-size:15px;letter-spacing:1px;color:var(--white)}
 .card-mercado .mv-tx span{font-family:var(--txt);font-size:13px;line-height:1.3;color:var(--white);opacity:.85}
@@ -10337,6 +10339,18 @@ html.html-menu, html.html-menu body{overflow:hidden}
 
   /* los ítems sin su ícono: nombre arriba y lo que hace abajo, centrados */
   #itemBar .item > .ii{display:none}
+  /* y la cantidad, que vivía en el ícono, en una pastilla dorada montada en la
+     esquina de arriba (v315). Sólo con dos o más. */
+  /* Apoyada sobre el borde de arriba de su caja, del lado derecho: la letra
+     del nombre arranca entre 0,7 y 3,6px debajo del borde, así que la pastilla
+     termina justo en el borde y no la toca. Para que entre sin tocar el panel
+     de arriba, la fila de ítems baja 8px (medido: había 5,4 de aire); los 8px
+     se los cede la mesa, que es la fila elástica. Siempre, no sólo con
+     pastilla: si no, la mesa saltaría al usar el penúltimo. Sólo parado:
+     acostado (667x375) la fila de ítems ya se monta sobre DEFENSA desde antes
+     de la v315, y bajarla la empujaba más. */
+  @media (orientation:portrait){ #panelItems{margin-top:8px} }
+  #itemBar .item > .iq-x{display:grid;position:absolute;z-index:3;top:-13px;right:3px;pointer-events:none}
   #itemBar .item{justify-content:center;gap:0}
   #itemBar .item .itx{flex:1 1 auto;min-width:0;align-items:center;text-align:center}
   #itemBar .item .inm{font-size:9.8px;letter-spacing:.6px;color:#e8eefa;max-width:100%}
@@ -10523,7 +10537,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
 :root .item:hover:not(:disabled){background:#1c2c25;border-color:var(--gold)}
 :root .item{background:rgba(10,22,16,.9);border-color:rgba(173,196,185,.2)}
 :root .item.apuntando{background:#1e1a0c;border-color:var(--gold)}
-:root .item .iq{box-shadow:0 0 0 1.5px rgba(7,19,14,.92)}
+
 :root .log p{border-bottom:1px solid rgba(39,61,51,.45)}
 :root .board-hint{background:rgba(13,23,18,.9)}
 :root .pick-stat.def:hover{background:#131b17}
@@ -13121,7 +13135,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 314;
+const VERSION = 315;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -14681,7 +14695,7 @@ function renderItems(){
     b.innerHTML =
       (usable ? '<span class="i-brillo"></span>' : '') +
       '<span class="ii">' + icoItem(k) +
-        (cuantos > 1 ? '<b class="iq">' + cuantos + '</b>' : '') +
+        (cuantos > 1 ? '<b class="iq cant-x">x' + cuantos + '</b>' : '') +
       '</span>' +
       '<span class="itx">' +
         /* En la caja va el nombre corto: son 69px de ancho y «GRITO DEL DT»
@@ -14690,7 +14704,13 @@ function renderItems(){
         '<span class="inm">' + (I.corto || I.nm) + '</span>' +
         '<span class="ief">' + I.efecto + '</span>' +
         '<span class="idesc">' + I.desc + '</span>' +
-      '</span>';
+      '</span>' +
+      /* **La cantidad en el teléfono parado (v315).** Ahí el ícono se oculta
+         desde la v276 para dejarle el ancho al nombre, y la chapita de arriba
+         se iba con él: con dos SUPLENTES no había forma de saberlo. Ésta es
+         una pastilla «x2» montada en la esquina de arriba de la caja; en la
+         compu y acostado no se muestra, porque ahí sigue la del ícono. */
+      (cuantos > 1 ? '<b class="iq-x cant-x">x' + cuantos + '</b>' : '');
     /* El toque abre la ficha del ítem en vez de usarlo directo: así se lee qué
        hace antes de gastarlo. Desde ahí se confirma con USAR. */
     b.onclick = (ev) => { ev.stopPropagation(); abrirItem(k, b); };
@@ -18634,7 +18654,7 @@ function mercadoListaHTML(){
     return '<div class="mv-fila' + (alcanza ? '' : ' off') + (dev ? ' con-dev' : '') + '" data-item="' + k + '">' +
       '<button class="mv-comprar" data-buy="item:' + k + '"' + (alcanza ? '' : ' disabled') +
         ' aria-label="Comprar ' + I.nm + ' por ' + plata(I.price) + (tengo ? ', tenés ' + tengo : '') + '">' +
-        '<span class="mv-ico">' + icoItem(k) + (tengo ? '<i class="mv-x">' + tengo + '</i>' : '') + '</span>' +
+        '<span class="mv-ico">' + icoItem(k) + (tengo ? '<i class="mv-x cant-x">x' + tengo + '</i>' : '') + '</span>' +
         '<span class="mv-tx"><b>' + I.nm + '</b><span>' + ITEM_EXPLICA[k] + '</span></span>' +
         '<span class="mv-pr">' + plata(I.price) + '</span>' +
       '</button>' +
