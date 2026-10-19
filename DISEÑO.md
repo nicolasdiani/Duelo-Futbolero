@@ -16398,3 +16398,44 @@ cartel simulado: se abre al tocar, aceptado se va la franja, rechazado queda y
 abre los pasos. Las tres hojas con el texto de cada teléfono, sin scroll
 también acostado, y LISTO vuelve al menú. Control de layout de las 31 pantallas
 igual al de la v311 (402 LED y clásico, 375). Prueba general 49/49.
+
+## v313 · premio por diferencia de gol
+
+Ganar un partido del campeonato paga según **por cuántos goles** ganaste, sin
+importar la ronda: +1 €5M, +2 €10M, +3 €20M, +4 o más €30M. Por penales la
+diferencia es cero y no paga. Sólo en el campeonato: el partido único no tiene
+mercado y el 1 vs 1 tiene su propia plata. La final también paga, porque la
+plata pasa al próximo campeonato.
+
+Medido en 2.000 campeonatos simulados con el juego real: el 36% de las
+victorias son por 1 gol, el 28% por 2, el 15% por 3, el 6% por 4 o más y el
+14% por penales. Las cartas dan unos €12M por partido; el premio medio queda
+en €11M por partido ganado. Ganar por poco paga como una carta de FAMA; la
+goleada es generosa: por 3, con lo de las cartas alcanza para el SEGUNDO AIRE.
+Se compararon cuatro tablas (5/10/15/25, ésta, 5/10/25/40 y 10/15/30/45).
+
+Cómo se ve:
+
+- **GANASTE:** una cinta verde debajo del marcador, «PREMIO · Ganaste por 3
+  goles · +€20M». EN CAJA ya lo muestra sumado. Por penales la cinta queda
+  apagada y dice «Por penales no hay premio». En teléfonos bajos va en un
+  renglón.
+- **CAMPEÓN y ELIMINADO:** en EL CAMINO, lo que pagó cada partido a la
+  derecha. En CAMPEÓN la cinta no entraba (hacía rodar la pantalla 59px en
+  402x784).
+- **¿CÓMO SE JUEGA?:** LOS ÍTEMS suma, en dorado, «Ganar por más goles da más
+  plata.».
+
+Se compararon cuatro formas de mostrarlo: en la caja, esta cinta, una escalera
+con los cuatro premios y un renglón dentro del marcador.
+
+**Para volver atrás:** el tag `plata-antes-de-premio` (= v312).
+
+Probado en el juego real: los montos (+1 a +7, penales, perder), la caja y la
+cinta ganando 2-1, 3-0, 5-0 y por penales, la final 4-1 y por penales, y el
+partido único sin premio. GANASTE, CAMPEÓN y ¿CÓMO SE JUEGA? en 320x568,
+360x640, 375x667, 402x784, 440x956 y el clásico: ninguna rueda más que en la
+v312. Con el teléfono acostado (667x375 y 844x390) las tres ya rodaban en la
+v312 y ahora ruedan entre 10 y 40px más: queda pendiente acomodarlas
+acostado. Control de layout de las 31 pantallas igual al de la v312 (402 LED y
+clásico, 375). Prueba general 49/49.
