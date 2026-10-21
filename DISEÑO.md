@@ -16581,3 +16581,35 @@ ESTUDIANTES, ARGENTINOS) en 320x568, 360x640, 375x667, 390x844, 402x784,
 ELIMINADO en semifinal y en la final, y GANASTE sin rodar, con el botón grande
 en un renglón y COMPARTIR a la vista; y en todos los marcadores ninguna palabra
 partida ni afuera de su columna.
+
+## v318 · el reflector del VAR
+
+Al tocar el VAR había que buscar las cartas trabadas: tenían un borde dorado
+que latía y el candado pasaba a 🔓, pero el resto de la mesa seguía igual de
+prendido.
+
+Ahora, mientras se apunta con el VAR:
+
+- **Un velo oscurece la mesa entera** (sin desenfocar: las otras cartas se
+  siguen leyendo, que es lo que te ayuda a elegir).
+- **Las trabadas quedan encima**, en color, con borde de 2px y un brillo que
+  late en el azul del VAR, el mismo de «DESTRABA» en el ítem.
+- **El candado del medio pasa a ser una ficha redonda 🔓 azul**, de 38px (30
+  en los teléfonos de 360 o menos): entra en cualquier carta y no tapa lo que
+  da. Se probó primero una chapa con texto, DESTRABAR o REVISAR, y en 320 no
+  entraba y tapaba el renglón de abajo de la carta.
+
+Tocar una trabada la destraba y saca el velo; tocar el VAR otra vez cancela
+sin gastarlo, como antes. La instrucción sigue en el pie.
+
+Se compararon tres: con todo el resto desenfocado y en dorado, ésta, y la
+pantalla del VAR (líneas de TV y la ficha 📺).
+
+**Para volver atrás:** el tag `var-antes-de-reflector` (= v317).
+
+Probado con el recorrido real (tocar el VAR, USAR, tocar una trabada; y
+cancelar) en 320x568, 360x640, 375x667, 402x784, 440x956, el clásico, 667x375
+y 844x390 (48 controles): sin apuntar no hay velo; apuntando, las tres
+trabadas quedan encima del velo, en azul, con la ficha, se pueden tocar y la
+ficha entra en la carta; destrabar gasta un VAR y saca el velo; cancelar no lo
+gasta.

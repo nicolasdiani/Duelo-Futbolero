@@ -8083,6 +8083,32 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .pv-cinta .pv-m{font-size:22px}
 }
 
+/* ---------- EL REFLECTOR DEL VAR (v318) ----------
+   Al tocar el VAR había que buscar las cartas trabadas: tenían un borde dorado
+   que latía, pero el resto de la mesa seguía igual de prendido. Ahora un velo
+   oscurece la mesa entera —sin desenfocar: las otras cartas se siguen
+   leyendo— y las trabadas quedan encima, en color, con borde y brillo en el
+   azul del VAR (el de «DESTRABA» en el ítem), y el candado del medio pasa a
+   ser una ficha redonda 🔓 que entra en cualquier carta sin tapar lo que da.
+   Para volver atrás: tag `var-antes-de-reflector`. */
+.board.var-apunta{position:relative}
+.board.var-apunta::after{content:"";position:absolute;inset:-4px;background:rgba(2,6,4,.72);z-index:4;pointer-events:none;border-radius:6px}
+.board.var-apunta .cell.destrabable{z-index:5;border:2px solid #4fa3ff;
+  box-shadow:0 0 0 3px rgba(79,163,255,.35), 0 0 30px rgba(79,163,255,.65);animation:varLate 1.2s ease-in-out infinite}
+@keyframes varLate{
+  0%,100%{box-shadow:0 0 0 2px rgba(79,163,255,.3), 0 0 18px rgba(79,163,255,.45)}
+  50%{box-shadow:0 0 0 4px rgba(79,163,255,.55), 0 0 34px rgba(79,163,255,.8)}
+}
+.board.var-apunta .cell.lock.destrabable::before,
+.board.var-apunta .cell.lock.destrabable .c-art{opacity:1;filter:none}
+.board.var-apunta .cell.destrabable .c-nm,.board.var-apunta .cell.destrabable .c-val,
+.board.var-apunta .cell.destrabable .c-esc,.board.var-apunta .cell.destrabable .c-out{opacity:1}
+.board.var-apunta .cell.destrabable .c-ico::before{
+  content:'🔓';width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:20px;line-height:1;opacity:1;z-index:6;
+  background:#4fa3ff;box-shadow:0 0 0 3px rgba(4,17,31,.75), 0 0 18px rgba(79,163,255,.9)}
+@media (max-width:360px){ .board.var-apunta .cell.destrabable .c-ico::before{width:30px;height:30px;font-size:16px} }
+@media (prefers-reduced-motion:reduce){ .board.var-apunta .cell.destrabable{animation:none} }
+
 /* ---------- CARA O SECA: LA MONEDA GRANDE (v316) ----------
    Un disco dorado con canto estriado (un `repeating-conic-gradient` recortado
    en anillo); la cara lleva el DF en letra LED y la seca un 1. El tamaño sale
@@ -13223,7 +13249,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 317;
+const VERSION = 318;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -14486,6 +14512,9 @@ function ajustarCartas(){ ajustarNombresCartas(); ajustarEscudosCartas(); }
 function renderBoard(){
   const board = $('board');
   board.innerHTML = '';
+  /* Apuntando con el VAR (v318): la mesa se oscurece y las trabadas quedan
+     iluminadas encima, en el azul del VAR. Ver «EL REFLECTOR DEL VAR». */
+  board.classList.toggle('var-apunta', G.targeting === 'revision');
 
   G.grid.forEach((row, r) => {
     const libres = row.filter(x => x && !x.lock).length;
