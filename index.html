@@ -2296,13 +2296,19 @@ img{height:auto}
 .marcador .m-eq{
   font-family:var(--txt);font-size:12.5px;letter-spacing:1.5px;
   color:var(--white);line-height:1.25;text-transform:uppercase;
-  /* los nombres largos se parten en dos líneas en vez de correr el resultado */
-  overflow-wrap:anywhere;hyphens:auto;
+  /* Los nombres de dos palabras se parten en dos líneas en vez de correr el
+     resultado; una palabra sola **no se corta al medio** (v317): con
+     `overflow-wrap:anywhere` en 320 de ancho salía «INDEPENDIENT / E». Si no
+     entra, `ajustarNombresMarcador` le baja la letra hasta que entre. */
+  overflow-wrap:normal;hyphens:manual;
 }
 /* Los dos equipos en blanco: el lado ya lo dice la posición —vos siempre a la
    izquierda— y pintar al rival en gris lo hacía parecer secundario. */
 .marcador .m-eq.mio{text-align:right}
 .marcador .m-eq.suyo{text-align:left}
+/* Las dos columnas de los nombres miden siempre lo mismo (v317): con `1fr`
+   a secas una palabra larga ensanchaba la suya y corría el resultado. */
+.marcador .m-fila{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}
 .marcador .m-res{
   font-family:var(--tit);font-weight:800;white-space:nowrap;
   font-size:clamp(34px,8vw,50px);line-height:1;letter-spacing:1px;
@@ -13217,7 +13223,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 316;
+const VERSION = 317;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -18124,12 +18130,13 @@ function matchWon(byPens){
           '<div class="chapa"><span>TE QUEDA</span><b class="plata">' + plata(G.dinero) + '</b></div>' +
           '<div class="chapa"><span>PRÓXIMO MÁXIMO</span><b class="ag">' + proxMax + ' <i class="ih"></i></b></div>' +
         '</div>' +
-        '<div class="final-pie">Seguís con la plata y los ítems que te quedan. ' +
-          (proxMax > AGUANTE_PISO
-            ? 'El <b>💪 SEGUNDO AIRE</b> recupera el corazón que gastaste.'
-            : 'El equipo ya no baja más de <b class="ef-ag">' + AGUANTE_PISO + ' <i class="ih"></i></b>.') +
-        '</div>' +
-        '<button class="cta jugar" id="againBtn">' + ICO('copa') + 'JUGAR OTRO CAMPEONATO</button>' +
+        /* **El mismo molde que ELIMINADO (v317).** Se fue el párrafo de abajo
+           («Seguís con la plata y los ítems…»): repetía lo que dicen TE QUEDA y
+           PRÓXIMO MÁXIMO, y con él la pantalla rodaba (13px en 402x784, 37 en
+           el clásico) y COMPARTIR quedaba abajo del corte. Y el botón dice
+           JUGAR OTRA COPA: JUGAR OTRO CAMPEONATO se partía en dos renglones en
+           320. Para volver atrás: tag `campeon-antes-de-ajuste`. */
+        '<button class="cta jugar" id="againBtn">' + ICO('copa') + 'JUGAR OTRA COPA</button>' +
         botonesFinal() +
       '</div>',
       'card-final card-remate'
@@ -18198,6 +18205,33 @@ function matchWon(byPens){
 /* El marcador de los pop-ups, con la misma lectura que la marquesina: tu equipo
    y tu número a la izquierda, el rival a la derecha. Antes los nombres iban en
    dos líneas sueltas arriba y abajo del marcador, y no se sabía cuál era cuál. */
+/* **Un nombre no se corta al medio (v317).** Si la palabra más larga no entra
+   en su columna, la letra baja de a medio punto hasta que entra (con un piso
+   de 8px), y el espaciado baja con ella. Corre cada vez que se abre una
+   pantalla y al girar el teléfono. */
+function ajustarNombresMarcador(raiz){
+  /* Se mide el ancho de la letra y no el desborde: del lado propio el nombre
+     va alineado a la derecha y, si no entra, se sale **hacia la izquierda**,
+     donde `scrollWidth` no lo ve. */
+  const ancho = el => Math.max(0, ...[...el.childNodes].filter(n => n.nodeType === 3 && n.textContent.trim()).flatMap(t => {
+    const rg = document.createRange(); rg.selectNodeContents(t); return [...rg.getClientRects()].map(r => r.width);
+  }));
+  const noEntra = el => ancho(el) > el.clientWidth + .5;
+  (raiz || document).querySelectorAll('.marcador .m-eq').forEach(el => {
+    el.style.fontSize = ''; el.style.letterSpacing = '';
+    if(!noEntra(el)) return;
+    const cs = getComputedStyle(el);
+    let fs = parseFloat(cs.fontSize);
+    const ls0 = parseFloat(cs.letterSpacing) || 0, fs0 = fs;
+    while(noEntra(el) && fs > 8){
+      fs -= .5;
+      el.style.fontSize = fs + 'px';
+      el.style.letterSpacing = (ls0 * fs / fs0).toFixed(2) + 'px';
+    }
+  });
+}
+addEventListener('resize', () => { const c = document.getElementById('card'); if(c) ajustarNombresMarcador(c); });
+
 function marcadorFinal(rival, byPens){
   return '<div class="marcador">' +
     /* Tres columnas: nombre · resultado · nombre. El resultado va en la del medio
@@ -18961,6 +18995,7 @@ function openCard(html, extra){
     ov.classList.toggle('ov-menu', extra === 'card-menu');
     document.documentElement.classList.toggle('html-menu', extra === 'card-menu');
     card.innerHTML = html;
+    ajustarNombresMarcador(card);
     sacarFoco();
   };
 

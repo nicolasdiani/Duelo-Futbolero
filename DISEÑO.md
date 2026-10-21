@@ -16544,3 +16544,40 @@ Probado en el juego real, el sorteo y el de penales, al elegir y resuelto, en
 entra entero sin rodar y nada cortado. 60 tiros con los dos cantando cara y
 seca: el ganador, el texto y lo que devuelve la función cuadran siempre con lo
 que salió, y salen las dos caras (42 controles). Prueba general 49/49.
+
+## v317 · campeón, con el molde de eliminado
+
+CAMPEÓN rodaba en varios teléfonos (13px en 402x784, 10 en 414x736, 37 en el
+clásico de 402) y ahí COMPARTIR quedaba abajo del corte; en 320 de ancho el
+botón JUGAR OTRO CAMPEONATO se partía en dos renglones. ELIMINADO, con el
+mismo molde, se veía bien en todos, también al perder la final con los cinco
+partidos en EL CAMINO.
+
+Sobraban dos cosas, y se fueron:
+
+- **El párrafo de abajo** («Seguís con la plata y los ítems que te quedan. El
+  SEGUNDO AIRE recupera…»): repetía lo que dicen TE QUEDA y PRÓXIMO MÁXIMO.
+- **El texto largo del botón:** ahora dice **JUGAR OTRA COPA**.
+
+Queda exactamente el molde de ELIMINADO: banda, cinta, marcador, EL CAMINO, dos
+chapas, el botón grande y COMPARTIR.
+
+**Los nombres del marcador no se cortan al medio.** En 320 de ancho una
+palabra larga se partía («INDEPENDIENT / E»), en CAMPEÓN, ELIMINADO y GANASTE.
+Ahora una palabra nunca se corta: si no entra en su columna, la letra baja de
+a medio punto hasta que entra (`ajustarNombresMarcador`, con piso de 8px), y
+las dos columnas miden siempre lo mismo. Se mide el ancho de la letra y no el
+desborde, porque del lado propio el nombre va a la derecha y se salía hacia la
+izquierda sin que `scrollWidth` lo viera.
+
+Se compararon tres: ésta, el párrafo en un renglón (seguía rodando en el
+clásico) y ésta con EL CAMINO en un renglón por partido.
+
+**Para volver atrás:** el tag `campeon-antes-de-ajuste` (= v316).
+
+Probado en el juego real con los nombres más largos (INDEPENDIENTE,
+ESTUDIANTES, ARGENTINOS) en 320x568, 360x640, 375x667, 390x844, 402x784,
+414x736, 440x956 y el clásico en 320, 375 y 402 (160 controles): CAMPEÓN,
+ELIMINADO en semifinal y en la final, y GANASTE sin rodar, con el botón grande
+en un renglón y COMPARTIR a la vista; y en todos los marcadores ninguna palabra
+partida ni afuera de su columna.
