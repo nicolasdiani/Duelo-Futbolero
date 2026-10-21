@@ -8077,6 +8077,67 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .pv-cinta .pv-m{font-size:22px}
 }
 
+/* ---------- CARA O SECA: LA MONEDA GRANDE (v316) ----------
+   Un disco dorado con canto estriado (un `repeating-conic-gradient` recortado
+   en anillo); la cara lleva el DF en letra LED y la seca un 1. El tamaño sale
+   de `--s`, así la misma pieza sirve grande en el medio y chica en el botón. */
+.mon-coin{--s:150px;width:var(--s);height:var(--s);border-radius:50%;position:relative;display:grid;place-items:center;flex:0 0 auto;margin:0 auto;
+  background:radial-gradient(circle at 34% 28%, #fff1b8 0%, #ffd25a 22%, #ffb21a 52%, #c47c06 100%);
+  box-shadow:inset 0 0 0 calc(var(--s)*.035) #b06d04, inset 0 0 0 calc(var(--s)*.06) #ffcf55, inset 0 0 0 calc(var(--s)*.07) #a86400,
+    0 0 34px rgba(255,178,26,.45), 0 12px 26px rgba(0,0,0,.65)}
+.mon-coin::before{content:"";position:absolute;inset:0;border-radius:50%;
+  background:repeating-conic-gradient(rgba(110,62,0,.55) 0 2.5deg, transparent 2.5deg 6deg);
+  -webkit-mask:radial-gradient(circle, transparent 0 calc(50% - var(--s)*.04), #000 calc(50% - var(--s)*.04));
+          mask:radial-gradient(circle, transparent 0 calc(50% - var(--s)*.04), #000 calc(50% - var(--s)*.04))}
+.mon-coin b{position:relative;font-family:var(--led, var(--tit));font-weight:900;font-size:calc(var(--s)*.36);line-height:1;color:#7a4500;
+  text-shadow:0 1px 0 rgba(255,236,170,.8), 0 -1px 0 rgba(90,50,0,.6)}
+.mon-coin.seca b{font-family:var(--tit);font-size:calc(var(--s)*.5)}
+.mon-coin i{position:absolute;bottom:calc(var(--s)*.15);left:0;right:0;text-align:center;font-style:normal;font-family:var(--tit);font-weight:800;
+  font-size:calc(var(--s)*.075);letter-spacing:calc(var(--s)*.012);color:#7a4500;opacity:.85}
+/* El tiro: sube girando la mitad de las vueltas, cambia al lado que salió y
+   baja girando la otra mitad. */
+.mon-coin.girando{animation:monSube .55s cubic-bezier(.3,.6,.4,1) forwards}
+.mon-coin.girando.segunda{animation:monBaja .6s cubic-bezier(.5,0,.6,1) forwards}
+@keyframes monSube{from{transform:translateY(0) rotateY(0)}to{transform:translateY(-46px) rotateY(900deg)}}
+@keyframes monBaja{from{transform:translateY(-46px) rotateY(900deg)}to{transform:translateY(0) rotateY(1800deg)}}
+@media (prefers-reduced-motion:reduce){ .mon-coin.girando, .mon-coin.girando.segunda{animation:none} }
+
+.sit.moneda.mon-v2{width:min(380px, calc(100vw - 24px));max-width:100%;box-sizing:border-box;display:grid;gap:12px;padding:22px 18px 20px;text-align:center}
+.sit.mon-v2 .sit-tag{margin:0}
+.mon-h{font-family:var(--led, var(--tit));font-weight:900;font-size:34px;line-height:1;color:var(--gold);text-shadow:var(--brillo-led, none);letter-spacing:1px}
+.mon-h em{font-style:normal;color:var(--white)}
+.mon-canta{display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--tit);font-weight:800;font-size:12px;letter-spacing:2px;color:var(--dim)}
+.mon-canta b{font-size:18px;letter-spacing:1px;color:var(--white)}
+.mon-baj{font-family:var(--tit);font-weight:800;font-size:11px;letter-spacing:2px;color:var(--gold);margin-top:-4px}
+.mon-bots{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mon-bot{display:grid;justify-items:center;gap:8px;padding:14px 8px 12px;border:1px solid var(--line);border-radius:8px;
+  background:rgba(255,255,255,.035);cursor:pointer;color:var(--white);font:inherit}
+.mon-bot .mon-coin{--s:62px;box-shadow:inset 0 0 0 2px #b06d04, inset 0 0 0 4px #ffcf55, 0 4px 10px rgba(0,0,0,.5)}
+.mon-bot span{font-family:var(--tit);font-weight:900;font-size:17px;letter-spacing:2px}
+.mon-bot:hover:not(:disabled){border-color:var(--gold);background:rgba(255,178,26,.08)}
+.mon-bot.elegido{border-color:var(--gold);background:rgba(255,178,26,.14);box-shadow:0 0 18px rgba(255,178,26,.3)}
+.mon-bot:disabled:not(.elegido){opacity:.45}
+.mon-gan{display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--led, var(--tit));font-weight:900;font-size:30px;line-height:1.1;
+  color:var(--gold);text-shadow:var(--brillo-led, none)}
+.mon-que{font-family:var(--tit);font-weight:800;font-size:14px;letter-spacing:2.5px;color:var(--white)}
+.mon-acerto{font-family:var(--txt);font-size:13px;color:var(--dim)}
+/* Teléfono bajo: se achican la moneda y el aire. */
+@media (max-height:600px){
+  .sit.moneda.mon-v2{gap:9px;padding:16px 14px}
+  .mon-coin.grande{--s:118px}
+  .mon-h{font-size:28px}
+}
+/* Teléfono acostado: hay ancho y no alto. */
+@media (orientation:landscape) and (max-height:500px){
+  .sit.moneda.mon-v2{width:min(460px, calc(100vw - 24px));gap:7px;padding:12px 14px}
+  .mon-coin.grande{--s:84px}
+  .mon-h{font-size:22px}
+  .mon-bot{padding:7px 8px;gap:4px;grid-template-columns:auto auto;align-items:center;justify-content:center}
+  .mon-bot .mon-coin{--s:38px}
+  .mon-bot span{font-size:15px}
+  .mon-gan{font-size:24px}
+}
+
 /* ---------- EL MERCADO EXPLICADO (v314) ----------
    La plata grande, una línea con el aguante y la racha, cuatro renglones que
    dicen en palabras qué hace cada ítem y una nota. Todo verde lo que es plata
@@ -12060,7 +12121,7 @@ function duelNuevoPartido(){
   /* El árbitro tira la moneda: el que la gana saca. Canta el visitante, como en
      la cancha. */
   G.busy = true;
-  moneda(G.J, 1, G.serie.alMejorDe > 1 ? 'PARTIDO ' + G.serie.partido : 'EL SORTEO', '¿CARA O SECA?')
+  moneda(G.J, 1, G.serie.alMejorDe > 1 ? 'PARTIDO ' + G.serie.partido : 'EL SORTEO', '¿CARA O SECA?', 'SACA PRIMERO')
     .then(gana => {
       G.turno = gana;
       cargarTurno();
@@ -12089,46 +12150,67 @@ function rivalJ(){ return G.modo === 'duelo' ? G.J[1 - G.turno] : null; }
 /* ---------------- el sorteo ----------------
    El árbitro tira la moneda: uno canta y el otro espera. Se usa al empezar el
    partido —define quién saca— y antes de los penales —quién patea primero.
-   Devuelve el índice del que ganó el sorteo. */
-function moneda(eqs, canta, titulo, bajada){
+   Devuelve el índice del que ganó el sorteo.
+
+   **La moneda grande (v316).** Era una caja chica con un círculo genérico.
+   Ahora es una moneda dorada de verdad, con canto estriado —en la cara el DF
+   del juego, en la seca un 1—, sola en el medio: «¿CARA O SECA?» en letra LED
+   arriba, el escudo del que canta debajo, y CARA y SECA con su moneda chica.
+   Al tocar, la moneda sube girando y cae del lado que salió. El resultado dice
+   qué salió, el escudo y el nombre del que ganó y qué gana (`gana`: SACA
+   PRIMERO o PATEA PRIMERO). Para volver atrás: tag `moneda-antes-de-grande`. */
+const caraMoneda = (cara, extra) =>
+  '<div class="mon-coin ' + (cara ? 'cara' : 'seca') + (extra ? ' ' + extra : '') + '" aria-hidden="true">' +
+    '<b>' + (cara ? 'DF' : '1') + '</b><i>' + (cara ? 'CARA' : 'SECA') + '</i></div>';
+function moneda(eqs, canta, titulo, bajada, ganaTxt){
   return new Promise(resolve => {
     let wrap = document.createElement('div');
     wrap.className = 'sit-flash';
+    /* La bajada sólo se muestra si dice algo más que el título («EL QUE GANA
+       PATEA PRIMERO» en los penales); al sacar repetía «¿CARA O SECA?». */
+    const extra = bajada && !/CARA O SECA/.test(bajada) ? '<div class="mon-baj">' + bajada + '</div>' : '';
     wrap.innerHTML =
-      '<div class="sit moneda">' +
+      '<div class="sit moneda mon-v2">' +
         '<div class="sit-tag">' + titulo + '</div>' +
-        '<div class="mon-moneda">' + icoDesenlace('cara') + '</div>' +
-        '<div class="t">' + eqs[canta].club + '</div>' +
-        '<div class="s">' + bajada + '</div>' +
-        '<div class="palos">' +
-          '<button class="palo" data-cara="1"><span class="pi">' + icoDesenlace('cara') + '</span><span class="pn">CARA</span></button>' +
-          '<button class="palo" data-cara="0"><span class="pi">' + icoDesenlace('seca') + '</span><span class="pn">SECA</span></button>' +
+        '<div class="mon-h">¿CARA O <em>SECA</em>?</div>' +
+        caraMoneda(true, 'grande') +
+        '<div class="mon-canta">CANTA ' + escudoDe(eqs[canta].escudo, 26) + '<b>' + eqs[canta].club + '</b></div>' +
+        extra +
+        '<div class="mon-bots">' +
+          '<button class="mon-bot" data-cara="1">' + caraMoneda(true) + '<span>CARA</span></button>' +
+          '<button class="mon-bot" data-cara="0">' + caraMoneda(false) + '<span>SECA</span></button>' +
         '</div>' +
       '</div>';
     wrap = montarPop(wrap);
 
-    wrap.querySelectorAll('.palo').forEach(btn => {
+    wrap.querySelectorAll('.mon-bot').forEach(btn => {
       btn.onclick = async () => {
         const canto = +btn.dataset.cara;
         const salio = chance(.5) ? 1 : 0;
         const acerto = canto === salio;
         const gana = acerto ? canta : 1 - canta;
 
-        wrap.querySelectorAll('.palo').forEach(b => {
+        wrap.querySelectorAll('.mon-bot').forEach(b => {
           b.disabled = true;
           if(+b.dataset.cara === canto) b.classList.add('elegido');
         });
-        const arb = wrap.querySelector('.mon-moneda');
-        arb.classList.add('girando');
-        await wait(1100);
+        /* Sube girando y, a mitad de vuelo, ya muestra el lado que va a caer. */
+        const grande = wrap.querySelector('.mon-coin.grande');
+        grande.classList.add('girando');
+        await wait(550);
+        grande.outerHTML = caraMoneda(salio === 1, 'grande girando segunda');
+        await wait(600);
 
         const box = wrap.querySelector('.sit.moneda');
+        const dijo = canto ? 'CARA' : 'SECA';
         /* La caja no se corta: se transforma. Lo mismo en los otros cuatro. */
-        morfarPop(box, 'sit moneda resuelta',
+        morfarPop(box, 'sit moneda mon-v2 resuelta',
           '<div class="sit-tag">SALIÓ ' + (salio ? 'CARA' : 'SECA') + '</div>' +
-          '<div class="sit-ico">' + icoDesenlace(salio ? 'cara' : 'seca') + '</div>' +
-          '<div class="t">' + eqs[gana].club + '</div>' +
-          '<div class="s">' + (acerto ? 'ACERTÓ EL SORTEO' : 'SE LO LLEVA IGUAL') + '</div>');
+          caraMoneda(salio === 1, 'grande') +
+          '<div class="mon-gan">' + escudoDe(eqs[gana].escudo, 34) + '<span>' + eqs[gana].club + '</span></div>' +
+          '<div class="mon-que">' + (ganaTxt || 'GANA EL SORTEO') + '</div>' +
+          '<div class="mon-acerto">' + (acerto ? 'Cantó ' + dijo + ' y acertó.'
+                                               : eqs[canta].club + ' cantó ' + dijo + ' y no acertó.') + '</div>');
         await esperarOClick(wrap, ESPERA_FIN);
         resolve(gana);
       };
@@ -13135,7 +13217,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 315;
+const VERSION = 316;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -15497,7 +15579,7 @@ async function serieDePenales(eqs, auto){
   say('🥅 Empate. Se define por penales.', 'big');
   /* El que gana la moneda patea primero. `moneda` devuelve el índice del
      ganador, así que se usa tal cual. */
-  const primero = await moneda(eqs, auto === 0 ? 1 : 0, 'PENALES', 'EL QUE GANA PATEA PRIMERO');
+  const primero = await moneda(eqs, auto === 0 ? 1 : 0, 'PENALES', 'EL QUE GANA PATEA PRIMERO', 'PATEA PRIMERO');
   say('🥅 Patea primero ' + eqs[primero].club + '.', 'big');
 
   const tiros = [[], []];                    // true = gol

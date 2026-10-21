@@ -16515,3 +16515,32 @@ uno, la pastilla se va). En 667x375 la fila de ítems ya se montaba sobre
 DEFENSA desde antes: ahí no se baja la fila y queda pendiente acomodar ese
 diseño acostado. Control de layout de las 31 pantallas igual al de la v314.
 Prueba general 49/49.
+
+## v316 · cara o seca, con la moneda grande
+
+El sorteo —al empezar cada partido del 1 vs 1, quién saca, y antes de la
+tanda de penales, quién patea primero— era una caja chica con un círculo
+genérico. Ahora:
+
+- **Una moneda dorada de verdad**, grande en el medio: canto estriado, en la
+  cara el DF del juego en letra LED y en la seca un 1.
+- **«¿CARA O SECA?»** en letra LED arriba, **CANTA** con el escudo y el nombre
+  del que canta, y en los penales «EL QUE GANA PATEA PRIMERO» en dorado.
+- **CARA y SECA** como dos botones, cada uno con su moneda chica.
+- **Al tocar**, la moneda sube girando y cae del lado que salió (sin
+  animación si el teléfono pide movimiento reducido).
+- **El resultado**: SALIÓ CARA o SECA, la moneda de ese lado, el escudo y el
+  nombre del que ganó, SACA PRIMERO o PATEA PRIMERO, y quién cantó qué («BOCA
+  cantó CARA y no acertó»).
+
+En teléfonos bajos la moneda baja de 150 a 118; acostado, a 84, y los botones
+van con la moneda al costado del nombre. Se compararon cuatro: ésta, las dos
+caras como botones, el partido con los dos escudos y con la foto del árbitro.
+
+**Para volver atrás:** el tag `moneda-antes-de-grande` (= v315).
+
+Probado en el juego real, el sorteo y el de penales, al elegir y resuelto, en
+320x568, 360x640, 375x667, 402x784, 440x956, el clásico, 667x375 y 844x390:
+entra entero sin rodar y nada cortado. 60 tiros con los dos cantando cara y
+seca: el ganador, el texto y lo que devuelve la función cuadran siempre con lo
+que salió, y salen las dos caras (42 controles). Prueba general 49/49.
