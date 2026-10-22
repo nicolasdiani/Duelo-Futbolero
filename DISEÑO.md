@@ -16653,3 +16653,25 @@ título y rival en un renglón, las dos tarjetas con su número, sin lo de antes
 sin scroll ni cortes; al apretar sale la onda y se hunde; la elegida queda
 marcada y la otra trabada; un segundo toque no suma; pasa al mercado (o
 arranca el partido en el debut) con un solo punto sumado.
+
+## v320 · La racha llena y la ruleta, fluidas
+
+Al llenarse la racha el juego se entrecortaba un par de segundos, y la ruleta de LA POSIBILIDAD DE GOL a veces daba saltos. Se midió con el procesador frenado 4 veces (un teléfono de gama media). La causa: al llenarse arrancaban unas 40 animaciones que repintan en cada cuadro (color y brillo de las letras, el anillo cónico con @property, el contorno del latido, las sombras de filas y columnas, los filtros del medidor), y seguían corriendo debajo del cartel que las tapa.
+
+- **Con un cartel encima, la mesa se queda quieta.** `montarPop` pone `body.pop-abierto` y `cerrarPop` lo saca cuando el velo se va. Las luces de la racha se pausan y siguen donde quedaron.
+- **El cartel LA POSIBILIDAD DE GOL anima sólo transform.** Las letras suben sin cambiar de color (el verde y un brillo suave quedan fijos), el latido va sin el anillo de `outline`, y la luz que da la vuelta es `.gb-luz`: una cuña que gira recortada en el borde, en vez del `::before` cónico. En el clásico no está, como antes.
+- **Columnas y filas** empujan sin sombras animadas: el aro dorado de las columnas queda fijo y se sacó `filoLate`.
+- **El medidor de racha** late con opacidad, no con filtros.
+- **La ruleta** marca los pasos con requestAnimationFrame según el reloj: un cuadro lento ya no atrasa a los que vienen. El foco aparece de una, sin transición de sombra y borde.
+- **Los nombres de las cartas** se borran, se miden y se aplican todos juntos. Sólo los que no estaban guardados se calculan uno por uno.
+- El desenfoque del velo se queda: sacarlo medía lo mismo.
+
+Medido contra la v319 (`plan-v320.js`), en trabajo del procesador:
+
+| Momento | v319 | v320 |
+|---|---|---|
+| Se llena la racha | 2.697 ms (diseño 220) | 1.076 ms (diseño 15) |
+| Cartel quieto | 1.834 ms (diseño 139) | 735 ms (diseño 0) |
+| Ruleta | 2.793 ms, paso 91 ms (peor 96) | 1.319 ms, paso 85 ms (peor 89) |
+
+Para volver atrás: tag `racha-antes-de-fluida` (= v319).

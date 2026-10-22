@@ -3856,7 +3856,12 @@ img.escudo{object-fit:contain}
 
 /* ---- EL SORTEO POR ELIMINACIÓN ----
    Las que no salieron se apagan de a una; la que queda se enciende. */
-.fg-mini{transition:transform .14s, box-shadow .14s, border-color .14s, opacity .3s, filter .3s}
+/* v320: el foco aparece de una (cada paso pinta una vez); sólo se anima el salto */
+.fg-mini{transition:transform .14s, opacity .3s, filter .3s}
+/* v320: **con un cartel encima la mesa se queda quieta.** Las luces de la racha llena siguen debajo del velo y nadie
+   las ve: se pausan (`pop-abierto` lo ponen montarPop y cerrarPop) y vuelven donde quedaron al cerrarse. */
+body.pop-abierto .gol-banner, body.pop-abierto .gol-banner *, body.pop-abierto .gol-banner::before, body.pop-abierto .gol-banner::after,
+body.pop-abierto .col-pick, body.pop-abierto .row-pick, body.pop-abierto .med-art, body.pop-abierto #m-racha::before{animation-play-state:paused !important}
 .fg-mini.foco{
   border-color:rgba(255,255,255,.92);
   box-shadow:0 0 0 2px rgba(255,255,255,.5);
@@ -10122,14 +10127,13 @@ html.html-menu, html.html-menu body{overflow:hidden}
    hacia arriba, que es donde está la mesa, y en dorado, que es la racha que
    cuestan. Reemplaza al titileo suave que tenían: sólo en las que se pueden
    usar, igual que las filas. */
+/* v320: sólo `transform` —la sombra que latía se repintaba en cada cuadro—; el aro dorado queda fijo. */
 @keyframes colEmpuja{
-  0%,100%{transform:translateY(0);box-shadow:0 0 0 0 rgba(245,200,66,0)}
-  16%    {transform:translateY(-2px);box-shadow:0 0 0 1.5px rgba(245,200,66,.75), 0 -3px 14px rgba(245,200,66,.28)}
-  35%    {transform:translateY(0);box-shadow:0 0 0 1px rgba(245,200,66,.4)}
-  51%    {transform:translateY(-1.5px);box-shadow:0 0 0 1.5px rgba(245,200,66,.6)}
-  73%    {transform:translateY(0);box-shadow:0 0 0 0 rgba(245,200,66,0)}
+  0%,35%,73%,100%{transform:translateY(0)}
+  16%    {transform:translateY(-2px)}
+  51%    {transform:translateY(-1.5px)}
 }
-.col-picks.lista .col-pick:not(:disabled){animation:colEmpuja 2.4s ease-in-out infinite}
+.col-picks.lista .col-pick:not(:disabled){animation:colEmpuja 2.4s ease-in-out infinite;box-shadow:0 0 0 1px rgba(245,200,66,.45)}
 .col-picks.lista .col-pick.activo:not(:disabled){animation:none}
 @media (hover:hover){
   .col-picks.lista .col-pick:hover:not(:disabled){animation:none}
@@ -10159,20 +10163,21 @@ html.html-menu, html.html-menu body{overflow:hidden}
     border:0;padding:0 0 0 2px;margin:0;border-radius:0;
     animation:none;transform:none;box-shadow:none;
   }
+  /* v320: laten con opacidad y no con filtros (un filtro animado se repinta en cada cuadro) */
   @keyframes pastillaLista{
-    0%,100%{filter:brightness(1);transform:scaleY(1)}
-    30%    {filter:brightness(1.55) drop-shadow(0 0 6px rgba(245,200,66,.95));transform:scaleY(1.25)}
-    60%    {filter:brightness(1.1);transform:scaleY(1)}
+    0%,100%{opacity:.85;transform:scaleY(1)}
+    30%    {opacity:1;transform:scaleY(1.25)}
+    60%    {opacity:.9;transform:scaleY(1)}
   }
   #m-racha.lista .med-art.on{animation:pastillaLista 1.9s ease-in-out infinite}
   #m-racha.lista .med-art.on:nth-child(2){animation-delay:.12s}
   #m-racha.lista .med-art.on:nth-child(3){animation-delay:.24s}
   #m-racha.lista .med-art.on:nth-child(4){animation-delay:.36s}
   @keyframes rayoListo{
-    0%,100%{filter:drop-shadow(0 0 2px rgba(245,200,66,.5))}
-    50%    {filter:drop-shadow(0 0 7px rgba(245,200,66,1)) brightness(1.3)}
+    0%,100%{opacity:.75}
+    50%    {opacity:1}
   }
-  #m-racha.lista::before{animation:rayoListo 1.9s ease-in-out infinite}
+  #m-racha.lista::before{animation:rayoListo 1.9s ease-in-out infinite;filter:drop-shadow(0 0 4px rgba(245,200,66,.8))}
 }
 /* Quieto, se queda encendido: el rayo brillando dice lo mismo sin moverse. */
 @media (prefers-reduced-motion:reduce) and (max-width:1024px) and (orientation:portrait),
@@ -10227,7 +10232,8 @@ html.html-menu, html.html-menu body{overflow:hidden}
     51%    {box-shadow:inset -2px 0 0 rgba(255,255,255,.9), 3px 0 10px rgba(255,255,255,.25)}
     73%    {box-shadow:inset -2px 0 0 rgba(255,255,255,0), 0 0 0 0 rgba(255,255,255,0)}
   }
-  .row-pick:not(:disabled){animation:filaEmpujaFilo 2.4s ease-in-out infinite, filoLate 2.4s ease-in-out infinite}
+  /* v320: sin `filoLate` (sombra animada); el filo blanco ya está en el fondo */
+  .row-pick:not(:disabled){animation:filaEmpujaFilo 2.4s ease-in-out infinite}
   .row-pick.activo:not(:disabled){animation:none}
   .wrap.atras .row-pick{animation:none}
 }
@@ -10444,13 +10450,17 @@ html.html-menu, html.html-menu body{overflow:hidden}
    exactamente lo mismo que antes. Se compararon tres —la ola que salta, la de
    luz y la que crece— y quedó la que crece. */
 .gol-banner .gb-l{display:inline-block}
+/* La luz que gira del cartel listo (v320) vive en el estilo LED; en el clásico no está y no ocupa lugar. */
+.gb-luz{display:none}
 .gol-banner.lista .gb-l{
   transform-origin:50% 100%;
   animation:gbOla 1.8s ease-in-out infinite;animation-delay:calc(var(--i) * 48ms);
 }
+/* v320: la ola es sólo `transform`; el color y el brillo quedan fijos (animarlos repintaba las 22 letras) */
+.gol-banner.lista:not(:disabled) .gb-l{color:var(--green);text-shadow:0 0 4px rgba(61,220,107,.35)}
 @keyframes gbOla{
-  0%,36%,100%{transform:none;color:var(--green);text-shadow:none}
-  18%        {transform:translateY(-2px) scale(1.22);color:#eafff0;text-shadow:0 0 6px rgba(61,220,107,.85)}
+  0%,36%,100%{transform:none}
+  18%        {transform:translateY(-2px) scale(1.22)}
 }
 .gol-banner.lista:disabled .gb-l{animation:none}
 @media (prefers-reduced-motion:reduce){.gol-banner.lista .gb-l{animation:none}}
@@ -11185,30 +11195,35 @@ html.html-menu, html.html-menu body{overflow:hidden}
    y las columnas. El anillo es una máscara sobre el borde: el cartel sigue
    midiendo lo mismo (37px) y la mesa no se mueve. Se eligió entre tres (como
    los ítems, borde que respira, luz que recorre). */
-@property --gbA{syntax:'<angle>';inherits:false;initial-value:0deg}
 :root .gol-banner.lista{
   border:1px solid rgba(39,240,138,.55);
   box-shadow:0 0 16px rgba(39,240,138,.25);
   position:relative;overflow:hidden;
 }
-:root .gol-banner.lista::before{
-  content:'';position:absolute;inset:-1px;border-radius:inherit;padding:2px;pointer-events:none;z-index:2;
-  background:conic-gradient(from var(--gbA), transparent 0 62%, rgba(39,240,138,.6) 74%, #d6ffe6 82%, var(--green) 88%, transparent 96%);
+/* v320: la luz es `.gb-luz`, una pieza recortada en el borde con una cuña que **gira** (transform, la mueve la
+   placa de video). Antes era el `::before` con un cónico que cambiaba de ángulo con @property: se repintaba
+   entero en cada cuadro. Se ve igual. (Afuera del LED está apagada: ver `.gol-banner .gb-l`.) */
+:root .gol-banner.lista .gb-luz{
+  display:block;position:absolute;inset:-1px;border-radius:inherit;padding:2px;pointer-events:none;z-index:2;overflow:hidden;
   -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);-webkit-mask-composite:xor;
   mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-  animation:gbVuelta 2.6s linear infinite;
 }
-@keyframes gbVuelta{to{--gbA:360deg}}
+.gb-luz i{
+  position:absolute;left:50%;top:50%;width:150%;aspect-ratio:1;translate:-50% -50%;will-change:transform;
+  background:conic-gradient(transparent 0 62%, rgba(39,240,138,.6) 74%, #d6ffe6 82%, var(--green) 88%, transparent 96%);
+  animation:gbGira 2.6s linear infinite;
+}
+@keyframes gbGira{to{transform:rotate(360deg)}}
 :root .gol-banner.lista::after{
   display:block;content:'';position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(105deg, transparent 38%, rgba(255,255,255,.14) 47%, rgba(255,255,255,.24) 50%, rgba(255,255,255,.14) 53%, transparent 62%);
   transform:translateX(-120%);animation:itemBrillo 1.5s ease-in-out infinite;
 }
 /* Apagado (cuando no se puede usar) o sin movimiento: quieto. */
-:root .gol-banner.lista:disabled::before, :root .gol-banner.lista:disabled::after{animation:none}
+:root .gol-banner.lista:disabled .gb-luz i, :root .gol-banner.lista:disabled::after{animation:none}
 :root .gol-banner.lista:disabled::after{opacity:0}
 @media (prefers-reduced-motion:reduce){
-  :root .gol-banner.lista::before, :root .gol-banner.lista::after{animation:none}
+  :root .gol-banner.lista .gb-luz i, :root .gol-banner.lista::after{animation:none}
   :root .gol-banner.lista::after{opacity:0}
 }
 
@@ -11300,21 +11315,21 @@ html.html-menu, html.html-menu body{overflow:hidden}
    ocupa lugar y la mesa no se mueve. */
 :root .gol-banner.lista{
   --gbK1:1.012;--gbK2:1.0075;
-  outline:0 solid rgba(39,240,138,.65);outline-offset:2px;
   animation:gbLatido 2.8s ease-in-out infinite;
 }
+/* v320: sin el anillo de `outline`, que se repintaba en cada golpe; la luz que gira ya marca el borde. */
 @keyframes gbLatido{
-  0%      {transform:scale(1);           outline-width:0}
-  10%     {transform:scale(var(--gbK1)); outline-width:2px}
+  0%      {transform:scale(1)}
+  10%     {transform:scale(var(--gbK1))}
   20%     {transform:scale(1)}
-  30%     {transform:scale(var(--gbK2)); outline-width:1.5px}
-  45%,100%{transform:scale(1);           outline-width:0}
+  30%     {transform:scale(var(--gbK2))}
+  45%,100%{transform:scale(1)}
 }
 @media (min-width:521px) and (max-width:1024px) and (orientation:portrait){
-  :root .gol-banner.lista{--gbK1:1.004;--gbK2:1.0025;outline-offset:0}
+  :root .gol-banner.lista{--gbK1:1.004;--gbK2:1.0025}
 }
 /* Apagado no late; con mouse se calma al pasar por encima, como los botones. */
-:root .gol-banner.lista:disabled{animation:none;outline-width:0}
+:root .gol-banner.lista:disabled{animation:none}
 @media (hover:hover){:root .gol-banner.lista:hover:not(:disabled){animation:none}}
 @media (prefers-reduced-motion:reduce){:root .gol-banner.lista{animation:none}}
 
@@ -11534,6 +11549,7 @@ if(/[?&]clasico=1/.test(location.search)){
     <main class="centro">
       <!-- la posibilidad de gol: arriba de todo, para que no se pierda -->
       <button class="gol-banner" id="golBanner" style="display:none">
+        <span class="gb-luz" aria-hidden="true"><i></i></span>
         <span class="gb-ico"></span>
         <span class="gb-txt">
           <!-- una caja por letra para la ola (v274); el lector de pantalla lee el rótulo entero -->
@@ -12932,6 +12948,7 @@ let POP_LIMPIA = null;    // el que suelta los tamaños al terminar
    el que el pop-up tiene que seguir usando para enganchar sus botones. */
 function montarPop(wrap){
   clearTimeout(POP_SALE); POP_SALE = null;
+  document.body.classList.add('pop-abierto');   // la mesa pausa sus luces (v320)
 
   const vivo = POP_VELO && POP_VELO.isConnected &&
                !POP_VELO.classList.contains('saliendo') ? POP_VELO : null;
@@ -13104,6 +13121,7 @@ function cerrarPop(){
     setTimeout(() => {
       if(POP_VELO === velo) POP_VELO = null;
       velo.remove();
+      if(!POP_VELO) document.body.classList.remove('pop-abierto');
     }, 300);
   }, POP_GRACIA);
 }
@@ -13316,7 +13334,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 319;
+const VERSION = 320;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -14505,8 +14523,29 @@ function render(){
    escalada (el resaltado al tocarla), se divide por esa escala. */
 const NOMBRE_TOPE = 1.7;
 const medidaNombres = new Map();
+/* **Primero todo lo guardado, de una vez** (v320). Antes cada carta borraba, medía y aplicaba por su cuenta, y
+   cada medida obligaba al navegador a rehacer el diseño de la mesa: 15 cartas, 15 rediseños en el cuadro en que
+   se llena la racha. Ahora se borran todas, se miden todas y se aplican las que ya estaban guardadas; sólo las
+   nuevas siguen con el cálculo de siempre. */
 function ajustarNombresCartas(){
-  document.querySelectorAll('#board .cell:not(.empty) .c-nm').forEach(nm => {
+  const nms = [...document.querySelectorAll('#board .cell:not(.empty) .c-nm')];
+  nms.forEach(nm => { nm.style.fontSize = ''; nm.style.letterSpacing = ''; });
+  const claves = nms.map(nm => {
+    if(!nm.offsetWidth) return null;
+    const sc = nm.getBoundingClientRect().width / nm.offsetWidth || 1;
+    const rg = document.createRange(); rg.selectNodeContents(nm);
+    const l0 = new Set([...rg.getClientRects()].filter(q => q.width > 1).map(q => Math.round(q.top / sc))).size;
+    return nm.textContent + '|' + nm.clientWidth + '|' + parseFloat(getComputedStyle(nm).fontSize) + '|' + l0 + '|' + nm.parentElement.offsetHeight;
+  });
+  const nuevos = [];
+  nms.forEach((nm, i) => {
+    const m = claves[i] && medidaNombres.get(claves[i]);
+    if(!claves[i]) return;
+    if(!m){ nuevos.push(nm); return; }
+    if(m.t) nm.style.fontSize = m.t + 'px';
+    if(m.ls) nm.style.letterSpacing = m.ls;
+  });
+  nuevos.forEach(nm => {
     nm.style.fontSize = ''; nm.style.letterSpacing = '';
     if(!nm.offsetWidth) return;
     const cab = nm.parentElement, ancho = nm.clientWidth;
@@ -15107,15 +15146,29 @@ async function sorteoGol(ficha, lista){
   /* Se sortea **acá** y se devuelve, para que el partido resuelva exactamente
      la carta que el jugador vio ganar. */
   const fin = pick(L.map((x, i) => [i, x.peso]))[0];
-  let esp = 85, i = 0;
   const vueltas = minis.length * 3 + fin;
-  for(let n = 0; n <= vueltas; n++){
-    minis.forEach(m => m.classList.remove('foco'));
-    i = n % minis.length;
-    minis[i].classList.add('foco');
-    await wait(esp);
-    if(n > vueltas - 6) esp += 48;
-  }
+
+  /* **Al ritmo del reloj** (v320). Con un `wait` por paso, cada cuadro que tardaba atrasaba todos los que
+     venían y el cursor se veía a los tirones. Ahora se sabe de antemano cuándo cae cada paso —85ms, y los
+     últimos seis 48ms más lentos cada uno— y en cada cuadro se pone el que corresponde a la hora. */
+  const cuando = []; let esp = 85, total = 0;
+  for(let n = 0; n <= vueltas; n++){ cuando.push(total); total += esp; if(n > vueltas - 6) esp += 48; }
+  await new Promise(listo => {
+    let t0 = null, va = -1;
+    const cuadro = t => {
+      if(t0 === null) t0 = t;
+      const pasado = t - t0;
+      let n = va;
+      while(n < vueltas && cuando[n + 1] <= pasado) n++;
+      if(n !== va){
+        if(va >= 0) minis[va % minis.length].classList.remove('foco');
+        minis[n % minis.length].classList.add('foco');
+        va = n;
+      }
+      if(pasado < total) requestAnimationFrame(cuadro); else listo();
+    };
+    requestAnimationFrame(cuadro);
+  });
 
   minis.forEach(m => m.classList.remove('foco'));
   minis.forEach((m, k) => m.classList.add(k === fin ? 'gana' : 'fuera'));
