@@ -16613,3 +16613,43 @@ y 844x390 (48 controles): sin apuntar no hay velo; apuntando, las tres
 trabadas quedan encima del velo, en azul, con la ficha, se pueden tocar y la
 ficha entra en la carta; destrabar gasta un VAR y saca el velo; cancelar no lo
 gasta.
+
+## v319 · mejorá tu equipo
+
+La pantalla del vestuario donde se elige ATAQUE o DEFENSA —antes del debut y
+entre partidos— pasa a ser más grande y más simple:
+
+- **Título MEJORÁ TU EQUIPO** (era ARMÁ TU PLANTEO o SUMÁ UN REFUERZO).
+- **El rival en un renglón:** AHORA VA (o PRIMER PARTIDO) · escudo · nombre ·
+  ronda. Se fueron la cinta del perfil y ELEGÍ UNO.
+- **Dos tarjetas grandes:** la foto (160px de alto en teléfonos de más de 700,
+  118 en los demás), el ícono y el nombre, el número que cambia —**2 → 3**, el
+  nuevo en dorado— y una frase: «Ganás más duelos contra defensores y
+  arqueros». Se fue la barra de tramos.
+- Se fueron también la franja de aguante y racha (ya está en GANASTE) y la nota
+  del pie.
+
+**El toque, igual que el resto del juego.** Las tarjetas siguen siendo
+`.rf-barra`, así que tienen la onda que sale del dedo, el hundido, el latido
+que se turna entre las dos y el borde de su color al pasar el mouse. Y ahora,
+como CARA o SECA y el mercado, al elegir la tarjeta queda marcada un instante
+(borde y resplandor de su color), la otra se apaga, y las dos se traban: un
+doble toque ya no puede sumar dos puntos.
+
+Acostado la foto baja a 54px: en 844x390 la pantalla vieja rodaba 219px y
+ahora entra. En 320 y 360 de ancho el nombre baja a 18px para que DEFENSA con
+su ícono entre en la tarjeta.
+
+Se compararon cuatro: ésta, con la pista del rival («3 de sus 4 duelos se
+ganan con DEFENSA» y TE CONVIENE), dos renglones sin fotos, y los números de
+tu equipo con un +1 debajo.
+
+**Para volver atrás:** el tag `refuerzo-antes-de-grande` (= v318).
+
+Probado con el recorrido real (GANASTE → IR AL VESTUARIO y el debut) y toques
+de verdad con el mouse del navegador, en 320x568, 360x640, 375x667, 390x844,
+402x784, 440x956, el clásico en 320 y 402, 667x375 y 844x390 (80 controles):
+título y rival en un renglón, las dos tarjetas con su número, sin lo de antes,
+sin scroll ni cortes; al apretar sale la onda y se hunde; la elegida queda
+marcada y la otra trabada; un segundo toque no suma; pasa al mercado (o
+arranca el partido en el debut) con un solo punto sumado.
