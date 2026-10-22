@@ -9891,6 +9891,65 @@ html.html-menu, html.html-menu body{overflow:hidden}
   .play.con-foto .p-esc svg, .play.con-foto .p-esc img{height:26px}
 }
 
+/* ---------- EL CARTEL DE LA CARTA, CON LA FOTO ARRIBA (v322) ----------
+   La foto dejó de ser el fondo del cartel. Mide 248x164 y el cartel es alto,
+   así que arriba y abajo se rellenaba con la misma foto desenfocada. Ahora va
+   **entera, chica y centrada**, a casi su tamaño, con un marco del color de la
+   carta, y todo lo demás se lee de arriba hacia abajo:
+
+     la cinta del club · la foto · el nombre · «3 VS 3» · lo que pasa · TOCÁ
+
+   El escudo va una sola vez (en la cinta) y el valor también (en el «3 VS 3»,
+   en números LED: la carta en el color de su eje y lo tuyo en blanco). Lo que
+   pasa va en un recuadro como los del vestuario y el mercado. Se eligió la A
+   entre tres (foto arriba, de costado, figurita). Para volver atrás: tag
+   `jugada-antes-de-foto-chica`. */
+.play.pj{--tono:var(--line);padding:14px 16px 16px;display:flex;flex-direction:column;align-items:stretch;gap:12px;
+  max-height:calc(100dvh - 24px);overflow-y:auto}
+.play.pj.good{--tono:var(--green)} .play.pj.bad,.play.pj.hot{--tono:var(--red)} .play.pj.gol{--tono:var(--fi-luz)}
+.play.pj.risk{--tono:var(--gold)} .play.pj.coin{--tono:var(--coin)}
+.play.pj .p-cinta{margin:-14px -16px 0;padding:8px 16px;flex:0 0 auto}
+.play.pj .p-nm{margin:0;font-size:clamp(26px, 7.4vw, 34px);line-height:1;letter-spacing:1.5px;text-indent:0;overflow-wrap:normal}
+.play.pj .p-ico{margin:0}
+.pj-foto{flex:0 0 auto;align-self:center;width:min(82%, 290px);aspect-ratio:248/164;border-radius:8px;overflow:hidden;
+  border:2px solid var(--tono);background:#050b08;box-shadow:0 8px 22px rgba(0,0,0,.55)}
+.pj-foto img{display:block;width:100%;height:100%;max-height:none;object-fit:cover}
+.pj-cmp{display:flex;justify-content:center;align-items:center;gap:16px}
+.pj-n{display:grid;justify-items:center;gap:3px}
+.pj-n b{font-family:var(--led, var(--tit));font-weight:900;font-size:40px;line-height:normal;letter-spacing:0}
+.pj-cmp.atk .pj-n b{color:var(--red)} .pj-cmp.def .pj-n b{color:var(--blue)}
+.pj-cmp .pj-n.tuyo b{color:var(--white)}
+.pj-n i{font-style:normal;font-family:var(--tit);font-weight:800;font-size:11px;letter-spacing:1.5px;color:var(--dim)}
+.pj-vs{font-family:var(--tit);font-weight:800;font-size:16px;letter-spacing:1px;color:var(--gold);margin-bottom:16px}
+.play.pj .p-out{margin:0;border:1px solid var(--line);border-radius:8px;background:rgba(7,18,13,.7);padding:10px}
+.play.pj .p-go{margin:0}
+/* Teléfonos bajos (320x568, 360x640): la foto y los números se achican. */
+@media (max-height:600px){
+  .play.pj{gap:9px}
+  .pj-foto{width:min(70%, 250px)}
+  .pj-n b{font-size:32px}
+}
+/* Acostado: la foto pasa a medirse por el alto. */
+@media (orientation:landscape) and (max-height:500px){
+  .play.pj{gap:6px;padding:10px 14px 12px}
+  .play.pj .p-cinta{margin:-10px -14px 0}
+  .pj-foto{width:auto;height:min(26vh, 104px)}
+  .play.pj .p-nm{font-size:24px}
+  /* el rótulo al lado del número y no abajo: acostado cada renglón cuenta */
+  .pj-n{display:flex;align-items:center;gap:6px}
+  .pj-n b{font-size:26px} .pj-vs{margin-bottom:0}
+  .play.pj .p-out{padding:6px;font-size:15px}
+  .play.pj .p-out .efe{font-size:12.5px;margin-top:5px;padding-top:5px}
+}
+/* Escritorio y tablet acostada: todo un escalón más grande. */
+@media (min-width:1025px) and (min-height:501px), (min-width:821px) and (orientation:landscape) and (min-height:501px){
+  .play.pj{padding:18px 26px 22px;gap:14px}
+  .play.pj .p-cinta{margin:-18px -26px 0;padding:10px 26px}
+  .pj-foto{width:min(80%, 360px)}
+  .play.pj .p-nm{font-size:clamp(34px, 3.4vw, 46px)}
+  .pj-n b{font-size:48px} .pj-n i{font-size:12.5px} .pj-vs{font-size:20px;margin-bottom:18px}
+}
+
 /* ═══════════ EL PIE QUE NO SE CORTA ═══════════
    La tarjeta rueda cuando no entra —`overflow-y:auto`— así que el botón de
    abajo nunca se perdía del todo: estaba, abajo, y había que bajar a buscarlo.
@@ -13352,7 +13411,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 321;
+const VERSION = 322;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -16919,6 +16978,7 @@ function filaValor(eje, n, rotulo, pie){
   '</span>';
 }
 
+const JUGADA_FOTO_FONDO = false;   // v322: true vuelve al cartel con la foto de fondo
 function mostrarJugada(cell){
   const T = TYPES[cell.type];
   const p = predict(cell);
@@ -16946,6 +17006,32 @@ function mostrarJugada(cell){
        derecha, que ahora es la única que hay ahí. */
     const art = artCarta(cell.type);
     const enc = ENCUADRE[cell.type] || [50];
+    /* **La foto arriba, chica y entera (v322).** Lo de abajo —la foto de fondo con
+       su velo— queda como estaba por si hay que volver; se arma sólo con
+       `JUGADA_FOTO_FONDO` en true. */
+    if(!JUGADA_FOTO_FONDO){
+      const eje = esAtk ? 'atk' : 'def';
+      wrap.innerHTML =
+        '<div class="play pj ' + p.tone + '">' +
+          cintaDelClub(cell.type) +
+          (art
+            ? '<div class="pj-foto"><img src="' + art + '" alt="" style="object-position:' + enc[0] + '% ' + (enc[1] === 'arriba' ? '20%' : '50%') + '"></div>'
+            : '<div class="p-ico">' + T.ico + '</div>') +
+          '<div class="p-nm">' + T.nm + '</div>' +
+          (cell.val
+            ? '<div class="pj-cmp ' + eje + '">' +
+                '<span class="pj-n"><b>' + cell.val + '</b><i>LA CARTA</i></span>' +
+                '<span class="pj-vs">VS</span>' +
+                '<span class="pj-n tuyo"><b>' + (esAtk ? ATK() : DEF()) + '</b><i>TU ' + (esAtk ? 'ATAQUE' : 'DEFENSA') + '</i></span>' +
+              '</div>'
+            : '') +
+          (p.label ? '<div class="p-out">' + p.label + '</div>' : '') +
+          '<div class="p-go">TOCÁ PARA JUGARLA</div>' +
+        '</div>';
+      wrap = montarPop(wrap);
+      wrap.onclick = () => { cerrarPop(); resolve(); };
+      return;
+    }
     wrap.innerHTML =
       '<div class="play ' + p.tone + (art ? ' con-foto' : '') +
         (enc[1] === 'arriba' ? ' arriba' : '') + '" style="--enc:' + enc[0] + '%">' +

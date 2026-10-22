@@ -16688,3 +16688,22 @@ Con la v319 se había ido la línea que decía cómo juega el rival. Vuelve deba
 Probado en 10 tamaños con los tres perfiles (`plan-v321.js`, 191 controles): la chapa en un renglón arriba de la frase, la frase en un renglón (11,5px en 320 y 360), entre el rival y las tarjetas sin pisar, sin cortes ni scroll, y elegir con un toque de verdad sigue sumando. En 844x390 la página ya rodaba en la v320; el cartel entra.
 
 Para volver atrás: tag `refuerzo-antes-de-perfil` (= v320).
+
+## v322 · El cartel de la carta, con la foto arriba
+
+El primer cartel que sale al elegir una carta (`mostrarJugada`) tenía la foto de fondo de todo el cartel. Como mide 248x164 y el cartel es alto, arriba y abajo se rellenaba con la misma foto desenfocada. El escudo aparecía dos veces (cinta y al lado del nombre) y el valor también (esquina y VALOR VS ATAQUE).
+
+Ahora, de arriba hacia abajo:
+
+- **La cinta del club** con el minuto, como antes. Es el único escudo.
+- **La foto entera, chica y centrada**, a casi su tamaño (`.pj-foto`, 290px como mucho), sin desenfoque, con un marco del color de la carta (`--tono`: verde, rojo, dorado, celeste o el de la plata).
+- **El nombre** grande.
+- **En los duelos, «4 VS 3»** en números LED (`.pj-cmp`): la carta en el color de su eje (rojo ataque, azul defensa), lo tuyo en blanco, y debajo LA CARTA y TU ATAQUE / TU DEFENSA.
+- **Lo que pasa** (MINI JUEGO, GOL, -1 ❤…) en un recuadro como los del vestuario y el mercado.
+- TOCÁ PARA JUGARLA.
+
+En teléfonos bajos (alto ≤ 600) la foto y los números se achican; acostado la foto se mide por el alto; en escritorio todo crece un escalón. El cartel de antes queda en el código detrás de `JUGADA_FOTO_FONDO`. Se eligió la A entre tres (foto arriba, de costado, figurita).
+
+Probado con `plan-v322.js`: las 31 cartas en 17 tamaños (de 320x568 a 440x956, el clásico y tres acostados; 4.467 controles) y el recorrido real con el mouse (fila, carta, cartel, tocar). Acostado, los duelos llevan el rótulo al lado del número para no rodar.
+
+Para volver atrás: tag `jugada-antes-de-foto-chica` (= v321).
