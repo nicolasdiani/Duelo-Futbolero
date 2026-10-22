@@ -16675,3 +16675,16 @@ Medido contra la v319 (`plan-v320.js`), en trabajo del procesador:
 | Ruleta | 2.793 ms, paso 91 ms (peor 96) | 1.319 ms, paso 85 ms (peor 89) |
 
 Para volver atrás: tag `racha-antes-de-fluida` (= v319).
+
+## v321 · El perfil del rival, de vuelta en MEJORÁ TU EQUIPO
+
+Con la v319 se había ido la línea que decía cómo juega el rival. Vuelve debajo del renglón del rival (AHORA VA · escudo · nombre · ronda), en dos renglones fijos, como en el ejemplo de VÉLEZ:
+
+- **Arriba, la chapa sola**: OFENSIVO (rojo, con el ícono de ataque), DEFENSIVO (azul, con el escudo) o NEUTRAL (dorado).
+- **Abajo, cómo juega y qué trae**: «sale a atacar · **más medios y delanteros**», «se cierra atrás · **más defensores y arqueros**» o «juega neutral · **de todo un poco**».
+
+`perfilRenglon(R)` arma las dos líneas con `PERFIL_EQUIPO` y `PERFILES`; sin perfil (el 1v1) no muestra nada. Se eligió la A entre tres (chapa abajo, la cinta del rival, la marca en la tarjeta que le corresponde).
+
+Probado en 10 tamaños con los tres perfiles (`plan-v321.js`, 191 controles): la chapa en un renglón arriba de la frase, la frase en un renglón (11,5px en 320 y 360), entre el rival y las tarjetas sin pisar, sin cortes ni scroll, y elegir con un toque de verdad sigue sumando. En 844x390 la página ya rodaba en la v320; el cartel entra.
+
+Para volver atrás: tag `refuerzo-antes-de-perfil` (= v320).

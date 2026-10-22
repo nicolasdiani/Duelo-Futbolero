@@ -8099,6 +8099,22 @@ html.html-menu, html.html-menu body{overflow:hidden}
   font-family:var(--tit);font-weight:800;font-size:12px;letter-spacing:1.5px;color:var(--dim)}
 :root .rf-riv b{font-size:17px;letter-spacing:1px;color:var(--white)}
 :root .rf-riv i{font-style:normal;font-family:var(--tit);font-weight:800;font-size:11px;letter-spacing:1.5px;color:#140c00;background:var(--gold);border-radius:3px;padding:3px 6px}
+/* **El perfil del rival, de vuelta (v321).** Con la v319 se había ido. Va
+   debajo del renglón del rival en dos renglones fijos: arriba la chapa
+   —OFENSIVO, DEFENSIVO o NEUTRAL, en su color— y abajo cómo juega y qué
+   cartas trae. Se eligió la A entre tres (chapa abajo, la cinta, la marca en
+   la tarjeta), con los dos renglones como en el ejemplo de VÉLEZ. Para volver
+   atrás: tag `refuerzo-antes-de-perfil`. */
+:root .rf-v2 .rf-pf{display:grid;justify-items:center;gap:5px;margin-top:-4px}
+:root .rf-v2 .rf-pf-chapa{display:inline-flex;align-items:center;gap:5px;font-family:var(--tit);font-weight:800;font-size:12px;letter-spacing:1.3px;line-height:1;
+  padding:4px 8px 4px 7px;border-radius:3px;border:1px solid;white-space:nowrap}
+:root .rf-v2 .rf-pf-chapa svg{width:13px;height:13px;flex:0 0 auto}
+:root .rf-v2 .rf-pf-chapa svg .fl, :root .rf-v2 .rf-pf-chapa svg .fn{fill:none;stroke:currentColor}
+:root .rf-v2 .pf-of .rf-pf-chapa{background:rgba(255,59,82,.16);border-color:rgba(255,59,82,.6);color:#ff8a97}
+:root .rf-v2 .pf-de .rf-pf-chapa{background:rgba(77,155,240,.16);border-color:rgba(77,155,240,.6);color:#8cc0ff}
+:root .rf-v2 .pf-pa .rf-pf-chapa{background:rgba(245,200,66,.12);border-color:rgba(245,200,66,.55);color:var(--gold);padding-left:8px}
+:root .rf-v2 .rf-pf-tx{font-family:var(--txt);font-size:12.5px;line-height:1.3;color:var(--dim)}
+:root .rf-v2 .rf-pf-tx b{color:var(--white);font-weight:600}
 :root .rf-v2 .rf-barras{gap:10px;margin-top:0}
 :root .rf-v2 .rf-barra{border:1px solid var(--line);border-radius:8px;background:rgba(7,18,13,.7);padding:0 0 14px}
 :root .rf-v2 .rf-barra.atk{box-shadow:inset 0 3px 0 var(--red)}
@@ -8138,6 +8154,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
 /* Teléfono angosto (320, 360): ATAQUE y DEFENSA con su ícono no entraban a
    22px en la tarjeta de 136. */
 @media (max-width:360px){
+  :root .rf-v2 .rf-pf-tx{font-size:11.5px}
   :root .rf-v2 .ba-cuerpo b{font-size:18px;gap:4px}
   :root .rf-v2 .ba-cuerpo b .ba-ico{width:16px;height:16px}
   :root .rf-v2 .ba-desc{font-size:11.5px}
@@ -8147,6 +8164,7 @@ html.html-menu, html.html-menu body{overflow:hidden}
 @media (orientation:landscape) and (max-height:500px){
   :root .rf-v2{gap:6px}
   :root .rf-v2 h1{font-size:24px}
+  :root .rf-v2 .rf-pf{margin-top:-2px;gap:3px}
   :root .rf-v2 .rf-barra{padding-bottom:8px}
   :root .rf-v2 .rf-barra .ba-foto{height:54px}
   :root .rf-v2 .ba-cuerpo{margin-top:-16px;gap:3px}
@@ -13334,7 +13352,7 @@ const icoItem = k => {
    da a vos. Por eso valen lo mismo. */
 /* Número de versión. Sube con cada entrega; se muestra en la pantalla de inicio
    para poder confirmar qué build se está jugando cuando aparece un bug. */
-const VERSION = 320;
+const VERSION = 321;
 
 const AGUANTE_BASE = 4;
 /* El aguante máximo se degrada DENTRO del partido: cada vez que te fundís,
@@ -18481,6 +18499,20 @@ function rivalRenglon(R, rot){
     '<b>' + R.rival + '</b><i>' + R.name + '</i></div>';
 }
 
+/* Debajo del rival, su perfil (v321): la chapa en un renglón y cómo juega en el
+   otro. Sin perfil (el 1v1 o un rival sin club) no muestra nada. */
+function perfilRenglon(R){
+  const p = R.eq && G.modo !== 'duelo' ? PERFIL_EQUIPO[R.eq.nm] : null;
+  const P = p && PERFILES[p];
+  if(!P) return '';
+  return '<div class="rf-pf pf-' + p + '">' +
+    '<span class="rf-pf-chapa">' +
+      (P.ico ? '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-' + P.ico + '"/></svg>' : '') +
+      P.nm + '</span>' +
+    '<span class="rf-pf-tx">' + P.tx + ' · <b>' + P.mix + '</b></span>' +
+  '</div>';
+}
+
 function showRefuerzo(debut){
   G.phase = 'refuerzo';
   /* **Una sola pantalla para el primer punto y para los refuerzos** (v269).
@@ -18504,6 +18536,7 @@ function showRefuerzo(debut){
       '<div class="tag">VESTUARIO</div>' +
       '<h1>MEJORÁ TU <em>EQUIPO</em></h1>' +
       rivalRenglon(R, debut ? (G.formato === 'unico' ? 'EL RIVAL' : 'PRIMER PARTIDO') : 'AHORA VA') +
+      perfilRenglon(R) +
       '<div class="rf-barras">' +
         barraStat('atk', 'ATAQUE', G.atk, 'defensores y arqueros', 'delantero') +
         barraStat('def', 'DEFENSA', G.def, 'medios y delanteros', 'arquero') +
